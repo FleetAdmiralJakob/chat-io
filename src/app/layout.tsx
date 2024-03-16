@@ -2,6 +2,7 @@ import "~/styles/globals.css";
 import { GeistSans } from "geist/font/sans";
 import { ThemeProvider } from "~/components/theme-provider";
 import type { Metadata, Viewport } from "next";
+import { cn } from "~/lib/utils";
 
 const APP_NAME = "Chat.io";
 const APP_DEFAULT_TITLE = "My Awesome PWA App";
@@ -54,7 +55,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={GeistSans.className}>
+      <body
+        className={cn(
+          GeistSans.className,
+          "min-h-screen bg-background font-sans antialiased",
+        )}
+      >
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
