@@ -16,6 +16,6 @@ const jiti = createJiti(fileURLToPath(import.meta.url));
 jiti("./src/env.ts");
 
 /** @type {import("next").NextConfig} */
-const config = {};
+const config = withSerwist({});
 
-export default withSerwist({ config });
+export default config;
