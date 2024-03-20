@@ -1,4 +1,4 @@
-import { defaultCache } from "@serwist/next/browser";
+import { defaultCache } from "@serwist/next/worker";
 import type { PrecacheEntry } from "@serwist/precaching";
 import { installSerwist } from "@serwist/sw";
 
@@ -14,5 +14,5 @@ installSerwist({
   skipWaiting: true,
   clientsClaim: true,
   navigationPreload: true,
-  runtimeCaching: defaultCache,
+  runtimeCaching: [...defaultCache],
 });

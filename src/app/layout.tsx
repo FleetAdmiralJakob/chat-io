@@ -3,6 +3,7 @@ import { GeistSans } from "geist/font/sans";
 import { ThemeProvider } from "~/components/theme-provider";
 import type { Metadata, Viewport } from "next";
 import { cn } from "~/lib/utils";
+import { ClerkProvider } from "@clerk/nextjs";
 
 const APP_NAME = "Chat.io";
 const APP_DEFAULT_TITLE = "My Awesome PWA App";
@@ -67,7 +68,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <ClerkProvider>{children}</ClerkProvider>
         </ThemeProvider>
       </body>
     </html>

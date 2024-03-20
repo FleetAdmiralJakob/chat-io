@@ -11,7 +11,7 @@ export default function HomePage() {
         <h1 className="text-5xl font-extrabold tracking-tight text-foreground sm:text-[5rem]">
           Chat.io
         </h1>
-        <Link href="/signin">
+        <Link href="/sign-in">
           <Button>Get Started</Button>
         </Link>
       </div>
