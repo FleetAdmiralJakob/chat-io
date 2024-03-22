@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "~/components/ui/button";
@@ -15,6 +15,7 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
+import React from "react";
 
 const formSchema = z.object({
   username: z
@@ -25,7 +26,14 @@ const formSchema = z.object({
     .max(20, {
       message: "Username must be at most 20 characters.",
     }),
-  usernameId: z.number().min(5).max(5),
+  usernameId: z
+    .string()
+    .min(5, {
+      message: "Username must be 5 characters long.",
+    })
+    .max(5, {
+      message: "Username must be 5 characters long.",
+    }),
   name: z.string().min(2).max(20).optional(),
   password: z
     .string()
@@ -38,6 +46,8 @@ const formSchema = z.object({
 });
 
 export function SignInForm() {
+  const [isLoading, setIsLoading] = React.useState(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -45,7 +55,9 @@ export function SignInForm() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {}
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsLoading(true);
+  }
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -60,8 +72,15 @@ export function SignInForm() {
                   <FormControl>
                     <Input
                       placeholder="myusername"
-                      pattern="[a-zA-Z]*"
                       {...field}
+                      onChange={(e) =>
+                        field.onChange(
+                          e.target.value
+                            .toLowerCase()
+                            .replace(" ", "")
+                            .substring(0, 20),
+                        )
+                      }
                     />
                   </FormControl>
                   <FormMessage />
@@ -119,7 +138,9 @@ export function SignInForm() {
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <Button type="submit" aria-disabled={isLoading}>
+          Submit
+        </Button>
       </form>
     </Form>
   );
