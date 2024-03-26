@@ -24,8 +24,8 @@ dependencies:
     specifier: 9.0.0-preview.16
     version: 9.0.0-preview.16(@serwist/sw@9.0.0-preview.16)(next@14.1.4)(typescript@5.4.3)
   '@serwist/precaching':
-    specifier: 9.0.0-preview.15
-    version: 9.0.0-preview.15(typescript@5.4.3)
+    specifier: 9.0.0-preview.16
+    version: 9.0.0-preview.16(typescript@5.4.3)
   '@serwist/sw':
     specifier: 9.0.0-preview.16
     version: 9.0.0-preview.16(typescript@5.4.3)
@@ -1142,17 +1142,6 @@ packages:
       typescript: 5.4.3
     dev: false
 
-  /@serwist/core@9.0.0-preview.15(typescript@5.4.3):
-    resolution: {integrity: sha512-TvNZcwLx5/MHwQO8OBmVCGbJRUoQItMo8TSwSXaMO4KnRvbpwDDp2Yz81L1ZMFwR+jbOzUET5Yw+a/U+GAGoug==}
-    peerDependencies:
-      typescript: '>=5.0.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      typescript: 5.4.3
-    dev: false
-
   /@serwist/core@9.0.0-preview.16(typescript@5.4.3):
     resolution: {integrity: sha512-7L9Qay8260n/MMNA36jQ/qSgkMHRB3QPOdb2ChJJj7tl6rdg4mIR8/qhmf/3nuyKndiUADBjeISO+9IwyR5WiA==}
     peerDependencies:
@@ -1234,20 +1223,6 @@ packages:
       - webpack
     dev: false
 
-  /@serwist/precaching@9.0.0-preview.15(typescript@5.4.3):
-    resolution: {integrity: sha512-BvB/hXGOw47mEV1jIwmr1BwHDxbaTC4EPqYp6ronK9bBj0Af9mNmKxDuaQv6Po25scxlk0K9t2AhqWGKhnU1Iw==}
-    peerDependencies:
-      typescript: '>=5.0.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@serwist/core': 9.0.0-preview.15(typescript@5.4.3)
-      '@serwist/routing': 9.0.0-preview.15(typescript@5.4.3)
-      '@serwist/strategies': 9.0.0-preview.15(typescript@5.4.3)
-      typescript: 5.4.3
-    dev: false
-
   /@serwist/precaching@9.0.0-preview.16(typescript@5.4.3):
     resolution: {integrity: sha512-8O8Y0GBc+w49GHuF8PhrnhsEKfMk0YeeR75fy+R7L15KK48x307BK1l92Z5/+hxTjqDzb5XUQF6pT6G2rk0MDg==}
     peerDependencies:
@@ -1274,18 +1249,6 @@ packages:
       typescript: 5.4.3
     dev: false
 
-  /@serwist/routing@9.0.0-preview.15(typescript@5.4.3):
-    resolution: {integrity: sha512-zIKHyBqEUu1BSFrLEvRdGmokjFnUm+3mfoCXOPfijIKWd+bxJF2U3lmy1klX296mcKkGMv31f+Ita+DvV9EFBQ==}
-    peerDependencies:
-      typescript: '>=5.0.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@serwist/core': 9.0.0-preview.15(typescript@5.4.3)
-      typescript: 5.4.3
-    dev: false
-
   /@serwist/routing@9.0.0-preview.16(typescript@5.4.3):
     resolution: {integrity: sha512-81VM7Q9cgv2zl4EqQgeVmYY4+8Dr2LiFCh21bhNhRHfFAfFnhweKUo7ZCGKgKVNBg/kELfrebJkoQgZYKDtJTw==}
     peerDependencies:
@@ -1295,18 +1258,6 @@ packages:
         optional: true
     dependencies:
       '@serwist/core': 9.0.0-preview.16(typescript@5.4.3)
-      typescript: 5.4.3
-    dev: false
-
-  /@serwist/strategies@9.0.0-preview.15(typescript@5.4.3):
-    resolution: {integrity: sha512-lWzYO8dUNWPuAyDh5kKGA23JUz8VF0qrp+SQndaFgH0LH6NkNdwRNTwvgZUKNXZNsuABIaCZ+sN4z6aQbtlSkg==}
-    peerDependencies:
-      typescript: '>=5.0.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@serwist/core': 9.0.0-preview.15(typescript@5.4.3)
       typescript: 5.4.3
     dev: false
 
