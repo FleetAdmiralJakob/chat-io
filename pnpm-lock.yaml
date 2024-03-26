@@ -21,8 +21,8 @@ dependencies:
     specifier: ^1.0.2
     version: 1.0.2(@types/react@18.2.72)(react@18.2.0)
   '@serwist/next':
-    specifier: 9.0.0-preview.15
-    version: 9.0.0-preview.15(@serwist/sw@9.0.0-preview.16)(next@14.1.4)(typescript@5.4.3)
+    specifier: 9.0.0-preview.16
+    version: 9.0.0-preview.16(@serwist/sw@9.0.0-preview.16)(next@14.1.4)(typescript@5.4.3)
   '@serwist/precaching':
     specifier: 9.0.0-preview.15
     version: 9.0.0-preview.15(typescript@5.4.3)
@@ -1108,8 +1108,8 @@ packages:
       typescript: 5.4.3
     dev: false
 
-  /@serwist/build@9.0.0-preview.15(typescript@5.4.3):
-    resolution: {integrity: sha512-0weOINUhb9M2oUl9g0xDPgL8QykXRBsLHKNtg7PHZ9biRNlqeSf2JgkXogeFPdRGyuuzl3sPZ/0qhxiLnZ6ENQ==}
+  /@serwist/build@9.0.0-preview.16(typescript@5.4.3):
+    resolution: {integrity: sha512-Z6gFbq0wAOfpKMx1LY4MmMuefbB+3PekWhm6JWuNsvk6X8kuV5y7qarc1t0cRhYDViD0xHGqYy1OYresryeUMQ==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       typescript: '>=5.0.0'
@@ -1117,7 +1117,7 @@ packages:
       typescript:
         optional: true
     dependencies:
-      '@serwist/core': 9.0.0-preview.15(typescript@5.4.3)
+      '@serwist/core': 9.0.0-preview.16(typescript@5.4.3)
       common-tags: 1.8.2
       fast-json-stable-stringify: 2.1.0
       fs-extra: 11.2.0
@@ -1164,19 +1164,6 @@ packages:
       typescript: 5.4.3
     dev: false
 
-  /@serwist/expiration@9.0.0-preview.15(typescript@5.4.3):
-    resolution: {integrity: sha512-B4/mplael48VGqhz1z4LFzXBGBoynKHhl0zxqDpNxm7Cb4pKof9wWv+GDXYpyJuJbp59tz5nCVSRJFlKfPZewA==}
-    peerDependencies:
-      typescript: '>=5.0.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@serwist/core': 9.0.0-preview.15(typescript@5.4.3)
-      idb: 8.0.0
-      typescript: 5.4.3
-    dev: false
-
   /@serwist/expiration@9.0.0-preview.16(typescript@5.4.3):
     resolution: {integrity: sha512-J47rj5C6p1RLk4VT5EcJ6ASPWLiEzt7M9LIu8obGOGNaOWheWl/ZS8JomvrAPPvYrHrXtfy4bkVXxRCdBAtAnw==}
     peerDependencies:
@@ -1217,11 +1204,11 @@ packages:
       typescript: 5.4.3
     dev: false
 
-  /@serwist/next@9.0.0-preview.15(@serwist/sw@9.0.0-preview.16)(next@14.1.4)(typescript@5.4.3):
-    resolution: {integrity: sha512-z4KLQme6OUOu+HczPZ4SfwoTkXmk8L/Shi8YBUpcnDJkC6OoGwJx/WXFb8MfpKYTeJBOvH8NbXSGos92vaxVOA==}
+  /@serwist/next@9.0.0-preview.16(@serwist/sw@9.0.0-preview.16)(next@14.1.4)(typescript@5.4.3):
+    resolution: {integrity: sha512-Km6Pbk0YFqoEwpqvcQhwxsxZq12Uu73scbxdqosy4VBY42jiBGdg3AJY3tILmh0e5VMhjleB4tAr9o8FjmF1NA==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
-      '@serwist/sw': 9.0.0-preview.15
+      '@serwist/sw': 9.0.0-preview.16
       next: '>=14.0.0'
       typescript: '>=5.0.0'
     peerDependenciesMeta:
@@ -1230,14 +1217,14 @@ packages:
       typescript:
         optional: true
     dependencies:
-      '@serwist/build': 9.0.0-preview.15(typescript@5.4.3)
-      '@serwist/core': 9.0.0-preview.15(typescript@5.4.3)
-      '@serwist/expiration': 9.0.0-preview.15(typescript@5.4.3)
-      '@serwist/range-requests': 9.0.0-preview.15(typescript@5.4.3)
-      '@serwist/strategies': 9.0.0-preview.15(typescript@5.4.3)
+      '@serwist/build': 9.0.0-preview.16(typescript@5.4.3)
+      '@serwist/core': 9.0.0-preview.16(typescript@5.4.3)
+      '@serwist/expiration': 9.0.0-preview.16(typescript@5.4.3)
+      '@serwist/range-requests': 9.0.0-preview.16(typescript@5.4.3)
+      '@serwist/strategies': 9.0.0-preview.16(typescript@5.4.3)
       '@serwist/sw': 9.0.0-preview.16(typescript@5.4.3)
-      '@serwist/webpack-plugin': 9.0.0-preview.15(typescript@5.4.3)
-      '@serwist/window': 9.0.0-preview.15(typescript@5.4.3)
+      '@serwist/webpack-plugin': 9.0.0-preview.16(typescript@5.4.3)
+      '@serwist/window': 9.0.0-preview.16(typescript@5.4.3)
       chalk: 5.3.0
       glob: 10.3.10
       next: 14.1.4(react-dom@18.2.0)(react@18.2.0)
@@ -1272,18 +1259,6 @@ packages:
       '@serwist/core': 9.0.0-preview.16(typescript@5.4.3)
       '@serwist/routing': 9.0.0-preview.16(typescript@5.4.3)
       '@serwist/strategies': 9.0.0-preview.16(typescript@5.4.3)
-      typescript: 5.4.3
-    dev: false
-
-  /@serwist/range-requests@9.0.0-preview.15(typescript@5.4.3):
-    resolution: {integrity: sha512-Qq4BTaSS0bbNfllTxLiTssK8hU9lkhZCfDAj5RakeHaYtv/s799SvY0yfUqfFa7NaOyw6hww4nWwX31dG2KqdQ==}
-    peerDependencies:
-      typescript: '>=5.0.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@serwist/core': 9.0.0-preview.15(typescript@5.4.3)
       typescript: 5.4.3
     dev: false
 
@@ -1369,8 +1344,8 @@ packages:
       typescript: 5.4.3
     dev: false
 
-  /@serwist/webpack-plugin@9.0.0-preview.15(typescript@5.4.3):
-    resolution: {integrity: sha512-y6Y7eaKM8D7yGH7IWobmRl3VpZ3vrS53Q6FdmcEhzc3RUtb3POEeqmkvC40/dXlUyAisOyesUJzInRTBb+HT5Q==}
+  /@serwist/webpack-plugin@9.0.0-preview.16(typescript@5.4.3):
+    resolution: {integrity: sha512-3hj1sXJWWyVKERKu4yWrHzjvneeMj+4H+2JFdj45p0OD9cW7RKzPlsvRvqoliNc5a0KxsDdAa3GWD7sQaqkT+w==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       typescript: '>=5.0.0'
@@ -1381,22 +1356,22 @@ packages:
       webpack:
         optional: true
     dependencies:
-      '@serwist/build': 9.0.0-preview.15(typescript@5.4.3)
+      '@serwist/build': 9.0.0-preview.16(typescript@5.4.3)
       pretty-bytes: 6.1.1
       typescript: 5.4.3
       upath: 2.0.1
       zod: 3.22.4
     dev: false
 
-  /@serwist/window@9.0.0-preview.15(typescript@5.4.3):
-    resolution: {integrity: sha512-8Bjv9sx7mt3w4SkCvfqN7Jw4weft1ri/Az0LJSsZgoSiSk6qM7OpBoBFaqUtw430yqugr7Hhw16+ti3Ej2RP/g==}
+  /@serwist/window@9.0.0-preview.16(typescript@5.4.3):
+    resolution: {integrity: sha512-/PNqjeajhbf/z8MhiGlBJOKbTVKJt2+d4bb0xX4DL1hO5il8Vz93L24WgArxyho6FIpKkHuBdvOot+CV07VL2A==}
     peerDependencies:
       typescript: '>=5.0.0'
     peerDependenciesMeta:
       typescript:
         optional: true
     dependencies:
-      '@serwist/core': 9.0.0-preview.15(typescript@5.4.3)
+      '@serwist/core': 9.0.0-preview.16(typescript@5.4.3)
       '@types/trusted-types': 2.0.7
       typescript: 5.4.3
     dev: false
