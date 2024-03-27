@@ -3,22 +3,19 @@ import { FaGithub, FaYoutube, FaUserGroup, FaBook } from "react-icons/fa6";
 import { MdLanguage } from "react-icons/md";
 import { IoIosHelpCircle } from "react-icons/io";
 import {
-  Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
-  DropdownItem,
-  Button,
-} from "@nextui-org/react";
-import React from "react";
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import Image from "next/image";
+import america from "src/assets/united-states.png";
+import germany from "src/assets/germany.png";
 
 const Footer = () => {
-  const [selectedKeys, setSelectedKeys] = React.useState(new Set(["text"]));
-
-  const selectedValue = React.useMemo(
-    () => Array.from(selectedKeys).join(", ").replaceAll("_", " "),
-    [selectedKeys],
-  );
-
   return (
     <>
       <div
@@ -37,7 +34,41 @@ const Footer = () => {
         </div>
         <div className={"mt-8 flex w-full justify-around md:w-2/5"}>
           <Link href={"/"} className={"flex"}>
-            <MdLanguage className={"mr-1 mt-1"} /> Languages
+            <MdLanguage className={"mr-1 mt-1"} />{" "}
+            <Select>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select a Language" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Languages</SelectLabel>
+                  <SelectItem value="English">
+                    <div className={"flex"}>
+                      <p>English</p>
+                      <Image
+                        src={america}
+                        alt={"Test"}
+                        width={20}
+                        height={20}
+                        className={"ml-2.5"}
+                      />
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="German">
+                    <div className={"flex"}>
+                      <p>German</p>
+                      <Image
+                        src={germany}
+                        alt={"Test"}
+                        width={20}
+                        height={20}
+                        className={"ml-2.5"}
+                      />
+                    </div>
+                  </SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
           </Link>
           <Link href={"/"} className={"flex"}>
             <FaBook className={"mr-1 mt-1"} /> Legal
