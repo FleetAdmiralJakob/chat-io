@@ -1,4 +1,4 @@
-import icon from "~/assets/icon-614x599.png";
+import icon from "~/assets/chatio.png";
 import Image from "next/image";
 import { SignInForm } from "~/app/sign-in/signin-form";
 

@@ -1,12 +1,15 @@
 import "~/styles/globals.css";
-import { GeistSans } from "geist/font/sans";
 import { ThemeProvider } from "~/components/theme-provider";
 import type { Metadata, Viewport } from "next";
 import { cn } from "~/lib/utils";
 import { ClerkProvider } from "@clerk/nextjs";
+import { DM_Sans } from "next/font/google";
+import React from "react";
+
+const sans = DM_Sans({ subsets: ["latin-ext"], weight: ["500"] });
 
 const APP_NAME = "Chat.io";
-const APP_DEFAULT_TITLE = "My Awesome PWA App";
+const APP_DEFAULT_TITLE = "Chat.io";
 const APP_TITLE_TEMPLATE = "%s - PWA App";
 const APP_DESCRIPTION = "Best PWA app in the world!";
 
@@ -58,8 +61,8 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={cn(
-          GeistSans.className,
-          "min-h-screen bg-background font-sans antialiased",
+          sans.className,
+          "min-h-screen  bg-background font-sans antialiased",
         )}
       >
         <ThemeProvider

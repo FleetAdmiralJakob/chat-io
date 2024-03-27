@@ -68,10 +68,9 @@ export function SignInForm() {
               name="username"
               render={({ field }) => (
                 <FormItem className="flex-1">
-                  <FormLabel required>Username</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="myusername"
+                      placeholder="Username*"
                       {...field}
                       onChange={(e) =>
                         field.onChange(
@@ -92,7 +91,6 @@ export function SignInForm() {
               name="usernameId"
               render={({ field }) => (
                 <FormItem className="flex-2">
-                  <FormLabel required>ID</FormLabel>
                   <FormControl>
                     <Input type="number" placeholder="01010" {...field} />
                   </FormControl>
@@ -111,9 +109,8 @@ export function SignInForm() {
           name="name"
           render={({ field }) => (
             <FormItem className="flex-2">
-              <FormLabel>Real Name</FormLabel>
               <FormControl>
-                <Input type="password" {...field} />
+                <Input placeholder={"Full Name*"} type="text" {...field} />
               </FormControl>
               <FormDescription>
                 This is optional, so you can stay anonymous.
@@ -127,9 +124,8 @@ export function SignInForm() {
           name="password"
           render={({ field }) => (
             <FormItem className="flex-2">
-              <FormLabel required>Password</FormLabel>
               <FormControl>
-                <Input type="password" {...field} />
+                <Input placeholder="Password*" type="password" {...field} />
               </FormControl>
               <FormDescription>
                 Password must be at least 8 characters.
