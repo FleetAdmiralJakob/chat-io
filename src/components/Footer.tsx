@@ -79,9 +79,6 @@ const Footer = () => {
           <Link href={"/legal"} className={"flex"}>
             <FaBook className={"mr-1 mt-1"} /> Legal
           </Link>
-          <Link href={"/help"} className={"flex"}>
-            <IoIosHelpCircle className={"mr-1 mt-1"} /> Help
-          </Link>
         </div>
       </div>
     </>
