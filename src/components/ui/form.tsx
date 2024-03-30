@@ -92,17 +92,9 @@ type FormLabelProps = React.ComponentPropsWithoutRef<
 
 const FormLabel = React.forwardRef<
   React.ElementRef<typeof LabelPrimitive.Root>,
-  FormLabelProps
->(({ className, required, ...props }, ref) => {
+  React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>
+>(({ className, ...props }, ref) => {
   const { error, formItemId } = useFormField();
-  if (required) {
-    props.children = (
-      <>
-        {props.children}
-        <span className="text-destructive">*</span>
-      </>
-    );
-  }
 
   return (
     <Label

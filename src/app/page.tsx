@@ -42,15 +42,23 @@ export default function HomePage() {
             crafting intuitive and feature-rich applications, we have designed
             Chat.io to revolutionize the way you connect with others.
           </p>
-          <Link href="/sign-in">
-            <Button
-              className={
-                "b my-11 bg-gray-300 p-6 text-2xl transition delay-150 duration-200 ease-in-out hover:bg-secondary-foreground hover:text-amber-50"
-              }
-            >
-              Login
-            </Button>
-          </Link>
+          <div className="flex flex-col items-center gap-1 py-11">
+            <Link href="/sign-up">
+              <Button
+                className={
+                  "b bg-gray-300 p-6 text-2xl transition delay-150 duration-200 ease-in-out hover:bg-secondary-foreground hover:text-amber-50"
+                }
+              >
+                Sign Up
+              </Button>
+            </Link>
+            <span>
+              Or{" "}
+              <Link href="/sign-in" className="underline">
+                Sign In
+              </Link>
+            </span>
+          </div>
 
           <p className={"h-0 text-xl"}>Why us ?</p>
           <FaCircleArrowDown
