@@ -20,7 +20,6 @@ export default authMiddleware({
     }
 
     const url = new URL(req.nextUrl.origin);
-    const parts = req.nextUrl.pathname.split("/").filter(Boolean);
 
     if (!auth.userId) {
       // User is not signed in
