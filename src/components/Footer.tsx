@@ -20,7 +20,7 @@ const Footer = () => {
     <>
       <div
         className={
-          "mt-10 block h-24 justify-between bg-card-foreground text-xl text-secondary-foreground md:flex"
+          "mt-10 block h-24 justify-between bg-card-foreground text-xl text-foreground md:flex"
         }
       >
         <div
@@ -28,16 +28,22 @@ const Footer = () => {
             "mt-8 flex w-full justify-around text-3xl md:ml-20 md:w-1/6"
           }
         >
-          <FaGithub />
-          <FaYoutube />
-          <FaUserGroup />
+          <Link href={"https://github.com/FleetAdmiralJakob/chat-io"}>
+            <FaGithub />
+          </Link>
+          <Link href={"https://www.youtube.com/@JakobTheCoder"}>
+            <FaYoutube />
+          </Link>
+          <Link href={"/contributors"}>
+            <FaUserGroup />
+          </Link>
         </div>
         <div className={"mt-8 flex w-full justify-around md:w-2/5"}>
-          <Link href={"/"} className={"flex"}>
+          <div className={"flex"}>
             <MdLanguage className={"mr-1 mt-1"} />{" "}
             <Select>
               <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Select a Language" />
+                <SelectValue placeholder="Languages" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
@@ -69,12 +75,9 @@ const Footer = () => {
                 </SelectGroup>
               </SelectContent>
             </Select>
-          </Link>
-          <Link href={"/"} className={"flex"}>
+          </div>
+          <Link href={"/legal"} className={"flex"}>
             <FaBook className={"mr-1 mt-1"} /> Legal
-          </Link>
-          <Link href={"/"} className={"flex"}>
-            <IoIosHelpCircle className={"mr-1 mt-1"} /> Help
           </Link>
         </div>
       </div>
