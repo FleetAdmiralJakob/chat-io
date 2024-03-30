@@ -10,6 +10,9 @@ const helplUrl = "/help";
 const contributorsUrl = "/contributors";
 
 export default authMiddleware({
+  // I know that this is the sign up url, but I want to redirect everyone to the sign-up page,
+  // because they can still navigate to the sign-in page there.
+  signInUrl: "/sign-up",
   // Allow signed out users to access the specified routes:
   publicRoutes: [
     "/",
