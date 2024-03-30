@@ -5,11 +5,14 @@ import { NextResponse } from "next/server";
 // for more information about configuring your Middleware
 
 const signInUrl = "/sign-in";
+const legalUrl = "/legal";
+const helplUrl = "/help";
+const contributorsUrl = "/contributors";
 
 export default authMiddleware({
   signInUrl: signInUrl,
   // Allow signed out users to access the specified routes:
-  publicRoutes: ["/", signInUrl],
+  publicRoutes: ["/", signInUrl, legalUrl, helplUrl, contributorsUrl],
   // Prevent the specified routes from accessing
   // authentication information:
   // ignoredRoutes: ['/no-auth-in-this-route'],

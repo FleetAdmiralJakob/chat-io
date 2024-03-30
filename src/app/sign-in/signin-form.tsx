@@ -60,7 +60,7 @@ export function SignInForm() {
   }
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="bg space-y-8">
         <div>
           <div className="flex">
             <FormField
