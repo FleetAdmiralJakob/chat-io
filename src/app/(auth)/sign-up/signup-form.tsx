@@ -18,6 +18,7 @@ import React from "react";
 import { formSchema } from "~/lib/validators";
 import { useSignIn } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
+import { cn } from "~/lib/utils";
 
 export function SignUpForm() {
   const [isLoading, setIsLoading] = React.useState(false);
@@ -176,7 +177,11 @@ export function SignUpForm() {
                   }
                 />
               </FormControl>
-              <FormDescription>
+              <FormDescription
+                className={cn({
+                  hidden: form.formState.errors.password,
+                })}
+              >
                 Password must be at least 8 characters.
               </FormDescription>
               <FormMessage />
