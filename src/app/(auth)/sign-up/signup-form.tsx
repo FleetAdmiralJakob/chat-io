@@ -11,6 +11,7 @@ import {
   FormDescription,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
@@ -67,16 +68,20 @@ export function SignUpForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="bg space-y-8">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="bg w-1/3 space-y-8"
+      >
         <div className="flex gap-1">
           <FormField
             control={form.control}
             name="username"
             render={({ field }) => (
               <FormItem className="w-2/3">
+                <FormLabel>Username</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Username"
+                    placeholder="exampleuser"
                     maxLength={20}
                     {...field}
                     onChange={(e) =>
@@ -98,6 +103,7 @@ export function SignUpForm() {
             name="usernameId"
             render={({ field }) => (
               <FormItem className="w-1/3">
+                <FormLabel>Username ID</FormLabel>
                 <FormControl>
                   <Input
                     type="number"
@@ -112,7 +118,13 @@ export function SignUpForm() {
             )}
           />
         </div>
-        <span className="text-sm text-muted-foreground">
+        <span
+          className={cn("text-sm text-muted-foreground", {
+            hidden:
+              form.formState.errors.username ||
+              form.formState.errors.usernameId,
+          })}
+        >
           This is your display name and the way friends can add you. It consists
           of the username and a ID.
         </span>
@@ -122,9 +134,10 @@ export function SignUpForm() {
             name="firstName"
             render={({ field }) => (
               <FormItem className="w-1/2">
+                <FormLabel>First Name</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="First Name"
+                    placeholder="John"
                     type="text"
                     maxLength={20}
                     {...field}
@@ -142,9 +155,10 @@ export function SignUpForm() {
             name="lastName"
             render={({ field }) => (
               <FormItem className="w-1/2">
+                <FormLabel>Last Name</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Last Name"
+                    placeholder="Doe"
                     type="text"
                     maxLength={20}
                     {...field}
@@ -158,7 +172,12 @@ export function SignUpForm() {
             )}
           />
         </div>
-        <span className="text-sm text-muted-foreground">
+        <span
+          className={cn("text-sm text-muted-foreground", {
+            hidden:
+              form.formState.errors.firstName || form.formState.errors.lastName,
+          })}
+        >
           This is optional, so you can stay anonymous.
         </span>
         <FormField
@@ -166,9 +185,10 @@ export function SignUpForm() {
           name="password"
           render={({ field }) => (
             <FormItem className="flex-2">
+              <FormLabel>Password</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Password"
+                  placeholder="********"
                   type="password"
                   maxLength={20}
                   {...field}
@@ -177,11 +197,7 @@ export function SignUpForm() {
                   }
                 />
               </FormControl>
-              <FormDescription
-                className={cn({
-                  hidden: form.formState.errors.password,
-                })}
-              >
+              <FormDescription>
                 Password must be at least 8 characters.
               </FormDescription>
               <FormMessage />
