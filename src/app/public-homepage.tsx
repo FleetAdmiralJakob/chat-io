@@ -52,12 +52,6 @@ export default function PublicHomepage() {
                 Sign Up
               </Button>
             </Link>
-            <span>
-              Or{" "}
-              <Link href="/sign-in" className="underline">
-                Sign In
-              </Link>
-            </span>
           </div>
 
           <p className={"h-0 text-xl"}>Why us ?</p>
