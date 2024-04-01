@@ -19,14 +19,19 @@ export async function POST(request: Request) {
       password: parsedSignUpHeaders.data.password,
     });
   } catch (e) {
-    if (
-      isClerkAPIResponseError(e) &&
-      e.errors.some((error) => error.code === "form_identifier_exists")
-    ) {
-      return new Response(
-        "Failed to create an account. Username already exists.",
-        { status: 400, statusText: "username_is_taken" },
-      );
+    if (isClerkAPIResponseError(e)) {
+      if (e.errors.some((error) => error.code === "form_identifier_exists")) {
+        return new Response(
+          "Failed to create an account. Username already exists.",
+          { status: 400, statusText: "username_is_taken" },
+        );
+      }
+      if (e.errors.some((error) => error.code === "form_password_pwned")) {
+        return new Response(
+          "Failed to create an account. Password has been found in an online data breach.",
+          { status: 400, statusText: "form_password_pwned" },
+        );
+      }
     }
     return new Response("Failed to create an account", { status: 400 });
   }

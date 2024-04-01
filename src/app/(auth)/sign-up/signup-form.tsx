@@ -50,6 +50,18 @@ export function SignUpForm() {
       form.setError("username", {
         message: "Username +  ID is already taken. Please choose another.",
       });
+
+      setIsLoading(false);
+      return;
+    }
+
+    if (response.statusText === "form_password_pwned") {
+      form.setError("password", {
+        message:
+          "Password is insecure or has been found in an online data breach. For account safety, please use a different password.",
+      });
+
+      setIsLoading(false);
       return;
     }
 
