@@ -52,7 +52,7 @@ export function AddUserDialog({
           </div>
         </div>
         <DialogFooter>
-          <Button type="submit">Save changes</Button>
+          <Button type="submit">Add</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
