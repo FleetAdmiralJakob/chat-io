@@ -12,10 +12,11 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
-import React from "react";
+import React, { useState } from "react";
 import { z } from "zod";
 import { useSignIn } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
+import { cn } from "~/lib/utils";
 
 export const formSchema = z.object({
   username: z
@@ -48,8 +49,9 @@ export const formSchema = z.object({
 });
 
 export function SignInForm() {
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { isLoaded, signIn, setActive } = useSignIn();
+  const [wholeFormError, setWholeFormError] = useState<null | string>(null);
   const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -70,15 +72,20 @@ export function SignInForm() {
       return;
     }
 
-    const result = await signIn.create({
-      identifier: values.username + values.usernameId,
-      password: values.password,
-    });
+    try {
+      const result = await signIn.create({
+        identifier: values.username + values.usernameId,
+        password: values.password,
+      });
 
-    if (result.status === "complete") {
-      console.log(result);
-      await setActive({ session: result.createdSessionId });
-      router.push("/");
+      if (result.status === "complete") {
+        await setActive({ session: result.createdSessionId });
+        router.push("/");
+      }
+    } catch {
+      setWholeFormError(
+        "The Username + ID or Password you entered is incorrect. Please try again.",
+      );
     }
 
     setIsLoading(false);
@@ -131,7 +138,13 @@ export function SignInForm() {
             )}
           />
         </div>
-        <span className="text-sm text-muted-foreground">
+        <span
+          className={cn("text-sm text-secondary-foreground", {
+            hidden:
+              form.formState.errors.username ??
+              form.formState.errors.usernameId,
+          })}
+        >
           This is your display name and the way friends can add you. It consists
           of the username and a ID.
         </span>
@@ -158,6 +171,14 @@ export function SignInForm() {
         <Button disabled={isLoading} type="submit" aria-disabled={isLoading}>
           Submit
         </Button>
+        {wholeFormError && (
+          <>
+            <br />
+            <span className="text-sm font-medium text-destructive">
+              {wholeFormError}
+            </span>
+          </>
+        )}
       </form>
     </Form>
   );
