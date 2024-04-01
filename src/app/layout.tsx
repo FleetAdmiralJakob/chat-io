@@ -3,10 +3,8 @@ import { ThemeProvider } from "~/components/theme-provider";
 import type { Metadata, Viewport } from "next";
 import { cn } from "~/lib/utils";
 import { ClerkProvider } from "@clerk/nextjs";
-import { DM_Sans } from "next/font/google";
 import React from "react";
-
-const sans = DM_Sans({ subsets: ["latin-ext"], weight: ["500"] });
+import { GeistSans } from "geist/font/sans";
 
 const APP_NAME = "Chat.io";
 const APP_DEFAULT_TITLE = "Chat.io";
@@ -61,7 +59,7 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={cn(
-          sans.className,
+          GeistSans.className,
           "min-h-screen  bg-background font-sans antialiased",
         )}
       >
