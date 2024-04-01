@@ -8,7 +8,7 @@ import { Button } from "~/components/ui/button";
 import { FaCircleArrowDown, FaGithub } from "react-icons/fa6";
 import { IoCloudDownloadOutline } from "react-icons/io5";
 import { MdPrivacyTip } from "react-icons/md";
-import Footer from "~/components/Footer";
+import Footer from "~/components/footer";
 
 export default function PublicHomepage() {
   const aboutRef = useRef<HTMLParagraphElement | null>(null);
