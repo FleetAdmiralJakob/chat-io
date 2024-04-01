@@ -20,12 +20,12 @@ const Footer = () => {
     <>
       <div
         className={
-          "mt-10 block h-24 justify-between bg-card-foreground text-xl text-foreground md:flex"
+          "mt-10 block h-48 justify-between bg-card-foreground text-xl text-foreground md:flex md:h-24"
         }
       >
         <div
           className={
-            "mt-8 flex w-full justify-around text-3xl md:ml-20 md:w-1/6"
+            "flex w-full justify-around pt-7 text-3xl md:ml-20 md:mt-8 md:w-1/6 md:pt-0"
           }
         >
           <Link href={"https://github.com/FleetAdmiralJakob/chat-io"}>
@@ -38,7 +38,7 @@ const Footer = () => {
             <FaUserGroup />
           </Link>
         </div>
-        <div className={"mt-8 flex w-full justify-around md:w-2/5"}>
+        <div className={" mt-8 w-full justify-around pl-14 md:flex md:w-2/5"}>
           <div className={"flex"}>
             <MdLanguage className={"mr-1 mt-1"} />{" "}
             <Select>
@@ -77,7 +77,7 @@ const Footer = () => {
             </Select>
           </div>
           <Link href={"/legal"} className={"flex"}>
-            <FaBook className={"mr-1 mt-1"} /> Legal
+            <FaBook className={"mb-5 mr-1 mt-1"} /> Legal
           </Link>
         </div>
       </div>
