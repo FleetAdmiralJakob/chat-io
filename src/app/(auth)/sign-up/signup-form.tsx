@@ -119,9 +119,9 @@ export function SignUpForm() {
           />
         </div>
         <span
-          className={cn("text-sm text-muted-foreground", {
+          className={cn("text-sm text-secondary-foreground", {
             hidden:
-              form.formState.errors.username ||
+              form.formState.errors.username ??
               form.formState.errors.usernameId,
           })}
         >
@@ -173,9 +173,9 @@ export function SignUpForm() {
           />
         </div>
         <span
-          className={cn("text-sm text-muted-foreground", {
+          className={cn("text-sm text-secondary-foreground", {
             hidden:
-              form.formState.errors.firstName || form.formState.errors.lastName,
+              form.formState.errors.firstName ?? form.formState.errors.lastName,
           })}
         >
           This is optional, so you can stay anonymous.
