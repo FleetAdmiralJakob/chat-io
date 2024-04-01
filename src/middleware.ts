@@ -4,15 +4,25 @@ import { NextResponse } from "next/server";
 // See https://clerk.com/docs/references/nextjs/auth-middleware
 // for more information about configuring your Middleware
 
-const signInUrl = "/sign-in";
+const signUpUrl = "/sign-up";
 const legalUrl = "/legal";
 const helplUrl = "/help";
 const contributorsUrl = "/contributors";
 
 export default authMiddleware({
-  signInUrl: signInUrl,
+  // I know that this is the sign-up url, but I want to redirect everyone to the sign-up page,
+  // because they can still navigate to the sign-in page there.
+  signInUrl: "/sign-up",
   // Allow signed out users to access the specified routes:
-  publicRoutes: ["/", signInUrl, legalUrl, helplUrl, contributorsUrl],
+  publicRoutes: [
+    "/",
+    signUpUrl,
+    "/sign-in",
+    "/api/sign-up",
+    legalUrl,
+    helplUrl,
+    contributorsUrl,
+  ],
   // Prevent the specified routes from accessing
   // authentication information:
   // ignoredRoutes: ['/no-auth-in-this-route'],
@@ -26,7 +36,7 @@ export default authMiddleware({
 
     if (!auth.userId) {
       // User is not signed in
-      url.pathname = signInUrl;
+      url.pathname = signUpUrl;
       return NextResponse.redirect(url);
     }
     return NextResponse.next();
