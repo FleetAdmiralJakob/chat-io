@@ -46,6 +46,13 @@ export function SignUpForm() {
       body: JSON.stringify(values),
     });
 
+    if (response.statusText === "username_is_taken") {
+      form.setError("username", {
+        message: "Username +  ID is already taken. Please choose another.",
+      });
+      return;
+    }
+
     if (response.status === 200) {
       if (!isLoaded) {
         setIsLoading(false);

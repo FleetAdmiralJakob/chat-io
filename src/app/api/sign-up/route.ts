@@ -1,5 +1,6 @@
 import { type FormSchema, formSchema } from "~/lib/validators";
 import { clerkClient } from "@clerk/nextjs";
+import { isClerkAPIResponseError } from "@clerk/shared";
 
 // This probably deserves a rate limiter + a check for not creating a bunch of trash users to spam us.
 export async function POST(request: Request) {
@@ -18,7 +19,16 @@ export async function POST(request: Request) {
       password: parsedSignUpHeaders.data.password,
     });
   } catch (e) {
-    return new Response("Uh oh, something went wrong", { status: 400 });
+    if (
+      isClerkAPIResponseError(e) &&
+      e.errors.some((error) => error.code === "form_identifier_exists")
+    ) {
+      return new Response(
+        "Failed to create an account. Username already exists.",
+        { status: 400, statusText: "username_is_taken" },
+      );
+    }
+    return new Response("Failed to create an account", { status: 400 });
   }
 
   return new Response("User created successfully", { status: 200 });
