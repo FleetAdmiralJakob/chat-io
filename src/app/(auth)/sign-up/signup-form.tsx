@@ -89,14 +89,14 @@ export function SignUpForm() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="bg w-1/3 space-y-8"
+        className="bg w-2/3 space-y-8 xl:w-5/12"
       >
-        <div className="flex gap-1">
+        <div className="block gap-1 xl:flex">
           <FormField
             control={form.control}
             name="username"
             render={({ field }) => (
-              <FormItem className="w-2/3">
+              <FormItem className="mb-7 w-full xl:mb-0 xl:w-2/3">
                 <FormLabel>Username</FormLabel>
                 <FormControl>
                   <Input
@@ -121,7 +121,7 @@ export function SignUpForm() {
             control={form.control}
             name="usernameId"
             render={({ field }) => (
-              <FormItem className="w-1/3">
+              <FormItem className="w-full xl:w-1/3">
                 <FormLabel>Username ID</FormLabel>
                 <FormControl>
                   <Input
@@ -147,12 +147,12 @@ export function SignUpForm() {
           This is your display name and the way friends can add you. It consists
           of the username and a ID.
         </span>
-        <div className="flex gap-1">
+        <div className="block gap-1 xl:flex">
           <FormField
             control={form.control}
             name="firstName"
             render={({ field }) => (
-              <FormItem className="w-1/2">
+              <FormItem className="xl:1/3 w-full xl:w-1/2">
                 <FormLabel>First Name</FormLabel>
                 <FormControl>
                   <Input
@@ -173,7 +173,7 @@ export function SignUpForm() {
             control={form.control}
             name="lastName"
             render={({ field }) => (
-              <FormItem className="w-1/2">
+              <FormItem className="w-full xl:w-1/2">
                 <FormLabel>Last Name</FormLabel>
                 <FormControl>
                   <Input

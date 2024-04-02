@@ -23,7 +23,7 @@ export function AddUserDialog({
       <DialogTrigger asChild>
         <button
           className={cn(
-            "inline-flex aspect-square w-10 items-center justify-center rounded-full bg-input",
+            "inline-flex aspect-square w-10 items-center justify-center rounded-full bg-background",
             classNameDialogTrigger,
           )}
         >
@@ -38,17 +38,25 @@ export function AddUserDialog({
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
+          <div className="block items-center gap-4">
             <Label htmlFor="name" className="text-right">
               Username
             </Label>
-            <Input id="name" placeholder="exampleuser" className="col-span-3" />
+            <Input
+              id="name"
+              placeholder="exampleuser"
+              className="col-span-3 mt-1"
+            />
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
+          <div className="block items-center gap-4">
             <Label htmlFor="username" className="text-right">
               Username ID
             </Label>
-            <Input id="username" placeholder="01010" className="col-span-3" />
+            <Input
+              id="username"
+              placeholder="01010"
+              className="col-span-3 mt-1"
+            />
           </div>
         </div>
         <DialogFooter>
