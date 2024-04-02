@@ -136,7 +136,11 @@ export function SignInForm() {
                     placeholder="01010"
                     maxLength={5}
                     {...field}
-                    onChange={(e) => field.onChange(e.target.value.slice(0, 5))}
+                    onChange={(e) =>
+                      field.onChange(
+                        e.target.value.replace(/\D/g, "").slice(0, 5),
+                      )
+                    }
                   />
                 </FormControl>
                 <FormMessage />
