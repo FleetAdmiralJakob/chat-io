@@ -14,7 +14,7 @@ const SignInPage = () => {
       </div>
       <SignUpForm />
       <div className="bottom-3 left-0 flex w-full items-end justify-center xl:fixed">
-        <span className="bottom-0 w-2/3 pt-10 pt-7 xl:w-1/5">
+        <span className="flex w-4/5 items-center justify-center gap-8 pt-7">
           If you already have an account you can{" "}
           <Link href="/sign-in" className="underline">
             sign-in here
