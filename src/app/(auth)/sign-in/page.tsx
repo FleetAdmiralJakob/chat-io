@@ -17,7 +17,7 @@ const SignInPage = () => {
         <span className="flex w-2/3 items-center justify-center gap-8 pt-7">
           If you not already have an account you can{" "}
           <Link href="/sign-up" className="underline">
-            sign-in here
+            sign-up here
           </Link>
         </span>
       </div>
