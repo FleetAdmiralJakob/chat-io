@@ -11,6 +11,7 @@
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
+    "@clerk/clerk-sdk-node": "^4.13.12",
     "@clerk/nextjs": "^4.29.9",
     "@clerk/shared": "^1.3.3",
     "@hookform/resolvers": "^3.3.4",
@@ -28,6 +29,9 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "cmdk": "^1.0.0",
+    "convex": "^1.10.0",
+    "convex-ents": "^0.4.3",
+    "convex-helpers": "^0.1.27",
     "framer-motion": "^11.0.22",
     "geist": "^1.2.2",
     "jiti": "^1.21.0",
