@@ -22,7 +22,7 @@ const Navbar = () => {
   return (
     <div
       className={cn(
-        "fixed bottom-0 flex h-24 w-full items-center justify-around bg-primary text-2xl",
+        "fixed bottom-0 flex h-24 w-full items-center justify-around bg-primary text-2xl text-secondary-foreground",
         { "pb-3": isIOS },
       )}
     >
