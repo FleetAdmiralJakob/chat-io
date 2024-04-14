@@ -34,7 +34,7 @@ export default function PublicHomepage() {
           </div>
           <p
             className={
-              "w-3/4 bg-gradient-to-b from-gray-600 via-gray-300 to-gray-800 bg-clip-text text-2xl text-transparent sm:w-7/12"
+              "w-3/4 bg-gradient-to-b from-gray-600 via-gray-500 to-gray-800 bg-clip-text text-2xl text-transparent sm:w-7/12"
             }
           >
             Introducing Chat.io, the next evolution in messaging apps from the
@@ -46,7 +46,7 @@ export default function PublicHomepage() {
             <Link href="/sign-up">
               <Button
                 className={
-                  "b bg-gray-300 p-6 text-2xl transition delay-150 duration-200 ease-in-out hover:bg-secondary-foreground hover:text-amber-50"
+                  "b bg-foreground p-6 text-2xl transition delay-150 duration-200 ease-in-out hover:bg-secondary-foreground hover:text-amber-50"
                 }
               >
                 Sign Up
