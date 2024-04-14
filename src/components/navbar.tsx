@@ -5,6 +5,7 @@ import { IoChatbubblesSharp } from "react-icons/io5";
 import { FaClipboardList } from "react-icons/fa6";
 import { CgProfile } from "react-icons/cg";
 import { HiUserGroup } from "react-icons/hi2";
+import { cn } from "~/lib/utils";
 
 const Navbar = () => {
   const IsIOS = () => {
@@ -12,26 +13,25 @@ const Navbar = () => {
   };
   return (
     <div
-      className={
-        IsIOS()
-          ? "fixed bottom-0 flex h-24 w-full items-center justify-around bg-primary pb-3 text-2xl"
-          : "fixed bottom-0 flex h-24 w-full items-center justify-around bg-primary text-2xl"
-      }
+      className={cn(
+        "fixed bottom-0 flex h-24 w-full items-center justify-around bg-primary text-2xl",
+        { "pb-3": IsIOS() },
+      )}
     >
-      <Link className={"block"} href={"/"}>
-        <IoChatbubblesSharp className={"ml-1.5"} />
+      <Link className={"flex flex-col items-center"} href={"/"}>
+        <IoChatbubblesSharp />
         <p className={"mt-0.5 text-sm"}>Chats</p>
       </Link>
-      <Link href={"/"}>
-        <FaClipboardList className={"ml-1"} />
+      <Link className={"flex flex-col items-center"} href={"/"}>
+        <FaClipboardList />
         <p className={"mt-0.5 text-sm"}>Todo</p>
       </Link>
-      <Link href={"/"}>
-        <HiUserGroup className={"ml-2"} />
+      <Link className={"flex flex-col items-center"} href={"/"}>
+        <HiUserGroup />
         <p className={"mt-0.5 text-sm"}>Group</p>
       </Link>
-      <Link href={"/"}>
-        <CgProfile className={"ml-2.5"} />
+      <Link className={"flex flex-col items-center"} href={"/"}>
+        <CgProfile />
         <p className={"mt-0.5 text-sm"}>Profile</p>
       </Link>
     </div>
