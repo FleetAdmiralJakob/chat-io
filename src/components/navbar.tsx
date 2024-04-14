@@ -19,6 +19,9 @@ const Navbar = () => {
     setIsIOS(checkIsIOS());
   }, []);
 
+  const page = window.location.pathname;
+  console.log(page, "Page");
+
   return (
     <div
       className={cn(
@@ -27,7 +30,11 @@ const Navbar = () => {
       )}
     >
       <Link className={"flex flex-col items-center"} href={"/"}>
-        <IoChatbubblesSharp />
+        <IoChatbubblesSharp
+          className={cn({
+            "text-accent": page === "/",
+          })}
+        />
         <p className={"mt-0.5 text-sm"}>Chats</p>
       </Link>
       <Link className={"flex flex-col items-center"} href={"/"}>
