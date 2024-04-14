@@ -6,16 +6,24 @@ import { FaClipboardList } from "react-icons/fa6";
 import { CgProfile } from "react-icons/cg";
 import { HiUserGroup } from "react-icons/hi2";
 import { cn } from "~/lib/utils";
+import { useEffect, useState } from "react";
 
 const Navbar = () => {
-  const IsIOS = () => {
-    return /iPad|iPhone|iPod/.test(navigator.userAgent);
-  };
+  const [isIOS, setIsIOS] = useState(false);
+
+  useEffect(() => {
+    const checkIsIOS = () => {
+      return /iPad|iPhone|iPod/.test(navigator.userAgent);
+    };
+
+    setIsIOS(checkIsIOS());
+  }, []);
+
   return (
     <div
       className={cn(
         "fixed bottom-0 flex h-24 w-full items-center justify-around bg-primary text-2xl",
-        { "pb-3": IsIOS() },
+        { "pb-3": isIOS },
       )}
     >
       <Link className={"flex flex-col items-center"} href={"/"}>
