@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 
 const Navbar = () => {
   const [isIOS, setIsIOS] = useState(false);
+  const [isPage, setISPage] = useState("/");
 
   useEffect(() => {
     const checkIsIOS = () => {
@@ -19,15 +20,29 @@ const Navbar = () => {
     setIsIOS(checkIsIOS());
   }, []);
 
+  useEffect(() => {
+    const checkIsPage = () => {
+      return window.location.pathname;
+
+      setISPage(checkIsPage());
+    };
+  }, []);
+
+  console.log(isPage);
+
   return (
     <div
       className={cn(
-        "fixed bottom-0 flex h-24 w-full items-center justify-around bg-primary text-2xl",
+        "fixed bottom-0 flex h-24 w-full items-center justify-around bg-primary text-2xl text-secondary-foreground",
         { "pb-3": isIOS },
       )}
     >
       <Link className={"flex flex-col items-center"} href={"/"}>
-        <IoChatbubblesSharp />
+        <IoChatbubblesSharp
+          className={cn({
+            "text-accent": isPage === "/",
+          })}
+        />
         <p className={"mt-0.5 text-sm"}>Chats</p>
       </Link>
       <Link className={"flex flex-col items-center"} href={"/"}>
