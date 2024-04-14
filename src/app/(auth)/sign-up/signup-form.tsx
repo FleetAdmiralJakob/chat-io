@@ -89,7 +89,7 @@ export function SignUpForm() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="bg w-2/3 space-y-8 xl:w-5/12"
+        className="bg w-3/4 space-y-8 xl:w-5/12"
       >
         <div className="block gap-1 xl:flex">
           <FormField
