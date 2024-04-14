@@ -10,7 +10,8 @@ export const formSchema = z.object({
       message: "Username must be at most 20 characters.",
     })
     .regex(new RegExp(/^[a-z]+$/), {
-      message: "Username must be all lowercase",
+      message:
+        "Username must be all lowercase. Without numbers or special characters.",
     }),
   usernameId: z
     .string()
@@ -19,6 +20,9 @@ export const formSchema = z.object({
     })
     .max(5, {
       message: "The ID for the username must be 5 characters long.",
+    })
+    .refine((val) => !isNaN(Number(val)), {
+      message: "The ID for the username must be a number",
     }),
   firstName: z
     .string()

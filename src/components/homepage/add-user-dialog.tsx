@@ -23,6 +23,10 @@ import {
   FormLabel,
   FormMessage,
 } from "~/components/ui/form";
+import { useMutation } from "convex/react";
+import { api } from "../../../convex/_generated/api";
+import { useState } from "react";
+import { ConvexError } from "convex/values";
 
 export const formSchema = z.object({
   username: z
@@ -43,6 +47,9 @@ export const formSchema = z.object({
     })
     .max(5, {
       message: "The ID for the username must be 5 characters long.",
+    })
+    .refine((val) => !isNaN(Number(val)), {
+      message: "The ID for the username must be a number",
     }),
 });
 
@@ -51,6 +58,8 @@ export function AddUserDialog({
 }: {
   classNameDialogTrigger?: string;
 }) {
+  const [dialogOpen, setDialogOpen] = useState(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -59,12 +68,39 @@ export function AddUserDialog({
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+  const addChatWithFriend = useMutation(api.chats.createChat);
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      await addChatWithFriend({
+        friendsUsername: values.username,
+        friendsUsernameId: values.usernameId,
+      });
+      setDialogOpen(false);
+    } catch (e) {
+      if (e instanceof ConvexError) {
+        if (e.message.includes("Cannot create a chat with yourself")) {
+          form.setError("usernameId", {
+            message: "Cannot create a chat with yourself.",
+          });
+        } else if (e.message.includes("User not found")) {
+          form.setError("usernameId", {
+            message: "User not found",
+          });
+        } else if (e.message.includes("Chat already created")) {
+          form.setError("usernameId", {
+            message: "Chat already created.",
+          });
+        }
+      }
+    }
   }
 
   return (
-    <Dialog>
+    <Dialog
+      open={dialogOpen}
+      onOpenChange={() => setDialogOpen((prevState) => !prevState)}
+    >
       <DialogTrigger asChild>
         <button
           className={cn(

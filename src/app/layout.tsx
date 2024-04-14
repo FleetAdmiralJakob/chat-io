@@ -6,6 +6,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import React from "react";
 import { GeistSans } from "geist/font/sans";
 import ConvexClientProvider from "~/app/convex-client-provider";
+import { env } from "~/env";
 
 const APP_NAME = "Chat.io";
 const APP_DEFAULT_TITLE = "Chat.io";
@@ -64,7 +65,7 @@ export default function RootLayout({
       <body
         className={cn(
           GeistSans.className,
-          "min-h-screen  bg-background antialiased",
+          "min-h-screen bg-background antialiased",
         )}
       >
         <ThemeProvider

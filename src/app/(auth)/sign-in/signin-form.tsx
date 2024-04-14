@@ -13,11 +13,12 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { z } from "zod";
 import { useSignIn } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { cn } from "~/lib/utils";
+import { useConvexAuth } from "convex/react";
 
 export const formSchema = z.object({
   username: z
@@ -38,6 +39,9 @@ export const formSchema = z.object({
     })
     .max(5, {
       message: "The ID for the username must be 5 characters long.",
+    })
+    .refine((val) => !isNaN(Number(val)), {
+      message: "The ID for the username must be a number",
     }),
   password: z
     .string()
@@ -50,8 +54,13 @@ export const formSchema = z.object({
 });
 
 export function SignInForm() {
-  const [isLoading, setIsLoading] = useState(false);
+  const [formIsLoading, setFormIsLoading] = useState(false);
+  const [signInComplete, setSignInComplete] = React.useState(false);
+
   const { isLoaded, signIn, setActive } = useSignIn();
+
+  const { isLoading, isAuthenticated } = useConvexAuth();
+
   const [wholeFormError, setWholeFormError] = useState<null | string>(null);
   const router = useRouter();
 
@@ -64,12 +73,18 @@ export function SignInForm() {
     },
   });
 
+  useEffect(() => {
+    if (signInComplete && isAuthenticated) {
+      router.push("/");
+    }
+  }, [isAuthenticated, signInComplete]);
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsLoading(true);
+    setFormIsLoading(true);
 
     if (!isLoaded) {
-      setIsLoading(false);
-      // We probably need a toast showing that the user has to try again or use a better way.
+      setFormIsLoading(false);
+      // TODO: We probably need a toast showing that the user has to try again or use a better way.
       return;
     }
 
@@ -81,7 +96,7 @@ export function SignInForm() {
 
       if (result.status === "complete") {
         await setActive({ session: result.createdSessionId });
-        router.push("/");
+        setSignInComplete(true);
       }
     } catch {
       setWholeFormError(
@@ -89,7 +104,7 @@ export function SignInForm() {
       );
     }
 
-    setIsLoading(false);
+    setFormIsLoading(false);
   }
 
   return (
