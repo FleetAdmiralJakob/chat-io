@@ -26,9 +26,9 @@ export default function PublicHomepage() {
             "container flex min-h-screen flex-col items-center justify-center gap-12 py-14"
           }
         >
-          <div className={"flex justify-center"}>
+          <div className={"flex items-center justify-center"}>
             <Image src={icon} alt="logo of Chat.io" className={"h-1/4 w-1/4"} />
-            <h2 className="mr-8 mt-2 text-3xl font-bold tracking-tight text-foreground sm:mt-5 sm:text-[5rem]">
+            <h2 className="mr-8 text-3xl font-bold tracking-tight text-foreground sm:text-[5rem]">
               Chat.io
             </h2>
           </div>

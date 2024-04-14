@@ -64,7 +64,7 @@ export default function RootLayout({
       <body
         className={cn(
           GeistSans.className,
-          "min-h-screen  bg-background font-sans antialiased",
+          "min-h-screen  bg-background antialiased",
         )}
       >
         <ThemeProvider
