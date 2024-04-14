@@ -10,13 +10,11 @@ import { useEffect, useState } from "react";
 
 const Navbar = () => {
   const [isIOS, setIsIOS] = useState(false);
+  const [pathname, setPathname] = useState("/");
 
   useEffect(() => {
-    const checkIsIOS = () => {
-      return /iPad|iPhone|iPod/.test(navigator.userAgent);
-    };
-
-    setIsIOS(checkIsIOS());
+    setIsIOS(/iPad|iPhone|iPod/.test(navigator.userAgent));
+    setPathname(window.location.pathname);
   }, []);
 
   return (
@@ -27,7 +25,11 @@ const Navbar = () => {
       )}
     >
       <Link className={"flex flex-col items-center"} href={"/"}>
-        <IoChatbubblesSharp />
+        <IoChatbubblesSharp
+          className={cn({
+            "text-accent": pathname === "/",
+          })}
+        />
         <p className={"mt-0.5 text-sm"}>Chats</p>
       </Link>
       <Link className={"flex flex-col items-center"} href={"/"}>
