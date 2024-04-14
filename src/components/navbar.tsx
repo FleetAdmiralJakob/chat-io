@@ -13,22 +13,9 @@ const Navbar = () => {
   const [isPage, setISPage] = useState("/");
 
   useEffect(() => {
-    const checkIsIOS = () => {
-      return /iPad|iPhone|iPod/.test(navigator.userAgent);
-    };
-
-    setIsIOS(checkIsIOS());
+    setIsIOS(/iPad|iPhone|iPod/.test(navigator.userAgent));
+    setISPage(window.location.pathname);
   }, []);
-
-  useEffect(() => {
-    const checkIsPage = () => {
-      return window.location.pathname;
-
-      setISPage(checkIsPage());
-    };
-  }, []);
-
-  console.log(isPage);
 
   return (
     <div
