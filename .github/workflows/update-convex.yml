@@ -2,7 +2,7 @@ name: Deploy to Convex
 
 on:
   push:
-    branches: ["master"]
+    branches: ["main"]
   merge_group:
 
 env:
