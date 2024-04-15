@@ -15,16 +15,21 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
-import React from "react";
+import React, { useEffect } from "react";
 import { formSchema } from "~/lib/validators";
 import { useSignIn } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { cn } from "~/lib/utils";
+import { useConvexAuth, useMutation } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
 
 export function SignUpForm() {
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [formIsLoading, setFormIsLoading] = React.useState(false);
+  const [signUpComplete, setSignUpComplete] = React.useState(false);
 
   const { isLoaded, signIn, setActive } = useSignIn();
+
+  const { isLoading, isAuthenticated } = useConvexAuth();
   const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -36,8 +41,27 @@ export function SignUpForm() {
     },
   });
 
+  const initialConvexSetup = useMutation(api.chats.initialConvexSetup);
+
+  useEffect(() => {
+    if (signUpComplete && isAuthenticated) {
+      initialConvexSetup().then(
+        () => {
+          router.push("/");
+        },
+        () => {
+          return undefined;
+        },
+      );
+    }
+  }, [initialConvexSetup, isAuthenticated, signUpComplete]);
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsLoading(true);
+    if (isAuthenticated || isLoading) {
+      // TODO: Make a toast or something to tell the user has to sign out first
+      return;
+    }
+    setFormIsLoading(true);
     const response = await fetch("/api/sign-up", {
       method: "POST",
       headers: {
@@ -51,7 +75,7 @@ export function SignUpForm() {
         message: "Username +  ID is already taken. Please choose another.",
       });
 
-      setIsLoading(false);
+      setFormIsLoading(false);
       return;
     }
 
@@ -61,28 +85,34 @@ export function SignUpForm() {
           "Password is insecure or has been found in an online data breach. For account safety, please use a different password.",
       });
 
-      setIsLoading(false);
+      setFormIsLoading(false);
       return;
     }
 
     if (response.status === 200) {
       if (!isLoaded) {
-        setIsLoading(false);
-        // We probably need a toast showing that the user has to try again or use a better way.
+        setFormIsLoading(false);
+        // TODO: We probably need a toast showing that the user has to try again or use a better way.
         return;
       }
-      const result = await signIn.create({
-        identifier: values.username + values.usernameId,
-        password: values.password,
-      });
+      try {
+        const result = await signIn.create({
+          identifier: values.username + values.usernameId,
+          password: values.password,
+        });
 
-      if (result.status === "complete") {
-        console.log(result);
-        await setActive({ session: result.createdSessionId });
-        router.push("/");
+        if (result.status === "complete") {
+          await setActive({ session: result.createdSessionId });
+          setSignUpComplete(true);
+        }
+      } catch (e) {
+        console.error("Problem with the sign-in process");
+        // TODO: Make a toast that something went wrong
+        setFormIsLoading(false);
+        return;
       }
     }
-    setIsLoading(false);
+    setFormIsLoading(false);
   }
 
   return (
@@ -129,7 +159,11 @@ export function SignUpForm() {
                     placeholder="01010"
                     maxLength={5}
                     {...field}
-                    onChange={(e) => field.onChange(e.target.value.slice(0, 5))}
+                    onChange={(e) =>
+                      field.onChange(
+                        e.target.value.replace(/\D/g, "").slice(0, 5),
+                      )
+                    }
                   />
                 </FormControl>
                 <FormMessage />
@@ -223,7 +257,11 @@ export function SignUpForm() {
             </FormItem>
           )}
         />
-        <Button disabled={isLoading} type="submit" aria-disabled={isLoading}>
+        <Button
+          disabled={formIsLoading}
+          type="submit"
+          aria-disabled={formIsLoading}
+        >
           Submit
         </Button>
       </form>

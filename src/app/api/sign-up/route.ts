@@ -2,7 +2,7 @@ import { type FormSchema, formSchema } from "~/lib/validators";
 import { clerkClient } from "@clerk/nextjs";
 import { isClerkAPIResponseError } from "@clerk/shared";
 
-// This probably deserves a rate limiter + a check for not creating a bunch of trash users to spam us.
+// TODO: This probably deserves a rate limiter + a check for not creating a bunch of trash users to spam us.
 export async function POST(request: Request) {
   const unparsedSignUpHeaders = (await request.json()) as FormSchema;
   const parsedSignUpHeaders = formSchema.safeParse(unparsedSignUpHeaders);
