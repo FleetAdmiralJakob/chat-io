@@ -32,16 +32,24 @@ const Navbar = () => {
         />
         <p className={"mt-0.5 text-sm"}>Chats</p>
       </Link>
-      <Link className={"flex flex-col items-center"} href={"/"}>
-        <FaClipboardList />
+      <Link className={"flex flex-col items-center"} href={"/todo"}>
+        <FaClipboardList
+          className={cn({
+            "text-accent": pathname === "/todo",
+          })}
+        />
         <p className={"mt-0.5 text-sm"}>Todo</p>
       </Link>
       <Link className={"flex flex-col items-center"} href={"/"}>
         <HiUserGroup />
         <p className={"mt-0.5 text-sm"}>Group</p>
       </Link>
-      <Link className={"flex flex-col items-center"} href={"/"}>
-        <CgProfile />
+      <Link className={"flex flex-col items-center"} href={"/profile"}>
+        <CgProfile
+          className={cn({
+            "text-accent": pathname === "/profile",
+          })}
+        />
         <p className={"mt-0.5 text-sm"}>Profile</p>
       </Link>
     </div>
