@@ -20,7 +20,7 @@ const Navbar = () => {
   return (
     <div
       className={cn(
-        "fixed bottom-0 flex h-24 w-full items-center justify-around bg-primary text-2xl text-secondary-foreground",
+        "fixed bottom-0 flex h-24 w-full items-center justify-around bg-primary text-2xl text-secondary-foreground lg:h-full lg:w-24 lg:flex-col lg:border-r-2 lg:border-gray-950",
         { "pb-3": isIOS },
       )}
     >
@@ -32,16 +32,24 @@ const Navbar = () => {
         />
         <p className={"mt-0.5 text-sm"}>Chats</p>
       </Link>
-      <Link className={"flex flex-col items-center"} href={"/"}>
-        <FaClipboardList />
+      <Link className={"flex flex-col items-center"} href={"/todo"}>
+        <FaClipboardList
+          className={cn({
+            "text-accent": pathname === "/todo",
+          })}
+        />
         <p className={"mt-0.5 text-sm"}>Todo</p>
       </Link>
       <Link className={"flex flex-col items-center"} href={"/"}>
         <HiUserGroup />
         <p className={"mt-0.5 text-sm"}>Group</p>
       </Link>
-      <Link className={"flex flex-col items-center"} href={"/"}>
-        <CgProfile />
+      <Link className={"flex flex-col items-center"} href={"/profile"}>
+        <CgProfile
+          className={cn({
+            "text-accent": pathname === "/profile",
+          })}
+        />
         <p className={"mt-0.5 text-sm"}>Profile</p>
       </Link>
     </div>
