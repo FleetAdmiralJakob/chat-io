@@ -7,6 +7,8 @@ import { Avatar, AvatarFallback } from "~/components/ui/avatar";
 import { NotebookText } from "lucide-react";
 import { Check } from "lucide-react";
 import { MousePointerClick } from "lucide-react";
+import Support from "~/components/ui/support";
+import Tool from "~/components/ui/tool";
 
 export function Chats() {
   const chats = useQuery(api.chats.getChats);
@@ -32,10 +34,7 @@ export function Chats() {
                       {" "}
                       <Check className="h-5" /> Support
                     </p>
-                    <div className="absolute ml-60 mt-20">
-                      <MousePointerClick className="mb-1 ml-6 animate-pulse" />
-                      <p>Click here</p>
-                    </div>
+                    <Support />
                   </div>
                 </>
               );
@@ -64,10 +63,7 @@ export function Chats() {
                   ) : (
                     <p className="flex">
                       <p>My Notes</p>
-                      <p className=" ml-2.5 flex rounded-sm bg-blue-400 p-1 pr-2 text-sm font-medium">
-                        {" "}
-                        <Check className="h-5" /> Tool
-                      </p>
+                      <Tool />
                     </p>
                   )}
                 </p>
