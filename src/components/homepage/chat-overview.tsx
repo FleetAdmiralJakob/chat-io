@@ -7,8 +7,7 @@ import { Avatar, AvatarFallback } from "~/components/ui/avatar";
 import { NotebookText } from "lucide-react";
 import { Check } from "lucide-react";
 import { MousePointerClick } from "lucide-react";
-import Support from "~/components/ui/support";
-import Tool from "~/components/ui/tool";
+import Badge from "~/components/ui/badge";
 
 export function Chats() {
   const chats = useQuery(api.chats.getChats);
@@ -30,11 +29,7 @@ export function Chats() {
                       <AvatarFallback>C</AvatarFallback>
                     </Avatar>
                     <p className="text-xl font-bold">Chat.io</p>
-                    <p className="flex rounded-sm bg-blue-400 p-1 pr-2 text-sm font-medium">
-                      {" "}
-                      <Check className="h-5" /> Support
-                    </p>
-                    <Support />
+                    <Badge>Support</Badge>
                   </div>
                 </>
               );
@@ -63,7 +58,7 @@ export function Chats() {
                   ) : (
                     <p className="flex">
                       <p>My Notes</p>
-                      <Tool />
+                      <Badge>Tool</Badge>
                     </p>
                   )}
                 </p>
