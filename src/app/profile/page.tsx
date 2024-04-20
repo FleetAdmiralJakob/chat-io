@@ -7,12 +7,12 @@ import { UsersRound } from "lucide-react";
 import { currentUser } from "@clerk/nextjs";
 import { Avatar, AvatarFallback } from "~/components/ui/avatar";
 
-interface Settings {
+interface settingsCard {
   title: string;
   icon: JSX.Element;
 }
 
-const settings: Settings[] = [
+const settings: settingsCard[] = [
   { title: "Account", icon: <Lock /> },
   { title: "Chats", icon: <SendHorizontal /> },
   { title: "Notification", icon: <Bell /> },
@@ -26,28 +26,45 @@ export default async function Profile() {
 
   return (
     <div className="h-screen">
-      <div className="flex h-full flex-col items-center justify-around lg:pl-24">
-        <div>
-          <p className="mt-10 text-xl font-bold">Profile</p>
-        </div>
-        <div className="flex">
-          <p className=" text-sm ">
-            <Avatar className="h-12 w-12 text-white">
-              <AvatarFallback>
-                {username ? username.substring(0, 2).toUpperCase() : "Y"}
-              </AvatarFallback>
-            </Avatar>
+      <div className=" flex h-full flex-col items-center justify-around lg:pl-24">
+        <div className="flex flex-col items-center">
+          <p className=" my-10 mt-16 text-xl font-bold sm:text-2xl xl:hidden">
+            Profile
           </p>
-          <p className="ml-4 mt-3">{user?.username}</p>
+
+          <div className="flex xl:mt-14">
+            <p className=" text-sm">
+              <Avatar className="h-12 w-12 text-white ">
+                <AvatarFallback>
+                  {username ? username.substring(0, 2).toUpperCase() : "Y"}
+                </AvatarFallback>
+              </Avatar>
+            </p>
+            <p
+              className="ml-4 text-sm
+            xl:mt-2 xl:text-lg"
+            >
+              {user?.lastName && user.firstName ? (
+                <div>
+                  {user.firstName} {user?.lastName} /{" "}
+                  <br className="xl:hidden" /> {user.username}
+                </div>
+              ) : (
+                <div className="xl:mt-4">{user?.username}</div>
+              )}
+            </p>
+          </div>
         </div>
-        <div className="mb-20 w-full">
+        <div className="mb-20 mt-10 w-full pb-24 sm:mb-32 lg:w-2/3 xl:w-1/3">
           {settings.map((item) => {
             return (
               <div
                 key={item.title}
-                className="flex w-full border-t-2 border-input p-7 text-xl"
+                className="flex w-full cursor-pointer border-t-2 border-input p-7 text-xl sm:text-2xl lg:mt-6 lg:rounded-xl lg:border-0 lg:bg-input xl:text-xl"
               >
-                <p className="mr-5 rounded-3xl bg-accent p-3">{item.icon}</p>
+                <p className="mr-5 rounded-3xl bg-accent p-3 text-white">
+                  {item.icon}
+                </p>
                 <p className="pt-3">{item.title}</p>
               </div>
             );
