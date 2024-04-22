@@ -6,6 +6,7 @@ import { Settings } from "lucide-react";
 import { UsersRound } from "lucide-react";
 import { currentUser } from "@clerk/nextjs";
 import { Avatar, AvatarFallback } from "~/components/ui/avatar";
+import Link from "next/link";
 
 interface settingsCard {
   title: string;
@@ -58,15 +59,16 @@ export default async function Profile() {
         <div className="mb-20 mt-10 w-full pb-24 sm:mb-32 lg:w-2/3 xl:w-1/3">
           {settings.map((item) => {
             return (
-              <div
+              <Link
                 key={item.title}
+                href={`/profile/${item.title.toLowerCase()}`}
                 className="flex w-full cursor-pointer border-t-2 border-input p-7 text-xl sm:text-2xl lg:mt-6 lg:rounded-xl lg:border-0 lg:bg-input xl:text-xl"
               >
                 <p className="mr-5 rounded-3xl bg-accent p-3 text-white">
                   {item.icon}
                 </p>
                 <p className="pt-3">{item.title}</p>
-              </div>
+              </Link>
             );
           })}
         </div>
