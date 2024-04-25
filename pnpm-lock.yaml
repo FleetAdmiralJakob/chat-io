@@ -45,8 +45,8 @@ dependencies:
     specifier: 9.0.0-preview.17
     version: 9.0.0-preview.17(@serwist/sw@9.0.0-preview.17)(next@14.2.1)(typescript@5.4.3)
   '@serwist/precaching':
-    specifier: 9.0.0-preview.17
-    version: 9.0.0-preview.17(typescript@5.4.3)
+    specifier: 9.0.2
+    version: 9.0.2(typescript@5.4.3)
   '@serwist/sw':
     specifier: 9.0.0-preview.17
     version: 9.0.0-preview.17(typescript@5.4.3)
@@ -1703,6 +1703,7 @@ packages:
 
   /@serwist/precaching@9.0.0-preview.17(typescript@5.4.3):
     resolution: {integrity: sha512-ZShW68Py7bFP9ztggbonyVg6z0GLGTc3dzMCpfHZqhcY0/c1tcib2FoEGToy/zLWOFORT6uNLJHAYTxwolKXXw==}
+    deprecated: This package has been deprecated. Please use serwist instead.
     peerDependencies:
       typescript: '>=5.0.0'
     peerDependenciesMeta:
@@ -1712,6 +1713,18 @@ packages:
       '@serwist/core': 9.0.0-preview.17(typescript@5.4.3)
       '@serwist/routing': 9.0.0-preview.17(typescript@5.4.3)
       '@serwist/strategies': 9.0.0-preview.17(typescript@5.4.3)
+      typescript: 5.4.3
+    dev: false
+
+  /@serwist/precaching@9.0.2(typescript@5.4.3):
+    resolution: {integrity: sha512-esq9MCODaeAX9C07Xg1ON8xVrm4LY/Yqavdkleyo26fBmUhDRwuhKRX06t4FW7XRBK82Z/SdGdcdbGmkXuVAjQ==}
+    peerDependencies:
+      typescript: '>=5.0.0'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+    dependencies:
+      serwist: 9.0.2(typescript@5.4.3)
       typescript: 5.4.3
     dev: false
 
@@ -4672,6 +4685,18 @@ packages:
     dependencies:
       lru-cache: 6.0.0
     dev: true
+
+  /serwist@9.0.2(typescript@5.4.3):
+    resolution: {integrity: sha512-36+GeVAd0nd6byRKrSVJJHdIF0mSJ+hwxPYBQKZ+8BJ9SGap9Udw4FeG1ohgbezvGteUWoOLXJwQqTl1I1BkyQ==}
+    peerDependencies:
+      typescript: '>=5.0.0'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+    dependencies:
+      idb: 8.0.0
+      typescript: 5.4.3
+    dev: false
 
   /set-function-length@1.2.2:
     resolution: {integrity: sha512-pgRc4hJ4/sNjWCSS9AmnS40x3bNMDTknHgL5UaMBTMyJnU90EgWh1Rz+MC9eFu4BuN/UwZjKQuY/1v3rM7HMfg==}
