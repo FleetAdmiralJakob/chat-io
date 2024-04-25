@@ -43,13 +43,13 @@ dependencies:
     version: 1.0.2(@types/react@18.2.73)(react@18.2.0)
   '@serwist/next':
     specifier: 9.0.0-preview.17
-    version: 9.0.0-preview.17(@serwist/sw@9.0.0-preview.17)(next@14.2.1)(typescript@5.4.3)
+    version: 9.0.0-preview.17(@serwist/sw@9.0.2)(next@14.2.1)(typescript@5.4.3)
   '@serwist/precaching':
     specifier: 9.0.0-preview.17
     version: 9.0.0-preview.17(typescript@5.4.3)
   '@serwist/sw':
-    specifier: 9.0.0-preview.17
-    version: 9.0.0-preview.17(typescript@5.4.3)
+    specifier: 9.0.2
+    version: 9.0.2(typescript@5.4.3)
   '@t3-oss/env-nextjs':
     specifier: ^0.9.2
     version: 0.9.2(typescript@5.4.3)(zod@3.22.4)
@@ -1561,31 +1561,6 @@ packages:
     resolution: {integrity: sha512-0HejFckBN2W+ucM6cUOlwsByTKt9/+0tWhqUffNIcHqCXkthY/mZ7AuYPK/2IIaGWhdl0h+tICDO0ssLMd6XMQ==}
     dev: true
 
-  /@serwist/background-sync@9.0.0-preview.17(typescript@5.4.3):
-    resolution: {integrity: sha512-MBiNdClB6MbDthIOdmrlLc9HZ30ooj8VtlciY2m4yARy6fAfSuy6gQjG5TBnOqbosvndJ0irkTYxMM5xGemqNA==}
-    peerDependencies:
-      typescript: '>=5.0.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@serwist/core': 9.0.0-preview.17(typescript@5.4.3)
-      idb: 8.0.0
-      typescript: 5.4.3
-    dev: false
-
-  /@serwist/broadcast-update@9.0.0-preview.17(typescript@5.4.3):
-    resolution: {integrity: sha512-gdazEGJMcJu53LGfdwEovBE1k9qp6DO440CsWjHLtRnQI8d10Cr68YHOtUW+3jPdy+lUlmkcs16IQU/hmN2fNQ==}
-    peerDependencies:
-      typescript: '>=5.0.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@serwist/core': 9.0.0-preview.17(typescript@5.4.3)
-      typescript: 5.4.3
-    dev: false
-
   /@serwist/build@9.0.0-preview.17(typescript@5.4.3):
     resolution: {integrity: sha512-cG/Ckquww0kMSjt/StWlqOU/RTQSBYZOxNh4XE1otnrNhq3FzZk2OS6BEPibIadMHdEUumZYOMQkwFetb9vtaQ==}
     engines: {node: '>=18.0.0'}
@@ -1606,18 +1581,6 @@ packages:
       typescript: 5.4.3
       upath: 2.0.1
       zod: 3.22.4
-    dev: false
-
-  /@serwist/cacheable-response@9.0.0-preview.17(typescript@5.4.3):
-    resolution: {integrity: sha512-c6m2PmLMv+u3uSxXmQMP88vmySFdT5DAxuzJ9T5D+MVrE9R2X3s4GB1krxzNti1cjBmaL3ng/FW8OkY2ZOuFgw==}
-    peerDependencies:
-      typescript: '>=5.0.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@serwist/core': 9.0.0-preview.17(typescript@5.4.3)
-      typescript: 5.4.3
     dev: false
 
   /@serwist/core@9.0.0-preview.17(typescript@5.4.3):
@@ -1644,34 +1607,7 @@ packages:
       typescript: 5.4.3
     dev: false
 
-  /@serwist/google-analytics@9.0.0-preview.17(typescript@5.4.3):
-    resolution: {integrity: sha512-JGMJ9l94oDai6c5hKNfWHcjskkyAY6sW1/hycLhRYO/X1KglRQxiEoFQrXvadA8Q2M+HM7wuXiV8GVKJKaMLmg==}
-    peerDependencies:
-      typescript: '>=5.0.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@serwist/background-sync': 9.0.0-preview.17(typescript@5.4.3)
-      '@serwist/core': 9.0.0-preview.17(typescript@5.4.3)
-      '@serwist/routing': 9.0.0-preview.17(typescript@5.4.3)
-      '@serwist/strategies': 9.0.0-preview.17(typescript@5.4.3)
-      typescript: 5.4.3
-    dev: false
-
-  /@serwist/navigation-preload@9.0.0-preview.17(typescript@5.4.3):
-    resolution: {integrity: sha512-+uUj23iYcyyUL47t/sx5MUybQP/KWMTUywaNYBJKv1CVGv1bc5WoHB/YLd7QzKMd5qmTvtNfw4CJkRSF19bIAA==}
-    peerDependencies:
-      typescript: '>=5.0.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@serwist/core': 9.0.0-preview.17(typescript@5.4.3)
-      typescript: 5.4.3
-    dev: false
-
-  /@serwist/next@9.0.0-preview.17(@serwist/sw@9.0.0-preview.17)(next@14.2.1)(typescript@5.4.3):
+  /@serwist/next@9.0.0-preview.17(@serwist/sw@9.0.2)(next@14.2.1)(typescript@5.4.3):
     resolution: {integrity: sha512-czpnmywewqmUw/3J3aETmcL/dDhaJNOEgslbeFmlkxE0+F4nuGnK/0hAlOutzLQmYiaOeKljdEv3SH4huYaDtw==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
@@ -1689,7 +1625,7 @@ packages:
       '@serwist/expiration': 9.0.0-preview.17(typescript@5.4.3)
       '@serwist/range-requests': 9.0.0-preview.17(typescript@5.4.3)
       '@serwist/strategies': 9.0.0-preview.17(typescript@5.4.3)
-      '@serwist/sw': 9.0.0-preview.17(typescript@5.4.3)
+      '@serwist/sw': 9.0.2(typescript@5.4.3)
       '@serwist/webpack-plugin': 9.0.0-preview.17(typescript@5.4.3)
       '@serwist/window': 9.0.0-preview.17(typescript@5.4.3)
       chalk: 5.3.0
@@ -1751,25 +1687,15 @@ packages:
       typescript: 5.4.3
     dev: false
 
-  /@serwist/sw@9.0.0-preview.17(typescript@5.4.3):
-    resolution: {integrity: sha512-FQRQh0nIllFFKaXdV8a0wJyyz91+sbaJMXwt7qxxt4JS6fcqLy0B7qXrKB7FNtE2wEtNc/ymaVX2p5E6WsOR3Q==}
+  /@serwist/sw@9.0.2(typescript@5.4.3):
+    resolution: {integrity: sha512-dJ7uu1yHfglCT1KcTg/FrgBs4wfuBDeDjXEmYIfN9kHvpw1SN42bY84+dhV+cCdVJPhWQ+6lFrADQsr+6vsELw==}
     peerDependencies:
       typescript: '>=5.0.0'
     peerDependenciesMeta:
       typescript:
         optional: true
     dependencies:
-      '@serwist/background-sync': 9.0.0-preview.17(typescript@5.4.3)
-      '@serwist/broadcast-update': 9.0.0-preview.17(typescript@5.4.3)
-      '@serwist/cacheable-response': 9.0.0-preview.17(typescript@5.4.3)
-      '@serwist/core': 9.0.0-preview.17(typescript@5.4.3)
-      '@serwist/expiration': 9.0.0-preview.17(typescript@5.4.3)
-      '@serwist/google-analytics': 9.0.0-preview.17(typescript@5.4.3)
-      '@serwist/navigation-preload': 9.0.0-preview.17(typescript@5.4.3)
-      '@serwist/precaching': 9.0.0-preview.17(typescript@5.4.3)
-      '@serwist/range-requests': 9.0.0-preview.17(typescript@5.4.3)
-      '@serwist/routing': 9.0.0-preview.17(typescript@5.4.3)
-      '@serwist/strategies': 9.0.0-preview.17(typescript@5.4.3)
+      serwist: 9.0.2(typescript@5.4.3)
       typescript: 5.4.3
     dev: false
 
@@ -4672,6 +4598,18 @@ packages:
     dependencies:
       lru-cache: 6.0.0
     dev: true
+
+  /serwist@9.0.2(typescript@5.4.3):
+    resolution: {integrity: sha512-36+GeVAd0nd6byRKrSVJJHdIF0mSJ+hwxPYBQKZ+8BJ9SGap9Udw4FeG1ohgbezvGteUWoOLXJwQqTl1I1BkyQ==}
+    peerDependencies:
+      typescript: '>=5.0.0'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+    dependencies:
+      idb: 8.0.0
+      typescript: 5.4.3
+    dev: false
 
   /set-function-length@1.2.2:
     resolution: {integrity: sha512-pgRc4hJ4/sNjWCSS9AmnS40x3bNMDTknHgL5UaMBTMyJnU90EgWh1Rz+MC9eFu4BuN/UwZjKQuY/1v3rM7HMfg==}
