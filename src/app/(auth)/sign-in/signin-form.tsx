@@ -54,7 +54,7 @@ export const formSchema = z.object({
 });
 
 export function SignInForm() {
-  const [formIsLoading, setFormIsLoading] = useState(false);
+  const [, setFormIsLoading] = useState(false);
   const [signInComplete, setSignInComplete] = React.useState(false);
 
   const { isLoaded, signIn, setActive } = useSignIn();
@@ -77,7 +77,7 @@ export function SignInForm() {
     if (signInComplete && isAuthenticated) {
       router.push("/");
     }
-  }, [isAuthenticated, signInComplete]);
+  }, [isAuthenticated, router, signInComplete]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setFormIsLoading(true);

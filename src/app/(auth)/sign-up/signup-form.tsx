@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { type z } from "zod";
 
 import { Button } from "~/components/ui/button";
 import {
@@ -54,7 +54,7 @@ export function SignUpForm() {
         },
       );
     }
-  }, [initialConvexSetup, isAuthenticated, signUpComplete]);
+  }, [initialConvexSetup, isAuthenticated, router, signUpComplete]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (isAuthenticated || isLoading) {

@@ -1,5 +1,5 @@
 import { type FormSchema, formSchema } from "~/lib/validators";
-import { clerkClient } from "@clerk/nextjs";
+import { clerkClient } from "@clerk/nextjs/server";
 import { isClerkAPIResponseError } from "@clerk/shared";
 
 // TODO: This probably deserves a rate limiter + a check for not creating a bunch of trash users to spam us.

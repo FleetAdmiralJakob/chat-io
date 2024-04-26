@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { FaGithub, FaYoutube, FaUserGroup, FaBook } from "react-icons/fa6";
 import { MdLanguage } from "react-icons/md";
-import { IoIosHelpCircle } from "react-icons/io";
 import {
   Select,
   SelectContent,
