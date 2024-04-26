@@ -1,12 +1,13 @@
-import Navbar from "~/components/navbar";
+import { Avatar, AvatarFallback } from "~/components/ui/avatar";
 import { Lock, NotebookText } from "lucide-react";
-import { SendHorizontal } from "lucide-react";
+
 import { Bell } from "lucide-react";
+import Link from "next/link";
+import Navbar from "~/components/navbar";
+import { SendHorizontal } from "lucide-react";
 import { Settings } from "lucide-react";
 import { UsersRound } from "lucide-react";
-import { currentUser } from "@clerk/nextjs";
-import { Avatar, AvatarFallback } from "~/components/ui/avatar";
-import Link from "next/link";
+import { currentUser } from "@clerk/nextjs/server";
 
 interface settingsCard {
   title: string;
