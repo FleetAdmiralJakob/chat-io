@@ -1,8 +1,7 @@
 import { SignOutButton } from "@clerk/nextjs";
 import PublicHomepage from "~/app/public-homepage";
 import { AddUserDialog } from "~/components/homepage/add-user-dialog";
-import { Chats } from "~/components/homepage/chat-overview";
-import Search from "~/components/homepage/search";
+import Chats from "~/components/homepage/chat-overview";
 import Navbar from "~/components/navbar";
 import { currentUser } from "@clerk/nextjs/server";
 
@@ -20,7 +19,6 @@ export default async function HomePage() {
             Current User: {user.username} <br /> <SignOutButton />
           </p>{" "}
           <br />
-          <Search />
           <Chats />
         </div>
         <Navbar />
