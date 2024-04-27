@@ -1,9 +1,5 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-
-import { Button } from "~/components/ui/button";
 import {
   Form,
   FormControl,
@@ -12,13 +8,17 @@ import {
   FormLabel,
   FormMessage,
 } from "~/components/ui/form";
-import { Input } from "~/components/ui/input";
 import React, { useEffect, useState } from "react";
-import { z } from "zod";
-import { useSignIn } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
+
+import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
 import { cn } from "~/lib/utils";
 import { useConvexAuth } from "convex/react";
+import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
+import { useSignIn } from "@clerk/nextjs";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 export const formSchema = z.object({
   username: z
@@ -75,7 +75,7 @@ export function SignInForm() {
 
   useEffect(() => {
     if (signInComplete && isAuthenticated) {
-      router.push("/");
+      router.push("/chats");
     }
   }, [isAuthenticated, router, signInComplete]);
 

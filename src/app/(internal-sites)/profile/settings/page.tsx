@@ -1,11 +1,7 @@
 import Navbar from "~/components/navbar";
 
 const SettingsPage = () => {
-  return (
-    <div>
-      <Navbar />
-    </div>
-  );
+  return <div>Settings</div>;
 };
 
 export default SettingsPage;

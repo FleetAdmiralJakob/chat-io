@@ -47,7 +47,7 @@ export function SignUpForm() {
     if (signUpComplete && isAuthenticated) {
       initialConvexSetup().then(
         () => {
-          router.push("/");
+          router.push("/chats");
         },
         () => {
           return undefined;
