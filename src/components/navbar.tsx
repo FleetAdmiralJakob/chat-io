@@ -1,20 +1,21 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
+import { CalendarCheck } from "lucide-react";
+import { CircleUser } from "lucide-react";
 import Link from "next/link";
 import { MessagesSquare } from "lucide-react";
-import { CalendarCheck } from "lucide-react";
 import { UsersRound } from "lucide-react";
-import { CircleUser } from "lucide-react";
 import { cn } from "~/lib/utils";
-import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 const Navbar = () => {
   const [isIOS, setIsIOS] = useState(false);
-  const [pathname, setPathname] = useState("/");
+  const pathname = usePathname();
 
   useEffect(() => {
     setIsIOS(/iPad|iPhone|iPod/.test(navigator.userAgent));
-    setPathname(window.location.pathname);
   }, []);
 
   return (
@@ -27,7 +28,7 @@ const Navbar = () => {
       <Link className={"flex flex-col items-center"} href={"/"}>
         <MessagesSquare
           className={cn({
-            "text-accent": pathname === "/",
+            "text-accent": pathname === "/chats",
           })}
         />
         <p className={"mt-0.5 text-sm"}>Chats</p>
