@@ -1,5 +1,3 @@
-import Navbar from "~/components/navbar";
-
 const Todo = () => {
   return (
     <div className="flex h-full flex-col items-center justify-center lg:pl-24">
