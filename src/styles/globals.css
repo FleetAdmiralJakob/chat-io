@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+.bg-clip-text-fix {
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
