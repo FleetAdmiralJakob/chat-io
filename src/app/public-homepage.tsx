@@ -34,7 +34,7 @@ export default function PublicHomepage() {
           </div>
           <p
             className={
-              "bg-clip-text-fix w-3/4 bg-gradient-to-b from-gray-600 via-gray-500 to-gray-800 text-2xl text-transparent sm:w-7/12"
+              "w-3/4 bg-gradient-to-b from-gray-600 via-gray-500 to-gray-800 bg-clip-text text-2xl text-transparent sm:w-7/12"
             }
           >
             Introducing Chat.io, the next evolution in messaging apps from the
