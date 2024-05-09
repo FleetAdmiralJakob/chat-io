@@ -66,8 +66,8 @@ importers:
         specifier: ^1.11.2
         version: 1.11.3(@clerk/clerk-react@5.0.1(eslint@9.2.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.4.5))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       convex-ents:
-        specifier: ^0.6.1
-        version: 0.6.1(convex@1.11.3(@clerk/clerk-react@5.0.1(eslint@9.2.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.4.5))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        specifier: ^0.7.0
+        version: 0.7.2(convex@1.11.3(@clerk/clerk-react@5.0.1(eslint@9.2.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.4.5))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       convex-helpers:
         specifier: ^0.1.35
         version: 0.1.36(convex@1.11.3(@clerk/clerk-react@5.0.1(eslint@9.2.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.4.5))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(zod@3.23.5)
@@ -1357,8 +1357,8 @@ packages:
   concat-map@0.0.1:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
 
-  convex-ents@0.6.1:
-    resolution: {integrity: sha512-DmWQwnM4dENx0+DQjgwATYgZmPd2sYUeWEspGINSJ+jdhxHSm7aNLZT3omslrnmSqrwj+ID9HBe+dMHRzZIeYA==}
+  convex-ents@0.7.2:
+    resolution: {integrity: sha512-FnYfIJSZL1GNHvH8X5gUrRJE06veIY2yBRSnIISxCPc2R1hhaz0WhqyOmzAjhznrRaTTvAZJ7lCu7Vp4dsLK4w==}
     peerDependencies:
       convex: ^1.11.2
 
@@ -4072,7 +4072,7 @@ snapshots:
 
   concat-map@0.0.1: {}
 
-  convex-ents@0.6.1(convex@1.11.3(@clerk/clerk-react@5.0.1(eslint@9.2.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.4.5))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)):
+  convex-ents@0.7.2(convex@1.11.3(@clerk/clerk-react@5.0.1(eslint@9.2.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.4.5))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)):
     dependencies:
       convex: 1.11.3(@clerk/clerk-react@5.0.1(eslint@9.2.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.4.5))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
 
