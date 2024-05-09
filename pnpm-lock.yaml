@@ -70,7 +70,7 @@ importers:
         version: 0.6.1(convex@1.11.2(@clerk/clerk-react@5.0.1(eslint@9.1.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.4.5))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       convex-helpers:
         specifier: ^0.1.35
-        version: 0.1.35(convex@1.11.2(@clerk/clerk-react@5.0.1(eslint@9.1.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.4.5))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(zod@3.23.5)
+        version: 0.1.36(convex@1.11.2(@clerk/clerk-react@5.0.1(eslint@9.1.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.4.5))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(zod@3.23.5)
       framer-motion:
         specifier: ^11.1.7
         version: 11.1.9(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -1362,8 +1362,8 @@ packages:
     peerDependencies:
       convex: ^1.11.2
 
-  convex-helpers@0.1.35:
-    resolution: {integrity: sha512-JruOIBGQGqOMsA50iEVpPrml5uXsBqcNRaWRsfYfBUJYEq+8RLVk5ad0LyMJd1gk2M/jk6XpB6XKy/QLs/sZLQ==}
+  convex-helpers@0.1.36:
+    resolution: {integrity: sha512-G69bfCTvOQHWr8JahGFFyhxiOUAlNtAgFPchuwYqGqAs5g63SpHxg9BliyLtNW7BxU+V1v+CwfTkTMpuzx7dQw==}
     peerDependencies:
       convex: ^1.11.0
       hono: ^4.0.5
@@ -4076,7 +4076,7 @@ snapshots:
     dependencies:
       convex: 1.11.2(@clerk/clerk-react@5.0.1(eslint@9.1.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.4.5))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
 
-  convex-helpers@0.1.35(convex@1.11.2(@clerk/clerk-react@5.0.1(eslint@9.1.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.4.5))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(zod@3.23.5):
+  convex-helpers@0.1.36(convex@1.11.2(@clerk/clerk-react@5.0.1(eslint@9.1.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.4.5))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(zod@3.23.5):
     dependencies:
       convex: 1.11.2(@clerk/clerk-react@5.0.1(eslint@9.1.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.4.5))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
     optionalDependencies:
