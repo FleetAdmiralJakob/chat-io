@@ -10,7 +10,7 @@ importers:
     dependencies:
       '@clerk/nextjs':
         specifier: ^5.0.3
-        version: 5.0.7(next@14.2.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 5.0.8(next@14.2.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@clerk/shared':
         specifier: ^2.0.0
         version: 2.0.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -173,8 +173,8 @@ packages:
     resolution: {integrity: sha512-Nms86NXrsaeU9vbBJKni6gXiEXZ4CVpYVzEjDH9Sb8vmZ3UljyA1GSOJl/6LGPO8EHLuSF9H+IxNXHPX8QHJ4g==}
     engines: {node: '>=6.9.0'}
 
-  '@clerk/backend@1.1.2':
-    resolution: {integrity: sha512-WWq7sRQ6UVQgpOrX4AgT4MsxLWFY+UqQ308yl3SYuLKHJhltXJ2p/NBu31V7tzb45QCejMbqlk91dXgA8QvI5A==}
+  '@clerk/backend@1.1.3':
+    resolution: {integrity: sha512-PCGolPkTff7aQjAoS+oDhUldviBYM376klclxJO8SK7eyNkxhwfU95T5McEVpEgz5nITKjKk03Zr7a7v82X6Iw==}
     engines: {node: '>=18.17.0'}
 
   '@clerk/clerk-react@5.0.4':
@@ -184,8 +184,8 @@ packages:
       react: '>=18'
       react-dom: '>=18'
 
-  '@clerk/nextjs@5.0.7':
-    resolution: {integrity: sha512-HMUERoU52EnEVpG9IaFcRaEOXme8rzv40POkczt8MNHLJ7bQjf3oyc2L+o++w7lmusGNABbfTs1Aq6F2d9b2Gw==}
+  '@clerk/nextjs@5.0.8':
+    resolution: {integrity: sha512-ZwTA+nd0EbeFbsrGYriv8t2oaiANTKQGvvPji9TWTwLR+gP9V5XcVsw4xuZ8w3+MjhnKCrc8BE+oCg5wUCn+Bw==}
     engines: {node: '>=18.17.0'}
     peerDependencies:
       next: ^13.5.4 || ^14.0.3
@@ -2811,7 +2811,7 @@ snapshots:
     dependencies:
       regenerator-runtime: 0.14.1
 
-  '@clerk/backend@1.1.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@clerk/backend@1.1.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@clerk/shared': 2.0.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       cookie: 0.5.0
@@ -2829,9 +2829,9 @@ snapshots:
       react-dom: 18.3.1(react@18.3.1)
       tslib: 2.4.1
 
-  '@clerk/nextjs@5.0.7(next@14.2.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@clerk/nextjs@5.0.8(next@14.2.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
-      '@clerk/backend': 1.1.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@clerk/backend': 1.1.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@clerk/clerk-react': 5.0.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@clerk/shared': 2.0.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       crypto-js: 4.2.0
