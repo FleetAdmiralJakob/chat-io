@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { type z } from "zod";
+import { z } from "zod";
 
 import { Button } from "~/components/ui/button";
 import {
@@ -22,6 +22,11 @@ import { useRouter } from "next/navigation";
 import { cn } from "~/lib/utils";
 import { useConvexAuth, useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
+
+const signUpResponseSchema = z.object({
+  message: z.string(),
+  statusText: z.string().optional(),
+});
 
 export function SignUpForm() {
   const [formIsLoading, setFormIsLoading] = React.useState(false);
@@ -70,7 +75,11 @@ export function SignUpForm() {
       body: JSON.stringify(values),
     });
 
-    if (response.statusText === "username_is_taken") {
+    const parsedResponseBody = signUpResponseSchema.safeParse(
+      await response.json(),
+    );
+
+    if (parsedResponseBody.data?.statusText === "username_is_taken") {
       form.setError("username", {
         message: "Username +  ID is already taken. Please choose another.",
       });
@@ -79,7 +88,7 @@ export function SignUpForm() {
       return;
     }
 
-    if (response.statusText === "form_password_pwned") {
+    if (parsedResponseBody.data?.statusText === "form_password_pwned") {
       form.setError("password", {
         message:
           "Password is insecure or has been found in an online data breach. For account safety, please use a different password.",
