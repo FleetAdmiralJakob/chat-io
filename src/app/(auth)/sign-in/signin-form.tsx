@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 import { useSignIn } from "@clerk/nextjs";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { LoaderCircle } from "lucide-react";
 
 export const formSchema = z.object({
   username: z
@@ -195,7 +196,14 @@ export function SignInForm() {
           )}
         />
         <Button disabled={isLoading} type="submit" aria-disabled={isLoading}>
-          Submit
+          {isLoading ? (
+            <>
+              <LoaderCircle className="mr-1.5 animate-spin p-0.5" />{" "}
+              Processing...
+            </>
+          ) : (
+            "Submit"
+          )}
         </Button>
         {wholeFormError && (
           <>
