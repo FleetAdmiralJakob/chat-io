@@ -19,12 +19,12 @@ const Footer = () => {
     <>
       <div
         className={
-          "mt-10 block h-48 justify-between bg-card-foreground text-xl text-foreground md:flex md:h-24"
+          "mt-10 block h-48 justify-between bg-card-foreground text-xl text-foreground lg:flex lg:h-24"
         }
       >
         <div
           className={
-            "flex w-full justify-around pt-7 text-3xl md:ml-20 md:mt-8 md:w-1/6 md:pt-0"
+            "flex w-full justify-around pt-7 text-3xl lg:ml-20 lg:mt-8 lg:w-1/6 lg:pt-0"
           }
         >
           <Link href={"https://github.com/FleetAdmiralJakob/chat-io"}>
@@ -37,9 +37,13 @@ const Footer = () => {
             <FaUserGroup />
           </Link>
         </div>
-        <div className={" mt-8 w-full justify-around pl-14 md:flex md:w-2/5"}>
+        <div
+          className={
+            " mt-8 block w-full pl-14 lg:flex lg:w-2/5 lg:justify-around"
+          }
+        >
           <div className={"flex"}>
-            <MdLanguage className={"mr-1 mt-1"} />{" "}
+            <MdLanguage className={"mr-1 mt-0.5"} />{" "}
             <Select>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Languages" />
