@@ -7,7 +7,10 @@ export async function POST(request: Request) {
   const unparsedSignUpHeaders = (await request.json()) as FormSchema;
   const parsedSignUpHeaders = formSchema.safeParse(unparsedSignUpHeaders);
   if (!parsedSignUpHeaders.success) {
-    return new Response(parsedSignUpHeaders.error.message, { status: 400 });
+    return Response.json(
+      { message: parsedSignUpHeaders.error.message },
+      { status: 400 },
+    );
   }
 
   try {
@@ -21,20 +24,33 @@ export async function POST(request: Request) {
   } catch (e) {
     if (isClerkAPIResponseError(e)) {
       if (e.errors.some((error) => error.code === "form_identifier_exists")) {
-        return new Response(
-          "Failed to create an account. Username already exists.",
-          { status: 400, statusText: "username_is_taken" },
+        return Response.json(
+          {
+            message: "Failed to create an account. Username already exists.",
+            statusText: "username_is_taken",
+          },
+          { status: 400 },
         );
       }
       if (e.errors.some((error) => error.code === "form_password_pwned")) {
-        return new Response(
-          "Failed to create an account. Password has been found in an online data breach.",
-          { status: 400, statusText: "form_password_pwned" },
+        return Response.json(
+          {
+            message:
+              "Failed to create an account. Password has been found in an online data breach.",
+            statusText: "form_password_pwned",
+          },
+          { status: 400 },
         );
       }
     }
-    return new Response("Failed to create an account", { status: 400 });
+    return Response.json(
+      { message: "Failed to create an account" },
+      { status: 400 },
+    );
   }
 
-  return new Response("User created successfully", { status: 200 });
+  return Response.json(
+    { message: "User created successfully" },
+    { status: 200 },
+  );
 }
