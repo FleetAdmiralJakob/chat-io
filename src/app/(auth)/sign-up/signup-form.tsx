@@ -105,6 +105,7 @@ export function SignUpForm() {
         if (result.status === "complete") {
           await setActive({ session: result.createdSessionId });
           setSignUpComplete(true);
+          return;
         }
       } catch (e) {
         console.error("Problem with the sign-in process");
