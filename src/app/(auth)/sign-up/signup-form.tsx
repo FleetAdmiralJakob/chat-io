@@ -22,6 +22,7 @@ import { useRouter } from "next/navigation";
 import { cn } from "~/lib/utils";
 import { useConvexAuth, useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
+import { LoaderCircle } from "lucide-react";
 
 export function SignUpForm() {
   const [formIsLoading, setFormIsLoading] = React.useState(false);
@@ -262,7 +263,14 @@ export function SignUpForm() {
           type="submit"
           aria-disabled={formIsLoading}
         >
-          Submit
+          {formIsLoading ? (
+            <>
+              <LoaderCircle className="mr-1.5 animate-spin p-0.5" />{" "}
+              Processing...
+            </>
+          ) : (
+            "Submit"
+          )}
         </Button>
       </form>
     </Form>
