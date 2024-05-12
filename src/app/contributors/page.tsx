@@ -1,6 +1,6 @@
 "use client";
 
-import Footer from "/src/components/footer";
+import Footer from "~/components/footer";
 import { IoIosArrowDropupCircle } from "react-icons/io";
 import JakobProfile from "/src/assets/jakob-profile.png";
 import FabiusProfile from "/src/assets/fabius-profile.png";
