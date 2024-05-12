@@ -6,8 +6,9 @@ import { api } from "../../../convex/_generated/api";
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import { type FunctionReturnType } from "convex/server";
-import { Check, MousePointerClick, NotebookText } from "lucide-react";
+import { MousePointerClick, NotebookText } from "lucide-react";
 import { Avatar, AvatarFallback } from "../ui/avatar";
+import Badge from "~/components/ui/badge";
 
 type Chats = FunctionReturnType<typeof api.chats.getChats>;
 
@@ -71,10 +72,7 @@ const Chats: React.FC = () => {
                       <AvatarFallback>C</AvatarFallback>
                     </Avatar>
                     <p className="text-xl font-bold">Chat.io</p>
-                    <p className="flex rounded-sm bg-blue-400 p-1 pr-2 text-sm font-medium">
-                      {" "}
-                      <Check className="h-5" /> Support
-                    </p>
+                    <Badge>Support</Badge>
                     <div className="absolute ml-60 mt-20">
                       <MousePointerClick className="mb-1 ml-6 animate-pulse" />
                       <p>Click here</p>
@@ -107,10 +105,7 @@ const Chats: React.FC = () => {
                   ) : (
                     <p className="flex">
                       <p>My Notes</p>
-                      <p className=" ml-2.5 flex rounded-sm bg-blue-400 p-1 pr-2 text-sm font-medium">
-                        {" "}
-                        <Check className="h-5" /> Tool
-                      </p>
+                      <Badge>Tool</Badge>
                     </p>
                   )}
                 </p>
