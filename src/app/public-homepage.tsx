@@ -55,12 +55,13 @@ export default function PublicHomepage() {
           </div>
 
           <p className={"h-0 text-xl"}>Why us ?</p>
-          <FaCircleArrowDown
+          <button
             onClick={() => {
               scrollCallback();
             }}
-            className={"h-7 animate-bounce text-2xl"}
-          />
+          >
+            <FaCircleArrowDown className={"h-7 animate-bounce text-2xl"} />
+          </button>
         </div>
 
         <p
