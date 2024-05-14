@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from "./ui/select";
 import Image from "next/image";
-import america from "src/assets/united-kingdom.png";
+import england from "src/assets/united-kingdom.png";
 import germany from "src/assets/germany.png";
 
 const Footer = () => {
@@ -55,7 +55,7 @@ const Footer = () => {
                     <div className={"flex"}>
                       <p>English</p>
                       <Image
-                        src={america}
+                        src={england}
                         alt={"English"}
                         width={20}
                         height={20}
@@ -68,7 +68,7 @@ const Footer = () => {
                       <p>German</p>
                       <Image
                         src={germany}
-                        alt={"Germany"}
+                        alt={"German"}
                         width={20}
                         height={20}
                         className={"ml-2.5"}
