@@ -14,6 +14,7 @@
     "convex:deploy": "convex deploy"
   },
   "dependencies": {
+    "@clerk/backend": "^1.1.4",
     "@clerk/nextjs": "^5.0.3",
     "@clerk/shared": "^2.0.0",
     "@hookform/resolvers": "^3.3.4",
@@ -47,6 +48,7 @@
     "react-dom": "18.3.1",
     "react-hook-form": "^7.51.3",
     "react-icons": "^5.1.0",
+    "react-resizable-panels": "^2.0.19",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.23.5"
