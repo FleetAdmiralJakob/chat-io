@@ -64,13 +64,13 @@ importers:
         version: 1.0.0(@types/react-dom@18.3.0)(@types/react@18.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       convex:
         specifier: ^1.11.2
-        version: 1.11.3(@clerk/clerk-react@5.0.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 1.12.0(@clerk/clerk-react@5.0.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       convex-ents:
         specifier: ^0.7.0
-        version: 0.7.4(convex@1.11.3(@clerk/clerk-react@5.0.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        version: 0.7.4(convex@1.12.0(@clerk/clerk-react@5.0.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       convex-helpers:
         specifier: ^0.1.35
-        version: 0.1.36(convex@1.11.3(@clerk/clerk-react@5.0.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(zod@3.23.8)
+        version: 0.1.36(convex@1.12.0(@clerk/clerk-react@5.0.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(zod@3.23.8)
       framer-motion:
         specifier: ^11.1.7
         version: 11.2.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -1325,6 +1325,7 @@ packages:
 
   convex-ents@0.7.4:
     resolution: {integrity: sha512-2gZLsgVvZsIPEU/pvHYalnjkkXwB5KiW74vyAeazqzjVDxosNVMkVpkCKS3QF9y/OEwW7CotsnlzBJ/hVMd8Pg==}
+    deprecated: Bad TypeScript perf
     peerDependencies:
       convex: ^1.11.2
 
@@ -1343,8 +1344,8 @@ packages:
       zod:
         optional: true
 
-  convex@1.11.3:
-    resolution: {integrity: sha512-2aZ6WdXfT59TrWynPNE6jQ3DYhYMgy0vzoLPTJsY1CkNbOA+KFIb03l4vQsEQtRU5gpjFbPqnPFsIS23Zlv0bQ==}
+  convex@1.12.0:
+    resolution: {integrity: sha512-N3WAkGEidECAsd7zkUG1tOIJSUZ9PShxiojkDk9Ha6V50A/iKR9D55LWh2zGKA37IgeUMbwvWx8NcDPO2YxaLA==}
     engines: {node: '>=16.15.1', npm: '>=7.0.0'}
     hasBin: true
     peerDependencies:
@@ -3947,18 +3948,18 @@ snapshots:
 
   concat-map@0.0.1: {}
 
-  convex-ents@0.7.4(convex@1.11.3(@clerk/clerk-react@5.0.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)):
+  convex-ents@0.7.4(convex@1.12.0(@clerk/clerk-react@5.0.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)):
     dependencies:
-      convex: 1.11.3(@clerk/clerk-react@5.0.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      convex: 1.12.0(@clerk/clerk-react@5.0.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
 
-  convex-helpers@0.1.36(convex@1.11.3(@clerk/clerk-react@5.0.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(zod@3.23.8):
+  convex-helpers@0.1.36(convex@1.12.0(@clerk/clerk-react@5.0.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(zod@3.23.8):
     dependencies:
-      convex: 1.11.3(@clerk/clerk-react@5.0.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      convex: 1.12.0(@clerk/clerk-react@5.0.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
     optionalDependencies:
       react: 18.3.1
       zod: 3.23.8
 
-  convex@1.11.3(@clerk/clerk-react@5.0.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  convex@1.12.0(@clerk/clerk-react@5.0.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       esbuild: 0.17.19
       jwt-decode: 3.1.2
