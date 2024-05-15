@@ -28,7 +28,7 @@ const Navbar = () => {
       <Link className={"flex flex-col items-center"} href={"/"}>
         <MessagesSquare
           className={cn({
-            "text-accent": pathname === "/chats",
+            "text-accent": pathname.includes("/chats"),
           })}
         />
         <p className={"mt-0.5 text-sm"}>Chats</p>

@@ -19,7 +19,7 @@ export default async function Page({ params }: { params: { chatId: string } }) {
             <ChatsWithSearch classNameChat={"justify-center"} user={user} />
           </ResizablePanel>
           <ResizableHandle />
-          <ResizablePanel>Two</ResizablePanel>
+          <ResizablePanel>ChatID: {params.chatId}</ResizablePanel>
         </ResizablePanelGroup>
       </div>
     </>
