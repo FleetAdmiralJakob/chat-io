@@ -1,4 +1,4 @@
-import { mutation, query } from "./functions";
+import { mutation, query } from "./lib/functions";
 import { ConvexError, v } from "convex/values";
 
 export const createChat = mutation({
