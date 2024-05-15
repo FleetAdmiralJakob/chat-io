@@ -67,7 +67,7 @@ importers:
         version: 1.12.0(@clerk/clerk-react@5.0.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       convex-ents:
         specifier: ^0.7.0
-        version: 0.7.4(convex@1.12.0(@clerk/clerk-react@5.0.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        version: 0.7.5(convex@1.12.0(@clerk/clerk-react@5.0.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       convex-helpers:
         specifier: ^0.1.35
         version: 0.1.36(convex@1.12.0(@clerk/clerk-react@5.0.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(zod@3.23.8)
@@ -1323,9 +1323,8 @@ packages:
   concat-map@0.0.1:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
 
-  convex-ents@0.7.4:
-    resolution: {integrity: sha512-2gZLsgVvZsIPEU/pvHYalnjkkXwB5KiW74vyAeazqzjVDxosNVMkVpkCKS3QF9y/OEwW7CotsnlzBJ/hVMd8Pg==}
-    deprecated: Bad TypeScript perf
+  convex-ents@0.7.5:
+    resolution: {integrity: sha512-rmj6jNjD4WRuqAMvkyJuDlRg7AW/O9hDuYtL2wwNLncqzXPWbiOTfgVKExp3lyX5sODGqF16br9ouzmXGnc/FQ==}
     peerDependencies:
       convex: ^1.11.2
 
@@ -3948,7 +3947,7 @@ snapshots:
 
   concat-map@0.0.1: {}
 
-  convex-ents@0.7.4(convex@1.12.0(@clerk/clerk-react@5.0.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)):
+  convex-ents@0.7.5(convex@1.12.0(@clerk/clerk-react@5.0.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)):
     dependencies:
       convex: 1.12.0(@clerk/clerk-react@5.0.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
 
