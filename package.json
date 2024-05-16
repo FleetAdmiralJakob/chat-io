@@ -14,7 +14,7 @@
     "convex:deploy": "convex deploy"
   },
   "dependencies": {
-    "@clerk/backend": "^1.1.4",
+    "@clerk/backend": "^1.1.5",
     "@clerk/nextjs": "^5.0.3",
     "@clerk/shared": "^2.0.0",
     "@hookform/resolvers": "^3.3.4",
