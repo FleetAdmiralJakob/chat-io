@@ -10,7 +10,15 @@ export const getMessages = query({
       throw new ConvexError("chatId was invalid");
     }
 
-    return ctx.table("privateChats").getX(parsedChatId).edge("messages");
+    return ctx
+      .table("privateChats")
+      .getX(parsedChatId)
+      .edge("messages")
+      .map(async (chat) => ({
+        ...chat,
+        userId: undefined,
+        from: await ctx.table("users").getX(chat.userId),
+      }));
   },
 });
 
@@ -39,12 +47,10 @@ export const createMessage = mutation({
       );
     }
 
-    await ctx
-      .table("messages")
-      .insert({
-        userId: convexUser._id,
-        privateChatId: parsedChatId,
-        content: args.content,
-      });
+    await ctx.table("messages").insert({
+      userId: convexUser._id,
+      privateChatId: parsedChatId,
+      content: args.content,
+    });
   },
 });

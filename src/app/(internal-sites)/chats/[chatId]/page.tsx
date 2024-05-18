@@ -90,7 +90,8 @@ export default function Page({ params }: { params: { chatId: string } }) {
                 ? messages.map((message) => {
                     return (
                       <>
-                        {message.content} <br />
+                        {message.from.username}
+                        {message.content} <br /> <br />
                       </>
                     );
                   })
