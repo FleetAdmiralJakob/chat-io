@@ -43,6 +43,7 @@ export default function Page({ params }: { params: { chatId: string } }) {
 
   function onTextMessageFormSubmit(values: z.infer<typeof textMessageSchema>) {
     sendMessage({ content: values.message, chatId: params.chatId });
+    textMessageForm.reset();
   }
 
   return (
