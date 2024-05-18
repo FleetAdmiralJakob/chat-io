@@ -36,7 +36,7 @@ export const createChat = mutation({
     const chatsFromTheUser = await ctx
       .table("users")
       .getX("clerkId", identity.tokenIdentifier)
-      .edge("chats")
+      .edge("privateChats")
       .map(async (chat) => ({
         ...chat,
         users: await chat.edge("users"),
@@ -102,7 +102,7 @@ export const getChats = query({
     return await ctx
       .table("users")
       .getX("clerkId", identity.tokenIdentifier)
-      .edge("chats")
+      .edge("privateChats")
       .map(async (chat) => ({
         ...chat,
         users: await chat.edge("users"),

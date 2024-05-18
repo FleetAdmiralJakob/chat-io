@@ -6,7 +6,7 @@ import { api } from "../../../convex/_generated/api";
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import { type FunctionReturnType } from "convex/server";
-import { MousePointerClick, NotebookText } from "lucide-react";
+import { NotebookText } from "lucide-react";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import Badge from "~/components/ui/badge";
 import Link from "next/link";
