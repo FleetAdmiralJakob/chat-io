@@ -20,6 +20,10 @@ import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../../../convex/_generated/api";
 import { Form, FormControl, FormField } from "~/components/ui/form";
 import { useRef } from "react";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+
+dayjs.extend(relativeTime);
 
 const textMessageSchema = z.object({
   message: z.string().min(1).max(4000),
@@ -96,8 +100,10 @@ export default function Page({ params }: { params: { chatId: string } }) {
                 ? messages.map((message) => {
                     return (
                       <>
-                        {message.from.username}
-                        {message.content} <br /> <br />
+                        <span className="pr-7">{message.from.username}</span>
+                        <span className="pr-7">{message.content}</span>
+                        {dayjs(message._creationTime).fromNow()}
+                        <br /> <br />
                       </>
                     );
                   })
