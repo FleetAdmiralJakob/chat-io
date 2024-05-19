@@ -12,6 +12,8 @@ import { Input } from "~/components/ui/input";
 import { BiSolidPhoneCall } from "react-icons/bi";
 import Badge from "~/components/ui/badge";
 import { z } from "zod";
+import React from "react";
+import { useMediaQuery } from "react-responsive";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "convex/react";
@@ -34,6 +36,11 @@ export default function Page({ params }: { params: { chatId: string } }) {
 
   const otherUser = "Chat.io";
 
+  const now = new Date();
+  const hours = now.getHours().toString().padStart(2, "0");
+  const minutes = now.getMinutes().toString().padStart(2, "0");
+  const isLgOrLarger = useMediaQuery({ query: "(max-width: 1023px)" });
+
   const textMessageForm = useForm<z.infer<typeof textMessageSchema>>({
     resolver: zodResolver(textMessageSchema),
     defaultValues: {
@@ -53,14 +60,16 @@ export default function Page({ params }: { params: { chatId: string } }) {
           className="w-full flex-grow"
           direction="horizontal"
         >
-          <ResizablePanel
-            className="w-full"
-            defaultSize={50}
-            minSize={30}
-            maxSize={70}
-          >
-            <ChatsWithSearch classNameChat="justify-center" />
-          </ResizablePanel>
+          {!isLgOrLarger ? (
+            <ResizablePanel
+              className="w-full"
+              defaultSize={50}
+              minSize={30}
+              maxSize={70}
+            >
+              <ChatsWithSearch classNameChat="justify-center" />
+            </ResizablePanel>
+          ) : null}
           <ResizableHandle />
           <ResizablePanel
             defaultSize={50}
