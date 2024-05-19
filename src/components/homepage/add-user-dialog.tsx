@@ -27,6 +27,12 @@ import { useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { useState } from "react";
 import { ConvexError } from "convex/values";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "~/components/ui/tooltip";
 
 export const formSchema = z.object({
   username: z
@@ -101,16 +107,25 @@ export function AddUserDialog({
       open={dialogOpen}
       onOpenChange={() => setDialogOpen((prevState) => !prevState)}
     >
-      <DialogTrigger asChild>
-        <button
-          className={cn(
-            "inline-flex aspect-square w-10 items-center justify-center rounded-full bg-background",
-            classNameDialogTrigger,
-          )}
-        >
-          <UserRoundPlus className="w-full" />
-        </button>
-      </DialogTrigger>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <DialogTrigger asChild>
+              <button
+                className={cn(
+                  "inline-flex aspect-square w-10 items-center justify-center rounded-full bg-background",
+                  classNameDialogTrigger,
+                )}
+              >
+                <UserRoundPlus className="w-full" />
+              </button>
+            </DialogTrigger>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Add contact</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
       <DialogContent className="sm:max-w-[425px]">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
