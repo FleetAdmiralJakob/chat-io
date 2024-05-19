@@ -35,10 +35,6 @@ export default function Page({ params }: { params: { chatId: string } }) {
   const formRef = useRef<HTMLFormElement | null>(null);
 
   const otherUser = "Chat.io";
-
-  const now = new Date();
-  const hours = now.getHours().toString().padStart(2, "0");
-  const minutes = now.getMinutes().toString().padStart(2, "0");
   const isLgOrLarger = useMediaQuery({ query: "(max-width: 1023px)" });
 
   const textMessageForm = useForm<z.infer<typeof textMessageSchema>>({
