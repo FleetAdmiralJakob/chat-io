@@ -24,6 +24,7 @@ import { useRef } from "react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { cn } from "~/lib/utils";
+import { useUser } from "@clerk/nextjs";
 
 dayjs.extend(relativeTime);
 
@@ -32,6 +33,7 @@ const textMessageSchema = z.object({
 });
 
 export default function Page({ params }: { params: { chatId: string } }) {
+  const clerkUser = useUser();
   const sendMessage = useMutation(api.messages.createMessage);
   const messages = useQuery(api.messages.getMessages, {
     chatId: params.chatId,
@@ -112,7 +114,16 @@ export default function Page({ params }: { params: { chatId: string } }) {
                 ? messages.map((message) => {
                     return (
                       <>
-                        <div className="my-4 flex w-full justify-center lg:justify-start">
+                        <div
+                          className={cn(
+                            "my-4 flex w-full justify-center lg:justify-start lg:pl-10",
+                            {
+                              "lg:justify-end lg:pl-0 lg:pr-10":
+                                clerkUser.user?.username ==
+                                message.from.username,
+                            },
+                          )}
+                        >
                           <div className="flex w-11/12 flex-col rounded-2xl border-2 border-secondary-foreground bg-secondary p-4 lg:w-2/3">
                             <div className="flex w-full justify-between">
                               <div>
@@ -120,8 +131,14 @@ export default function Page({ params }: { params: { chatId: string } }) {
                                   {message.from.username}
                                 </span>
                               </div>
-                              <span>
-                                {dayjs(message._creationTime).fromNow()}
+                              <span className="flex text-secondary-foreground">
+                                {dayjs(message._creationTime).hour()}:
+                                {dayjs(message._creationTime).minute() > 10 ? (
+                                  <div></div>
+                                ) : (
+                                  <div>0</div>
+                                )}
+                                {dayjs(message._creationTime).minute()}
                               </span>
                             </div>
                             <div className="mt-4">
