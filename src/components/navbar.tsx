@@ -13,6 +13,7 @@ import { usePathname } from "next/navigation";
 const Navbar = () => {
   const [isIOS, setIsIOS] = useState(false);
   const pathname = usePathname();
+  const isChatPath = pathname.startsWith("/chats/");
 
   useEffect(() => {
     setIsIOS(/iPad|iPhone|iPod/.test(navigator.userAgent));
@@ -23,6 +24,7 @@ const Navbar = () => {
       className={cn(
         "fixed bottom-0 flex h-24 w-full items-center justify-around bg-primary text-2xl text-secondary-foreground lg:h-full lg:w-24 lg:flex-col lg:border-r-2 lg:border-gray-950",
         { "pb-3": isIOS },
+        { "hidden lg:flex": isChatPath },
       )}
     >
       <Link className={"flex flex-col items-center"} href={"/"}>
