@@ -23,8 +23,6 @@ export const createChat = mutation({
       );
     }
 
-    console.log(user2);
-
     if (!user2) {
       throw new ConvexError(
         "Mismatch between Clerk and Convex. This is an error by us.",
@@ -107,5 +105,37 @@ export const getChats = query({
         ...chat,
         users: await chat.edge("users"),
       }));
+  },
+});
+
+export const getChatInfoFromId = query({
+  args: { chatId: v.string() },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (identity === null) {
+      return null;
+    }
+
+    const parsedChatId = ctx.table("privateChats").normalizeId(args.chatId);
+
+    if (!parsedChatId) {
+      throw new ConvexError("chatId was invalid");
+    }
+
+    const chat = await ctx.table("privateChats").get(parsedChatId);
+
+    if (chat === null) {
+      throw new ConvexError("did not find chat");
+    }
+
+    const chatWithUser = {
+      basicChatInfo: chat,
+      otherUser: (await chat.edge("users")).filter(
+        (user) => user.clerkId !== identity.tokenIdentifier,
+      ),
+    };
+
+    return chatWithUser;
   },
 });

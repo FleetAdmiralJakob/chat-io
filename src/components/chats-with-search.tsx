@@ -1,8 +1,8 @@
 "use client";
 
-import { AddUserDialog } from "~/components/homepage/add-user-dialog";
+import { AddUserDialog } from "~/components/add-user-dialog";
 import { SignOutButton, useUser } from "@clerk/nextjs";
-import Chats from "~/components/homepage/chat-overview";
+import Chats from "~/components/chat-overview";
 
 const ChatsWithSearch = ({ classNameChat }: { classNameChat?: string }) => {
   const { user } = useUser();

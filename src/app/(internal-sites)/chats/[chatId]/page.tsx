@@ -28,6 +28,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { cn } from "~/lib/utils";
 import { useUser } from "@clerk/nextjs";
 import { Skeleton } from "~/components/ui/skeleton";
+import { NotebookText } from "lucide-react";
 
 dayjs.extend(relativeTime);
 
@@ -49,9 +50,12 @@ export default function Page({ params }: { params: { chatId: string } }) {
     chatId: params.chatId,
   });
 
+  const chatInfo = useQuery(api.chats.getChatInfoFromId, {
+    chatId: params.chatId,
+  });
+
   const formRef = useRef<HTMLFormElement | null>(null);
 
-  const otherUser = "Chat.io";
   const isLgOrLarger = useMediaQuery({ query: "(max-width: 1023px)" });
   const is2xlOrmore = useMediaQuery({ query: "(max-width: 1537px)" });
   const maxSize = is2xlOrmore ? 50 : 60;
@@ -127,14 +131,28 @@ export default function Page({ params }: { params: { chatId: string } }) {
             <div className="flex h-20 w-full items-center justify-between bg-primary py-6">
               <div className="ml-3 flex w-3/12 items-center justify-around 2xl:ml-16">
                 <div className="mr-2.5 rounded-full bg-black p-4 px-6 pt-4 text-xl lg:text-2xl">
-                  {otherUser.charAt(0).toUpperCase()}
+                  {chatInfo?.basicChatInfo.support ? (
+                    "C"
+                  ) : chatInfo?.otherUser[0] ? (
+                    chatInfo.otherUser[0].username.slice(0, 2).toUpperCase()
+                  ) : (
+                    <NotebookText />
+                  )}
                 </div>
                 <div className="flex">
                   <p className="mx-2.5 text-xl font-bold lg:text-2xl">
-                    {otherUser}
+                    {chatInfo?.basicChatInfo.support
+                      ? "Chat.io"
+                      : chatInfo?.otherUser[0]
+                        ? chatInfo.otherUser[0].username
+                        : "My Notes"}
                   </p>
                   <div className="mt-0.5">
-                    <Badge>Support</Badge>
+                    {chatInfo?.basicChatInfo.support ? (
+                      <Badge>Support</Badge>
+                    ) : !chatInfo?.otherUser[0] ? (
+                      <Badge>Tool</Badge>
+                    ) : null}
                   </div>
                 </div>
               </div>

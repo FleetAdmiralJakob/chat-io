@@ -24,7 +24,7 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { useMutation } from "convex/react";
-import { api } from "../../../convex/_generated/api";
+import { api } from "../../convex/_generated/api";
 import { useState } from "react";
 import { ConvexError } from "convex/values";
 import {

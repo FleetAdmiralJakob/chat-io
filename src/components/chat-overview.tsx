@@ -2,12 +2,12 @@
 
 import { Input } from "~/components/ui/input";
 import { useQuery } from "convex/react";
-import { api } from "../../../convex/_generated/api";
+import { api } from "../../convex/_generated/api";
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import { type FunctionReturnType } from "convex/server";
 import { NotebookText } from "lucide-react";
-import { Avatar, AvatarFallback } from "../ui/avatar";
+import { Avatar, AvatarFallback } from "./ui/avatar";
 import Badge from "~/components/ui/badge";
 import Link from "next/link";
 import { cn } from "~/lib/utils";
@@ -65,21 +65,20 @@ const Chats: React.FC<{ classNameChat?: string }> = ({ classNameChat }) => {
           {searchedChats?.map((chat, index) => {
             if (chat.support) {
               return (
-                <>
-                  <div
-                    key={index}
-                    className={cn(
-                      "flex w-full items-center justify-start gap-3 border-t-2 border-input py-6 pl-11 lg:mr-16 lg:border-0",
-                      classNameChat,
-                    )}
-                  >
-                    <Avatar className="text-white">
-                      <AvatarFallback>C</AvatarFallback>
-                    </Avatar>
-                    <p className="text-xl font-bold">Chat.io</p>
-                    <Badge>Support</Badge>
-                  </div>
-                </>
+                <Link
+                  key={index}
+                  className={cn(
+                    "flex w-full items-center justify-start gap-3 border-t-2 border-input py-6 pl-11 lg:mr-16 lg:border-0",
+                    classNameChat,
+                  )}
+                  href={`/chats/${chat._id}`}
+                >
+                  <Avatar className="text-white">
+                    <AvatarFallback>C</AvatarFallback>
+                  </Avatar>
+                  <p className="text-xl font-bold">Chat.io</p>
+                  <Badge>Support</Badge>
+                </Link>
               );
             }
             chat.users = chat.users.filter(
