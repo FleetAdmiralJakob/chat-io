@@ -5,6 +5,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "~/components/ui/resize";
+import { Avatar, AvatarFallback } from "~/components/ui/avatar";
 import ChatsWithSearch from "~/components/chats-with-search";
 import { IoMdVideocam } from "react-icons/io";
 import { TiMicrophone } from "react-icons/ti";
@@ -21,10 +22,12 @@ import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../../../convex/_generated/api";
 import { Form, FormControl, FormField } from "~/components/ui/form";
 import { useRef } from "react";
+import { Progress } from "~/components/ui/progress";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { cn } from "~/lib/utils";
 import { useUser } from "@clerk/nextjs";
+import { Skeleton } from "~/components/ui/skeleton";
 
 dayjs.extend(relativeTime);
 
@@ -33,6 +36,13 @@ const textMessageSchema = z.object({
 });
 
 export default function Page({ params }: { params: { chatId: string } }) {
+  const [progress, setProgress] = React.useState(13);
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => setProgress(66), 500);
+    return () => clearTimeout(timer);
+  }, []);
+
   const clerkUser = useUser();
   const sendMessage = useMutation(api.messages.createMessage);
   const messages = useQuery(api.messages.getMessages, {
@@ -53,6 +63,30 @@ export default function Page({ params }: { params: { chatId: string } }) {
       message: "",
     },
   });
+
+  const SkeletonMessage = () => {
+    return (
+      <div>
+        <div className="mt-5 flex items-center space-x-4 lg:ml-11">
+          <Skeleton className="h-12 w-12 rounded-full" />
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-[250px]" />
+            <Skeleton className="h-4 w-[200px]" />
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const SkeletonMessages = ({ count }: { count: number }) => {
+    return (
+      <div>
+        {Array.from({ length: count }).map((_, index) => (
+          <SkeletonMessage key={index} />
+        ))}
+      </div>
+    );
+  };
 
   const [inputValue, setInputValue] = useState("");
 
@@ -110,21 +144,26 @@ export default function Page({ params }: { params: { chatId: string } }) {
               </div>
             </div>
             <div className="flex-grow overflow-x-auto">
-              {messages
-                ? messages.map((message) => {
-                    return (
-                      <>
-                        <div
-                          className={cn(
-                            "my-4 flex w-full justify-center lg:justify-start lg:pl-10",
-                            {
-                              "lg:justify-end lg:pl-0 lg:pr-10":
-                                clerkUser.user?.username ==
-                                message.from.username,
-                            },
-                          )}
-                        >
-                          <div className="flex w-11/12 flex-col rounded-2xl border-2 border-secondary-foreground bg-secondary p-4 lg:w-2/3">
+              {messages ? (
+                messages.map((message) => {
+                  return (
+                    <>
+                      <div
+                        className={cn(
+                          "my-4 flex w-full justify-center lg:justify-start lg:pl-10",
+                          {
+                            "lg:justify-end lg:pl-0 lg:pr-10":
+                              clerkUser.user?.username == message.from.username,
+                          },
+                        )}
+                      >
+                        <div className="flex w-11/12 rounded-2xl border-2 border-secondary-foreground bg-secondary p-4 lg:w-2/3">
+                          <Avatar className="text-white">
+                            <AvatarFallback>
+                              {message.from.username.charAt(0).toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="ml-3 flex w-full flex-col">
                             <div className="flex w-full justify-between">
                               <div>
                                 <span className="pr-7 font-bold">
@@ -141,15 +180,24 @@ export default function Page({ params }: { params: { chatId: string } }) {
                                 {dayjs(message._creationTime).minute()}
                               </span>
                             </div>
-                            <div className="mt-4">
+                            <div className="mt-1">
                               <p>{message.content}</p>
                             </div>
                           </div>
                         </div>
-                      </>
-                    );
-                  })
-                : "Loading..."}
+                      </div>
+                    </>
+                  );
+                })
+              ) : isLgOrLarger ? (
+                <div className="flex justify-center">
+                  <SkeletonMessages count={7} />
+                </div>
+              ) : (
+                <div className="flex h-full w-full items-center justify-center">
+                  <Progress value={progress} className="w-[60%]" />
+                </div>
+              )}
             </div>
             <div className="flex h-28 w-full items-center justify-start bg-primary p-4 pb-10 lg:h-24 lg:pb-4">
               <div className="flex w-full justify-between">
@@ -199,7 +247,7 @@ export default function Page({ params }: { params: { chatId: string } }) {
                       onTextMessageFormSubmit,
                     )}
                     {...textMessageForm}
-                    className="mx-4 h-8 w-8 cursor-pointer rounded-full bg-accent p-1 lg:h-14 lg:w-14 lg:p-3"
+                    className="mx-4 h-8 w-8 cursor-pointer rounded-full bg-accent p-1 lg:hidden lg:h-14 lg:w-14 lg:p-3"
                   />
                 </div>
               </div>
