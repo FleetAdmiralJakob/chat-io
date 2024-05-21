@@ -33,7 +33,6 @@
     "@serwist/sw": "9.0.2",
     "@t3-oss/env-nextjs": "^0.10.1",
     "add": "^2.0.6",
-    "avatar": "^0.1.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
