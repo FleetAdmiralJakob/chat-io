@@ -129,18 +129,20 @@ export default function Page({ params }: { params: { chatId: string } }) {
             className="flex flex-col"
           >
             <div className="flex h-20 w-full items-center justify-between bg-primary py-6">
-              <div className="ml-3 flex w-3/12 items-center justify-around 2xl:ml-16">
-                <div className="mr-2.5 rounded-full bg-black p-4 px-6 pt-4 text-xl lg:text-2xl">
-                  {chatInfo?.basicChatInfo.support ? (
-                    "C"
-                  ) : chatInfo?.otherUser[0] ? (
-                    chatInfo.otherUser[0].username.slice(0, 2).toUpperCase()
-                  ) : (
-                    <NotebookText />
-                  )}
-                </div>
+              <div className="ml-3 flex w-full items-center justify-center lg:justify-start 2xl:ml-16">
+                <Avatar className="mr-4 text-white">
+                  <AvatarFallback>
+                    {chatInfo?.basicChatInfo.support ? (
+                      "C"
+                    ) : chatInfo?.otherUser[0] ? (
+                      chatInfo.otherUser[0].username.slice(0, 2).toUpperCase()
+                    ) : (
+                      <NotebookText />
+                    )}
+                  </AvatarFallback>
+                </Avatar>
                 <div className="flex">
-                  <p className="mx-2.5 text-xl font-bold lg:text-2xl">
+                  <p className="mx-2.5 mt-1 whitespace-nowrap text-lg font-bold lg:text-2xl">
                     {chatInfo?.basicChatInfo.support
                       ? "Chat.io"
                       : chatInfo?.otherUser[0]
@@ -156,7 +158,11 @@ export default function Page({ params }: { params: { chatId: string } }) {
                   </div>
                 </div>
               </div>
-              <div className="mr-3 flex text-xl 2xl:mr-16">
+              <div
+                className={cn("mr-3 flex text-xl 2xl:mr-16", {
+                  hidden: chatInfo?.basicChatInfo.support,
+                })}
+              >
                 <BiSolidPhoneCall className="mr-4 h-8 w-8 cursor-pointer rounded-full bg-secondary p-1 lg:mr-14 lg:h-12 lg:w-12 lg:p-2.5" />
                 <IoMdVideocam className="h-8 w-8 cursor-pointer rounded-full bg-secondary p-1.5 lg:h-12 lg:w-12 lg:p-2.5" />
               </div>
