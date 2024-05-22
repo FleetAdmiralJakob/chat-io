@@ -27,8 +27,8 @@ export const formSchema = z.object({
     .min(7, {
       message: "Username must be at least 7 characters.",
     })
-    .max(20, {
-      message: "Username must be at most 20 characters.",
+    .max(15, {
+      message: "Username must be at most 15 characters.",
     })
     .regex(new RegExp(/^[a-z]+$/), {
       message: "Username must be all lowercase",
