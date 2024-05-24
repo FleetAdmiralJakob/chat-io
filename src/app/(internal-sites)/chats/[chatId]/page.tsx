@@ -15,6 +15,7 @@ import Badge from "~/components/ui/badge";
 import { SendHorizontal } from "lucide-react";
 import { Plus } from "lucide-react";
 import { z } from "zod";
+import { Ban } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import { Controller, useForm } from "react-hook-form";
@@ -60,6 +61,9 @@ export default function Page({ params }: { params: { chatId: string } }) {
   const formRef = useRef<HTMLFormElement | null>(null);
 
   const isLgOrLarger = useMediaQuery({ query: "(max-width: 1023px)" });
+  const isScreenWidthLessThan1200 = useMediaQuery({
+    query: "(max-width: 1200px)",
+  });
   const is2xlOrmore = useMediaQuery({ query: "(max-width: 1537px)" });
   const maxSize = is2xlOrmore ? 50 : 60;
   const minSize = is2xlOrmore ? 45 : 30;
@@ -96,15 +100,27 @@ export default function Page({ params }: { params: { chatId: string } }) {
   };
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [scrollPosition, setScrollPosition] = useState(0);
 
-  const scrollToBottom = () => {
+  const handleScroll = () => {
     if (messagesEndRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = messagesEndRef.current;
+      const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+      setScrollPosition(distanceFromBottom);
+      console.log("Distance from bottom:", distanceFromBottom);
+    }
+  };
+
+  const scrollToBottom = (messageUser: boolean) => {
+    if (messagesEndRef.current && messageUser) {
+      messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
+    } else if (messagesEndRef.current && scrollPosition < 100) {
       messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
     }
   };
 
   useEffect(() => {
-    scrollToBottom();
+    scrollToBottom(false);
   }, [messages]);
 
   const [inputValue, setInputValue] = useState("");
@@ -117,8 +133,14 @@ export default function Page({ params }: { params: { chatId: string } }) {
     sendMessage({ content: values.message, chatId: params.chatId });
     textMessageForm.reset();
     setInputValue("");
-    scrollToBottom();
+    scrollToBottom(true);
   }
+
+  const [menuActive, setMenuActive] = useState(false);
+
+  const menuClick = () => {
+    setMenuActive(!menuActive);
+  };
 
   return (
     <>
@@ -171,7 +193,11 @@ export default function Page({ params }: { params: { chatId: string } }) {
                       {chatInfo?.basicChatInfo.support
                         ? "Chat.io"
                         : chatInfo?.otherUser[0]
-                          ? chatInfo.otherUser[0].username
+                          ? chatInfo.otherUser[0].username.length > 13 &&
+                            !isScreenWidthLessThan1200
+                            ? chatInfo.otherUser[0].username
+                            : chatInfo.otherUser[0].username.slice(0, 13) +
+                              "..."
                           : "My Notes"}
                     </p>
                     <div className="ml-2.5 text-sm text-secondary-foreground">
@@ -204,7 +230,11 @@ export default function Page({ params }: { params: { chatId: string } }) {
                 </div>
               </div>
             </div>
-            <div className="flex-grow overflow-x-auto" ref={messagesEndRef}>
+            <div
+              className="flex-grow overflow-x-auto"
+              onScroll={handleScroll}
+              ref={messagesEndRef}
+            >
               {messages ? (
                 messages.map((message) => {
                   return (
@@ -213,24 +243,44 @@ export default function Page({ params }: { params: { chatId: string } }) {
                         {message.from.username == clerkUser.user?.username ? (
                           <div className="my-1 mr-4 flex w-full flex-col items-end">
                             <div className="max-w-[66.6667%] rounded-sm bg-accent p-3">
-                              {message.content}
+                              {message.deleted ? (
+                                <div className="flex font-medium">
+                                  <Ban />
+                                  <p className="ml-2.5">
+                                    This message was deleted
+                                  </p>
+                                </div>
+                              ) : (
+                                message.content
+                              )}
                             </div>
                             <div className="mr-2 text-[75%] font-bold text-secondary-foreground">
                               Read
                             </div>
-                            <button
-                              onMouseDown={() => {
-                                deleteMessage({ messageId: message._id });
-                                console.log("hi");
-                              }}
-                            >
-                              Delete
-                            </button>
+                            {!message.deleted ? (
+                              <button
+                                onMouseDown={() => {
+                                  deleteMessage({ messageId: message._id });
+                                  console.log("hi");
+                                }}
+                              >
+                                Delete
+                              </button>
+                            ) : null}
                           </div>
                         ) : (
                           <div className="my-1 ml-4 flex w-full justify-start">
                             <div className="max-w-[66.6667%] rounded-sm bg-secondary p-3">
-                              {message.content}
+                              {message.deleted ? (
+                                <div className="flex font-medium">
+                                  <Ban />
+                                  <p className="ml-2.5">
+                                    This message was deleted
+                                  </p>
+                                </div>
+                              ) : (
+                                message.content
+                              )}
                             </div>
                           </div>
                         )}
@@ -306,12 +356,14 @@ export default function Page({ params }: { params: { chatId: string } }) {
                       "mx-4 h-11 w-11 cursor-pointer rounded-sm border-2 border-secondary-foreground bg-primary p-2 lg:h-14 lg:w-14 lg:p-3",
                       { "hidden lg:flex": inputValue != "" },
                     )}
+                    onClick={menuClick}
                   />
                 </div>
               </div>
             </div>
           </ResizablePanel>
         </ResizablePanelGroup>
+        {menuActive && isLgOrLarger ? <div>Test</div> : null}
       </div>
     </>
   );

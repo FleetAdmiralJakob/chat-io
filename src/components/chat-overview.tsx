@@ -4,6 +4,7 @@ import { Input } from "~/components/ui/input";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { useUser } from "@clerk/nextjs";
+import { useMediaQuery } from "react-responsive";
 import { useEffect, useState } from "react";
 import { type FunctionReturnType } from "convex/server";
 import { NotebookText } from "lucide-react";
@@ -17,6 +18,7 @@ type Chats = FunctionReturnType<typeof api.chats.getChats>;
 const Chats: React.FC<{ classNameChat?: string }> = ({ classNameChat }) => {
   const chats = useQuery(api.chats.getChats);
   const clerkUser = useUser();
+  const isLgOrLarger = useMediaQuery({ query: "(max-width: 1023px)" });
   const [searchTerm, setSearchTerm] = useState("");
   const [searchedChats, setSearchedChats] = useState<Chats | null | undefined>(
     chats,
@@ -105,7 +107,15 @@ const Chats: React.FC<{ classNameChat?: string }> = ({ classNameChat }) => {
                 </Avatar>
                 <p className=" text-xl font-bold">
                   {chat.users[0] ? (
-                    chat.users[0].username
+                    chat.users[0].username.length > 14 && isLgOrLarger ? (
+                      <p className="whitespace-nowrap">
+                        {chat.users[0].username.slice(0, 14)}...
+                      </p>
+                    ) : (
+                      <p className="whitespace-nowrap">
+                        {chat.users[0].username}
+                      </p>
+                    )
                   ) : (
                     <p className="flex">
                       <p className="whitespace-nowrap">My Notes</p>
