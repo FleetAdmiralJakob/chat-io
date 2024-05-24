@@ -47,10 +47,12 @@ export const createMessage = mutation({
       );
     }
 
+    if (args.content.trim() === "") throw new Error("Post cannot be empty");
+
     await ctx.table("messages").insert({
       userId: convexUser._id,
       privateChatId: parsedChatId,
-      content: args.content,
+      content: args.content.trim(),
     });
   },
 });
