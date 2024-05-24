@@ -10,7 +10,8 @@ export default {
   "extends": [
     "next/core-web-vitals",
     "plugin:@typescript-eslint/recommended-type-checked",
-    "plugin:@typescript-eslint/stylistic-type-checked"
+    "plugin:@typescript-eslint/stylistic-type-checked",
+    "plugin:react-hooks/recommended"
   ],
   "rules": {
     "@typescript-eslint/array-type": "off",
