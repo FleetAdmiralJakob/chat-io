@@ -48,6 +48,7 @@ export default function Page({ params }: { params: { chatId: string } }) {
 
   const clerkUser = useUser();
   const sendMessage = useMutation(api.messages.createMessage);
+  const deleteMessage = useMutation(api.messages.deleteMessage);
   const messages = useQuery(api.messages.getMessages, {
     chatId: params.chatId,
   });
@@ -217,6 +218,14 @@ export default function Page({ params }: { params: { chatId: string } }) {
                             <div className="mr-2 text-[75%] font-bold text-secondary-foreground">
                               Read
                             </div>
+                            <button
+                              onMouseDown={() => {
+                                deleteMessage({ messageId: message._id });
+                                console.log("hi");
+                              }}
+                            >
+                              Delete
+                            </button>
                           </div>
                         ) : (
                           <div className="my-1 ml-4 flex w-full justify-start">

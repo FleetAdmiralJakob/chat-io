@@ -15,6 +15,7 @@ const schema = defineEntSchema({
     .edges("messages", { ref: true }),
   messages: defineEnt({})
     .field("content", v.string())
+    .field("deleted", v.boolean(), { default: false })
     .edge("privateChat")
     .edge("user"),
 });

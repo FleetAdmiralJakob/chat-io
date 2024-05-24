@@ -53,6 +53,27 @@ export const createMessage = mutation({
       userId: convexUser._id,
       privateChatId: parsedChatId,
       content: args.content.trim(),
+      deleted: false,
+    });
+  },
+});
+
+export const deleteMessage = mutation({
+  args: { messageId: v.string() },
+  handler: async (ctx, args) => {
+    const parsedMessageId = ctx.table("messages").normalizeId(args.messageId);
+
+    if (!parsedMessageId) {
+      throw new ConvexError("chatId was invalid");
+    }
+
+    console.log(args.messageId);
+
+    await (
+      await ctx.table("messages").getX(parsedMessageId)
+    ).patch({
+      content: "",
+      deleted: true,
     });
   },
 });
