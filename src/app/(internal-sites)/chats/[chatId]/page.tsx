@@ -96,34 +96,11 @@ export default function Page({ params }: { params: { chatId: string } }) {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const [scrollPosition, setScrollPosition] = useState(0);
-
   const scrollToBottom = () => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
     }
   };
-
-  const handleScroll = () => {
-    if (messagesEndRef.current) {
-      const { scrollTop, scrollHeight, clientHeight } = messagesEndRef.current;
-      const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
-      setScrollPosition(distanceFromBottom);
-    }
-  };
-
-  useEffect(() => {
-    const scrollContainer = messagesEndRef.current;
-    if (scrollContainer) {
-      scrollContainer.addEventListener("scroll", handleScroll);
-    }
-    // Clean up the event listener on component unmount
-    return () => {
-      if (scrollContainer) {
-        scrollContainer.removeEventListener("scroll", handleScroll);
-      }
-    };
-  }, []);
 
   useEffect(() => {
     scrollToBottom();
@@ -144,9 +121,6 @@ export default function Page({ params }: { params: { chatId: string } }) {
 
   return (
     <>
-      <div className={cn("absolute hidden", { flex: scrollPosition > 70 })}>
-        Test
-      </div>
       <div className="flex h-screen flex-col">
         <ResizablePanelGroup
           className="w-full flex-grow"
