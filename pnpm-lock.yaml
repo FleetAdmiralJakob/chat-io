@@ -165,6 +165,9 @@ importers:
       eslint-config-next:
         specifier: ^14.2.3
         version: 14.2.3(eslint@9.3.0)(typescript@5.4.5)
+      eslint-plugin-react-hooks:
+        specifier: ^4.6.2
+        version: 4.6.2(eslint@9.3.0)
       postcss:
         specifier: ^8.4.38
         version: 8.4.38
