@@ -7,14 +7,15 @@ import {
 } from "~/components/ui/resize";
 import { Avatar, AvatarFallback } from "~/components/ui/avatar";
 import ChatsWithSearch from "~/components/chats-with-search";
-import { IoMdVideocam } from "react-icons/io";
-import { TiMicrophone } from "react-icons/ti";
+import { Video } from "lucide-react";
+import { Mic } from "lucide-react";
 import { Input } from "~/components/ui/input";
-import { BiSolidPhoneCall } from "react-icons/bi";
+import { Phone } from "lucide-react";
 import Badge from "~/components/ui/badge";
-import { LuSendHorizonal } from "react-icons/lu";
+import { SendHorizontal } from "lucide-react";
+import { Plus } from "lucide-react";
 import { z } from "zod";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,6 +26,7 @@ import { useRef } from "react";
 import { Progress } from "~/components/ui/progress";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { ChevronLeft } from "lucide-react";
 import { cn } from "~/lib/utils";
 import { useUser } from "@clerk/nextjs";
 import { Skeleton } from "~/components/ui/skeleton";
@@ -92,6 +94,41 @@ export default function Page({ params }: { params: { chatId: string } }) {
     );
   };
 
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const [scrollPosition, setScrollPosition] = useState(0);
+
+  const scrollToBottom = () => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
+    }
+  };
+
+  const handleScroll = () => {
+    if (messagesEndRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = messagesEndRef.current;
+      const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+      setScrollPosition(distanceFromBottom);
+    }
+  };
+
+  useEffect(() => {
+    const scrollContainer = messagesEndRef.current;
+    if (scrollContainer) {
+      scrollContainer.addEventListener("scroll", handleScroll);
+    }
+    // Clean up the event listener on component unmount
+    return () => {
+      if (scrollContainer) {
+        scrollContainer.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
   const [inputValue, setInputValue] = useState("");
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -102,10 +139,14 @@ export default function Page({ params }: { params: { chatId: string } }) {
     sendMessage({ content: values.message, chatId: params.chatId });
     textMessageForm.reset();
     setInputValue("");
+    scrollToBottom();
   }
 
   return (
     <>
+      <div className={cn("absolute hidden", { flex: scrollPosition > 70 })}>
+        Test
+      </div>
       <div className="flex h-screen flex-col">
         <ResizablePanelGroup
           className="w-full flex-grow"
@@ -129,8 +170,16 @@ export default function Page({ params }: { params: { chatId: string } }) {
             className="flex flex-col"
           >
             <div className="flex h-20 w-full items-center justify-between bg-primary py-6">
-              <div className="ml-3 flex w-full items-center justify-center lg:justify-start 2xl:ml-16">
-                <Avatar className="mr-4 text-white">
+              <div className="text-lg lg:hidden">
+                <ChevronLeft
+                  className="ml-2 mr-1"
+                  onClick={() => {
+                    window.history.back();
+                  }}
+                />
+              </div>
+              <div className="ml-1 flex w-full items-center justify-start  2xl:ml-16">
+                <Avatar className="mr-0.5 text-sm text-white">
                   <AvatarFallback>
                     {chatInfo?.basicChatInfo.support ? (
                       "C"
@@ -142,13 +191,18 @@ export default function Page({ params }: { params: { chatId: string } }) {
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex">
-                  <p className="mx-2.5 mt-1 whitespace-nowrap text-lg font-bold lg:text-2xl">
-                    {chatInfo?.basicChatInfo.support
-                      ? "Chat.io"
-                      : chatInfo?.otherUser[0]
-                        ? chatInfo.otherUser[0].username
-                        : "My Notes"}
-                  </p>
+                  <div>
+                    <p className="mx-2.5 mt-1 whitespace-nowrap text-sm font-bold lg:text-lg">
+                      {chatInfo?.basicChatInfo.support
+                        ? "Chat.io"
+                        : chatInfo?.otherUser[0]
+                          ? chatInfo.otherUser[0].username
+                          : "My Notes"}
+                    </p>
+                    <div className="ml-2.5 text-sm text-secondary-foreground">
+                      Offline
+                    </div>
+                  </div>
                   <div className="mt-0.5">
                     {chatInfo?.basicChatInfo.support ? (
                       <Badge>Support</Badge>
@@ -159,56 +213,44 @@ export default function Page({ params }: { params: { chatId: string } }) {
                 </div>
               </div>
               <div
-                className={cn("mr-3 flex text-xl 2xl:mr-16", {
-                  hidden: chatInfo?.basicChatInfo.support,
-                })}
+                className={cn(
+                  "mr-1 flex cursor-pointer rounded-sm border-secondary-foreground px-2 text-sm lg:border-2 lg:bg-primary 2xl:mr-16",
+                  {
+                    hidden: chatInfo?.basicChatInfo.support,
+                  },
+                )}
               >
-                <BiSolidPhoneCall className="mr-4 h-8 w-8 cursor-pointer rounded-full bg-secondary p-1 lg:mr-14 lg:h-12 lg:w-12 lg:p-2.5" />
-                <IoMdVideocam className="h-8 w-8 cursor-pointer rounded-full bg-secondary p-1.5 lg:h-12 lg:w-12 lg:p-2.5" />
+                <div className="h-10 rounded-sm border-2 border-secondary-foreground lg:h-12 lg:rounded-none lg:border-0 lg:border-r-2">
+                  <Phone className="mx-1.5 mt-1.5 lg:mx-0 lg:ml-2 lg:mr-4 lg:mt-3" />
+                </div>
+
+                <div className="ml-3 h-10 rounded-sm border-2 border-secondary-foreground lg:ml-0 lg:h-12 lg:border-0">
+                  <Video className="mx-1.5 mt-1.5 lg:mx-0 lg:ml-4 lg:mr-2 lg:mt-3" />
+                </div>
               </div>
             </div>
-            <div className="flex-grow overflow-x-auto">
+            <div className="flex-grow overflow-x-auto" ref={messagesEndRef}>
               {messages ? (
                 messages.map((message) => {
                   return (
                     <>
-                      <div
-                        className={cn(
-                          "my-4 flex w-full justify-center lg:justify-start lg:pl-10",
-                          {
-                            "lg:justify-end lg:pl-0 lg:pr-10":
-                              clerkUser.user?.username == message.from.username,
-                          },
-                        )}
-                      >
-                        <div className="flex w-11/12 rounded-2xl border-2 border-secondary-foreground bg-secondary p-4 lg:w-2/3">
-                          <Avatar className="text-white">
-                            <AvatarFallback>
-                              {message.from.username.charAt(0).toUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="ml-3 flex w-full flex-col">
-                            <div className="flex w-full justify-between">
-                              <div>
-                                <span className="pr-7 font-bold">
-                                  {message.from.username}
-                                </span>
-                              </div>
-                              <span className="flex text-secondary-foreground">
-                                {dayjs(message._creationTime).hour()}:
-                                {dayjs(message._creationTime).minute() > 10 ? (
-                                  <div></div>
-                                ) : (
-                                  <div>0</div>
-                                )}
-                                {dayjs(message._creationTime).minute()}
-                              </span>
+                      <div className="flex">
+                        {message.from.username == clerkUser.user?.username ? (
+                          <div className="my-1 mr-4 flex w-full flex-col items-end">
+                            <div className="max-w-[66.6667%] rounded-sm bg-accent p-3">
+                              {message.content}
                             </div>
-                            <div className="mt-1">
-                              <p>{message.content}</p>
+                            <div className="mr-2 text-[75%] font-bold text-secondary-foreground">
+                              Read
                             </div>
                           </div>
-                        </div>
+                        ) : (
+                          <div className="my-1 ml-4 flex w-full justify-start">
+                            <div className="max-w-[66.6667%] rounded-sm bg-secondary p-3">
+                              {message.content}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </>
                   );
@@ -243,7 +285,7 @@ export default function Page({ params }: { params: { chatId: string } }) {
                             control={textMessageForm.control}
                             render={({ field }) => (
                               <Input
-                                className="text ml-4 h-11 w-10/12 rounded-2xl bg-secondary p-2 lg:h-16"
+                                className="ml-4 h-11 w-10/12 rounded-2xl border-2 border-secondary-foreground bg-secondary p-2 lg:h-16"
                                 placeholder="Message ..."
                                 value={inputValue}
                                 onChange={(e) => {
@@ -260,18 +302,27 @@ export default function Page({ params }: { params: { chatId: string } }) {
                   </form>
                 </Form>
                 <div className="flex items-center">
-                  <TiMicrophone
+                  <Mic
                     className={cn(
-                      "mx-4 h-8 w-8 cursor-pointer rounded-full bg-accent p-1 lg:h-14 lg:w-14 lg:p-3",
+                      "mx-4 h-11 w-11 cursor-pointer rounded-sm border-2 border-secondary-foreground bg-primary p-2 lg:h-14 lg:w-14 lg:p-3",
                       { "hidden lg:flex": inputValue != "" },
                     )}
                   />
-                  <LuSendHorizonal
+                  <SendHorizontal
                     onClick={textMessageForm.handleSubmit(
                       onTextMessageFormSubmit,
                     )}
                     {...textMessageForm}
-                    className="mx-4 h-8 w-8 cursor-pointer rounded-full bg-accent p-1 lg:hidden lg:h-14 lg:w-14 lg:p-3"
+                    className={cn(
+                      "mx-4 h-11 w-11 cursor-pointer rounded-sm border-2 border-secondary-foreground bg-primary p-2 lg:hidden lg:h-14 lg:w-14 lg:p-3",
+                      { hidden: inputValue == "" },
+                    )}
+                  />
+                  <Plus
+                    className={cn(
+                      "mx-4 h-11 w-11 cursor-pointer rounded-sm border-2 border-secondary-foreground bg-primary p-2 lg:h-14 lg:w-14 lg:p-3",
+                      { "hidden lg:flex": inputValue != "" },
+                    )}
                   />
                 </div>
               </div>

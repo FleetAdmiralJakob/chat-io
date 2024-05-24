@@ -14,6 +14,10 @@ const Avatar = React.forwardRef<
     className={cn(
       "relative flex h-14 w-14 shrink-0 overflow-hidden rounded-full",
       className,
+      {
+        "h-11 w-11 lg:h-14 lg:w-14":
+          window.location.pathname.startsWith("/chats/"),
+      },
     )}
     {...props}
   />
