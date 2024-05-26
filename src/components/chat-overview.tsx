@@ -105,17 +105,11 @@ const Chats: React.FC<{ classNameChat?: string }> = ({ classNameChat }) => {
                     )}
                   </AvatarFallback>
                 </Avatar>
-                <p className=" text-xl font-bold">
+                <p className="overflow-hidden text-xl font-bold">
                   {chat.users[0] ? (
-                    chat.users[0].username.length > 14 && isLgOrLarger ? (
-                      <p className="whitespace-nowrap">
-                        {chat.users[0].username.slice(0, 14)}...
-                      </p>
-                    ) : (
-                      <p className="whitespace-nowrap">
-                        {chat.users[0].username}
-                      </p>
-                    )
+                    <p className="truncate whitespace-nowrap">
+                      {chat.users[0].username}
+                    </p>
                   ) : (
                     <p className="flex">
                       <p className="whitespace-nowrap">My Notes</p>

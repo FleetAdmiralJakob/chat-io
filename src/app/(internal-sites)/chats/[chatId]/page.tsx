@@ -32,6 +32,7 @@ import { cn } from "~/lib/utils";
 import { useUser } from "@clerk/nextjs";
 import { Skeleton } from "~/components/ui/skeleton";
 import { NotebookText } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 dayjs.extend(relativeTime);
 
@@ -41,6 +42,8 @@ const textMessageSchema = z.object({
 
 export default function Page({ params }: { params: { chatId: string } }) {
   const [progress, setProgress] = React.useState(13);
+
+  const router = useRouter();
 
   React.useEffect(() => {
     const timer = setTimeout(() => setProgress(66), 500);
@@ -171,7 +174,7 @@ export default function Page({ params }: { params: { chatId: string } }) {
                 <ChevronLeft
                   className="ml-2 mr-1"
                   onClick={() => {
-                    window.history.back();
+                    router.back();
                   }}
                 />
               </div>
