@@ -8,6 +8,7 @@ import { IoChevronBackSharp } from "react-icons/io5";
 import { FaLinkedin } from "react-icons/fa";
 import Image from "next/image";
 import { cn } from "~/lib/utils";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FaLink } from "react-icons/fa6";
 import { FaGithub } from "react-icons/fa";
@@ -58,6 +59,8 @@ const ContributorList: ContributorsProps[] = [
 ];
 
 const Contributors = () => {
+  const router = useRouter();
+
   return (
     <>
       <div className="flex min-h-screen flex-col">
@@ -65,7 +68,7 @@ const Contributors = () => {
           <div className="mb-5 mt-6 flex text-3xl lg:text-4xl">
             <IoChevronBackSharp
               onClick={() => {
-                window.history.back();
+                router.back();
               }}
               className="absolute left-4 top-6 cursor-pointer text-3xl "
             />
@@ -124,7 +127,7 @@ const Contributors = () => {
                       })}
                       onClick={() => {
                         if (contributor.website) {
-                          window.location.href = contributor.website;
+                          router.push(contributor.website);
                         }
                       }}
                     >
@@ -135,7 +138,7 @@ const Contributors = () => {
                       className={cn("hidden", { flex: contributor.linkedin })}
                       onClick={() => {
                         if (contributor.linkedin) {
-                          window.location.href = contributor.linkedin;
+                          router.push(contributor.linkedin);
                         }
                       }}
                     >
@@ -148,7 +151,7 @@ const Contributors = () => {
                       className={cn("hidden", { flex: contributor.github })}
                       onClick={() => {
                         if (contributor.github) {
-                          window.location.href = contributor.github;
+                          router.push(contributor.github);
                         }
                       }}
                     >

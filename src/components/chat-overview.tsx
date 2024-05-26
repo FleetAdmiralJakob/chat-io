@@ -50,7 +50,6 @@ const Chats: React.FC<{ classNameChat?: string }> = ({ classNameChat }) => {
           : false;
     });
 
-    console.log(filteredChats);
     setSearchedChats(filteredChats);
   }, [searchTerm, chats, clerkUser.user?.id]);
 

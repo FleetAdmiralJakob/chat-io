@@ -110,7 +110,6 @@ export default function Page({ params }: { params: { chatId: string } }) {
       const { scrollTop, scrollHeight, clientHeight } = messagesEndRef.current;
       const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
       setScrollPosition(distanceFromBottom);
-      console.log("Distance from bottom:", distanceFromBottom);
     }
   };
 
@@ -264,7 +263,6 @@ export default function Page({ params }: { params: { chatId: string } }) {
                               <button
                                 onMouseDown={() => {
                                   deleteMessage({ messageId: message._id });
-                                  console.log("hi");
                                 }}
                               >
                                 Delete
