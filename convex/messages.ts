@@ -67,8 +67,6 @@ export const deleteMessage = mutation({
       throw new ConvexError("chatId was invalid");
     }
 
-    console.log(args.messageId);
-
     await (
       await ctx.table("messages").getX(parsedMessageId)
     ).patch({

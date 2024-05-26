@@ -62,7 +62,10 @@ export const initialConvexSetup = mutation({
     }
 
     if (!identity.nickname) {
-      console.log(identity);
+      console.error(
+        "Username is not defined. This is likely an error by us",
+        identity,
+      );
       throw new ConvexError(
         "Username is not defined. This is likely an error by us.",
       );

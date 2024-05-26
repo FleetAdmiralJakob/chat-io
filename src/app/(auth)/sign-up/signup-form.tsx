@@ -142,14 +142,14 @@ export function SignUpForm() {
                 <FormControl>
                   <Input
                     placeholder="exampleuser"
-                    maxLength={20}
+                    maxLength={15}
                     {...field}
                     onChange={(e) =>
                       field.onChange(
                         e.target.value
                           .toLowerCase()
                           .replace(" ", "")
-                          .substring(0, 20),
+                          .substring(0, 15),
                       )
                     }
                   />
