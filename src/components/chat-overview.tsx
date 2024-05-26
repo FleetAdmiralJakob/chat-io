@@ -106,7 +106,7 @@ const Chats: React.FC<{ classNameChat?: string }> = ({ classNameChat }) => {
                 </Avatar>
                 <p className="overflow-hidden text-xl font-bold">
                   {chat.users[0] ? (
-                    <p className="truncate whitespace-nowrap">
+                    <p className="text-clip whitespace-nowrap">
                       {chat.users[0].username}
                     </p>
                   ) : (

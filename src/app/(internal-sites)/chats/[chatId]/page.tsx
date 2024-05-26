@@ -177,7 +177,7 @@ export default function Page({ params }: { params: { chatId: string } }) {
                   }}
                 />
               </div>
-              <div className="ml-1 flex w-full items-center justify-start  2xl:ml-16">
+              <div className="ml-1 flex w-full items-center justify-start truncate 2xl:ml-16">
                 <Avatar className="mr-0.5 text-sm text-white">
                   <AvatarFallback>
                     {chatInfo?.basicChatInfo.support ? (
@@ -195,11 +195,7 @@ export default function Page({ params }: { params: { chatId: string } }) {
                       {chatInfo?.basicChatInfo.support
                         ? "Chat.io"
                         : chatInfo?.otherUser[0]
-                          ? chatInfo.otherUser[0].username.length > 13 &&
-                            !isScreenWidthLessThan1200
-                            ? chatInfo.otherUser[0].username
-                            : chatInfo.otherUser[0].username.slice(0, 13) +
-                              "..."
+                          ? chatInfo.otherUser[0].username
                           : "My Notes"}
                     </p>
                     <div className="ml-2.5 text-sm text-secondary-foreground">
