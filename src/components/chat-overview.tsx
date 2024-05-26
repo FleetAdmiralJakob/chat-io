@@ -15,7 +15,10 @@ import { cn } from "~/lib/utils";
 
 type Chats = FunctionReturnType<typeof api.chats.getChats>;
 
-const Chats: React.FC<{ classNameChat?: string }> = ({ classNameChat }) => {
+const Chats: React.FC<{
+  classNameChat?: string;
+  classNameChatList?: string;
+}> = ({ classNameChat, classNameChatList }) => {
   const chats = useQuery(api.chats.getChats);
   const clerkUser = useUser();
   const isLgOrLarger = useMediaQuery({ query: "(max-width: 1023px)" });
@@ -59,17 +62,22 @@ const Chats: React.FC<{ classNameChat?: string }> = ({ classNameChat }) => {
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         placeholder="Search ..."
-        className="w-3/4 min-w-72 lg:w-1/2 xl:w-1/3"
+        className={cn("w-3/4 min-w-72 lg:w-1/2 xl:w-1/3", classNameChatList)}
       />
       <div className="flex w-full justify-center">
-        <div className="mt-20 flex w-full flex-col items-center lg:w-1/3">
+        <div
+          className={cn(
+            "mt-20 flex w-full flex-col items-center truncate lg:w-1/2 xl:w-1/3",
+            classNameChatList,
+          )}
+        >
           {searchedChats?.map((chat, index) => {
             if (chat.support) {
               return (
                 <Link
                   key={index}
                   className={cn(
-                    "flex w-full items-center justify-start gap-3 border-t-2 border-input py-6 pl-11 lg:mr-16 lg:border-0",
+                    "flex w-full items-center justify-start gap-3 truncate border-t-2 border-input px-11 py-6 lg:border-0 lg:px-0",
                     classNameChat,
                   )}
                   href={`/chats/${chat._id}`}
@@ -77,7 +85,9 @@ const Chats: React.FC<{ classNameChat?: string }> = ({ classNameChat }) => {
                   <Avatar className="text-white">
                     <AvatarFallback>C</AvatarFallback>
                   </Avatar>
-                  <p className="text-xl font-bold">Chat.io</p>
+                  <div className="truncate text-xl font-bold">
+                    <p className="truncate whitespace-nowrap">Chat.io</p>
+                  </div>
                   <Badge>Support</Badge>
                 </Link>
               );
@@ -90,7 +100,7 @@ const Chats: React.FC<{ classNameChat?: string }> = ({ classNameChat }) => {
               <Link
                 key={index}
                 className={cn(
-                  "flex w-full items-center justify-start gap-3 border-t-2 border-input py-6 pl-11 lg:mr-16 lg:border-0",
+                  "flex w-full items-center justify-start gap-3 truncate border-t-2 border-input px-11 py-6 lg:border-0 lg:px-0",
                   classNameChat,
                 )}
                 href={`/chats/${chat._id}`}
@@ -104,18 +114,18 @@ const Chats: React.FC<{ classNameChat?: string }> = ({ classNameChat }) => {
                     )}
                   </AvatarFallback>
                 </Avatar>
-                <p className="overflow-hidden text-xl font-bold">
+                <div className="truncate text-xl font-bold">
                   {chat.users[0] ? (
-                    <p className="text-clip whitespace-nowrap">
+                    <p className="truncate whitespace-nowrap">
                       {chat.users[0].username}
                     </p>
                   ) : (
                     <p className="flex">
-                      <p className="whitespace-nowrap">My Notes</p>
+                      <p className="truncate whitespace-nowrap">My Notes</p>
                       <Badge>Tool</Badge>
                     </p>
                   )}
-                </p>
+                </div>
               </Link>
             );
           })}

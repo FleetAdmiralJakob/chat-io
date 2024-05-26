@@ -4,7 +4,13 @@ import { AddUserDialog } from "~/components/add-user-dialog";
 import { SignOutButton, useUser } from "@clerk/nextjs";
 import Chats from "~/components/chat-overview";
 
-const ChatsWithSearch = ({ classNameChat }: { classNameChat?: string }) => {
+const ChatsWithSearch = ({
+  classNameChat,
+  classNameChatList,
+}: {
+  classNameChat?: string;
+  classNameChatList?: string;
+}) => {
   const { user } = useUser();
 
   return (
@@ -19,7 +25,10 @@ const ChatsWithSearch = ({ classNameChat }: { classNameChat?: string }) => {
         <SignOutButton />
       </p>{" "}
       <br />
-      <Chats classNameChat={classNameChat} />
+      <Chats
+        classNameChat={classNameChat}
+        classNameChatList={classNameChatList}
+      />
     </div>
   );
 };

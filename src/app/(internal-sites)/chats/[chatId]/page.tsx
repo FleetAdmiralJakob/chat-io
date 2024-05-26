@@ -158,7 +158,10 @@ export default function Page({ params }: { params: { chatId: string } }) {
               minSize={minSize}
               maxSize={maxSize}
             >
-              <ChatsWithSearch classNameChat="justify-center" />
+              <ChatsWithSearch
+                classNameChat="justify-center"
+                classNameChatList="xl:w-1/2"
+              />
             </ResizablePanel>
           ) : null}
           <ResizableHandle />
@@ -177,7 +180,7 @@ export default function Page({ params }: { params: { chatId: string } }) {
                   }}
                 />
               </div>
-              <div className="ml-1 flex w-full items-center justify-start truncate 2xl:ml-16">
+              <div className="ml-1 flex w-full items-center justify-start overflow-hidden 2xl:ml-16">
                 <Avatar className="mr-0.5 text-sm text-white">
                   <AvatarFallback>
                     {chatInfo?.basicChatInfo.support ? (
@@ -189,9 +192,9 @@ export default function Page({ params }: { params: { chatId: string } }) {
                     )}
                   </AvatarFallback>
                 </Avatar>
-                <div className="flex">
-                  <div>
-                    <p className="mx-2.5 mt-1 whitespace-nowrap text-sm font-bold lg:text-lg">
+                <div className="flex truncate">
+                  <div className="truncate">
+                    <p className="mx-2.5 mt-1 truncate text-sm font-bold lg:text-lg">
                       {chatInfo?.basicChatInfo.support
                         ? "Chat.io"
                         : chatInfo?.otherUser[0]
