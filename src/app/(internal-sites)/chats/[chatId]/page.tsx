@@ -240,7 +240,7 @@ export default function Page({ params }: { params: { chatId: string } }) {
                       <div className="flex">
                         {message.from.username == clerkUser.user?.username ? (
                           <div className="my-1 mr-4 flex w-full flex-col items-end">
-                            <div className="max-w-[66.6667%] rounded-sm bg-accent p-3">
+                            <div className="max-w-[66.6667%] break-words rounded-sm bg-accent p-3">
                               {message.deleted ? (
                                 <div className="flex font-medium">
                                   <Ban />
