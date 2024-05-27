@@ -63,10 +63,6 @@ export default function Page({ params }: { params: { chatId: string } }) {
 
   const formRef = useRef<HTMLFormElement | null>(null);
 
-  const isLgOrLarger = useMediaQuery({ query: "(max-width: 1023px)" });
-  const isScreenWidthLessThan1200 = useMediaQuery({
-    query: "(max-width: 1200px)",
-  });
   const is2xlOrmore = useMediaQuery({ query: "(max-width: 1537px)" });
   const maxSize = is2xlOrmore ? 50 : 60;
   const minSize = is2xlOrmore ? 45 : 30;
@@ -151,16 +147,14 @@ export default function Page({ params }: { params: { chatId: string } }) {
           className="w-full flex-grow"
           direction="horizontal"
         >
-          {!isLgOrLarger ? (
-            <ResizablePanel
-              className="w-full"
-              defaultSize={50}
-              minSize={minSize}
-              maxSize={maxSize}
-            >
-              <ChatsWithSearch classNameChatList="xl:w-1/2" />
-            </ResizablePanel>
-          ) : null}
+          <ResizablePanel
+            className="hidden w-full lg:block"
+            defaultSize={50}
+            minSize={minSize}
+            maxSize={maxSize}
+          >
+            <ChatsWithSearch classNameChatList="xl:w-1/2" />
+          </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel
             defaultSize={50}
@@ -285,17 +279,18 @@ export default function Page({ params }: { params: { chatId: string } }) {
                     </>
                   );
                 })
-              ) : isLgOrLarger ? (
-                <div className="flex justify-center">
-                  <SkeletonMessages count={7} />
-                </div>
               ) : (
-                <div className="flex h-full w-full items-center justify-center">
-                  <Progress value={progress} className="w-[60%]" />
-                </div>
+                <>
+                  <div className="flex justify-center lg:hidden">
+                    <SkeletonMessages count={7} />
+                  </div>
+                  <div className="hidden h-full w-full items-center justify-center lg:flex">
+                    <Progress value={progress} className="w-[60%]" />
+                  </div>
+                </>
               )}
             </div>
-            <div className="flex h-28 w-full items-center justify-start bg-primary p-4 pb-10 lg:h-24 lg:pb-4">
+            <div className="fixed bottom-0 flex h-28 w-full items-center justify-start bg-primary p-4 pb-10 lg:h-24 lg:pb-4">
               <div className="flex w-full justify-between">
                 <Form {...textMessageForm}>
                   <form
