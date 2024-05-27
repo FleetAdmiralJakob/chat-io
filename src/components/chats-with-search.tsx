@@ -5,10 +5,8 @@ import { SignOutButton, useUser } from "@clerk/nextjs";
 import Chats from "~/components/chat-overview";
 
 const ChatsWithSearch = ({
-  classNameChat,
   classNameChatList,
 }: {
-  classNameChat?: string;
   classNameChatList?: string;
 }) => {
   const { user } = useUser();
@@ -25,10 +23,7 @@ const ChatsWithSearch = ({
         <SignOutButton />
       </p>{" "}
       <br />
-      <Chats
-        classNameChat={classNameChat}
-        classNameChatList={classNameChatList}
-      />
+      <Chats classNameChatList={classNameChatList} />
     </div>
   );
 };

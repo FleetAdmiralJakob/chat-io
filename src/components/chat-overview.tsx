@@ -16,9 +16,8 @@ import { cn } from "~/lib/utils";
 type Chats = FunctionReturnType<typeof api.chats.getChats>;
 
 const Chats: React.FC<{
-  classNameChat?: string;
   classNameChatList?: string;
-}> = ({ classNameChat, classNameChatList }) => {
+}> = ({ classNameChatList }) => {
   const chats = useQuery(api.chats.getChats);
   const clerkUser = useUser();
   const isLgOrLarger = useMediaQuery({ query: "(max-width: 1023px)" });

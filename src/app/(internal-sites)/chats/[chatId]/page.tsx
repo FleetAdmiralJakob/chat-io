@@ -158,10 +158,7 @@ export default function Page({ params }: { params: { chatId: string } }) {
               minSize={minSize}
               maxSize={maxSize}
             >
-              <ChatsWithSearch
-                classNameChat="justify-center"
-                classNameChatList="xl:w-1/2"
-              />
+              <ChatsWithSearch classNameChatList="xl:w-1/2" />
             </ResizablePanel>
           ) : null}
           <ResizableHandle />
