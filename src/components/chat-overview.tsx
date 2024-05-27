@@ -78,7 +78,6 @@ const Chats: React.FC<{
                   key={index}
                   className={cn(
                     "flex w-full items-center justify-start gap-3 truncate border-t-2 border-input px-11 py-6 lg:border-0 lg:px-0",
-                    classNameChat,
                   )}
                   href={`/chats/${chat._id}`}
                 >
@@ -101,7 +100,6 @@ const Chats: React.FC<{
                 key={index}
                 className={cn(
                   "flex w-full items-center justify-start gap-3 truncate border-t-2 border-input px-11 py-6 lg:border-0 lg:px-0",
-                  classNameChat,
                 )}
                 href={`/chats/${chat._id}`}
               >

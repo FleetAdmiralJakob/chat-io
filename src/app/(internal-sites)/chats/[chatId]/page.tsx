@@ -363,7 +363,6 @@ export default function Page({ params }: { params: { chatId: string } }) {
             </div>
           </ResizablePanel>
         </ResizablePanelGroup>
-        {menuActive && isLgOrLarger ? <div>Test</div> : null}
       </div>
     </>
   );
