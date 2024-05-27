@@ -306,7 +306,7 @@ export default function Page({ params }: { params: { chatId: string } }) {
                 </>
               )}
             </div>
-            <div className="fixed bottom-0 flex h-28 w-full items-center justify-start bg-primary p-4 pb-10 lg:h-24 lg:pb-4">
+            <div className="flex h-28 w-full items-center justify-start bg-primary p-4 pb-10 lg:h-24 lg:pb-4">
               <div className="flex w-full justify-between">
                 <Form {...textMessageForm}>
                   <form
