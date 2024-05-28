@@ -8,9 +8,9 @@ import {
   mutation as baseMutation,
   internalQuery as baseInternalQuery,
   internalMutation as baseInternalMutation,
-} from "./_generated/server";
+} from "../_generated/server";
 import { entsTableFactory } from "convex-ents";
-import { entDefinitions } from "./schema";
+import { entDefinitions } from "../schema";
 
 export const query = customQuery(
   baseQuery,

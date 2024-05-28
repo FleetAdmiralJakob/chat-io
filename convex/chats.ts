@@ -1,4 +1,4 @@
-import { mutation, query } from "./functions";
+import { mutation, query } from "./lib/functions";
 import { ConvexError, v } from "convex/values";
 
 export const createChat = mutation({
@@ -23,8 +23,6 @@ export const createChat = mutation({
       );
     }
 
-    console.log(user2);
-
     if (!user2) {
       throw new ConvexError(
         "Mismatch between Clerk and Convex. This is an error by us.",
@@ -36,7 +34,7 @@ export const createChat = mutation({
     const chatsFromTheUser = await ctx
       .table("users")
       .getX("clerkId", identity.tokenIdentifier)
-      .edge("chats")
+      .edge("privateChats")
       .map(async (chat) => ({
         ...chat,
         users: await chat.edge("users"),
@@ -64,7 +62,10 @@ export const initialConvexSetup = mutation({
     }
 
     if (!identity.nickname) {
-      console.log(identity);
+      console.error(
+        "Username is not defined. This is likely an error by us",
+        identity,
+      );
       throw new ConvexError(
         "Username is not defined. This is likely an error by us.",
       );
@@ -102,10 +103,42 @@ export const getChats = query({
     return await ctx
       .table("users")
       .getX("clerkId", identity.tokenIdentifier)
-      .edge("chats")
+      .edge("privateChats")
       .map(async (chat) => ({
         ...chat,
         users: await chat.edge("users"),
       }));
+  },
+});
+
+export const getChatInfoFromId = query({
+  args: { chatId: v.string() },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (identity === null) {
+      return null;
+    }
+
+    const parsedChatId = ctx.table("privateChats").normalizeId(args.chatId);
+
+    if (!parsedChatId) {
+      throw new ConvexError("chatId was invalid");
+    }
+
+    const chat = await ctx.table("privateChats").get(parsedChatId);
+
+    if (chat === null) {
+      throw new ConvexError("did not find chat");
+    }
+
+    const chatWithUser = {
+      basicChatInfo: chat,
+      otherUser: (await chat.edge("users")).filter(
+        (user) => user.clerkId !== identity.tokenIdentifier,
+      ),
+    };
+
+    return chatWithUser;
   },
 });

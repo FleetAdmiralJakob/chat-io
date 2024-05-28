@@ -24,7 +24,7 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { useMutation } from "convex/react";
-import { api } from "../../../convex/_generated/api";
+import { api } from "../../convex/_generated/api";
 import { useState } from "react";
 import { ConvexError } from "convex/values";
 import {
@@ -40,11 +40,12 @@ export const formSchema = z.object({
     .min(7, {
       message: "Username must be at least 7 characters.",
     })
-    .max(20, {
+    .max(15, {
       message: "Username must be at most 20 characters.",
     })
     .regex(new RegExp(/^[a-z]+$/), {
-      message: "Username must be all lowercase",
+      message:
+        "Username must be all lowercase. Without numbers or special characters.",
     }),
   usernameId: z
     .string()
@@ -152,7 +153,7 @@ export function AddUserDialog({
                             e.target.value
                               .toLowerCase()
                               .replace(" ", "")
-                              .substring(0, 20),
+                              .substring(0, 15),
                           )
                         }
                       />

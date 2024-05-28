@@ -2,19 +2,25 @@
 
 import { Input } from "~/components/ui/input";
 import { useQuery } from "convex/react";
-import { api } from "../../../convex/_generated/api";
+import { api } from "../../convex/_generated/api";
 import { useUser } from "@clerk/nextjs";
+import { useMediaQuery } from "react-responsive";
 import { useEffect, useState } from "react";
 import { type FunctionReturnType } from "convex/server";
-import { MousePointerClick, NotebookText } from "lucide-react";
-import { Avatar, AvatarFallback } from "../ui/avatar";
+import { NotebookText } from "lucide-react";
+import { Avatar, AvatarFallback } from "./ui/avatar";
 import Badge from "~/components/ui/badge";
+import Link from "next/link";
+import { cn } from "~/lib/utils";
 
 type Chats = FunctionReturnType<typeof api.chats.getChats>;
 
-const Chats: React.FC = () => {
+const Chats: React.FC<{
+  classNameChatList?: string;
+}> = ({ classNameChatList }) => {
   const chats = useQuery(api.chats.getChats);
   const clerkUser = useUser();
+  const isLgOrLarger = useMediaQuery({ query: "(max-width: 1023px)" });
   const [searchTerm, setSearchTerm] = useState("");
   const [searchedChats, setSearchedChats] = useState<Chats | null | undefined>(
     chats,
@@ -46,7 +52,6 @@ const Chats: React.FC = () => {
           : false;
     });
 
-    console.log(filteredChats);
     setSearchedChats(filteredChats);
   }, [searchTerm, chats, clerkUser.user?.id]);
 
@@ -56,29 +61,33 @@ const Chats: React.FC = () => {
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         placeholder="Search ..."
-        className="w-3/4 lg:w-1/2 xl:w-1/3"
+        className={cn("w-3/4 min-w-72 lg:w-1/2 xl:w-1/3", classNameChatList)}
       />
       <div className="flex w-full justify-center">
-        <div className="mt-20 flex w-full flex-col items-center lg:w-1/3">
+        <div
+          className={cn(
+            "mt-20 flex w-full flex-col items-center truncate lg:w-1/2 xl:w-1/3",
+            classNameChatList,
+          )}
+        >
           {searchedChats?.map((chat, index) => {
             if (chat.support) {
               return (
-                <>
-                  <div
-                    key={index}
-                    className="flex w-full items-center justify-start gap-3 border-t-2 border-input py-6 pl-11 lg:mr-16 lg:border-0"
-                  >
-                    <Avatar className="text-white">
-                      <AvatarFallback>C</AvatarFallback>
-                    </Avatar>
-                    <p className="text-xl font-bold">Chat.io</p>
-                    <Badge>Support</Badge>
-                    <div className="absolute ml-60 mt-20">
-                      <MousePointerClick className="mb-1 ml-6 animate-pulse" />
-                      <p>Click here</p>
-                    </div>
+                <Link
+                  key={index}
+                  className={cn(
+                    "flex w-full items-center justify-start gap-3 truncate border-t-2 border-input px-11 py-6 lg:border-0 lg:px-0",
+                  )}
+                  href={`/chats/${chat._id}`}
+                >
+                  <Avatar className="text-white">
+                    <AvatarFallback>C</AvatarFallback>
+                  </Avatar>
+                  <div className="truncate text-xl font-bold">
+                    <p className="truncate whitespace-nowrap">Chat.io</p>
                   </div>
-                </>
+                  <Badge>Support</Badge>
+                </Link>
               );
             }
             chat.users = chat.users.filter(
@@ -86,9 +95,12 @@ const Chats: React.FC = () => {
             );
 
             return (
-              <div
+              <Link
                 key={index}
-                className="flex w-full items-center justify-start gap-3 border-t-2 border-input py-6 pl-11 lg:mr-16 lg:border-0"
+                className={cn(
+                  "flex w-full items-center justify-start gap-3 truncate border-t-2 border-input px-11 py-6 lg:border-0 lg:px-0",
+                )}
+                href={`/chats/${chat._id}`}
               >
                 <Avatar className="text-white">
                   <AvatarFallback>
@@ -99,17 +111,19 @@ const Chats: React.FC = () => {
                     )}
                   </AvatarFallback>
                 </Avatar>
-                <p className=" text-xl font-bold">
+                <div className="truncate text-xl font-bold">
                   {chat.users[0] ? (
-                    chat.users[0].username
+                    <p className="truncate whitespace-nowrap">
+                      {chat.users[0].username}
+                    </p>
                   ) : (
                     <p className="flex">
-                      <p>My Notes</p>
+                      <p className="truncate whitespace-nowrap">My Notes</p>
                       <Badge>Tool</Badge>
                     </p>
                   )}
-                </p>
-              </div>
+                </div>
+              </Link>
             );
           })}
         </div>
