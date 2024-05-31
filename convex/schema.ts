@@ -17,7 +17,7 @@ const schema = defineEntSchema({
     .edges("readMessages", {
       to: "messages",
       inverseField: "readBy",
-      table: "messages",
+      table: "readMessages",
     }),
 
   messages: defineEnt({})
@@ -28,7 +28,7 @@ const schema = defineEntSchema({
     .edges("readBy", {
       to: "users",
       inverseField: "readMessages",
-      table: "users",
+      table: "readMessages",
     }),
 });
 

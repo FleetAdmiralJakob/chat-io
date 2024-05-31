@@ -19,9 +19,11 @@ export const Message = ({
     threshold: 0.9,
   });
 
+  const markRead = useMutation(api.messages.markMessageRead);
+
   useEffect(() => {
     if (inView) {
-      // Convex Mutation
+      markRead({ messageId: message._id });
     }
   }, [inView, message._id]);
 
@@ -41,7 +43,10 @@ export const Message = ({
               )}
             </div>
             <div className="mr-2 text-[75%] font-bold text-secondary-foreground">
-              Read
+              Read by:{" "}
+              {message.readBy
+                ? message.readBy.map((user) => user.username)
+                : null}
             </div>
             {!message.deleted ? (
               <button

@@ -14,10 +14,11 @@ export const getMessages = query({
       .table("privateChats")
       .getX(parsedChatId)
       .edge("messages")
-      .map(async (chat) => ({
-        ...chat,
+      .map(async (message) => ({
+        ...message,
         userId: undefined,
-        from: await ctx.table("users").getX(chat.userId),
+        from: await ctx.table("users").getX(message.userId),
+        readBy: await message.edge("readBy"),
       }));
   },
 });
@@ -84,6 +85,24 @@ export const markMessageRead = mutation({
     if (identity === null) {
       return null;
     }
-    await ctx.table("messages").getX(args.messageId).patch({});
+
+    const convexUser = await ctx
+      .table("users")
+      .get("clerkId", identity.tokenIdentifier);
+
+    if (!convexUser?._id) {
+      throw new ConvexError(
+        "Mismatch between Clerk and Convex. This is an error by us.",
+      );
+    }
+
+    await ctx
+      .table("messages")
+      .getX(args.messageId)
+      .patch({
+        readBy: {
+          add: [convexUser._id],
+        },
+      });
   },
 });
