@@ -41,6 +41,30 @@ const textMessageSchema = z.object({
   message: z.string().min(1).max(4000),
 });
 
+const SkeletonMessage = () => {
+  return (
+    <div>
+      <div className="mt-5 flex items-center space-x-4 lg:ml-11">
+        <Skeleton className="h-12 w-12 rounded-full" />
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-[250px]" />
+          <Skeleton className="h-4 w-[200px]" />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const SkeletonMessages = ({ count }: { count: number }) => {
+  return (
+    <div>
+      {Array.from({ length: count }).map((_, index) => (
+        <SkeletonMessage key={index} />
+      ))}
+    </div>
+  );
+};
+
 export default function Page({ params }: { params: { chatId: string } }) {
   const [progress, setProgress] = React.useState(13);
 
@@ -72,30 +96,6 @@ export default function Page({ params }: { params: { chatId: string } }) {
       message: "",
     },
   });
-
-  const SkeletonMessage = () => {
-    return (
-      <div>
-        <div className="mt-5 flex items-center space-x-4 lg:ml-11">
-          <Skeleton className="h-12 w-12 rounded-full" />
-          <div className="space-y-2">
-            <Skeleton className="h-4 w-[250px]" />
-            <Skeleton className="h-4 w-[200px]" />
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  const SkeletonMessages = ({ count }: { count: number }) => {
-    return (
-      <div>
-        {Array.from({ length: count }).map((_, index) => (
-          <SkeletonMessage key={index} />
-        ))}
-      </div>
-    );
-  };
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [scrollPosition, setScrollPosition] = useState(0);
@@ -192,7 +192,7 @@ export default function Page({ params }: { params: { chatId: string } }) {
                 </Avatar>
                 <div className="flex truncate">
                   <div className="mx-2.5 flex flex-col gap-1 truncate">
-                    <div className=" truncate text-sm font-bold lg:text-lg">
+                    <div className="truncate text-sm font-bold lg:text-lg">
                       {chatInfo ? (
                         chatInfo.basicChatInfo.support ? (
                           "Chat.io"
@@ -251,7 +251,7 @@ export default function Page({ params }: { params: { chatId: string } }) {
               ) : (
                 <>
                   <div className="flex justify-center lg:hidden">
-                    <SkeletonMessages count={7} />
+                    <SkeletonMessages count={10} />
                   </div>
                   <div className="hidden h-full w-full items-center justify-center lg:flex">
                     <Progress value={progress} className="w-[60%]" />
