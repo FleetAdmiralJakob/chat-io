@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import Image from "next/image";
 import icon from "~/assets/chatio.png";
 import Link from "next/link";
@@ -9,6 +9,8 @@ import { FaCircleArrowDown, FaGithub } from "react-icons/fa6";
 import { IoCloudDownloadOutline } from "react-icons/io5";
 import { MdPrivacyTip } from "react-icons/md";
 import Footer from "~/components/footer";
+import { devMode$ } from "~/states";
+import { DevMode } from "~/components/dev-mode-info";
 
 export default function PublicHomepage() {
   const aboutRef = useRef<HTMLParagraphElement | null>(null);
@@ -17,17 +19,31 @@ export default function PublicHomepage() {
       aboutRef.current.scrollIntoView({ behavior: "smooth" });
     }
   };
+  const [devModeClick, setDevModeClick] = useState<number>(0);
 
   return (
     <>
       <main className="flex min-h-screen flex-col items-center text-foreground">
+        <DevMode>
+          <div onClick={() => devMode$.set(false)}>Disable dev mode</div>
+        </DevMode>
         <div
           className={
             "container flex min-h-screen flex-col items-center justify-center gap-12 py-14"
           }
         >
           <div className={"flex items-center justify-center"}>
-            <Image src={icon} alt="logo of Chat.io" className={"h-1/4 w-1/4"} />
+            <Image
+              src={icon}
+              alt="logo of Chat.io"
+              className={"h-1/4 w-1/4"}
+              onClick={() => {
+                setDevModeClick((prevState) => prevState + 1);
+                if (devModeClick >= 9) {
+                  devMode$.set(true);
+                }
+              }}
+            />
             <h2 className="mr-8 text-3xl font-bold tracking-tight text-foreground sm:text-[5rem]">
               Chat.io
             </h2>
