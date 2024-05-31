@@ -31,6 +31,8 @@ import { cn } from "~/lib/utils";
 import { Skeleton } from "~/components/ui/skeleton";
 import { NotebookText } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { DevMode } from "~/components/dev-mode-info";
+import { devMode$ } from "~/states";
 import { Message } from "~/components/message";
 
 dayjs.extend(relativeTime);
@@ -157,8 +159,12 @@ export default function Page({ params }: { params: { chatId: string } }) {
             defaultSize={50}
             minSize={30}
             maxSize={70}
-            className="flex flex-col"
+            className="relative flex flex-col"
           >
+            <DevMode className="top-20 z-10">
+              chatId: {params.chatId}
+              <div onClick={() => devMode$.set(false)}>Disable dev mode</div>
+            </DevMode>
             <div className="flex h-20 w-full items-center justify-between bg-primary py-6">
               <div className="text-lg lg:hidden">
                 <ChevronLeft
@@ -236,7 +242,7 @@ export default function Page({ params }: { params: { chatId: string } }) {
               </div>
             </div>
             <div
-              className="flex-grow overflow-x-auto"
+              className="relative flex-grow overflow-x-auto"
               onScroll={handleScroll}
               ref={messagesEndRef}
             >
