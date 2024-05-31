@@ -75,3 +75,15 @@ export const deleteMessage = mutation({
     });
   },
 });
+
+export const markMessageRead = mutation({
+  args: { messageId: v.id("messages") },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (identity === null) {
+      return null;
+    }
+    await ctx.table("messages").getX(args.messageId).patch({});
+  },
+});
