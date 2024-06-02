@@ -17,6 +17,8 @@
     "@clerk/backend": "^1.1.5",
     "@clerk/nextjs": "^5.0.3",
     "@clerk/shared": "^2.0.0",
+    "@floating-ui/react": "^0.26.16",
+    "@floating-ui/react-dom": "^2.1.0",
     "@hookform/resolvers": "^3.3.4",
     "@legendapp/state": "3.0.0-alpha.2",
     "@radix-ui/react-avatar": "^1.0.4",
@@ -55,6 +57,7 @@
     "react-intersection-observer": "^9.10.2",
     "react-resizable-panels": "^2.0.19",
     "react-responsive": "^10.0.0",
+    "react-toastify": "^10.0.5",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.23.5"

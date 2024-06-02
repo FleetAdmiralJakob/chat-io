@@ -40,9 +40,12 @@ dayjs.extend(relativeTime);
 const textMessageSchema = z.object({
   message: z.string().min(1).max(4000),
 });
-
 export default function Page({ params }: { params: { chatId: string } }) {
   const [progress, setProgress] = React.useState(13);
+
+  const [selectedMessageId, setSelectedMessageId] = useState<string | null>(
+    null,
+  );
 
   const router = useRouter();
 
@@ -52,6 +55,7 @@ export default function Page({ params }: { params: { chatId: string } }) {
   }, []);
 
   const sendMessage = useMutation(api.messages.createMessage);
+
   const messages = useQuery(api.messages.getMessages, {
     chatId: params.chatId,
   });
@@ -132,7 +136,6 @@ export default function Page({ params }: { params: { chatId: string } }) {
     setInputValue("");
     scrollToBottom(true);
   }
-
   const [menuActive, setMenuActive] = useState(false);
 
   const menuClick = () => {
@@ -247,7 +250,13 @@ export default function Page({ params }: { params: { chatId: string } }) {
               ref={messagesEndRef}
             >
               {messages ? (
-                messages.map((message) => <Message message={message} />)
+                messages.map((message) => (
+                  <Message
+                    selectedMessageId={selectedMessageId}
+                    setSelectedMessageId={setSelectedMessageId}
+                    message={message}
+                  />
+                ))
               ) : (
                 <>
                   <div className="flex justify-center lg:hidden">
