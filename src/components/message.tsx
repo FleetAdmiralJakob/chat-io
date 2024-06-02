@@ -10,6 +10,8 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { useFloating } from "@floating-ui/react";
 
+dayjs.extend(relativeTime);
+
 export const Message = ({
   message,
   selectedMessageId,
@@ -20,8 +22,9 @@ export const Message = ({
   setSelectedMessageId: React.Dispatch<React.SetStateAction<string | null>>;
 }) => {
   const clerkUser = useUser();
+
   const deleteMessage = useMutation(api.messages.deleteMessage);
-  dayjs.extend(relativeTime);
+
   const { ref, inView } = useInView({
     threshold: 0.9,
   });
