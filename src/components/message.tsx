@@ -9,6 +9,8 @@ import { cn } from "~/lib/utils";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { useFloating } from "@floating-ui/react";
+import { Toaster } from "~/components/ui/sonner";
+import { toast } from "sonner";
 
 dayjs.extend(relativeTime);
 
@@ -45,6 +47,8 @@ export const Message = ({
 
   return (
     <>
+      <Toaster />
+
       {isModalOpen && (
         <div
           onClick={() => setIsModalOpen(!isModalOpen)}
@@ -105,6 +109,7 @@ export const Message = ({
                     onClick={() => {
                       navigator.clipboard.writeText(message.content);
                       setIsModalOpen(!isModalOpen);
+                      toast.success("Copied to clipboard");
                     }}
                   >
                     <CopyCheck />
@@ -174,7 +179,14 @@ export const Message = ({
                 className="z-50 mt-4 rounded-sm border-2 border-secondary-foreground opacity-100"
               >
                 <div className="rounded-sm bg-secondary">
-                  <div className="flex cursor-pointer p-2">
+                  <div
+                    onClick={() => {
+                      navigator.clipboard.writeText(message.content);
+                      setIsModalOpen(!isModalOpen);
+                      toast.success("Copied to clipboard");
+                    }}
+                    className="flex cursor-pointer p-2"
+                  >
                     <CopyCheck />
                     <p className="ml-1">Copy</p>
                   </div>
