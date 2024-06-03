@@ -11,7 +11,8 @@
     "lint": "next lint",
     "start": "next start",
     "preinstall": "npx only-allow pnpm",
-    "convex:deploy": "convex deploy"
+    "convex:deploy": "convex deploy",
+    "create:vapid-keys": "tsx create-vapid-key-pair.ts"
   },
   "dependencies": {
     "@clerk/backend": "^1.2.1",
@@ -57,6 +58,7 @@
     "serwist": "^9.0.2",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
+    "web-push": "^3.6.7",
     "zod": "^3.23.8"
   },
   "devDependencies": {
@@ -65,6 +67,7 @@
     "@types/node": "^20.12.13",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
+    "@types/web-push": "^3.6.3",
     "@typescript-eslint/eslint-plugin": "^7.11.0",
     "@typescript-eslint/parser": "^7.11.0",
     "autoprefixer": "^10.4.19",
@@ -75,6 +78,7 @@
     "prettier": "^3.2.5",
     "prettier-plugin-tailwindcss": "^0.6.0",
     "tailwindcss": "^3.4.3",
+    "tsx": "^4.11.0",
     "typescript": "^5.4.5"
   },
   "ct3aMetadata": {

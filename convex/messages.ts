@@ -1,5 +1,6 @@
 import { mutation, query } from "./lib/functions";
 import { ConvexError, v } from "convex/values";
+import { internal } from "./_generated/api";
 
 export const getMessages = query({
   args: { chatId: v.string() },
@@ -49,12 +50,21 @@ export const createMessage = mutation({
 
     if (args.content.trim() === "") throw new Error("Post cannot be empty");
 
-    await ctx.table("messages").insert({
+    const messageId = await ctx.table("messages").insert({
       userId: convexUser._id,
       privateChatId: parsedChatId,
       content: args.content.trim(),
       deleted: false,
     });
+
+    await ctx.scheduler.runAt(
+      0,
+      internal.notificationsConvex.sendNotifications,
+      {
+        messageId,
+        chatId: parsedChatId,
+      },
+    );
   },
 });
 
