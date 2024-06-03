@@ -11,6 +11,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { useFloating } from "@floating-ui/react";
 import { Toaster } from "~/components/ui/sonner";
 import { toast } from "sonner";
+import { useMediaQuery } from "react-responsive";
 
 dayjs.extend(relativeTime);
 
@@ -25,11 +26,29 @@ export const Message = ({
 }) => {
   const clerkUser = useUser();
 
+  const isLarge = useMediaQuery({ query: "(min-width: 1024px)" });
   const deleteMessage = useMutation(api.messages.deleteMessage);
 
   const { ref, inView } = useInView({
     threshold: 0.9,
   });
+
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkIfMobile = () => {
+      const userAgent = navigator.userAgent || navigator.vendor;
+      if (/android/i.test(userAgent)) {
+        setIsMobile(true);
+      } else if (/iPad|iPhone|iPod/.test(userAgent)) {
+        setIsMobile(true);
+      } else {
+        setIsMobile(false);
+      }
+    };
+
+    checkIfMobile();
+  }, []);
 
   const [messageOwner, setMessageOwner] = useState<boolean | null>(null);
   const { refs, floatingStyles } = useFloating({
@@ -62,16 +81,25 @@ export const Message = ({
             className="my-1 mr-4 flex w-full flex-col items-end"
           >
             <div
+              onContextMenu={(e) => {
+                e.preventDefault();
+                if (message.deleted) return;
+                setIsModalOpen(!isModalOpen);
+                setSelectedMessageId(message._id);
+                setMessageOwner(true);
+              }}
               onClick={() => {
+                if (!isMobile) return;
                 if (message.deleted) return;
                 setIsModalOpen(!isModalOpen);
                 setSelectedMessageId(message._id);
                 setMessageOwner(true);
               }}
               className={cn(
-                "max-w-[66.6667%] cursor-pointer break-words rounded-sm bg-accent p-3",
+                "max-w-[66.6667%] cursor-default break-words rounded-sm bg-accent p-3",
                 {
                   "sticky z-50 opacity-100": message._id === selectedMessageId,
+                  "cursor-default": message.deleted,
                 },
               )}
             >
@@ -150,16 +178,25 @@ export const Message = ({
           <div className="my-1 ml-4 flex w-full justify-start">
             <div
               ref={refs.setReference}
+              onContextMenu={(e) => {
+                e.preventDefault();
+                if (message.deleted) return;
+                setIsModalOpen(!isModalOpen);
+                setSelectedMessageId(message._id);
+                setMessageOwner(false);
+              }}
               onClick={() => {
+                if (!isMobile) return;
                 if (message.deleted) return;
                 setIsModalOpen(!isModalOpen);
                 setSelectedMessageId(message._id);
                 setMessageOwner(false);
               }}
               className={cn(
-                "max-w-[66.6667%] cursor-pointer break-words rounded-sm bg-secondary p-3",
+                "max-w-[66.6667%] cursor-default break-words rounded-sm bg-secondary p-3",
                 {
                   "sticky z-50 opacity-100": message._id == selectedMessageId,
+                  "cursor-default": message.deleted,
                 },
               )}
             >
