@@ -4067,7 +4067,7 @@ snapshots:
 
   '@types/web-push@3.6.3':
     dependencies:
-      '@types/node': 20.13.0
+      '@types/node': 20.14.1
 
   '@typescript-eslint/eslint-plugin@7.12.0(@typescript-eslint/parser@7.12.0(eslint@9.3.0)(typescript@5.4.5))(eslint@9.3.0)(typescript@5.4.5)':
     dependencies:
