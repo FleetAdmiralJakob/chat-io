@@ -16,7 +16,7 @@ export const sendNotifications = internalMutation({
       const subscription = await user.edgeX("notificationSubscription");
 
       if (user._id !== message.userId) {
-        return ctx.scheduler.runAt(
+        return ctx.scheduler.runAfter(
           0,
           internal.notificationsNode.sendNotification,
           {

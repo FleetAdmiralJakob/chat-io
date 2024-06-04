@@ -58,7 +58,7 @@ export const createMessage = mutation({
       deleted: false,
     });
 
-    await ctx.scheduler.runAt(
+    await ctx.scheduler.runAfter(
       0,
       internal.notificationsConvex.sendNotifications,
       {
