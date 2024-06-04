@@ -15,7 +15,6 @@ import Badge from "~/components/ui/badge";
 import { SendHorizontal } from "lucide-react";
 import { Plus } from "lucide-react";
 import { z } from "zod";
-import { Ban } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import { Controller, useForm } from "react-hook-form";
@@ -29,12 +28,12 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { ChevronLeft } from "lucide-react";
 import { cn } from "~/lib/utils";
-import { useUser } from "@clerk/nextjs";
 import { Skeleton } from "~/components/ui/skeleton";
 import { NotebookText } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { DevMode } from "~/components/dev-mode-info";
 import { devMode$ } from "~/states";
+import { Message } from "~/components/message";
 
 dayjs.extend(relativeTime);
 
@@ -69,6 +68,10 @@ const SkeletonMessages = ({ count }: { count: number }) => {
 export default function Page({ params }: { params: { chatId: string } }) {
   const [progress, setProgress] = React.useState(13);
 
+  const [selectedMessageId, setSelectedMessageId] = useState<string | null>(
+    null,
+  );
+
   const router = useRouter();
 
   React.useEffect(() => {
@@ -76,9 +79,7 @@ export default function Page({ params }: { params: { chatId: string } }) {
     return () => clearTimeout(timer);
   }, []);
 
-  const clerkUser = useUser();
   const sendMessage = useMutation(api.messages.createMessage);
-  const deleteMessage = useMutation(api.messages.deleteMessage);
   const messages = useQuery(api.messages.getMessages, {
     chatId: params.chatId,
   });
@@ -135,7 +136,6 @@ export default function Page({ params }: { params: { chatId: string } }) {
     setInputValue("");
     scrollToBottom(true);
   }
-
   const [menuActive, setMenuActive] = useState(false);
 
   const menuClick = () => {
@@ -250,57 +250,13 @@ export default function Page({ params }: { params: { chatId: string } }) {
               ref={messagesEndRef}
             >
               {messages ? (
-                messages.map((message) => {
-                  return (
-                    <>
-                      <div className="flex">
-                        {message.from.username == clerkUser.user?.username ? (
-                          <div className="my-1 mr-4 flex w-full flex-col items-end">
-                            <div className="max-w-[66.6667%] break-words rounded-sm bg-accent p-3">
-                              {message.deleted ? (
-                                <div className="flex font-medium">
-                                  <Ban />
-                                  <p className="ml-2.5">
-                                    This message was deleted
-                                  </p>
-                                </div>
-                              ) : (
-                                message.content
-                              )}
-                            </div>
-                            <div className="mr-2 text-[75%] font-bold text-secondary-foreground">
-                              Read
-                            </div>
-                            {!message.deleted ? (
-                              <button
-                                onMouseDown={() => {
-                                  deleteMessage({ messageId: message._id });
-                                }}
-                              >
-                                Delete
-                              </button>
-                            ) : null}
-                          </div>
-                        ) : (
-                          <div className="my-1 ml-4 flex w-full justify-start">
-                            <div className="max-w-[66.6667%] rounded-sm bg-secondary p-3">
-                              {message.deleted ? (
-                                <div className="flex font-medium">
-                                  <Ban />
-                                  <p className="ml-2.5">
-                                    This message was deleted
-                                  </p>
-                                </div>
-                              ) : (
-                                message.content
-                              )}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </>
-                  );
-                })
+                messages.map((message) => (
+                  <Message
+                    selectedMessageId={selectedMessageId}
+                    setSelectedMessageId={setSelectedMessageId}
+                    message={message}
+                  />
+                ))
               ) : (
                 <>
                   <div className="flex justify-center lg:hidden">
