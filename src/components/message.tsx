@@ -99,7 +99,6 @@ export const Message = ({
                 "max-w-[66.6667%] cursor-default break-words rounded-sm bg-accent p-3",
                 {
                   "sticky z-50 opacity-100": message._id === selectedMessageId,
-                  "cursor-default": message.deleted,
                 },
               )}
             >
@@ -196,7 +195,6 @@ export const Message = ({
                 "max-w-[66.6667%] cursor-default break-words rounded-sm bg-secondary p-3",
                 {
                   "sticky z-50 opacity-100": message._id == selectedMessageId,
-                  "cursor-default": message.deleted,
                 },
               )}
             >
