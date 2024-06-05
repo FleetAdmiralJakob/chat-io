@@ -117,10 +117,10 @@ const Chats: React.FC<{
                       {chat.users[0].username}
                     </p>
                   ) : (
-                    <p className="flex">
+                    <div className="flex">
                       <p className="truncate whitespace-nowrap">My Notes</p>
                       <Badge>Tool</Badge>
-                    </p>
+                    </div>
                   )}
                 </div>
               </Link>
