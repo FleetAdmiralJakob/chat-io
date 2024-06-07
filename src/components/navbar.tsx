@@ -27,7 +27,7 @@ const Navbar = () => {
         { "hidden lg:flex": isChatPath },
       )}
     >
-      <div className="flex h-full w-full justify-around lg:flex-col">
+      <div className="flex w-full justify-around lg:h-full lg:flex-col">
         <Link className={"flex flex-col items-center"} href={"/"}>
           <MessagesSquare
             className={cn({
