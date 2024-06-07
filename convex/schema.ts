@@ -6,18 +6,30 @@ const schema = defineEntSchema({
     .field("support", v.boolean(), { default: false })
     .edges("users")
     .edges("messages", { ref: true }),
+
   users: defineEnt({})
     .field("clerkId", v.string(), { unique: true })
     .field("username", v.string(), { unique: true })
     .field("firstName", v.optional(v.string()))
     .field("lastName", v.optional(v.string()))
     .edges("privateChats")
-    .edges("messages", { ref: true }),
+    .edges("messages", { ref: true })
+    .edges("readMessages", {
+      to: "messages",
+      inverseField: "readBy",
+      table: "readMessages",
+    }),
+
   messages: defineEnt({})
     .field("content", v.string())
     .field("deleted", v.boolean(), { default: false })
     .edge("privateChat")
-    .edge("user"),
+    .edge("user")
+    .edges("readBy", {
+      to: "users",
+      inverseField: "readMessages",
+      table: "readMessages",
+    }),
 });
 
 export default schema;

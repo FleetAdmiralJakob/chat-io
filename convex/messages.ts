@@ -14,10 +14,11 @@ export const getMessages = query({
       .table("privateChats")
       .getX(parsedChatId)
       .edge("messages")
-      .map(async (chat) => ({
-        ...chat,
+      .map(async (message) => ({
+        ...message,
         userId: undefined,
-        from: await ctx.table("users").getX(chat.userId),
+        from: await ctx.table("users").getX(message.userId),
+        readBy: await message.edge("readBy"),
       }));
   },
 });
@@ -73,5 +74,35 @@ export const deleteMessage = mutation({
       content: "",
       deleted: true,
     });
+  },
+});
+
+export const markMessageRead = mutation({
+  args: { messageId: v.id("messages") },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (identity === null) {
+      return null;
+    }
+
+    const convexUser = await ctx
+      .table("users")
+      .get("clerkId", identity.tokenIdentifier);
+
+    if (!convexUser?._id) {
+      throw new ConvexError(
+        "Mismatch between Clerk and Convex. This is an error by us.",
+      );
+    }
+
+    await ctx
+      .table("messages")
+      .getX(args.messageId)
+      .patch({
+        readBy: {
+          add: [convexUser._id],
+        },
+      });
   },
 });
