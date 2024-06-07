@@ -12,8 +12,9 @@ export const PlaceholdersAndVanishInput = forwardRef<
     value: string;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+    animationInput: boolean;
   }
->(({ placeholders, onChange, onSubmit }, ref) => {
+>(({ placeholders, onChange, onSubmit, animationInput }, ref) => {
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
 
   useEffect(() => {
@@ -32,7 +33,7 @@ export const PlaceholdersAndVanishInput = forwardRef<
   const inputRef = useRef<HTMLInputElement>(null);
   const [value, setValue] = useState("");
   const [animating, setAnimating] = useState(false);
-
+  const [isFirstRender, setIsFirstRender] = useState(true);
   const draw = useCallback(() => {
     if (!inputRef.current) return;
     const canvas = canvasRef.current;
@@ -159,6 +160,15 @@ export const PlaceholdersAndVanishInput = forwardRef<
     vanishAndSubmit();
     onSubmit && onSubmit(e);
   };
+
+  useEffect(() => {
+    if (isFirstRender) {
+      setIsFirstRender(false);
+    } else {
+      vanishAndSubmit();
+    }
+  }, [animationInput]);
+
   return (
     <form
       className={cn(
@@ -169,7 +179,7 @@ export const PlaceholdersAndVanishInput = forwardRef<
     >
       <canvas
         className={cn(
-          "pointer-events-none absolute left-2 top-[10%] origin-top-left scale-50 transform pr-20 text-base invert filter dark:invert-0 lg:top-[27%]",
+          "pointer-events-none absolute left-2 top-[14%] origin-top-left scale-50 transform pr-20 text-base invert filter dark:invert-0 lg:top-[27%]",
           !animating ? "opacity-0" : "opacity-100",
         )}
         ref={canvasRef}
@@ -187,47 +197,10 @@ export const PlaceholdersAndVanishInput = forwardRef<
         value={value}
         type="text"
         className={cn(
-          "relative h-full w-full rounded-full border-none bg-transparent pl-4 pr-20 text-sm text-black focus:outline-none focus:ring-0 dark:text-white sm:text-base",
+          "relative h-full w-full rounded-full border-none bg-transparent pl-4 pr-4 text-[100%] text-black focus:outline-none focus:ring-0 dark:text-white sm:text-base",
           animating && "text-transparent dark:text-transparent",
         )}
       />
-
-      <button
-        disabled={!value}
-        type="submit"
-        className="absolute right-2 top-1/2 hidden h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-black transition duration-200 disabled:bg-gray-100 dark:bg-zinc-900 dark:disabled:bg-zinc-800"
-      >
-        <motion.svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="h-4 w-4 text-gray-300"
-        >
-          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-          <motion.path
-            d="M5 12l14 0"
-            initial={{
-              strokeDasharray: "50%",
-              strokeDashoffset: "50%",
-            }}
-            animate={{
-              strokeDashoffset: value ? 0 : "50%",
-            }}
-            transition={{
-              duration: 0.3,
-              ease: "linear",
-            }}
-          />
-          <path d="M13 18l6 -6" />
-          <path d="M13 6l6 6" />
-        </motion.svg>
-      </button>
 
       <div className="pointer-events-none absolute inset-0 flex items-center rounded-full">
         <AnimatePresence mode="wait">
