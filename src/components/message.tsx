@@ -1,5 +1,5 @@
 import { useUser } from "@clerk/nextjs";
-import { useMutation, useQuery } from "convex/react";
+import { useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { Ban, CopyCheck, Forward, Info, Trash2 } from "lucide-react";
 import { FunctionReturnType } from "convex/server";
@@ -11,7 +11,6 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { useFloating } from "@floating-ui/react";
 import { Toaster } from "~/components/ui/sonner";
 import { toast } from "sonner";
-import { useMediaQuery } from "react-responsive";
 
 dayjs.extend(relativeTime);
 
@@ -26,7 +25,6 @@ export const Message = ({
 }) => {
   const clerkUser = useUser();
 
-  const isLarge = useMediaQuery({ query: "(min-width: 1024px)" });
   const deleteMessage = useMutation(api.messages.deleteMessage);
   const [isScreenTop, setScreenTop] = useState<boolean | null>(null);
 
@@ -50,7 +48,7 @@ export const Message = ({
 
   useEffect(() => {
     const checkIfMobile = () => {
-      const userAgent = navigator.userAgent || navigator.vendor;
+      const userAgent = navigator.userAgent;
       if (/android/i.test(userAgent)) {
         setIsMobile(true);
       } else if (/iPad|iPhone|iPod/.test(userAgent)) {
