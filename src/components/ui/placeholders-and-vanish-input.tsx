@@ -187,7 +187,7 @@ export const PlaceholdersAndVanishInput = forwardRef<
         value={value}
         type="text"
         className={cn(
-          "relative z-50 h-full w-full rounded-full border-none bg-transparent pl-4 pr-20 text-sm text-black focus:outline-none focus:ring-0 dark:text-white sm:text-base",
+          "relative h-full w-full rounded-full border-none bg-transparent pl-4 pr-20 text-sm text-black focus:outline-none focus:ring-0 dark:text-white sm:text-base",
           animating && "text-transparent dark:text-transparent",
         )}
       />
@@ -195,7 +195,7 @@ export const PlaceholdersAndVanishInput = forwardRef<
       <button
         disabled={!value}
         type="submit"
-        className="absolute right-2 top-1/2 z-50 hidden h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-black transition duration-200 disabled:bg-gray-100 dark:bg-zinc-900 dark:disabled:bg-zinc-800"
+        className="absolute right-2 top-1/2 hidden h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-black transition duration-200 disabled:bg-gray-100 dark:bg-zinc-900 dark:disabled:bg-zinc-800"
       >
         <motion.svg
           xmlns="http://www.w3.org/2000/svg"
