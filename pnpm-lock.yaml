@@ -21,8 +21,8 @@ importers:
         specifier: ^3.4.2
         version: 3.6.0(react-hook-form@7.51.5(react@18.3.1))
       '@legendapp/state':
-        specifier: 3.0.0-alpha.9
-        version: 3.0.0-alpha.9(react@18.3.1)
+        specifier: 3.0.0-alpha.11
+        version: 3.0.0-alpha.11(react@18.3.1)
       '@radix-ui/react-avatar':
         specifier: ^1.0.4
         version: 1.0.4(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -133,7 +133,7 @@ importers:
         version: 10.0.0(react@18.3.1)
       sonner:
         specifier: ^1.4.41
-        version: 1.4.41(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 1.5.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       tailwind-merge:
         specifier: ^2.3.0
         version: 2.3.0
@@ -185,7 +185,7 @@ importers:
         version: 3.3.1
       prettier-plugin-tailwindcss:
         specifier: ^0.6.0
-        version: 0.6.1(prettier@3.3.1)
+        version: 0.6.2(prettier@3.3.1)
       tailwindcss:
         specifier: ^3.4.3
         version: 3.4.4
@@ -474,8 +474,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
 
-  '@legendapp/state@3.0.0-alpha.9':
-    resolution: {integrity: sha512-5mnExFlrdzXRrQx/+O00pPZSpyUSYtEObZDvMzaOGNOM0xVgthQOBAYeqF4l26AcrH4uxXdbaeaxCHSZHC0Npw==}
+  '@legendapp/state@3.0.0-alpha.11':
+    resolution: {integrity: sha512-xZpZgi0a1YE//s+R6DRubIrVI8kgqcm0JAkldXpJ8XPnFJmtClftKqyotDLdzPgXaLzcjWTM9DWVl+zAVM34KQ==}
 
   '@next/env@14.2.3':
     resolution: {integrity: sha512-W7fd7IbkfmeeY2gXrzJYDx8D2lWKbVoTIj1o1ScPHNzvp30s1AuoEFSdr39bC5sjxJaxTtq3OTCZboNp0lNWHA==}
@@ -2412,8 +2412,8 @@ packages:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
 
-  prettier-plugin-tailwindcss@0.6.1:
-    resolution: {integrity: sha512-AnbeYZu0WGj+QgKciUgdMnRxrqcxltleZPgdwfA5104BHM3siBLONN/HLW1yS2HvzSNkzpQ/JAj+LN0jcJO+0w==}
+  prettier-plugin-tailwindcss@0.6.2:
+    resolution: {integrity: sha512-eFefm4cg+1c2B57+H274Qm//CTWBdtQN9ansl0YTP/8TC8x3bugCTQSS/e4FC5Ctl9djhTzsbcMrZ7x2/abIow==}
     engines: {node: '>=14.21.3'}
     peerDependencies:
       '@ianvs/prettier-plugin-sort-imports': '*'
@@ -2685,8 +2685,8 @@ packages:
     resolution: {integrity: sha512-YTywJG93yxwHLgrYLZjlC75moVEX04LZM4FHfihjHe1FCXm+QaLOFfSf535aXOAd0ArVQMWUAe8ZPm4VtWyXaA==}
     engines: {node: '>=12'}
 
-  sonner@1.4.41:
-    resolution: {integrity: sha512-uG511ggnnsw6gcn/X+YKkWPo5ep9il9wYi3QJxHsYe7yTZ4+cOd1wuodOUmOpFuXL+/RE3R04LczdNCDygTDgQ==}
+  sonner@1.5.0:
+    resolution: {integrity: sha512-FBjhG/gnnbN6FY0jaNnqZOMmB73R+5IiyYAw8yBj7L54ER7HB3fOSE5OFiQiE2iXWxeXKvg6fIP4LtVppHEdJA==}
     peerDependencies:
       react: ^18.0.0
       react-dom: ^18.0.0
@@ -3212,7 +3212,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.4.15
 
-  '@legendapp/state@3.0.0-alpha.9(react@18.3.1)':
+  '@legendapp/state@3.0.0-alpha.11(react@18.3.1)':
     dependencies:
       use-sync-external-store: 1.2.2(react@18.3.1)
     transitivePeerDependencies:
@@ -5297,7 +5297,7 @@ snapshots:
 
   prelude-ls@1.2.1: {}
 
-  prettier-plugin-tailwindcss@0.6.1(prettier@3.3.1):
+  prettier-plugin-tailwindcss@0.6.2(prettier@3.3.1):
     dependencies:
       prettier: 3.3.1
 
@@ -5539,7 +5539,7 @@ snapshots:
       snake-case: 3.0.4
       type-fest: 2.19.0
 
-  sonner@1.4.41(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  sonner@1.5.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
