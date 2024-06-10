@@ -57,8 +57,8 @@ importers:
         specifier: 9.0.2
         version: 9.0.2(next@14.2.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(typescript@5.4.5)
       '@serwist/precaching':
-        specifier: 9.0.2
-        version: 9.0.2(typescript@5.4.5)
+        specifier: 9.0.3
+        version: 9.0.3(typescript@5.4.5)
       '@serwist/sw':
         specifier: 9.0.2
         version: 9.0.2(typescript@5.4.5)
@@ -1033,8 +1033,9 @@ packages:
       typescript:
         optional: true
 
-  '@serwist/precaching@9.0.2':
-    resolution: {integrity: sha512-esq9MCODaeAX9C07Xg1ON8xVrm4LY/Yqavdkleyo26fBmUhDRwuhKRX06t4FW7XRBK82Z/SdGdcdbGmkXuVAjQ==}
+  '@serwist/precaching@9.0.3':
+    resolution: {integrity: sha512-0sSUXrsWFHTze1llOxnhkyJCQ/MhUmTL2TFRjDnRqdg5TIiJqTqGnBU6FHgWxlMyiPb9jLbmsZcGaLIlwTOQWg==}
+    deprecated: This package has been deprecated. Please use serwist instead.
     peerDependencies:
       typescript: '>=5.0.0'
     peerDependenciesMeta:
@@ -1043,6 +1044,7 @@ packages:
 
   '@serwist/sw@9.0.2':
     resolution: {integrity: sha512-dJ7uu1yHfglCT1KcTg/FrgBs4wfuBDeDjXEmYIfN9kHvpw1SN42bY84+dhV+cCdVJPhWQ+6lFrADQsr+6vsELw==}
+    deprecated: This package has been deprecated. Please use serwist instead.
     peerDependencies:
       typescript: '>=5.0.0'
     peerDependenciesMeta:
@@ -2644,6 +2646,14 @@ packages:
       typescript:
         optional: true
 
+  serwist@9.0.3:
+    resolution: {integrity: sha512-WNan/+oethHd0YKyEVIETk9z7BWNnhbrhKWD5iE/n9eAIGUMUS4a3Ff5E6QHltxEVo+X3Dc3HtSIqXkSoEK9YA==}
+    peerDependencies:
+      typescript: '>=5.0.0'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+
   set-function-length@1.2.2:
     resolution: {integrity: sha512-pgRc4hJ4/sNjWCSS9AmnS40x3bNMDTknHgL5UaMBTMyJnU90EgWh1Rz+MC9eFu4BuN/UwZjKQuY/1v3rM7HMfg==}
     engines: {node: '>= 0.4'}
@@ -3760,9 +3770,9 @@ snapshots:
     transitivePeerDependencies:
       - webpack
 
-  '@serwist/precaching@9.0.2(typescript@5.4.5)':
+  '@serwist/precaching@9.0.3(typescript@5.4.5)':
     dependencies:
-      serwist: 9.0.2(typescript@5.4.5)
+      serwist: 9.0.3(typescript@5.4.5)
     optionalDependencies:
       typescript: 5.4.5
 
@@ -5486,6 +5496,12 @@ snapshots:
   semver@7.6.2: {}
 
   serwist@9.0.2(typescript@5.4.5):
+    dependencies:
+      idb: 8.0.0
+    optionalDependencies:
+      typescript: 5.4.5
+
+  serwist@9.0.3(typescript@5.4.5):
     dependencies:
       idb: 8.0.0
     optionalDependencies:
