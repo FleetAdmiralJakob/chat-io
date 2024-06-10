@@ -94,7 +94,7 @@ importers:
         version: 1.3.0(next@14.2.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       jiti:
         specifier: ^1.21.0
-        version: 1.21.3
+        version: 1.21.5
       lucide-react:
         specifier: ^0.391.0
         version: 0.391.0(react@18.3.1)
@@ -1035,6 +1035,7 @@ packages:
 
   '@serwist/precaching@9.0.2':
     resolution: {integrity: sha512-esq9MCODaeAX9C07Xg1ON8xVrm4LY/Yqavdkleyo26fBmUhDRwuhKRX06t4FW7XRBK82Z/SdGdcdbGmkXuVAjQ==}
+    deprecated: This package has been deprecated. Please use serwist instead.
     peerDependencies:
       typescript: '>=5.0.0'
     peerDependenciesMeta:
@@ -1043,6 +1044,7 @@ packages:
 
   '@serwist/sw@9.0.2':
     resolution: {integrity: sha512-dJ7uu1yHfglCT1KcTg/FrgBs4wfuBDeDjXEmYIfN9kHvpw1SN42bY84+dhV+cCdVJPhWQ+6lFrADQsr+6vsELw==}
+    deprecated: This package has been deprecated. Please use serwist instead.
     peerDependencies:
       typescript: '>=5.0.0'
     peerDependenciesMeta:
@@ -2040,8 +2042,8 @@ packages:
     resolution: {integrity: sha512-JVYhQnN59LVPFCEcVa2C3CrEKYacvjRfqIQl+h8oi91aLYQVWRYbxjPcv1bUiUy/kLmQaANrYfNMCO3kuEDHfw==}
     engines: {node: '>=14'}
 
-  jiti@1.21.3:
-    resolution: {integrity: sha512-uy2bNX5zQ+tESe+TiC7ilGRz8AtRGmnJH55NC5S0nSUjvvvM2hJHmefHErugGXN4pNv4Qx7vLsnNw9qJ9mtIsw==}
+  jiti@1.21.5:
+    resolution: {integrity: sha512-JmvHYAZK3v0BifQ3fk+kOhuCeni40Ehqx1qdFJsYUeFZVL3kKeyWPRQ4NEY0rjklqgVZzLzqNHktzQRirst15Q==}
     hasBin: true
 
   js-cookie@3.0.1:
@@ -4961,7 +4963,7 @@ snapshots:
     optionalDependencies:
       '@pkgjs/parseargs': 0.11.0
 
-  jiti@1.21.3: {}
+  jiti@1.21.5: {}
 
   js-cookie@3.0.1: {}
 
@@ -5664,7 +5666,7 @@ snapshots:
       fast-glob: 3.3.2
       glob-parent: 6.0.2
       is-glob: 4.0.3
-      jiti: 1.21.3
+      jiti: 1.21.5
       lilconfig: 2.1.0
       micromatch: 4.0.7
       normalize-path: 3.0.0
