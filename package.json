@@ -31,7 +31,7 @@
     "@radix-ui/react-tooltip": "^1.0.7",
     "@serwist/next": "9.0.2",
     "@serwist/precaching": "9.0.2",
-    "@serwist/sw": "9.0.2",
+    "@serwist/sw": "9.0.3",
     "@t3-oss/env-nextjs": "^0.10.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
