@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { type FunctionReturnType } from "convex/server";
 import { NotebookText } from "lucide-react";
 import { Avatar, AvatarFallback } from "./ui/avatar";
+import { Ban } from "lucide-react";
 import { ArrowRight } from "lucide-react";
 import Badge from "~/components/ui/badge";
 import Link from "next/link";
@@ -98,7 +99,29 @@ const Chats: React.FC<{
                           <Badge>Support</Badge>
                         </div>
                         <p className="ml-4 mt-0.5 text-sm text-destructive-foreground">
-                          Test
+                          {chat.lastMessage.content != "" ? (
+                            chat.lastMessage.content != undefined ? (
+                              chat.lastMessage.readBy.some(
+                                (user) =>
+                                  user.username === clerkUser.user?.username,
+                              ) ? (
+                                chat.lastMessage?.content
+                              ) : (
+                                <p className="truncate font-bold">
+                                  {chat.lastMessage?.content}
+                                </p>
+                              )
+                            ) : (
+                              "No messages yet"
+                            )
+                          ) : (
+                            <div className="flex truncate">
+                              <Ban className="p-1 pt-0" />
+                              <p className="truncate">
+                                This message was deleted
+                              </p>
+                            </div>
+                          )}
                         </p>
                       </div>
                     </div>
@@ -140,8 +163,35 @@ const Chats: React.FC<{
                           <p className="truncate text-lg">
                             {chat.users[0].username}
                           </p>
-                          <p className="mt-0.5 w-10/12 truncate text-sm font-normal text-destructive-foreground">
-                            Last Message
+                          <p
+                            className={cn(
+                              "mt-0.5 w-10/12 truncate text-sm font-normal text-destructive-foreground",
+                              { "w-full": chat.lastMessage.content == "" },
+                            )}
+                          >
+                            {chat.lastMessage.content != "" ? (
+                              chat.lastMessage.content != undefined ? (
+                                chat.lastMessage.readBy.some(
+                                  (user) =>
+                                    user.username === clerkUser.user?.username,
+                                ) ? (
+                                  chat.lastMessage?.content
+                                ) : (
+                                  <p className="truncate font-bold">
+                                    {chat.lastMessage?.content}
+                                  </p>
+                                )
+                              ) : (
+                                "No messages yet"
+                              )
+                            ) : (
+                              <div className="flex truncate">
+                                <Ban className="p-1 pt-0" />
+                                <p className="truncate">
+                                  This message was deleted
+                                </p>
+                              </div>
+                            )}
                           </p>
                         </div>
                       ) : (
@@ -153,13 +203,54 @@ const Chats: React.FC<{
                             <Badge>Tool</Badge>
                           </div>
                           <p className="mt-0.5 w-10/12 truncate text-sm font-normal text-destructive-foreground">
-                            Last Message
+                            {chat.lastMessage.content != "" ? (
+                              chat.lastMessage.content != undefined ? (
+                                chat.lastMessage.readBy.some(
+                                  (user) =>
+                                    user.username === clerkUser.user?.username,
+                                ) ? (
+                                  chat.lastMessage?.content
+                                ) : (
+                                  <p className="truncate font-bold">
+                                    {chat.lastMessage?.content}
+                                  </p>
+                                )
+                              ) : (
+                                "No messages yet"
+                              )
+                            ) : (
+                              <div className="flex truncate">
+                                <Ban className="p-1 pt-0" />
+                                <p className="truncate">
+                                  This message was deleted
+                                </p>
+                              </div>
+                            )}
                           </p>
                         </div>
                       )}
                     </div>
                   </div>
-                  <ArrowRight className="ml-3 text-secondary-foreground lg:mr-10" />
+                  <div className="flex">
+                    {chat.lastMessage.content != "" ? (
+                      chat.lastMessage.content != undefined ? (
+                        chat.lastMessage.readBy.some(
+                          (user) => user.username === clerkUser.user?.username,
+                        ) ? (
+                          ""
+                        ) : (
+                          <div className="flex h-6 w-9 items-center justify-center rounded-full bg-accent p-1 text-[70%] font-medium">
+                            {chat.numberOfUnreadMessages}
+                          </div>
+                        )
+                      ) : (
+                        ""
+                      )
+                    ) : (
+                      ""
+                    )}
+                    <ArrowRight className="!important ml-3 h-6 w-6 text-secondary-foreground lg:mr-10" />
+                  </div>
                 </Link>
               </div>
             );

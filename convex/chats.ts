@@ -104,10 +104,43 @@ export const getChats = query({
       .table("users")
       .getX("clerkId", identity.tokenIdentifier)
       .edge("privateChats")
-      .map(async (chat) => ({
-        ...chat,
-        users: await chat.edge("users"),
-      }));
+      .map(async (chat) => {
+        const messages = await chat.edge("messages");
+        const sortedMessages = messages.sort(
+          (a, b) => b._creationTime - a._creationTime,
+        );
+        const latestMessage = sortedMessages[0];
+        const readBy = latestMessage ? await latestMessage.edge("readBy") : [];
+        const extendedMessagesPromises = sortedMessages.map(async (message) => {
+          return {
+            ...message,
+            readBy: await message.edge("readBy"),
+          };
+        });
+
+        const extendedMessages = await Promise.all(extendedMessagesPromises);
+
+        const unreadMessagesCount = extendedMessages.reduce(
+          (count, message) => {
+            return message.readBy.some(
+              (user) => user.clerkId === identity.tokenIdentifier,
+            )
+              ? count
+              : count + 1;
+          },
+          0,
+        );
+
+        return {
+          ...chat,
+          users: await chat.edge("users"),
+          numberOfUnreadMessages: unreadMessagesCount,
+          lastMessage: {
+            ...latestMessage,
+            readBy,
+          },
+        };
+      });
   },
 });
 

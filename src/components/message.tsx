@@ -79,7 +79,7 @@ export const Message = ({
     if (inView) {
       markRead({ messageId: message._id });
     }
-  }, [inView, message._id]);
+  }, [inView, message._id, message.deleted, deleteMessage]);
 
   return (
     <>

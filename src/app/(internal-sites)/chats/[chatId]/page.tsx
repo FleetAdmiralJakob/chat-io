@@ -33,7 +33,7 @@ import { useRouter } from "next/navigation";
 import { DevMode } from "~/components/dev-mode-info";
 import { devMode$ } from "~/states";
 import { Message } from "~/components/message";
-import { PlaceholdersAndVanishInput } from "~/components/ui/placeholders-and-vanish-input";
+import { Input } from "~/components/ui/input";
 
 dayjs.extend(relativeTime);
 
@@ -119,6 +119,8 @@ export default function Page({ params }: { params: { chatId: string } }) {
       messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
     }
   };
+
+  const formRef = useRef<HTMLFormElement | null>(null);
 
   useEffect(() => {
     scrollToBottom(false);
@@ -271,33 +273,38 @@ export default function Page({ params }: { params: { chatId: string } }) {
             <div className="flex h-28 w-full items-center justify-start bg-primary p-4 pb-10 lg:h-24 lg:pb-4">
               <div className="flex w-full justify-between">
                 <Form {...textMessageForm}>
-                  <FormField
-                    control={textMessageForm.control}
-                    name="message"
-                    render={() => (
-                      <FormControl>
-                        <Controller
-                          name="message"
-                          control={textMessageForm.control}
-                          render={({ field }) => (
-                            <PlaceholdersAndVanishInput
-                              placeholders={["Type your message here..."]}
-                              value={inputValue}
-                              animationInput={animationInput}
-                              onSubmit={textMessageForm.handleSubmit(
-                                onTextMessageFormSubmit,
-                              )}
-                              onChange={(e) => {
-                                handleChange(e);
-                                field.onChange(e);
-                              }}
-                              ref={field.ref}
-                            />
-                          )}
-                        />
-                      </FormControl>
+                  <form
+                    className="w-10/12"
+                    ref={formRef}
+                    onSubmit={textMessageForm.handleSubmit(
+                      onTextMessageFormSubmit,
                     )}
-                  />
+                  >
+                    <FormField
+                      control={textMessageForm.control}
+                      name="message"
+                      render={() => (
+                        <FormControl>
+                          <Controller
+                            name="message"
+                            control={textMessageForm.control}
+                            render={({ field }) => (
+                              <Input
+                                className="ml-4 h-11 w-10/12 rounded-2xl border-2 border-secondary-foreground bg-secondary p-2 lg:h-16"
+                                placeholder="Message ..."
+                                value={inputValue}
+                                onChange={(e) => {
+                                  handleChange(e);
+                                  field.onChange(e);
+                                }}
+                                ref={field.ref}
+                              />
+                            )}
+                          />
+                        </FormControl>
+                      )}
+                    />
+                  </form>
                 </Form>
                 <div className="flex items-center">
                   <Mic
