@@ -111,30 +111,46 @@ export const getChats = query({
         );
         const latestMessage = sortedMessages[0];
         const readBy = latestMessage ? await latestMessage.edge("readBy") : [];
+
         const extendedMessagesPromises = sortedMessages.map(async (message) => {
           return {
             ...message,
             readBy: await message.edge("readBy"),
+            deleted: message.deleted,
           };
         });
 
         const extendedMessages = await Promise.all(extendedMessagesPromises);
 
-        const unreadMessagesCount = extendedMessages.reduce(
-          (count, message) => {
-            return message.readBy.some(
-              (user) => user.clerkId === identity.tokenIdentifier,
-            )
-              ? count
-              : count + 1;
-          },
-          0,
+        const sortedMessagesAgain = extendedMessages.sort(
+          (a, b) => b._creationTime - a._creationTime,
         );
+
+        let deletedCount = 0;
+        const firstReadMessageIndex = sortedMessagesAgain.findIndex(
+          (message) => {
+            if (message.deleted) {
+              deletedCount++;
+            }
+            return (
+              message.readBy.some(
+                (user) => user.clerkId === identity.tokenIdentifier,
+              ) && !message.deleted
+            );
+          },
+        );
+
+        let numberOfUnreadMessages;
+        if (firstReadMessageIndex === -1) {
+          numberOfUnreadMessages = sortedMessages.length - deletedCount;
+        } else {
+          numberOfUnreadMessages = firstReadMessageIndex - deletedCount;
+        }
 
         return {
           ...chat,
           users: await chat.edge("users"),
-          numberOfUnreadMessages: unreadMessagesCount,
+          numberOfUnreadMessages: numberOfUnreadMessages,
           lastMessage: {
             ...latestMessage,
             readBy,
