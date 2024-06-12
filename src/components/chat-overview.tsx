@@ -143,7 +143,7 @@ const Chats: React.FC<{
                 <Link
                   key={index}
                   className={cn(
-                    "flex w-full items-center justify-between truncate border-t-2 border-input px-5 py-6 lg:ml-5 lg:border-0 lg:px-0",
+                    "flex w-full items-center justify-between truncate px-5 py-6 lg:ml-5 lg:border-0 lg:px-0",
                   )}
                   href={`/chats/${chat._id}`}
                 >
