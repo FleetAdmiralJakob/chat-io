@@ -159,7 +159,7 @@ export default function Page({ params }: { params: { chatId: string } }) {
           >
             <div className="min-w-96 pb-24">
               <div className="relative flex h-full w-full justify-center">
-                <div className="h-screen overflow-y-auto">
+                <div className="h-screen w-full overflow-y-auto">
                   <ChatsWithSearch classNameChatList="xl:w-1/2" />
                 </div>
               </div>
