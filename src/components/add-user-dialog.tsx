@@ -114,7 +114,7 @@ export function AddUserDialog({
             <DialogTrigger asChild>
               <button
                 className={cn(
-                  "inline-flex aspect-square w-10 items-center justify-center rounded-full bg-background",
+                  "inline-flex aspect-square w-11 items-center justify-center rounded-full bg-background",
                   classNameDialogTrigger,
                 )}
               >
