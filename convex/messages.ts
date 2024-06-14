@@ -56,6 +56,7 @@ export const createMessage = mutation({
       privateChatId: parsedChatId,
       content: args.content.trim(),
       deleted: false,
+      readBy: [convexUser._id],
     });
 
     await ctx.scheduler.runAfter(
@@ -78,11 +79,17 @@ export const deleteMessage = mutation({
       throw new ConvexError("chatId was invalid");
     }
 
+    const message = await ctx.table("messages").getX(parsedMessageId);
+    const chatId = message.privateChatId;
+    const chat = await ctx.table("privateChats").getX(chatId);
+    const users = await chat.edge("users");
+
     await (
       await ctx.table("messages").getX(parsedMessageId)
     ).patch({
       content: "",
       deleted: true,
+      readBy: { add: users.map((user) => user._id) },
     });
   },
 });

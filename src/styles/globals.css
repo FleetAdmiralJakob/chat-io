@@ -2,6 +2,28 @@
 @tailwind components;
 @tailwind utilities;
 
+
+::-webkit-scrollbar {
+  width: 7px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #b0b0b0;
+  border-radius: 12px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #b0b0b0;
+  border-radius: 12px;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -19,7 +41,7 @@
     --accent: 353.06, 69.48%, 48.82%;
     --accent-foreground: 210 40% 98%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0, 0%, 14.12%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 221.2 83.2% 53.3%;
@@ -42,7 +64,7 @@
     --accent: 353.06, 69.48%, 48.82%;
     --accent-foreground: 210 40% 98%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0, 0%, 73.73%;
     --border: 217.2 32.6% 17.5%;
     --input: 0, 0%, 10.2%;
     --ring: 224.3 76.3% 48%;
