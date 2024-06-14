@@ -5,7 +5,8 @@ import { cn } from "~/lib/utils";
 import { ClerkProvider } from "@clerk/nextjs";
 import React from "react";
 import { GeistSans } from "geist/font/sans";
-import ConvexClientProvider from "~/app/convex-client-provider";
+import ConvexClientProvider from "~/components/providers/convex-client-provider";
+import TanstackQueryClientProvider from "~/components/providers/tanstack-query-client-provider";
 
 const APP_NAME = "Chat.io";
 const APP_DEFAULT_TITLE = "Chat.io";
@@ -74,7 +75,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <ClerkProvider>
-            <ConvexClientProvider>{children}</ConvexClientProvider>
+            <TanstackQueryClientProvider>
+              <ConvexClientProvider>{children}</ConvexClientProvider>
+            </TanstackQueryClientProvider>
           </ClerkProvider>
         </ThemeProvider>
       </body>

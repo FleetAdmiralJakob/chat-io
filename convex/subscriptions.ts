@@ -1,5 +1,5 @@
 import { mutation } from "./lib/functions";
-import { ConvexError, v } from "convex/values";
+import { ConvexError } from "convex/values";
 import { subscription } from "./schema";
 
 export const saveSubscription = mutation({
@@ -23,10 +23,12 @@ export const saveSubscription = mutation({
       );
     }
 
-    const userSubscription = await convexUser.edge("notificationSubscription");
+    const userSubscription = await ctx
+      .table("notificationSubscriptions")
+      .get("userId", convexUser._id);
 
     if (userSubscription) {
-      await convexUser.delete();
+      await userSubscription.delete();
     }
 
     return ctx.table("notificationSubscriptions").insert({
