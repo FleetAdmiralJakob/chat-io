@@ -22,12 +22,12 @@ const Chats: React.FC<{
   const chats = useQuery(api.chats.getChats);
   chats?.sort((a, b) => {
     const aLatestTime = Math.max(
-      new Date(a._creationTime).getTime(),
-      a.lastMessage ? new Date(a.lastMessage._creationTime).getTime() : 0,
+      new Date(a._creationTime || 0).getTime(),
+      a.lastMessage ? new Date(a.lastMessage._creationTime || 0).getTime() : 0,
     );
     const bLatestTime = Math.max(
-      new Date(b._creationTime).getTime(),
-      b.lastMessage ? new Date(b.lastMessage._creationTime).getTime() : 0,
+      new Date(b._creationTime || 0).getTime(),
+      b.lastMessage ? new Date(b.lastMessage._creationTime || 0).getTime() : 0,
     );
 
     return bLatestTime - aLatestTime;
@@ -111,16 +111,16 @@ const Chats: React.FC<{
                           <Badge>Support</Badge>
                         </div>
                         <p className="ml-4 mt-0.5 text-sm text-destructive-foreground">
-                          {chat.lastMessage?.content != "" ? (
-                            chat.lastMessage?.content != undefined ? (
-                              chat.lastMessage?.readBy.some(
+                          {chat.lastMessage.content != "" ? (
+                            chat.lastMessage.content != undefined ? (
+                              chat.lastMessage.readBy.some(
                                 (user) =>
                                   user.username === clerkUser.user?.username,
                               ) ? (
-                                chat.lastMessage?.content
+                                chat.lastMessage.content
                               ) : (
                                 <p className="truncate font-bold">
-                                  {chat.lastMessage?.content}
+                                  {chat.lastMessage.content}
                                 </p>
                               )
                             ) : (
@@ -178,12 +178,12 @@ const Chats: React.FC<{
                           <p
                             className={cn(
                               "mt-0.5 w-10/12 truncate text-sm font-normal text-destructive-foreground",
-                              { "w-full": chat.lastMessage?.content == "" },
+                              { "w-full": chat.lastMessage.content == "" },
                             )}
                           >
-                            {chat.lastMessage?.content != "" ? (
-                              chat.lastMessage?.content != undefined ? (
-                                chat.lastMessage?.readBy.some(
+                            {chat.lastMessage.content != "" ? (
+                              chat.lastMessage.content != undefined ? (
+                                chat.lastMessage.readBy.some(
                                   (user) =>
                                     user.username === clerkUser.user?.username,
                                 ) ? (
@@ -215,16 +215,16 @@ const Chats: React.FC<{
                             <Badge>Tool</Badge>
                           </div>
                           <p className="mt-0.5 w-10/12 truncate text-sm font-normal text-destructive-foreground">
-                            {chat.lastMessage?.content != "" ? (
-                              chat.lastMessage?.content != undefined ? (
-                                chat.lastMessage?.readBy.some(
+                            {chat.lastMessage.content != "" ? (
+                              chat.lastMessage.content != undefined ? (
+                                chat.lastMessage.readBy.some(
                                   (user) =>
                                     user.username === clerkUser.user?.username,
                                 ) ? (
-                                  chat.lastMessage?.content
+                                  chat.lastMessage.content
                                 ) : (
                                   <p className="truncate font-bold">
-                                    {chat.lastMessage?.content}
+                                    {chat.lastMessage.content}
                                   </p>
                                 )
                               ) : (
