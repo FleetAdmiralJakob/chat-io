@@ -1,3 +1,5 @@
+"use client";
+
 import { ArrowRight, Lock } from "lucide-react";
 import { Bell } from "lucide-react";
 import Link from "next/link";
@@ -12,18 +14,19 @@ interface settingsCard {
   icon?: JSX.Element;
 }
 
-const clerkUser = useUser();
-const username = clerkUser.user ? clerkUser.user.username || "" : "";
-
-const settings: settingsCard[] = [
-  { title: username },
-  { title: "Settings", icon: <Settings /> },
-  { title: "Notification", icon: <Bell /> },
-  { title: "Privacy", icon: <Lock /> },
-  { title: "Chats", icon: <SendHorizontal /> },
-  { title: "Contributors", icon: <UsersRound /> },
-];
 export default async function Profile() {
+  const clerkUser = useUser();
+  const username = clerkUser.user ? clerkUser.user.username || "" : "";
+
+  const settings: settingsCard[] = [
+    { title: username },
+    { title: "Settings", icon: <Settings /> },
+    { title: "Notification", icon: <Bell /> },
+    { title: "Privacy", icon: <Lock /> },
+    { title: "Chats", icon: <SendHorizontal /> },
+    { title: "Contributors", icon: <UsersRound /> },
+  ];
+
   return (
     <div className="mt-7 flex h-screen flex-col items-center lg:mt-0 lg:justify-center lg:pl-24">
       <div className="flex flex-col items-center">
