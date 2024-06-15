@@ -14,7 +14,7 @@ interface settingsCard {
   icon?: JSX.Element;
 }
 
-export default async function Profile() {
+export default function Profile() {
   const clerkUser = useUser();
   const username = clerkUser.user ? clerkUser.user.username || "" : "";
 
