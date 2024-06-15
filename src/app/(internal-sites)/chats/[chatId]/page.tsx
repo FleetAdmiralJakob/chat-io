@@ -9,7 +9,6 @@ import { Avatar, AvatarFallback } from "~/components/ui/avatar";
 import ChatsWithSearch from "~/components/chats-with-search";
 import { Video } from "lucide-react";
 import { Mic } from "lucide-react";
-import { Input } from "~/components/ui/input";
 import { Phone } from "lucide-react";
 import Badge from "~/components/ui/badge";
 import { SendHorizontal } from "lucide-react";
@@ -34,6 +33,7 @@ import { useRouter } from "next/navigation";
 import { DevMode } from "~/components/dev-mode-info";
 import { devMode$ } from "~/states";
 import { Message } from "~/components/message";
+import { Input } from "~/components/ui/input";
 
 dayjs.extend(relativeTime);
 
@@ -88,8 +88,6 @@ export default function Page({ params }: { params: { chatId: string } }) {
     chatId: params.chatId,
   });
 
-  const formRef = useRef<HTMLFormElement | null>(null);
-
   const is2xlOrmore = useMediaQuery({ query: "(max-width: 1537px)" });
   const maxSize = is2xlOrmore ? 50 : 60;
   const minSize = is2xlOrmore ? 45 : 30;
@@ -100,6 +98,8 @@ export default function Page({ params }: { params: { chatId: string } }) {
       message: "",
     },
   });
+
+  const [animationInput, setAnimationInput] = useState(true);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [scrollPosition, setScrollPosition] = useState(0);
@@ -119,6 +119,8 @@ export default function Page({ params }: { params: { chatId: string } }) {
       messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
     }
   };
+
+  const formRef = useRef<HTMLFormElement | null>(null);
 
   useEffect(() => {
     scrollToBottom(false);
@@ -155,7 +157,13 @@ export default function Page({ params }: { params: { chatId: string } }) {
             minSize={minSize}
             maxSize={maxSize}
           >
-            <ChatsWithSearch classNameChatList="xl:w-1/2" />
+            <div className="min-w-96 pb-24">
+              <div className="relative flex h-full w-full justify-center">
+                <div className="h-screen w-full overflow-y-auto">
+                  <ChatsWithSearch classNameChatList="xl:w-1/2" />
+                </div>
+              </div>
+            </div>
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel
@@ -245,7 +253,7 @@ export default function Page({ params }: { params: { chatId: string } }) {
               </div>
             </div>
             <div
-              className="relative flex-grow overflow-x-auto"
+              className="relative flex-grow overflow-x-hidden"
               onScroll={handleScroll}
               ref={messagesEndRef}
             >
@@ -312,10 +320,10 @@ export default function Page({ params }: { params: { chatId: string } }) {
                     )}
                   />
                   <SendHorizontal
-                    onClick={textMessageForm.handleSubmit(
-                      onTextMessageFormSubmit,
-                    )}
-                    {...textMessageForm}
+                    onClick={(e) => {
+                      setAnimationInput(!animationInput);
+                      textMessageForm.handleSubmit(onTextMessageFormSubmit)(e);
+                    }}
                     className={cn(
                       "mx-4 h-11 w-11 cursor-pointer rounded-sm border-2 border-secondary-foreground bg-primary p-2 lg:hidden lg:h-14 lg:w-14 lg:p-3",
                       { hidden: inputValue == "" },

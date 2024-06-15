@@ -31,7 +31,7 @@ const ChatsWithSearch = ({
           Chats
         </h1>
 
-        <AddUserDialog classNameDialogTrigger="absolute bg-input right-16 top-16" />
+        <AddUserDialog classNameDialogTrigger="absolute bg-input border-2 border-secondary right-12 top-12" />
       </div>
       <DevMode className="lg:left-24">
         Current User: {user ? user.username : "No user"} <br />{" "}

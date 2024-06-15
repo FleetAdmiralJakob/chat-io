@@ -104,10 +104,61 @@ export const getChats = query({
       .table("users")
       .getX("clerkId", identity.tokenIdentifier)
       .edge("privateChats")
-      .map(async (chat) => ({
-        ...chat,
-        users: await chat.edge("users"),
-      }));
+      .map(async (chat) => {
+        const messages = await chat.edge("messages");
+        const sortedMessages = messages.sort(
+          (a, b) => b._creationTime - a._creationTime,
+        );
+        const latestMessage = sortedMessages[0];
+        const readBy = latestMessage ? await latestMessage.edge("readBy") : [];
+
+        const extendedMessagesPromises = sortedMessages.map(async (message) => {
+          return {
+            ...message,
+            readBy: await message.edge("readBy"),
+            deleted: message.deleted,
+          };
+        });
+
+        const extendedMessages = await Promise.all(extendedMessagesPromises);
+
+        const sortedMessagesAgain = extendedMessages.sort(
+          (a, b) => b._creationTime - a._creationTime,
+        );
+
+        let deletedCount = 0;
+        const firstReadMessageIndex = sortedMessagesAgain.findIndex(
+          (message) => {
+            if (message.deleted) {
+              deletedCount++;
+            }
+            return (
+              message.readBy.some(
+                (user) => user.clerkId === identity.tokenIdentifier,
+              ) && !message.deleted
+            );
+          },
+        );
+
+        let numberOfUnreadMessages;
+        if (firstReadMessageIndex === -1) {
+          numberOfUnreadMessages = sortedMessages.length - deletedCount;
+        } else {
+          numberOfUnreadMessages = firstReadMessageIndex - deletedCount;
+        }
+
+        return {
+          ...chat,
+          users: await chat.edge("users"),
+          numberOfUnreadMessages: numberOfUnreadMessages,
+          lastMessage: latestMessage
+            ? {
+                ...latestMessage,
+                readBy,
+              }
+            : null,
+        };
+      });
   },
 });
 
