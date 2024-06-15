@@ -151,10 +151,12 @@ export const getChats = query({
           ...chat,
           users: await chat.edge("users"),
           numberOfUnreadMessages: numberOfUnreadMessages,
-          lastMessage: {
-            ...latestMessage,
-            readBy,
-          },
+          lastMessage: latestMessage
+            ? {
+                ...latestMessage,
+                readBy,
+              }
+            : null,
         };
       });
   },
