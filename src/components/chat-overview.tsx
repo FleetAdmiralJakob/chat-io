@@ -111,9 +111,9 @@ const Chats: React.FC<{
                           <Badge>Support</Badge>
                         </div>
                         <p className="ml-4 mt-0.5 text-sm text-destructive-foreground">
-                          {chat.lastMessage.content != "" ? (
-                            chat.lastMessage.content != undefined ? (
-                              chat.lastMessage.readBy.some(
+                          {chat.lastMessage?.content != "" ? (
+                            chat.lastMessage?.content != undefined ? (
+                              chat.lastMessage?.readBy.some(
                                 (user) =>
                                   user.username === clerkUser.user?.username,
                               ) ? (
@@ -178,12 +178,12 @@ const Chats: React.FC<{
                           <p
                             className={cn(
                               "mt-0.5 w-10/12 truncate text-sm font-normal text-destructive-foreground",
-                              { "w-full": chat.lastMessage.content == "" },
+                              { "w-full": chat.lastMessage?.content == "" },
                             )}
                           >
-                            {chat.lastMessage.content != "" ? (
-                              chat.lastMessage.content != undefined ? (
-                                chat.lastMessage.readBy.some(
+                            {chat.lastMessage?.content != "" ? (
+                              chat.lastMessage?.content != undefined ? (
+                                chat.lastMessage?.readBy.some(
                                   (user) =>
                                     user.username === clerkUser.user?.username,
                                 ) ? (
@@ -215,9 +215,9 @@ const Chats: React.FC<{
                             <Badge>Tool</Badge>
                           </div>
                           <p className="mt-0.5 w-10/12 truncate text-sm font-normal text-destructive-foreground">
-                            {chat.lastMessage.content != "" ? (
-                              chat.lastMessage.content != undefined ? (
-                                chat.lastMessage.readBy.some(
+                            {chat.lastMessage?.content != "" ? (
+                              chat.lastMessage?.content != undefined ? (
+                                chat.lastMessage?.readBy.some(
                                   (user) =>
                                     user.username === clerkUser.user?.username,
                                 ) ? (
