@@ -83,6 +83,7 @@ export function AddUserDialog({
         friendsUsername: values.username,
         friendsUsernameId: values.usernameId,
       });
+      form.reset();
       setDialogOpen(false);
     } catch (e) {
       if (e instanceof ConvexError) {
