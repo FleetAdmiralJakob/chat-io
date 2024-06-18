@@ -39,7 +39,7 @@ const Footer = () => {
         </div>
         <div
           className={
-            " mt-8 block w-full pl-14 lg:flex lg:w-2/5 lg:justify-around"
+            "mt-8 block w-full pl-14 lg:flex lg:w-2/5 lg:justify-around"
           }
         >
           <div className={"flex"}>
