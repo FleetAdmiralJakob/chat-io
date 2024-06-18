@@ -136,9 +136,9 @@ export const Message = ({
                   ? message.readBy.map((user) =>
                       user.username != clerkUser.user?.username
                         ? "Read"
-                        : message.readBy.length == 1
+                        : message.sent
                           ? "Sent"
-                          : null,
+                          : "Sending",
                     )
                   : null
                 : null}
