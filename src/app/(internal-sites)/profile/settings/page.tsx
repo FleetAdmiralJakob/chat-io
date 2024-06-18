@@ -13,6 +13,10 @@ const SettingsPage = () => {
   const clerkUser = useUser();
   const [lastName, setLastName] = useState(clerkUser.user?.lastName || "");
   const [firstName, setFirstName] = useState(clerkUser.user?.firstName || "");
+  const [emailValue, setEmailValue] = useState(
+    clerkUser.user?.emailAddresses.map((email) => email.emailAddress) || "",
+  );
+
   useEffect(() => {
     if (clerkUser.user?.firstName) {
       setFirstName(clerkUser.user.firstName);
@@ -21,9 +25,18 @@ const SettingsPage = () => {
     if (clerkUser.user?.lastName) {
       setLastName(clerkUser.user.lastName);
     }
-  }, [clerkUser.user?.firstName, clerkUser.user?.lastName]);
 
-  const [emailValue, setEmailValue] = useState("");
+    if (clerkUser.user?.emailAddresses.map((email) => email.emailAddress)) {
+      setEmailValue(
+        clerkUser.user.emailAddresses.map((email) => email.emailAddress),
+      );
+    }
+  }, [
+    clerkUser.user?.firstName,
+    clerkUser.user?.lastName,
+    clerkUser.user?.emailAddresses,
+  ]);
+
   const [emailError, setEmailError] = useState(false);
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,7 +63,7 @@ const SettingsPage = () => {
   return (
     <>
       <div className="flex h-screen flex-col items-center justify-center lg:ml-24">
-        <div className="flex h-2/3 w-full flex-col items-center justify-around lg:h-2/5">
+        <div className="flex h-2/3 w-full flex-col items-center justify-around lg:h-1/2">
           <div className="w-11/12 lg:w-1/3">
             <div className="relative w-full">
               <Input
@@ -60,7 +73,12 @@ const SettingsPage = () => {
                 className="border-2 border-secondary"
               />
               {firstName != "" && firstName != clerkUser.user?.firstName ? (
-                <div className="absolute right-2 top-1/2 flex -translate-y-1/2 transform cursor-pointer rounded-sm bg-secondary p-2 px-3 text-[100%] text-destructive-foreground">
+                <div
+                  onClick={() => {
+                    clerkUser.user?.update({ firstName: firstName });
+                  }}
+                  className="absolute right-2 top-1/2 flex -translate-y-1/2 transform cursor-pointer rounded-sm bg-secondary p-2 px-3 text-[100%] text-destructive-foreground"
+                >
                   <HardDriveUpload className="mr-1 h-5 w-5" />
                   <p>Update</p>
                 </div>
@@ -81,7 +99,12 @@ const SettingsPage = () => {
                 className="border-2 border-secondary"
               />
               {lastName != "" && lastName != clerkUser.user?.lastName ? (
-                <div className="absolute right-2 top-1/2 flex -translate-y-1/2 transform cursor-pointer rounded-sm bg-secondary p-2 px-3 text-[100%] text-destructive-foreground">
+                <div
+                  onClick={() => {
+                    clerkUser.user?.update({ lastName: lastName });
+                  }}
+                  className="absolute right-2 top-1/2 flex -translate-y-1/2 transform cursor-pointer rounded-sm bg-secondary p-2 px-3 text-[100%] text-destructive-foreground"
+                >
                   <HardDriveUpload className="mr-1 h-5 w-5" />
                   <p>Update</p>
                 </div>

@@ -10,6 +10,7 @@ const schema = defineEntSchema({
   users: defineEnt({})
     .field("clerkId", v.string(), { unique: true })
     .field("username", v.string(), { unique: true })
+    .field("email", v.optional(v.string()))
     .field("firstName", v.optional(v.string()))
     .field("lastName", v.optional(v.string()))
     .edges("privateChats")

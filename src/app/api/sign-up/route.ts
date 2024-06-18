@@ -19,6 +19,9 @@ export async function POST(request: Request) {
         parsedSignUpHeaders.data.username + parsedSignUpHeaders.data.usernameId,
       firstName: parsedSignUpHeaders.data.firstName,
       lastName: parsedSignUpHeaders.data.lastName,
+      emailAddress: parsedSignUpHeaders.data.email
+        ? [parsedSignUpHeaders.data.email]
+        : undefined,
       password: parsedSignUpHeaders.data.password,
     });
   } catch (e) {

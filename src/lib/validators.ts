@@ -42,6 +42,7 @@ export const formSchema = z.object({
       message: "Name must be at most 20 characters.",
     })
     .optional(),
+  email: z.string().email().optional(),
   password: z
     .string()
     .min(8, {

@@ -246,6 +246,23 @@ export function SignUpForm() {
         </span>
         <FormField
           control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem className="flex-2">
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input placeholder="email" type="text" {...field} />
+              </FormControl>
+              <FormDescription>
+                This is optional but if you forgot your password we can send you
+                a Email
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
           name="password"
           render={({ field }) => (
             <FormItem className="flex-2">
