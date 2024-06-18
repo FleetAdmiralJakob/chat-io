@@ -34,6 +34,8 @@ import { DevMode } from "~/components/dev-mode-info";
 import { devMode$ } from "~/states";
 import { Message } from "~/components/message";
 import { Input } from "~/components/ui/input";
+import { Id } from "../../../../../convex/_generated/dataModel";
+import { FunctionReturnType } from "convex/server";
 
 dayjs.extend(relativeTime);
 
@@ -79,7 +81,40 @@ export default function Page({ params }: { params: { chatId: string } }) {
     return () => clearTimeout(timer);
   }, []);
 
-  const sendMessage = useMutation(api.messages.createMessage);
+  const userInfo = useQuery(api.users.getUserData, {});
+
+  const sendMessage = useMutation(
+    api.messages.createMessage,
+  ).withOptimisticUpdate((localStore, args) => {
+    const chatId: Id<"privateChats"> = args.chatId as Id<"privateChats">;
+    const content = args.content;
+
+    const existingMessages = localStore.getQuery(api.messages.getMessages, {
+      chatId,
+    });
+    // If we've loaded the api.messages.list query, push an optimistic message
+    // onto the list.
+    if (existingMessages !== undefined && userInfo) {
+      const now = Date.now();
+      const newMessage: FunctionReturnType<
+        typeof api.messages.getMessages
+      >[number] = {
+        userId: undefined,
+        _id: crypto.randomUUID() as Id<"messages">,
+        _creationTime: now,
+        content,
+        deleted: false,
+        privateChatId: chatId,
+        from: userInfo,
+        readBy: [userInfo],
+      };
+      localStore.setQuery(api.messages.getMessages, { chatId }, [
+        ...existingMessages,
+        newMessage,
+      ]);
+    }
+  });
+
   const messages = useQuery(api.messages.getMessages, {
     chatId: params.chatId,
   });
