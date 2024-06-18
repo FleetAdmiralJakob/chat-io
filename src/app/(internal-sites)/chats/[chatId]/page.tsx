@@ -92,9 +92,10 @@ export default function Page({ params }: { params: { chatId: string } }) {
     const existingMessages = localStore.getQuery(api.messages.getMessages, {
       chatId,
     });
-    // If we've loaded the api.messages.list query, push an optimistic message
-    // onto the list.
-    if (existingMessages !== undefined && userInfo) {
+    const existingChats = localStore.getQuery(api.chats.getChats);
+    // If we've loaded the api.messages.getMessages and api.chats.getChats query, push an optimistic message
+    // onto the lists.
+    if (existingMessages !== undefined && existingChats && userInfo) {
       const now = Date.now();
       const newMessage: FunctionReturnType<
         typeof api.messages.getMessages
@@ -112,6 +113,23 @@ export default function Page({ params }: { params: { chatId: string } }) {
         ...existingMessages,
         newMessage,
       ]);
+      localStore.setQuery(
+        api.chats.getChats,
+        {},
+        existingChats.map((chat) => {
+          if (chat._id === chatId) {
+            return {
+              ...chat,
+              lastMessage: {
+                ...newMessage,
+                userId: userInfo._id,
+              },
+            };
+          } else {
+            return chat;
+          }
+        }),
+      );
     }
   });
 
