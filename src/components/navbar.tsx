@@ -28,7 +28,11 @@ const Navbar = () => {
       )}
     >
       <div className="flex w-full justify-around lg:h-full lg:flex-col">
-        <Link className={"flex flex-col items-center"} href={"/"}>
+        <Link
+          className={"flex flex-col items-center"}
+          href={"/"}
+          aria-label="Go to the chat-overview page"
+        >
           <MessagesSquare
             className={cn({
               "text-accent": pathname.includes("/chats"),
@@ -36,7 +40,11 @@ const Navbar = () => {
           />
           <p className={"mt-0.5 text-sm lg:hidden"}>Chats</p>
         </Link>
-        <Link className={"flex flex-col items-center"} href={"/todo"}>
+        <Link
+          className={"flex flex-col items-center"}
+          href={"/todo"}
+          aria-label="Go to the todo-overview page"
+        >
           <CalendarCheck
             className={cn({
               "text-accent": pathname === "/todo",
@@ -44,11 +52,19 @@ const Navbar = () => {
           />
           <p className={"mt-0.5 text-sm lg:hidden"}>Todo</p>
         </Link>
-        <Link className={"flex flex-col items-center"} href={"/"}>
+        <Link
+          className={"flex flex-col items-center"}
+          href={"/"}
+          aria-label="Go to the group page"
+        >
           <UsersRound />
           <p className={"mt-0.5 text-sm lg:hidden"}>Group</p>
         </Link>
-        <Link className={"flex flex-col items-center"} href={"/profile"}>
+        <Link
+          className={"flex flex-col items-center"}
+          href={"/profile"}
+          aria-label="Go to the profile page, where you can change your personal settings"
+        >
           <CircleUser
             className={cn({
               "text-accent": pathname === "/profile",
