@@ -4,7 +4,7 @@ import { api } from "../../convex/_generated/api";
 import { Ban, CopyCheck, Forward, Info, Trash2 } from "lucide-react";
 import { FunctionReturnType } from "convex/server";
 import { useInView } from "react-intersection-observer";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "~/lib/utils";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -137,9 +137,9 @@ export const Message = ({
                       if (user.username != clerkUser.user?.username) {
                         return "Read";
                       } else {
-                        if (message.readBy.length == 1 && message.sent) {
+                        if (message.readBy.length === 1 && message.sent) {
                           return "Sent";
-                        } else if (message.readBy.length == 1) {
+                        } else if (message.readBy.length === 1) {
                           return "Sending";
                         } else {
                           return null;
