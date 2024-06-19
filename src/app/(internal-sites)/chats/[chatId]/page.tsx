@@ -107,6 +107,7 @@ export default function Page({ params }: { params: { chatId: string } }) {
         privateChatId: chatId,
         from: userInfo,
         readBy: [userInfo],
+        sent: false,
       };
       localStore.setQuery(api.messages.getMessages, { chatId }, [
         ...existingMessages,
@@ -180,203 +181,198 @@ export default function Page({ params }: { params: { chatId: string } }) {
   };
 
   return (
-    <>
-      <div className="flex h-screen flex-col">
-        <ResizablePanelGroup
-          className="w-full flex-grow"
-          direction="horizontal"
+    <main className="flex h-screen flex-col">
+      <ResizablePanelGroup className="w-full flex-grow" direction="horizontal">
+        <ResizablePanel
+          className="hidden w-full lg:block"
+          defaultSize={50}
+          minSize={minSize}
+          maxSize={maxSize}
         >
-          <ResizablePanel
-            className="hidden w-full lg:block"
-            defaultSize={50}
-            minSize={minSize}
-            maxSize={maxSize}
-          >
-            <div className="min-w-96 pb-24">
-              <div className="relative flex h-full w-full justify-center">
-                <div className="h-screen w-full overflow-y-auto">
-                  <ChatsWithSearch classNameChatList="xl:w-1/2" />
-                </div>
+          <div className="min-w-96 pb-24">
+            <div className="relative flex h-full w-full justify-center">
+              <div className="h-screen w-full overflow-y-auto">
+                <ChatsWithSearch classNameChatList="xl:w-1/2" />
               </div>
             </div>
-          </ResizablePanel>
-          <ResizableHandle />
-          <ResizablePanel
-            defaultSize={50}
-            minSize={30}
-            maxSize={70}
-            className="relative flex flex-col"
-          >
-            <DevMode className="top-20 z-10">
-              chatId: {params.chatId}
-              <div onClick={() => devMode$.set(false)}>Disable dev mode</div>
-            </DevMode>
-            <div className="flex h-20 w-full items-center justify-between bg-primary py-6">
-              <div className="text-lg lg:hidden">
-                <ChevronLeft
-                  className="ml-2 mr-1"
-                  onClick={() => {
-                    router.back();
-                  }}
-                />
-              </div>
-              <div className="ml-1 flex w-full items-center justify-start overflow-hidden 2xl:ml-16">
-                <Avatar className="mr-0.5 text-sm text-white">
-                  <AvatarFallback>
+          </div>
+        </ResizablePanel>
+        <ResizableHandle />
+        <ResizablePanel
+          defaultSize={50}
+          minSize={30}
+          maxSize={70}
+          className="relative flex flex-col"
+        >
+          <DevMode className="top-20 z-10">
+            chatId: {params.chatId}
+            <div onClick={() => devMode$.set(false)}>Disable dev mode</div>
+          </DevMode>
+          <div className="flex h-20 w-full items-center justify-between bg-primary py-6">
+            <div className="text-lg lg:hidden">
+              <ChevronLeft
+                className="ml-2 mr-1"
+                onClick={() => {
+                  router.back();
+                }}
+              />
+            </div>
+            <div className="ml-1 flex w-full items-center justify-start overflow-hidden 2xl:ml-16">
+              <Avatar className="mr-0.5 text-sm text-white">
+                <AvatarFallback>
+                  {chatInfo ? (
+                    chatInfo.basicChatInfo.support ? (
+                      "C"
+                    ) : chatInfo.otherUser[0] ? (
+                      chatInfo.otherUser[0].username.slice(0, 2).toUpperCase()
+                    ) : (
+                      <NotebookText />
+                    )
+                  ) : (
+                    <Skeleton className="h-full w-full"></Skeleton>
+                  )}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex truncate">
+                <div className="mx-2.5 flex flex-col gap-1 truncate">
+                  <div className="truncate text-sm font-bold lg:text-lg">
                     {chatInfo ? (
                       chatInfo.basicChatInfo.support ? (
-                        "C"
+                        "Chat.io"
                       ) : chatInfo.otherUser[0] ? (
-                        chatInfo.otherUser[0].username.slice(0, 2).toUpperCase()
+                        chatInfo.otherUser[0].username
                       ) : (
-                        <NotebookText />
+                        "My Notes"
                       )
                     ) : (
-                      <Skeleton className="h-full w-full"></Skeleton>
+                      <Skeleton className="h-5 w-32"></Skeleton>
                     )}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex truncate">
-                  <div className="mx-2.5 flex flex-col gap-1 truncate">
-                    <div className="truncate text-sm font-bold lg:text-lg">
-                      {chatInfo ? (
-                        chatInfo.basicChatInfo.support ? (
-                          "Chat.io"
-                        ) : chatInfo.otherUser[0] ? (
-                          chatInfo.otherUser[0].username
-                        ) : (
-                          "My Notes"
-                        )
-                      ) : (
-                        <Skeleton className="h-5 w-32"></Skeleton>
-                      )}
-                    </div>
-                    <div className="text-sm text-secondary-foreground">
-                      {chatInfo ? (
-                        "Offline"
-                      ) : (
-                        <Skeleton className="h-5 w-16"></Skeleton>
-                      )}
-                    </div>
                   </div>
-                  <div className="mt-0.5">
+                  <div className="text-sm text-secondary-foreground">
                     {chatInfo ? (
-                      chatInfo.basicChatInfo.support ? (
-                        <Badge>Support</Badge>
-                      ) : !chatInfo?.otherUser[0] ? (
-                        <Badge>Tool</Badge>
-                      ) : null
-                    ) : null}
+                      "Offline"
+                    ) : (
+                      <Skeleton className="h-5 w-16"></Skeleton>
+                    )}
                   </div>
                 </div>
-              </div>
-              <div
-                className={cn(
-                  "mr-1 flex cursor-pointer rounded-sm border-secondary-foreground px-2 text-sm lg:border-2 lg:bg-primary 2xl:mr-16",
-                  {
-                    hidden: chatInfo?.basicChatInfo.support,
-                  },
-                )}
-              >
-                <div className="h-10 rounded-sm border-2 border-secondary-foreground lg:h-12 lg:rounded-none lg:border-0 lg:border-r-2">
-                  <Phone className="mx-1.5 mt-1.5 lg:mx-0 lg:ml-2 lg:mr-4 lg:mt-3" />
-                </div>
-
-                <div className="ml-3 h-10 rounded-sm border-2 border-secondary-foreground lg:ml-0 lg:h-12 lg:border-0">
-                  <Video className="mx-1.5 mt-1.5 lg:mx-0 lg:ml-4 lg:mr-2 lg:mt-3" />
+                <div className="mt-0.5">
+                  {chatInfo ? (
+                    chatInfo.basicChatInfo.support ? (
+                      <Badge>Support</Badge>
+                    ) : !chatInfo?.otherUser[0] ? (
+                      <Badge>Tool</Badge>
+                    ) : null
+                  ) : null}
                 </div>
               </div>
             </div>
             <div
-              className="relative flex-grow overflow-x-hidden"
-              onScroll={handleScroll}
-              ref={messagesEndRef}
-            >
-              {messages ? (
-                messages.map((message) => (
-                  <Message
-                    selectedMessageId={selectedMessageId}
-                    setSelectedMessageId={setSelectedMessageId}
-                    message={message}
-                  />
-                ))
-              ) : (
-                <>
-                  <div className="flex justify-center lg:hidden">
-                    <SkeletonMessages count={10} />
-                  </div>
-                  <div className="hidden h-full w-full items-center justify-center lg:flex">
-                    <Progress value={progress} className="w-[60%]" />
-                  </div>
-                </>
+              className={cn(
+                "mr-1 flex cursor-pointer rounded-sm border-secondary-foreground px-2 text-sm lg:border-2 lg:bg-primary 2xl:mr-16",
+                {
+                  hidden: chatInfo?.basicChatInfo.support,
+                },
               )}
-            </div>
-            <div className="flex h-28 w-full items-center justify-start bg-primary p-4 pb-10 lg:h-24 lg:pb-4">
-              <div className="flex w-full justify-between">
-                <Form {...textMessageForm}>
-                  <form
-                    className="w-10/12"
-                    ref={formRef}
-                    onSubmit={textMessageForm.handleSubmit(
-                      onTextMessageFormSubmit,
-                    )}
-                  >
-                    <FormField
-                      control={textMessageForm.control}
-                      name="message"
-                      render={() => (
-                        <FormControl>
-                          <Controller
-                            name="message"
-                            control={textMessageForm.control}
-                            render={({ field }) => (
-                              <Input
-                                className="ml-4 h-11 w-10/12 rounded-2xl border-2 border-secondary-foreground bg-secondary p-2 lg:h-16"
-                                placeholder="Message ..."
-                                value={inputValue}
-                                onChange={(e) => {
-                                  handleChange(e);
-                                  field.onChange(e);
-                                }}
-                                ref={field.ref}
-                              />
-                            )}
-                          />
-                        </FormControl>
-                      )}
-                    />
-                  </form>
-                </Form>
-                <div className="flex items-center">
-                  <Mic
-                    className={cn(
-                      "mx-4 h-11 w-11 cursor-pointer rounded-sm border-2 border-secondary-foreground bg-primary p-2 lg:h-14 lg:w-14 lg:p-3",
-                      { "hidden lg:flex": inputValue != "" },
-                    )}
-                  />
-                  <SendHorizontal
-                    onClick={(e) => {
-                      setAnimationInput(!animationInput);
-                      textMessageForm.handleSubmit(onTextMessageFormSubmit)(e);
-                    }}
-                    className={cn(
-                      "mx-4 h-11 w-11 cursor-pointer rounded-sm border-2 border-secondary-foreground bg-primary p-2 lg:hidden lg:h-14 lg:w-14 lg:p-3",
-                      { hidden: inputValue == "" },
-                    )}
-                  />
-                  <Plus
-                    className={cn(
-                      "mx-4 h-11 w-11 cursor-pointer rounded-sm border-2 border-secondary-foreground bg-primary p-2 lg:h-14 lg:w-14 lg:p-3",
-                      { "hidden lg:flex": inputValue != "" },
-                    )}
-                    onClick={menuClick}
-                  />
-                </div>
+            >
+              <div className="h-10 rounded-sm border-2 border-secondary-foreground lg:h-12 lg:rounded-none lg:border-0 lg:border-r-2">
+                <Phone className="mx-1.5 mt-1.5 lg:mx-0 lg:ml-2 lg:mr-4 lg:mt-3" />
+              </div>
+
+              <div className="ml-3 h-10 rounded-sm border-2 border-secondary-foreground lg:ml-0 lg:h-12 lg:border-0">
+                <Video className="mx-1.5 mt-1.5 lg:mx-0 lg:ml-4 lg:mr-2 lg:mt-3" />
               </div>
             </div>
-          </ResizablePanel>
-        </ResizablePanelGroup>
-      </div>
-    </>
+          </div>
+          <div
+            className="relative flex-grow overflow-x-hidden"
+            onScroll={handleScroll}
+            ref={messagesEndRef}
+          >
+            {messages ? (
+              messages.map((message) => (
+                <Message
+                  selectedMessageId={selectedMessageId}
+                  setSelectedMessageId={setSelectedMessageId}
+                  message={message}
+                />
+              ))
+            ) : (
+              <>
+                <div className="flex justify-center lg:hidden">
+                  <SkeletonMessages count={10} />
+                </div>
+                <div className="hidden h-full w-full items-center justify-center lg:flex">
+                  <Progress value={progress} className="w-[60%]" />
+                </div>
+              </>
+            )}
+          </div>
+          <div className="flex h-28 w-full items-center justify-start bg-primary p-4 pb-10 lg:h-24 lg:pb-4">
+            <div className="flex w-full justify-between">
+              <Form {...textMessageForm}>
+                <form
+                  className="w-10/12"
+                  ref={formRef}
+                  onSubmit={textMessageForm.handleSubmit(
+                    onTextMessageFormSubmit,
+                  )}
+                >
+                  <FormField
+                    control={textMessageForm.control}
+                    name="message"
+                    render={() => (
+                      <FormControl>
+                        <Controller
+                          name="message"
+                          control={textMessageForm.control}
+                          render={({ field }) => (
+                            <Input
+                              className="ml-4 h-11 w-10/12 rounded-2xl border-2 border-secondary-foreground bg-secondary p-2 lg:h-16"
+                              placeholder="Message ..."
+                              value={inputValue}
+                              onChange={(e) => {
+                                handleChange(e);
+                                field.onChange(e);
+                              }}
+                              ref={field.ref}
+                            />
+                          )}
+                        />
+                      </FormControl>
+                    )}
+                  />
+                </form>
+              </Form>
+              <div className="flex items-center">
+                <Mic
+                  className={cn(
+                    "mx-4 h-11 w-11 cursor-pointer rounded-sm border-2 border-secondary-foreground bg-primary p-2 lg:h-14 lg:w-14 lg:p-3",
+                    { "hidden lg:flex": inputValue != "" },
+                  )}
+                />
+                <SendHorizontal
+                  onClick={(e) => {
+                    setAnimationInput(!animationInput);
+                    textMessageForm.handleSubmit(onTextMessageFormSubmit)(e);
+                  }}
+                  className={cn(
+                    "mx-4 h-11 w-11 cursor-pointer rounded-sm border-2 border-secondary-foreground bg-primary p-2 lg:hidden lg:h-14 lg:w-14 lg:p-3",
+                    { hidden: inputValue == "" },
+                  )}
+                />
+                <Plus
+                  className={cn(
+                    "mx-4 h-11 w-11 cursor-pointer rounded-sm border-2 border-secondary-foreground bg-primary p-2 lg:h-14 lg:w-14 lg:p-3",
+                    { "hidden lg:flex": inputValue != "" },
+                  )}
+                  onClick={menuClick}
+                />
+              </div>
+            </div>
+          </div>
+        </ResizablePanel>
+      </ResizablePanelGroup>
+    </main>
   );
 }
