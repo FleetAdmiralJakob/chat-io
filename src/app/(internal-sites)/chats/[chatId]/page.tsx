@@ -107,6 +107,7 @@ export default function Page({ params }: { params: { chatId: string } }) {
         privateChatId: chatId,
         from: userInfo,
         readBy: [userInfo],
+        sent: false,
       };
       localStore.setQuery(api.messages.getMessages, { chatId }, [
         ...existingMessages,
