@@ -133,13 +133,19 @@ export const Message = ({
             <div className="mr-2 text-[75%] font-bold text-secondary-foreground">
               {!message.deleted
                 ? message.readBy
-                  ? message.readBy.map((user) =>
-                      user.username != clerkUser.user?.username
-                        ? "Read"
-                        : message.sent
-                          ? "Sent"
-                          : "Sending",
-                    )
+                  ? message.readBy.map((user) => {
+                      if (user.username != clerkUser.user?.username) {
+                        return "Read";
+                      } else {
+                        if (message.readBy.length == 1 && message.sent) {
+                          return "Sent";
+                        } else if (message.readBy.length == 1) {
+                          return "Sending";
+                        } else {
+                          return null;
+                        }
+                      }
+                    })
                   : null
                 : null}
             </div>
