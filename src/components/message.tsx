@@ -4,7 +4,7 @@ import { api } from "../../convex/_generated/api";
 import { Ban, CopyCheck, Forward, Info, Trash2 } from "lucide-react";
 import { FunctionReturnType } from "convex/server";
 import { useInView } from "react-intersection-observer";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "~/lib/utils";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -76,7 +76,7 @@ export const Message = ({
   const markRead = useMutation(api.messages.markMessageRead);
 
   useEffect(() => {
-    if (inView) {
+    if (inView && message.sent) {
       markRead({ messageId: message._id });
     }
   }, [inView, message._id, message.deleted, deleteMessage]);
@@ -133,13 +133,19 @@ export const Message = ({
             <div className="mr-2 text-[75%] font-bold text-secondary-foreground">
               {!message.deleted
                 ? message.readBy
-                  ? message.readBy.map((user) =>
-                      user.username != clerkUser.user?.username
-                        ? "Read"
-                        : message.readBy.length == 1
-                          ? "Sent"
-                          : null,
-                    )
+                  ? message.readBy.map((user) => {
+                      if (user.username != clerkUser.user?.username) {
+                        return "Read";
+                      } else {
+                        if (message.readBy.length === 1 && message.sent) {
+                          return "Sent";
+                        } else if (message.readBy.length === 1) {
+                          return "Sending";
+                        } else {
+                          return null;
+                        }
+                      }
+                    })
                   : null
                 : null}
             </div>

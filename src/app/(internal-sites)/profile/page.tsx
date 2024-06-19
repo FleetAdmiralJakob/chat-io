@@ -1,13 +1,13 @@
 "use client";
-
-import { ArrowRight, Lock } from "lucide-react";
+import { Avatar, AvatarFallback } from "~/components/ui/avatar";
+import {ArrowRight, Lock} from "lucide-react";
 import { Bell } from "lucide-react";
 import Link from "next/link";
 import { SendHorizontal } from "lucide-react";
 import { Settings } from "lucide-react";
 import { UsersRound } from "lucide-react";
-import { cn } from "~/lib/utils";
 import { useUser } from "@clerk/nextjs";
+import {cn} from "~/lib/utils";
 
 interface settingsCard {
   title: string;
@@ -28,7 +28,7 @@ export default function Profile() {
   ];
 
   return (
-    <div className="mt-7 flex h-screen flex-col items-center lg:mt-0 lg:justify-around lg:pl-24">
+    <main className="mt-7 flex h-screen flex-col items-center lg:mt-0 lg:justify-around lg:pl-24">
       <div className="flex flex-col items-center">
         <p className="my-10 text-xl font-bold sm:text-2xl">Profile</p>
       </div>
@@ -109,6 +109,6 @@ export default function Profile() {
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

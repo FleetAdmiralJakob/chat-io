@@ -18,6 +18,7 @@ import type * as chats from "../chats.js";
 import type * as lib_functions from "../lib/functions.js";
 import type * as lib_types from "../lib/types.js";
 import type * as messages from "../messages.js";
+import type * as users from "../users.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -32,6 +33,7 @@ declare const fullApi: ApiFromModules<{
   "lib/functions": typeof lib_functions;
   "lib/types": typeof lib_types;
   messages: typeof messages;
+  users: typeof users;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,
