@@ -19,6 +19,7 @@ export const getMessages = query({
         userId: undefined,
         from: await ctx.table("users").getX(message.userId),
         readBy: await message.edge("readBy"),
+        sent: true,
       }));
   },
 });
