@@ -27,13 +27,27 @@ export async function POST(request: Request) {
   } catch (e) {
     if (isClerkAPIResponseError(e)) {
       if (e.errors.some((error) => error.code === "form_identifier_exists")) {
-        return Response.json(
-          {
-            message: "Failed to create an account. Username already exists.",
-            statusText: "username_is_taken",
-          },
-          { status: 400 },
-        );
+        if (
+          e.errors.some((error) => error.meta?.paramName === "email_address")
+        ) {
+          return Response.json(
+            {
+              message: "Failed to create an account. Email already exists.",
+              statusText: "email_is_taken",
+            },
+            { status: 400 },
+          );
+        }
+
+        if (e.errors.some((error) => error.meta?.paramName === "username")) {
+          return Response.json(
+            {
+              message: "Failed to create an account. Username already exists.",
+              statusText: "username_is_taken",
+            },
+            { status: 400 },
+          );
+        }
       }
       if (e.errors.some((error) => error.code === "form_password_pwned")) {
         return Response.json(

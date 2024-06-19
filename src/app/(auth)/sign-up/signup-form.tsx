@@ -89,6 +89,15 @@ export function SignUpForm() {
       return;
     }
 
+    if (parsedResponseBody.data?.statusText === "email_is_taken") {
+      form.setError("email", {
+        message: "Email is already taken. Please choose another.",
+      });
+
+      setFormIsLoading(false);
+      return;
+    }
+
     if (parsedResponseBody.data?.statusText === "form_password_pwned") {
       form.setError("password", {
         message:
