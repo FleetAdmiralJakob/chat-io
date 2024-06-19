@@ -75,6 +75,7 @@ export default function PublicHomepage() {
             onClick={() => {
               scrollCallback();
             }}
+            aria-label="Automatically scroll down to all the features of Chat.io"
           >
             <FaCircleArrowDown className={"h-7 animate-bounce text-2xl"} />
           </button>
@@ -91,7 +92,7 @@ export default function PublicHomepage() {
           <IoCloudDownloadOutline className={"mb-2 ml-7 text-4xl"} />
           <p className={"mb-5 text-xl"}>Installable</p>
         </div>
-        <p className={"w-3/4 text-secondary-foreground  md:w-1/2 lg:w-1/4"}>
+        <p className={"w-3/4 text-secondary-foreground md:w-1/2 lg:w-1/4"}>
           Whether you have on iOS, Android, Windows, or Mac, Weather.io installs
           smoothly across all major platforms, ensuring a consistent and
           reliable weather experience across all your devices.
@@ -100,7 +101,7 @@ export default function PublicHomepage() {
           <FaGithub className={"mb-2 ml-10 mt-16 text-4xl"} />
           <p className={"mb-5 text-xl"}>Open Source</p>
         </div>
-        <p className={"w-3/4 text-secondary-foreground  md:w-1/2 lg:w-1/4"}>
+        <p className={"w-3/4 text-secondary-foreground md:w-1/2 lg:w-1/4"}>
           By embracing open-source principles, Weather.io invites collaboration
           and innovation from a global community of developers, ensuring a
           robust and customizable weather solution tailored to your needs.
@@ -110,7 +111,7 @@ export default function PublicHomepage() {
           <p className={"mb-5 text-xl"}>Privacy</p>
         </div>
         <p
-          className={"mb-20 w-3/4 text-secondary-foreground md:w-1/2 lg:w-1/4 "}
+          className={"mb-20 w-3/4 text-secondary-foreground md:w-1/2 lg:w-1/4"}
         >
           Chat.io boasts strong security measures, including robust encryption
           and strict access controls, ensuring user data is always safeguarded.

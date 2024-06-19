@@ -1,5 +1,5 @@
 const SettingsPage = () => {
-  return <div>Settings</div>;
+  return <main>Settings</main>;
 };
 
 export default SettingsPage;
