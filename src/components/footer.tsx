@@ -19,7 +19,7 @@ const Footer = () => {
     <>
       <div
         className={
-          "mt-10 block h-48 justify-between bg-card-foreground text-xl text-foreground lg:flex lg:h-24"
+          "block h-48 justify-between bg-card-foreground text-xl text-foreground lg:flex lg:h-24"
         }
       >
         <div
