@@ -3,7 +3,7 @@ import { type MetadataRoute } from "next";
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Chat.io",
-    short_name: "Chat",
+    short_name: "Chat.io",
     icons: [
       {
         src: "/icons/icon-512x-512-any.png",
