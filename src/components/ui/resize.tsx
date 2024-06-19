@@ -33,6 +33,7 @@ const ResizableHandle = ({
       className,
     )}
     {...props}
+    aria-label="Resize here to get enough space to view either the chats or the messages"
   >
     {withHandle && (
       <div className="z-10 flex h-4 w-3 items-center justify-center rounded-sm border bg-border">

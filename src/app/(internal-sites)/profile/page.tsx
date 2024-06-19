@@ -1,5 +1,5 @@
 import { Avatar, AvatarFallback } from "~/components/ui/avatar";
-import { Lock, NotebookText } from "lucide-react";
+import { Lock } from "lucide-react";
 
 import { Bell } from "lucide-react";
 import Link from "next/link";
@@ -26,24 +26,21 @@ export default async function Profile() {
   const username = user?.username;
 
   return (
-    <div className=" flex h-full flex-col items-center justify-around lg:pl-24">
+    <main className="flex h-full flex-col items-center justify-around lg:pl-24">
       <div className="flex flex-col items-center">
-        <p className=" my-10 mt-16 text-xl font-bold sm:text-2xl xl:hidden">
+        <p className="my-10 mt-16 text-xl font-bold sm:text-2xl xl:hidden">
           Profile
         </p>
 
         <div className="flex xl:mt-14">
           <div className="text-sm">
-            <Avatar className="h-12 w-12 text-white ">
+            <Avatar className="h-12 w-12 text-white">
               <AvatarFallback>
                 {username ? username.substring(0, 2).toUpperCase() : "Y"}
               </AvatarFallback>
             </Avatar>
           </div>
-          <div
-            className="ml-4 text-sm
-            xl:mt-2 xl:text-lg"
-          >
+          <div className="ml-4 text-sm xl:mt-2 xl:text-lg">
             {user?.lastName && user.firstName ? (
               <div>
                 {user.firstName} {user?.lastName} / <br className="xl:hidden" />{" "}
@@ -71,6 +68,6 @@ export default async function Profile() {
           );
         })}
       </div>
-    </div>
+    </main>
   );
 }
