@@ -3,8 +3,9 @@
 import { Input } from "~/components/ui/input";
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
-import { HardDriveUpload, MailCheck, MailX } from "lucide-react";
+import { ChevronLeft, HardDriveUpload, MailCheck, MailX } from "lucide-react";
 import { z } from "zod";
+import { useRouter } from "next/navigation";
 
 const SettingsPage = () => {
   const EmailValidator = z.object({
@@ -37,6 +38,7 @@ const SettingsPage = () => {
     clerkUser.user?.emailAddresses,
   ]);
 
+  const router = useRouter();
   const [emailError, setEmailError] = useState(false);
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -62,9 +64,18 @@ const SettingsPage = () => {
 
   return (
     <>
-      <div className="flex h-screen flex-col items-center justify-center lg:ml-24">
-        <div className="flex h-2/3 w-full flex-col items-center justify-around lg:h-1/2">
-          <div className="w-11/12 lg:w-1/3">
+      <div className="flex justify-center text-destructive-foreground lg:hidden">
+        <p className="absolute top-12 text-xl font-semibold">Settings</p>
+        <ChevronLeft
+          className="absolute left-10 top-11 h-8 w-8"
+          onClick={() => {
+            router.back();
+          }}
+        />
+      </div>
+      <main className="flex h-screen flex-col items-center justify-center lg:ml-24">
+        <div className="flex h-2/3 w-full flex-col items-center justify-center sm:h-1/2">
+          <div className="mb-4 w-11/12 lg:w-1/3">
             <div className="relative w-full">
               <Input
                 placeholder="First name"
@@ -90,7 +101,7 @@ const SettingsPage = () => {
               First name
             </p>
           </div>
-          <div className="w-11/12 lg:w-1/3">
+          <div className="mb-4 w-11/12 lg:w-1/3">
             <div className="relative w-full">
               <Input
                 placeholder="Last name"
@@ -116,7 +127,7 @@ const SettingsPage = () => {
               Last name
             </p>
           </div>
-          <div className="w-11/12 lg:w-1/3">
+          <div className="mb-4 w-11/12 lg:w-1/3">
             <div className="relative w-full">
               <Input
                 value={emailValue}
@@ -141,17 +152,32 @@ const SettingsPage = () => {
               If you forgott your password we can send you a Email
             </p>
           </div>
-          <div className="w-11/12 lg:w-1/3">
-            <Input
-              placeholder="Password"
-              className="border-2 border-secondary"
-            />
+          <div className="mb-4 w-11/12 lg:w-1/3">
+            <div className="relative w-full">
+              <Input
+                placeholder="Password"
+                className="border-2 border-secondary"
+              />
+
+              <div
+                onClick={() => {
+                  clerkUser.user?.updatePassword({
+                    currentPassword: "Jakob78_12",
+                    newPassword: "Test1234!...",
+                  });
+                }}
+                className="absolute right-2 top-1/2 flex -translate-y-1/2 transform cursor-pointer rounded-sm bg-secondary p-2 px-3 text-[100%] text-destructive-foreground"
+              >
+                <HardDriveUpload className="mr-1 h-5 w-5" />
+                <p>Update</p>
+              </div>
+            </div>
             <p className="ml-2 mt-0.5 text-[85%] text-secondary-foreground">
               Password
             </p>
           </div>
         </div>
-      </div>
+      </main>
     </>
   );
 };
