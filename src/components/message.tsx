@@ -76,7 +76,7 @@ export const Message = ({
   const markRead = useMutation(api.messages.markMessageRead);
 
   useEffect(() => {
-    if (inView) {
+    if (inView && message.sent) {
       markRead({ messageId: message._id });
     }
   }, [inView, message._id, message.deleted, deleteMessage]);
