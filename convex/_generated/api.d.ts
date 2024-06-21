@@ -21,6 +21,7 @@ import type * as messages from "../messages.js";
 import type * as notificationsConvex from "../notificationsConvex.js";
 import type * as notificationsNode from "../notificationsNode.js";
 import type * as subscriptions from "../subscriptions.js";
+import type * as users from "../users.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -35,6 +36,7 @@ declare const fullApi: ApiFromModules<{
   "lib/functions": typeof lib_functions;
   "lib/types": typeof lib_types;
   messages: typeof messages;
+  users: typeof users;
   notificationsConvex: typeof notificationsConvex;
   notificationsNode: typeof notificationsNode;
   subscriptions: typeof subscriptions;

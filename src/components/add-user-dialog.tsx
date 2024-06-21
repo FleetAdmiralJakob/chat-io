@@ -83,6 +83,7 @@ export function AddUserDialog({
         friendsUsername: values.username,
         friendsUsernameId: values.usernameId,
       });
+      form.reset();
       setDialogOpen(false);
     } catch (e) {
       if (e instanceof ConvexError) {
@@ -117,6 +118,7 @@ export function AddUserDialog({
                   "inline-flex aspect-square w-11 items-center justify-center rounded-full bg-background",
                   classNameDialogTrigger,
                 )}
+                aria-label="Click here to add a chat with a user"
               >
                 <UserRoundPlus className="w-full" />
               </button>
