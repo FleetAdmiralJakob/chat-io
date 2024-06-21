@@ -36,10 +36,10 @@ declare const fullApi: ApiFromModules<{
   "lib/functions": typeof lib_functions;
   "lib/types": typeof lib_types;
   messages: typeof messages;
-  users: typeof users;
   notificationsConvex: typeof notificationsConvex;
   notificationsNode: typeof notificationsNode;
   subscriptions: typeof subscriptions;
+  users: typeof users;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,
