@@ -7,7 +7,8 @@ export const getMessages = query({
     const identity = await ctx.auth.getUserIdentity();
 
     if (identity === null) {
-      throw new ConvexError("Unauthenticated call to mutation");
+      console.error("Unauthenticated call to mutation");
+      return null;
     }
 
     const parsedChatId = ctx.table("privateChats").normalizeId(args.chatId);
@@ -44,7 +45,8 @@ export const createMessage = mutation({
     const identity = await ctx.auth.getUserIdentity();
 
     if (identity === null) {
-      throw new ConvexError("Unauthenticated call to mutation");
+      console.error("Unauthenticated call to mutation");
+      return null;
     }
 
     const convexUser = await ctx
@@ -94,7 +96,8 @@ export const deleteMessage = mutation({
     const identity = await ctx.auth.getUserIdentity();
 
     if (identity === null) {
-      throw new ConvexError("Unauthenticated call to mutation");
+      console.error("Unauthenticated call to mutation");
+      return null;
     }
 
     const parsedMessageId = ctx.table("messages").normalizeId(args.messageId);
@@ -128,7 +131,8 @@ export const markMessageRead = mutation({
     const identity = await ctx.auth.getUserIdentity();
 
     if (identity === null) {
-      throw new ConvexError("Unauthenticated call to mutation");
+      console.error("Unauthenticated call to mutation");
+      return null;
     }
 
     const convexUser = await ctx

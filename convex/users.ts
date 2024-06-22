@@ -6,7 +6,8 @@ export const getUserData = query({
     const identity = await ctx.auth.getUserIdentity();
 
     if (identity === null) {
-      throw new ConvexError("Unauthenticated call to mutation");
+      console.error("Unauthenticated call to mutation");
+      return null;
     }
 
     return ctx.table("users").getX("clerkId", identity.tokenIdentifier);
