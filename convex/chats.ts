@@ -97,7 +97,7 @@ export const getChats = query({
     const identity = await ctx.auth.getUserIdentity();
 
     if (identity === null) {
-      return null;
+      throw new ConvexError("Unauthenticated call to mutation");
     }
 
     return await ctx
@@ -168,7 +168,7 @@ export const getChatInfoFromId = query({
     const identity = await ctx.auth.getUserIdentity();
 
     if (identity === null) {
-      return null;
+      throw new ConvexError("Unauthenticated call to mutation");
     }
 
     const parsedChatId = ctx.table("privateChats").normalizeId(args.chatId);
@@ -183,13 +183,21 @@ export const getChatInfoFromId = query({
       throw new ConvexError("did not find chat");
     }
 
-    const chatWithUser = {
+    const usersInChat = await chat.edge("users");
+
+    if (
+      !usersInChat.some((user) => user.clerkId === identity.tokenIdentifier)
+    ) {
+      throw new ConvexError(
+        "UNAUTHORIZED REQUEST: User requested chat info from a chat in which he is not in.",
+      );
+    }
+
+    return {
       basicChatInfo: chat,
-      otherUser: (await chat.edge("users")).filter(
+      otherUser: usersInChat.filter(
         (user) => user.clerkId !== identity.tokenIdentifier,
       ),
     };
-
-    return chatWithUser;
   },
 });
