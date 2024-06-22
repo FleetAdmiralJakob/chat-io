@@ -6,7 +6,8 @@ export const createChat = mutation({
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (identity === null) {
-      throw new ConvexError("Unauthenticated call to mutation");
+      console.error("Unauthenticated call to mutation");
+      return null;
     }
 
     const user1 = await ctx
@@ -58,7 +59,8 @@ export const initialConvexSetup = mutation({
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
     if (identity === null) {
-      throw new ConvexError("Unauthenticated call to mutation");
+      console.error("Unauthenticated call to mutation");
+      return null;
     }
 
     if (!identity.nickname) {
@@ -97,7 +99,8 @@ export const getChats = query({
     const identity = await ctx.auth.getUserIdentity();
 
     if (identity === null) {
-      throw new ConvexError("Unauthenticated call to mutation");
+      console.error("Unauthenticated call to mutation");
+      return null;
     }
 
     return await ctx
@@ -168,7 +171,8 @@ export const getChatInfoFromId = query({
     const identity = await ctx.auth.getUserIdentity();
 
     if (identity === null) {
-      throw new ConvexError("Unauthenticated call to mutation");
+      console.error("Unauthenticated call to mutation");
+      return null;
     }
 
     const parsedChatId = ctx.table("privateChats").normalizeId(args.chatId);

@@ -18,7 +18,7 @@ import React, { useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery } from "convex/react";
+import { useMutation } from "convex/react";
 import { api } from "../../../../../convex/_generated/api";
 import { Form, FormControl, FormField } from "~/components/ui/form";
 import { useRef } from "react";
@@ -36,6 +36,7 @@ import { Message } from "~/components/message";
 import { Input } from "~/components/ui/input";
 import { Id } from "../../../../../convex/_generated/dataModel";
 import { FunctionReturnType } from "convex/server";
+import { useQueryWithStatus } from "~/app/convex-client-provider";
 
 dayjs.extend(relativeTime);
 
@@ -81,8 +82,6 @@ export default function Page({ params }: { params: { chatId: string } }) {
     return () => clearTimeout(timer);
   }, []);
 
-  const userInfo = useQuery(api.users.getUserData, {});
-
   const sendMessage = useMutation(
     api.messages.createMessage,
   ).withOptimisticUpdate((localStore, args) => {
@@ -95,10 +94,10 @@ export default function Page({ params }: { params: { chatId: string } }) {
     const existingChats = localStore.getQuery(api.chats.getChats);
     // If we've loaded the api.messages.getMessages and api.chats.getChats query, push an optimistic message
     // onto the lists.
-    if (existingMessages !== undefined && existingChats && userInfo) {
+    if (existingMessages !== undefined && existingChats && userInfo.data) {
       const now = Date.now();
-      const newMessage: FunctionReturnType<
-        typeof api.messages.getMessages
+      const newMessage: NonNullable<
+        FunctionReturnType<typeof api.messages.getMessages>
       >[number] = {
         userId: undefined,
         _id: crypto.randomUUID() as Id<"messages">,
@@ -106,12 +105,12 @@ export default function Page({ params }: { params: { chatId: string } }) {
         content,
         deleted: false,
         privateChatId: chatId,
-        from: userInfo,
-        readBy: [userInfo],
+        from: userInfo.data,
+        readBy: [userInfo.data],
         sent: false,
       };
       localStore.setQuery(api.messages.getMessages, { chatId }, [
-        ...existingMessages,
+        ...(Array.isArray(existingMessages) ? existingMessages : []),
         newMessage,
       ]);
       localStore.setQuery(
@@ -123,7 +122,7 @@ export default function Page({ params }: { params: { chatId: string } }) {
               ...chat,
               lastMessage: {
                 ...newMessage,
-                userId: userInfo._id,
+                userId: userInfo.data!._id,
               },
             };
           } else {
@@ -134,13 +133,25 @@ export default function Page({ params }: { params: { chatId: string } }) {
     }
   });
 
-  const messages = useQuery(api.messages.getMessages, {
+  const userInfo = useQueryWithStatus(api.users.getUserData, {});
+
+  const messages = useQueryWithStatus(api.messages.getMessages, {
     chatId: params.chatId,
   });
 
-  const chatInfo = useQuery(api.chats.getChatInfoFromId, {
+  const chatInfo = useQueryWithStatus(api.chats.getChatInfoFromId, {
     chatId: params.chatId,
   });
+
+  useEffect(() => {
+    if (
+      userInfo.error?.message.includes("UNAUTHORIZED REQUEST") ||
+      messages.error?.message.includes("UNAUTHORIZED REQUEST") ||
+      chatInfo.error?.message.includes("UNAUTHORIZED REQUEST")
+    ) {
+      router.push("/chats");
+    }
+  }, [userInfo, messages, chatInfo]);
 
   const is2xlOrmore = useMediaQuery({ query: "(max-width: 1537px)" });
   const maxSize = is2xlOrmore ? 50 : 60;
@@ -239,10 +250,12 @@ export default function Page({ params }: { params: { chatId: string } }) {
               <Avatar className="mr-0.5 text-sm text-white">
                 <AvatarFallback>
                   {chatInfo ? (
-                    chatInfo.basicChatInfo.support ? (
+                    chatInfo.data?.basicChatInfo.support ? (
                       "C"
-                    ) : chatInfo.otherUser[0] ? (
-                      chatInfo.otherUser[0].username.slice(0, 2).toUpperCase()
+                    ) : chatInfo.data?.otherUser[0] ? (
+                      chatInfo.data.otherUser[0].username
+                        .slice(0, 2)
+                        .toUpperCase()
                     ) : (
                       <NotebookText />
                     )
@@ -255,10 +268,10 @@ export default function Page({ params }: { params: { chatId: string } }) {
                 <div className="mx-2.5 flex flex-col gap-1 truncate">
                   <div className="truncate text-sm font-bold lg:text-lg">
                     {chatInfo ? (
-                      chatInfo.basicChatInfo.support ? (
+                      chatInfo.data?.basicChatInfo.support ? (
                         "Chat.io"
-                      ) : chatInfo.otherUser[0] ? (
-                        chatInfo.otherUser[0].username
+                      ) : chatInfo.data?.otherUser[0] ? (
+                        chatInfo.data.otherUser[0].username
                       ) : (
                         "My Notes"
                       )
@@ -275,10 +288,10 @@ export default function Page({ params }: { params: { chatId: string } }) {
                   </div>
                 </div>
                 <div className="mt-0.5">
-                  {chatInfo ? (
-                    chatInfo.basicChatInfo.support ? (
+                  {chatInfo.data ? (
+                    chatInfo.data.basicChatInfo.support ? (
                       <Badge>Support</Badge>
-                    ) : !chatInfo?.otherUser[0] ? (
+                    ) : !chatInfo.data?.otherUser[0] ? (
                       <Badge>Tool</Badge>
                     ) : null
                   ) : null}
@@ -289,7 +302,7 @@ export default function Page({ params }: { params: { chatId: string } }) {
               className={cn(
                 "mr-1 flex cursor-pointer rounded-sm border-secondary-foreground px-2 text-sm lg:border-2 lg:bg-primary 2xl:mr-16",
                 {
-                  hidden: chatInfo?.basicChatInfo.support,
+                  hidden: chatInfo.data?.basicChatInfo.support,
                 },
               )}
             >
@@ -307,8 +320,8 @@ export default function Page({ params }: { params: { chatId: string } }) {
             onScroll={handleScroll}
             ref={messagesEndRef}
           >
-            {messages ? (
-              messages.map((message) => (
+            {messages.data ? (
+              messages.data.map((message) => (
                 <Message
                   selectedMessageId={selectedMessageId}
                   setSelectedMessageId={setSelectedMessageId}

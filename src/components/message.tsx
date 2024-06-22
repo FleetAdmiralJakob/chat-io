@@ -19,7 +19,9 @@ export const Message = ({
   selectedMessageId,
   setSelectedMessageId,
 }: {
-  message: FunctionReturnType<typeof api.messages.getMessages>[number];
+  message: NonNullable<
+    FunctionReturnType<typeof api.messages.getMessages>
+  >[number];
   selectedMessageId: string | null;
   setSelectedMessageId: React.Dispatch<React.SetStateAction<string | null>>;
 }) => {
