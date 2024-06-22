@@ -89,9 +89,9 @@ const Chats: React.FC<{
                   className={cn("w-full border-t-2 border-secondary", {
                     "border-0": index == 0,
                   })}
+                  key={index}
                 >
                   <Link
-                    key={index}
                     className={cn(
                       "flex w-full items-center justify-between truncate px-5 py-6 lg:ml-5 lg:px-0",
                     )}
@@ -151,9 +151,9 @@ const Chats: React.FC<{
                 className={cn("w-full border-t-2 border-secondary", {
                   "border-0": index == 0,
                 })}
+                key={index}
               >
                 <Link
-                  key={index}
                   className={cn(
                     "flex w-full items-center justify-between truncate px-5 py-6 lg:ml-5 lg:border-0 lg:px-0",
                   )}
