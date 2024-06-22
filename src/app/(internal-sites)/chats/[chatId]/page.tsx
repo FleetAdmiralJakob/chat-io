@@ -249,10 +249,10 @@ export default function Page({ params }: { params: { chatId: string } }) {
             <div className="ml-1 flex w-full items-center justify-start overflow-hidden 2xl:ml-16">
               <Avatar className="mr-0.5 text-sm text-white">
                 <AvatarFallback>
-                  {chatInfo ? (
-                    chatInfo.data?.basicChatInfo.support ? (
+                  {chatInfo.data ? (
+                    chatInfo.data.basicChatInfo.support ? (
                       "C"
-                    ) : chatInfo.data?.otherUser[0] ? (
+                    ) : chatInfo.data.otherUser[0] ? (
                       chatInfo.data.otherUser[0].username
                         .slice(0, 2)
                         .toUpperCase()
@@ -267,10 +267,10 @@ export default function Page({ params }: { params: { chatId: string } }) {
               <div className="flex truncate">
                 <div className="mx-2.5 flex flex-col gap-1 truncate">
                   <div className="truncate text-sm font-bold lg:text-lg">
-                    {chatInfo ? (
-                      chatInfo.data?.basicChatInfo.support ? (
+                    {chatInfo.data ? (
+                      chatInfo.data.basicChatInfo.support ? (
                         "Chat.io"
-                      ) : chatInfo.data?.otherUser[0] ? (
+                      ) : chatInfo.data.otherUser[0] ? (
                         chatInfo.data.otherUser[0].username
                       ) : (
                         "My Notes"
@@ -280,7 +280,7 @@ export default function Page({ params }: { params: { chatId: string } }) {
                     )}
                   </div>
                   <div className="text-sm text-secondary-foreground">
-                    {chatInfo ? (
+                    {chatInfo.data ? (
                       "Offline"
                     ) : (
                       <Skeleton className="h-5 w-16"></Skeleton>
