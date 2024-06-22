@@ -1,8 +1,11 @@
 "use client";
 
-import { base64ToUint8Array, arrayBufferToString } from "~/lib/utils";
+import {
+  arrayBufferToBase64String,
+  base64StringToUint8Array,
+} from "~/lib/utils";
 import { useEffect } from "react";
-import { isFirstVisit, registration$, subscription$ } from "~/states";
+import { registration$, subscription$ } from "~/states";
 import { useMutation as useConvexMutation } from "convex/react";
 import { useMutation as useRqMutation } from "@tanstack/react-query";
 import { api } from "../../../convex/_generated/api";
@@ -24,7 +27,7 @@ const usePushNotificationSubscription = () => {
       try {
         const sub = await registration$.get()!.pushManager.subscribe({
           userVisibleOnly: true,
-          applicationServerKey: base64ToUint8Array(
+          applicationServerKey: base64StringToUint8Array(
             process.env.NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY,
           ),
         });
@@ -34,8 +37,8 @@ const usePushNotificationSubscription = () => {
             subscription: {
               endpoint: sub.endpoint,
               expirationTime: sub.expirationTime ?? undefined,
-              p256dh: arrayBufferToString(sub.getKey("p256dh")!),
-              auth: arrayBufferToString(sub.getKey("auth")!),
+              p256dh: arrayBufferToBase64String(sub.getKey("p256dh")!),
+              auth: arrayBufferToBase64String(sub.getKey("auth")!),
             },
           });
         } else {
@@ -80,11 +83,7 @@ export const PushSubscriptionManager = observer(() => {
         registration$.set(reg);
       });
 
-      if (isFirstVisit.get()) {
-        isFirstVisit.set(false);
-        console.log("hi");
-        subscribe.mutate();
-      }
+      subscribe.mutate();
     }
   }, []);
 
