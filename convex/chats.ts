@@ -6,7 +6,8 @@ export const createChat = mutation({
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (identity === null) {
-      throw new ConvexError("Unauthenticated call to mutation");
+      console.error("Unauthenticated call to mutation");
+      return null;
     }
 
     const user1 = await ctx
@@ -58,7 +59,8 @@ export const initialConvexSetup = mutation({
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
     if (identity === null) {
-      throw new ConvexError("Unauthenticated call to mutation");
+      console.error("Unauthenticated call to mutation");
+      return null;
     }
 
     if (!identity.nickname) {
@@ -97,6 +99,7 @@ export const getChats = query({
     const identity = await ctx.auth.getUserIdentity();
 
     if (identity === null) {
+      console.error("Unauthenticated call to mutation");
       return null;
     }
 
@@ -168,6 +171,7 @@ export const getChatInfoFromId = query({
     const identity = await ctx.auth.getUserIdentity();
 
     if (identity === null) {
+      console.error("Unauthenticated call to mutation");
       return null;
     }
 
@@ -183,13 +187,21 @@ export const getChatInfoFromId = query({
       throw new ConvexError("did not find chat");
     }
 
-    const chatWithUser = {
+    const usersInChat = await chat.edge("users");
+
+    if (
+      !usersInChat.some((user) => user.clerkId === identity.tokenIdentifier)
+    ) {
+      throw new ConvexError(
+        "UNAUTHORIZED REQUEST: User requested chat info from a chat in which he is not in.",
+      );
+    }
+
+    return {
       basicChatInfo: chat,
-      otherUser: (await chat.edge("users")).filter(
+      otherUser: usersInChat.filter(
         (user) => user.clerkId !== identity.tokenIdentifier,
       ),
     };
-
-    return chatWithUser;
   },
 });
