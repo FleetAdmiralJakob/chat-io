@@ -291,7 +291,7 @@ export default function Page({ params }: { params: { chatId: string } }) {
                   {chatInfo.data ? (
                     chatInfo.data.basicChatInfo.support ? (
                       <Badge>Support</Badge>
-                    ) : !chatInfo.data?.otherUser[0] ? (
+                    ) : !chatInfo.data.otherUser[0] ? (
                       <Badge>Tool</Badge>
                     ) : null
                   ) : null}
