@@ -36,7 +36,7 @@ import { Message } from "~/components/message";
 import { Input } from "~/components/ui/input";
 import { Id } from "../../../../../convex/_generated/dataModel";
 import { FunctionReturnType } from "convex/server";
-import { useQueryWithStatus } from "~/app/convex-client-provider";
+import { useQueryWithStatus } from "~/components/providers/convex-client-provider";
 
 dayjs.extend(relativeTime);
 
