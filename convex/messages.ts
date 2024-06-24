@@ -1,5 +1,6 @@
 import { mutation, query } from "./lib/functions";
 import { ConvexError, v } from "convex/values";
+import { internal } from "./_generated/api";
 
 export const getMessages = query({
   args: { chatId: v.string() },
@@ -7,7 +8,7 @@ export const getMessages = query({
     const identity = await ctx.auth.getUserIdentity();
 
     if (identity === null) {
-      console.error("Unauthenticated call to mutation");
+      console.error("Unauthenticated call to query getMessages");
       return null;
     }
 
@@ -45,7 +46,7 @@ export const createMessage = mutation({
     const identity = await ctx.auth.getUserIdentity();
 
     if (identity === null) {
-      console.error("Unauthenticated call to mutation");
+      console.error("Unauthenticated call to mutation createMessage");
       return null;
     }
 
@@ -80,13 +81,22 @@ export const createMessage = mutation({
 
     if (args.content.trim() === "") throw new Error("Post cannot be empty");
 
-    await ctx.table("messages").insert({
+    const messageId = await ctx.table("messages").insert({
       userId: convexUser._id,
       privateChatId: parsedChatId,
       content: args.content.trim(),
       deleted: false,
       readBy: [convexUser._id],
     });
+
+    await ctx.scheduler.runAfter(
+      0,
+      internal.notificationsConvex.sendNotifications,
+      {
+        messageId,
+        chatId: parsedChatId,
+      },
+    );
   },
 });
 
@@ -96,7 +106,7 @@ export const deleteMessage = mutation({
     const identity = await ctx.auth.getUserIdentity();
 
     if (identity === null) {
-      console.error("Unauthenticated call to mutation");
+      console.error("Unauthenticated call to mutation deleteMessage");
       return null;
     }
 
@@ -131,7 +141,7 @@ export const markMessageRead = mutation({
     const identity = await ctx.auth.getUserIdentity();
 
     if (identity === null) {
-      console.error("Unauthenticated call to mutation");
+      console.error("Unauthenticated call to mutation markMessageRead");
       return null;
     }
 

@@ -18,6 +18,9 @@ import type * as chats from "../chats.js";
 import type * as lib_functions from "../lib/functions.js";
 import type * as lib_types from "../lib/types.js";
 import type * as messages from "../messages.js";
+import type * as notificationsConvex from "../notificationsConvex.js";
+import type * as notificationsNode from "../notificationsNode.js";
+import type * as subscriptions from "../subscriptions.js";
 import type * as users from "../users.js";
 
 /**
@@ -33,6 +36,9 @@ declare const fullApi: ApiFromModules<{
   "lib/functions": typeof lib_functions;
   "lib/types": typeof lib_types;
   messages: typeof messages;
+  notificationsConvex: typeof notificationsConvex;
+  notificationsNode: typeof notificationsNode;
+  subscriptions: typeof subscriptions;
   users: typeof users;
 }>;
 export declare const api: FilterApi<

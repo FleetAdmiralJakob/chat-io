@@ -1,6 +1,13 @@
 import { defineEnt, defineEntSchema, getEntDefinitions } from "convex-ents";
 import { v } from "convex/values";
 
+export const subscription = v.object({
+  endpoint: v.string(),
+  expirationTime: v.optional(v.number()),
+  auth: v.string(),
+  p256dh: v.string(),
+});
+
 const schema = defineEntSchema({
   privateChats: defineEnt({})
     .field("support", v.boolean(), { default: false })
@@ -14,6 +21,7 @@ const schema = defineEntSchema({
     .field("lastName", v.optional(v.string()))
     .edges("privateChats")
     .edges("messages", { ref: true })
+    .edge("notificationSubscription", { optional: true })
     .edges("readMessages", {
       to: "messages",
       inverseField: "readBy",
@@ -30,6 +38,7 @@ const schema = defineEntSchema({
       inverseField: "readMessages",
       table: "readMessages",
     }),
+  notificationSubscriptions: defineEnt({ subscription }).edge("user"),
 });
 
 export default schema;

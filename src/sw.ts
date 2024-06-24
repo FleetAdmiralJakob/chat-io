@@ -1,6 +1,7 @@
 import { defaultCache } from "@serwist/next/worker";
 import type { PrecacheEntry, SerwistGlobalConfig } from "serwist";
 import { Serwist } from "serwist";
+import { z } from "zod";
 
 // This declares the value of `injectionPoint` to TypeScript.
 // `injectionPoint` is the string that will be replaced by the
@@ -20,6 +21,51 @@ const serwist = new Serwist({
   clientsClaim: true,
   navigationPreload: true,
   runtimeCaching: defaultCache,
+});
+
+const messageSchema = z.object({
+  title: z.string(),
+  message: z.string(),
+  chatId: z.string(),
+});
+
+self.addEventListener("push", (event) => {
+  const message = JSON.parse(event.data?.text() ?? "");
+
+  const parsedMessage = messageSchema.parse(message);
+
+  event.waitUntil(
+    self.registration.showNotification(parsedMessage.title, {
+      body: parsedMessage.message,
+      icon: "/icons/icon-512x-512-any.png",
+      data: {
+        chatId: parsedMessage.chatId,
+      },
+    }),
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+
+  const chatId = event.notification.data.chatId;
+
+  event.waitUntil(
+    self.clients
+      .matchAll({ type: "window", includeUncontrolled: true })
+      .then((clientList) => {
+        if (clientList.length > 0) {
+          let client = clientList[0]!;
+          for (let i = 0; i < clientList.length; i++) {
+            if (clientList && clientList[i]!.focused) {
+              client = clientList[i]!;
+            }
+          }
+          return client.focus().then(() => client.navigate(`/chats/${chatId}`));
+        }
+        return self.clients.openWindow(`/chats/${chatId}`);
+      }),
+  );
 });
 
 serwist.addEventListeners();
