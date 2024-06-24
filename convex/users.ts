@@ -1,12 +1,11 @@
 import { query } from "./lib/functions";
-import { ConvexError } from "convex/values";
 
 export const getUserData = query({
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
 
     if (identity === null) {
-      console.error("Unauthenticated call to mutation");
+      console.error("Unauthenticated call to query getUserData");
       return null;
     }
 

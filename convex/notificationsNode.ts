@@ -1,7 +1,7 @@
 "use node";
 
 import webPush from "web-push";
-import { action, internalAction } from "./_generated/server";
+import { internalAction } from "./_generated/server";
 import { v } from "convex/values";
 import { subscription } from "./schema";
 
@@ -12,7 +12,7 @@ export const sendNotification = internalAction({
     chatId: v.id("privateChats"),
     subscription: subscription,
   },
-  handler: async (ctx, args) => {
+  handler: async (_, args) => {
     if (
       !process.env.NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY ||
       !process.env.WEB_PUSH_EMAIL ||

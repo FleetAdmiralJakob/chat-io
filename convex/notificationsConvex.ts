@@ -12,6 +12,8 @@ export const sendNotifications = internalMutation({
 
     const message = await ctx.table("messages").getX(args.messageId);
 
+    const userWhichSentMessage = await message.edgeX("user");
+
     const notificationPromises = usersInChat.map(async (user) => {
       const subscription = await user.edgeX("notificationSubscription");
 
@@ -22,7 +24,7 @@ export const sendNotifications = internalMutation({
           {
             chatId: args.chatId,
             messageContent: message.content,
-            senderUsername: user.username,
+            senderUsername: userWhichSentMessage.username,
             subscription: subscription.subscription,
           },
         );

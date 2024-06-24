@@ -10,6 +10,7 @@ export const saveSubscription = mutation({
     const identity = await ctx.auth.getUserIdentity();
 
     if (identity === null) {
+      console.error("Unauthenticated call to mutation saveSubscription");
       return null;
     }
 
@@ -44,6 +45,7 @@ export const deleteSubscription = mutation({
     const identity = await ctx.auth.getUserIdentity();
 
     if (identity === null) {
+      console.error("Unauthenticated call to mutation deleteSubscription");
       return null;
     }
 

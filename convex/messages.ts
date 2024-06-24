@@ -8,7 +8,7 @@ export const getMessages = query({
     const identity = await ctx.auth.getUserIdentity();
 
     if (identity === null) {
-      console.error("Unauthenticated call to mutation");
+      console.error("Unauthenticated call to query getMessages");
       return null;
     }
 
@@ -46,7 +46,7 @@ export const createMessage = mutation({
     const identity = await ctx.auth.getUserIdentity();
 
     if (identity === null) {
-      console.error("Unauthenticated call to mutation");
+      console.error("Unauthenticated call to mutation createMessage");
       return null;
     }
 
@@ -106,7 +106,7 @@ export const deleteMessage = mutation({
     const identity = await ctx.auth.getUserIdentity();
 
     if (identity === null) {
-      console.error("Unauthenticated call to mutation");
+      console.error("Unauthenticated call to mutation deleteMessage");
       return null;
     }
 
@@ -141,7 +141,7 @@ export const markMessageRead = mutation({
     const identity = await ctx.auth.getUserIdentity();
 
     if (identity === null) {
-      console.error("Unauthenticated call to mutation");
+      console.error("Unauthenticated call to mutation markMessageRead");
       return null;
     }
 

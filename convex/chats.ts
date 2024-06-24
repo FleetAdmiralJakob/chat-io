@@ -6,7 +6,7 @@ export const createChat = mutation({
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (identity === null) {
-      console.error("Unauthenticated call to mutation");
+      console.error("Unauthenticated call to mutation createChat");
       return null;
     }
 
@@ -59,7 +59,7 @@ export const initialConvexSetup = mutation({
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
     if (identity === null) {
-      console.error("Unauthenticated call to mutation");
+      console.error("Unauthenticated call to mutation initialConvexSetup");
       return null;
     }
 
@@ -99,7 +99,7 @@ export const getChats = query({
     const identity = await ctx.auth.getUserIdentity();
 
     if (identity === null) {
-      console.error("Unauthenticated call to mutation");
+      console.error("Unauthenticated call to query getChats");
       return null;
     }
 
@@ -171,7 +171,7 @@ export const getChatInfoFromId = query({
     const identity = await ctx.auth.getUserIdentity();
 
     if (identity === null) {
-      console.error("Unauthenticated call to mutation");
+      console.error("Unauthenticated call to query getChatInfoFromId");
       return null;
     }
 
