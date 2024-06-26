@@ -189,7 +189,7 @@ export default function Page({ params }: { params: { chatId: string } }) {
 
   useEffect(() => {
     scrollToBottom(false);
-  }, [messages]);
+  }, [messages.data]);
 
   const [inputValue, setInputValue] = useState("");
 
