@@ -279,7 +279,7 @@ export default function Page({ params }: { params: { chatId: string } }) {
                       <Skeleton className="h-5 w-32"></Skeleton>
                     )}
                   </div>
-                  <div className="text-sm text-secondary-foreground">
+                  <div className="text-sm text-destructive-foreground">
                     {chatInfo.data ? (
                       "Offline"
                     ) : (
