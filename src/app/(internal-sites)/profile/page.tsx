@@ -1,72 +1,113 @@
+"use client";
 import { Avatar, AvatarFallback } from "~/components/ui/avatar";
-import { Lock } from "lucide-react";
-
+import {ArrowRight, Lock} from "lucide-react";
 import { Bell } from "lucide-react";
 import Link from "next/link";
 import { SendHorizontal } from "lucide-react";
 import { Settings } from "lucide-react";
 import { UsersRound } from "lucide-react";
-import { currentUser } from "@clerk/nextjs/server";
+import { useUser } from "@clerk/nextjs";
+import {cn} from "~/lib/utils";
 
 interface settingsCard {
   title: string;
-  icon: JSX.Element;
+  icon?: JSX.Element;
 }
 
-const settings: settingsCard[] = [
-  { title: "Account", icon: <Lock /> },
-  { title: "Chats", icon: <SendHorizontal /> },
-  { title: "Notification", icon: <Bell /> },
-  { title: "Settings", icon: <Settings /> },
-  { title: "Contributors", icon: <UsersRound /> },
-];
+export default function Profile() {
+  const clerkUser = useUser();
+  const username = clerkUser.user ? clerkUser.user.username || "" : "";
 
-export default async function Profile() {
-  const user = await currentUser();
-  const username = user?.username;
+  const settings: settingsCard[] = [
+    { title: username },
+    { title: "Settings", icon: <Settings /> },
+    { title: "Notification", icon: <Bell /> },
+    { title: "Privacy", icon: <Lock /> },
+    { title: "Chats", icon: <SendHorizontal /> },
+    { title: "Contributors", icon: <UsersRound /> },
+  ];
 
   return (
-    <main className="flex h-full flex-col items-center justify-around lg:pl-24">
+    <main className="mt-7 flex h-screen flex-col items-center lg:mt-0 lg:justify-around lg:pl-24">
       <div className="flex flex-col items-center">
-        <p className="my-10 mt-16 text-xl font-bold sm:text-2xl xl:hidden">
-          Profile
-        </p>
-
-        <div className="flex xl:mt-14">
-          <div className="text-sm">
-            <Avatar className="h-12 w-12 text-white">
-              <AvatarFallback>
-                {username ? username.substring(0, 2).toUpperCase() : "Y"}
-              </AvatarFallback>
-            </Avatar>
-          </div>
-          <div className="ml-4 text-sm xl:mt-2 xl:text-lg">
-            {user?.lastName && user.firstName ? (
-              <div>
-                {user.firstName} {user?.lastName} / <br className="xl:hidden" />{" "}
-                {user.username}
-              </div>
-            ) : (
-              <div className="xl:mt-4">{user?.username}</div>
-            )}
+        <p className="my-10 text-xl font-bold sm:text-2xl">Profile</p>
+      </div>
+      <div className="flex w-full flex-col items-center justify-center">
+        <div className="mb-8 flex w-11/12 flex-col items-center justify-center rounded-xl border-2 border-secondary lg:w-2/3 xl:w-1/3">
+          {settings.map((item) => {
+            if (item.title == username) {
+              return (
+                <div className="flex w-full cursor-pointer rounded-lg bg-primary p-6 text-xl sm:text-2xl xl:text-lg">
+                  <div className="mr-5 flex h-10 w-10 items-center justify-center rounded-3xl bg-background text-sm font-medium text-destructive-foreground">
+                    {item.title.slice(0, 2).toUpperCase()}
+                  </div>
+                  <p className="pt-2 font-semibold text-destructive-foreground">
+                    {item.title}
+                  </p>
+                </div>
+              );
+            }
+          })}
+        </div>
+        <div className="flex w-11/12 flex-col items-center justify-center rounded-xl border-2 border-secondary lg:w-2/3 xl:w-1/3">
+          {settings.map((item) => {
+            if (item.title == username || item.title == "Contributors") {
+              return;
+            }
+            return (
+              <Link
+                key={item.title}
+                href={`/profile/${item.title.toLowerCase()}`}
+                className={cn(
+                  "flex w-full cursor-pointer justify-between border-t-2 border-secondary bg-primary p-6 text-xl sm:text-2xl xl:text-lg",
+                  {
+                    "rounded-t-lg border-t-0": item.title == "Settings",
+                    "rounded-b-lg": item.title == "Chats",
+                  },
+                )}
+              >
+                <div className="flex">
+                  <div className="mr-5 flex h-10 w-10 items-center justify-center rounded-3xl bg-secondary text-sm font-medium text-destructive-foreground">
+                    {item.icon}
+                  </div>
+                  <p className="flex items-center font-semibold text-destructive-foreground">
+                    {item.title}
+                  </p>
+                </div>
+                <div className="flex items-center">
+                  <ArrowRight className="ml-3 flex text-secondary-foreground" />
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+        <div className="mb-4 mt-8 flex w-full flex-col items-center justify-center rounded-xl pb-[30%] lg:pb-0">
+          <div className="w-11/12 rounded-xl border-2 border-secondary lg:w-2/3 xl:w-1/3">
+            {settings.map((item) => {
+              if (item.title == "Contributors") {
+                return (
+                  <Link
+                    href={`/profile/${item.title.toLowerCase()}`}
+                    key={item.title}
+                    className="flex w-full cursor-pointer justify-between rounded-lg bg-primary p-6 text-xl sm:text-2xl lg:border-0 xl:text-lg"
+                  >
+                    <div className="flex">
+                      <div className="mr-5 flex h-10 w-10 items-center justify-center rounded-3xl bg-secondary text-sm font-medium text-destructive-foreground">
+                        {item.icon}
+                      </div>
+                      <p className="flex items-center font-semibold text-destructive-foreground">
+                        {item.title}
+                      </p>
+                    </div>
+                    <div className="flex items-center">
+                      <ArrowRight className="ml-3 flex text-secondary-foreground" />
+                    </div>
+                  </Link>
+                );
+              }
+            })}
           </div>
         </div>
-      </div>
-      <div className="mb-20 mt-10 w-full pb-24 sm:mb-32 lg:w-2/3 xl:w-1/3">
-        {settings.map((item) => {
-          return (
-            <Link
-              key={item.title}
-              href={`/profile/${item.title.toLowerCase()}`}
-              className="flex w-full cursor-pointer border-t-2 border-input p-7 text-xl sm:text-2xl lg:mt-6 lg:rounded-xl lg:border-0 lg:bg-input xl:text-xl"
-            >
-              <p className="mr-5 rounded-3xl bg-accent p-3 text-white">
-                {item.icon}
-              </p>
-              <p className="pt-3">{item.title}</p>
-            </Link>
-          );
-        })}
       </div>
     </main>
   );

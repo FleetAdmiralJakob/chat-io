@@ -89,6 +89,15 @@ export function SignUpForm() {
       return;
     }
 
+    if (parsedResponseBody.data?.statusText === "email_is_taken") {
+      form.setError("email", {
+        message: "Email is already taken. Please choose another.",
+      });
+
+      setFormIsLoading(false);
+      return;
+    }
+
     if (parsedResponseBody.data?.statusText === "form_password_pwned") {
       form.setError("password", {
         message:
@@ -244,6 +253,23 @@ export function SignUpForm() {
         >
           This is optional, so you can stay anonymous.
         </span>
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem className="flex-2">
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input placeholder="email" type="text" {...field} />
+              </FormControl>
+              <FormDescription>
+                This is optional but if you forgot your password we can send you
+                a Email
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name="password"

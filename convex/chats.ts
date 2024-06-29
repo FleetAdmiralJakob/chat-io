@@ -79,6 +79,7 @@ export const initialConvexSetup = mutation({
         username: identity.nickname,
         clerkId: identity.tokenIdentifier,
         firstName: identity.givenName,
+        email: identity.email,
         lastName: identity.familyName,
       })
       .get();
