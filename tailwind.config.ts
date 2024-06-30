@@ -21,6 +21,10 @@ const config = {
     },
     extend: {
       colors: {
+        badge: {
+          dark: "#005C8F",
+          white: "#009BFA",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
