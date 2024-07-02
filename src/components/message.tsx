@@ -156,7 +156,7 @@ export const Message = ({
     <>
       <Toaster />
 
-      {isModalOpen && message.type == "user" ? (
+      {isModalOpen && message.type == "message" ? (
         <div
           onClick={() => setIsModalOpen(!isModalOpen)}
           className="fixed inset-0 z-10 bg-black opacity-75"
@@ -204,7 +204,7 @@ export const Message = ({
                 </div>
               ) : (
                 <div>
-                  {message.type != "user" ? (
+                  {message.type != "message" ? (
                     <div className="font-semibold text-destructive-foreground">
                       {message.type == "request"
                         ? "You`ve send a request"
@@ -218,7 +218,7 @@ export const Message = ({
               )}
             </div>
             <div className="mr-2 text-[75%] font-bold text-secondary-foreground">
-              {!message.deleted && message.type == "user"
+              {!message.deleted && message.type == "message"
                 ? message.readBy
                   ? message.readBy.map((user) => {
                       if (user.username != clerkUser.user?.username) {
@@ -238,7 +238,7 @@ export const Message = ({
             </div>
             {message._id == selectedMessageId &&
             isModalOpen &&
-            message.type == "user" ? (
+            message.type == "message" ? (
               <div
                 ref={refs.setFloating}
                 style={floatingStyles}
@@ -327,7 +327,7 @@ export const Message = ({
                   <Ban />
                   <p className="ml-2.5">This message was deleted</p>
                 </div>
-              ) : message.type != "user" ? (
+              ) : message.type != "message" ? (
                 <div className="font-semibold text-destructive-foreground">
                   <p>
                     {message.type == "request"
@@ -367,7 +367,7 @@ export const Message = ({
             </div>
             {message._id == selectedMessageId &&
             isModalOpen &&
-            message.type == "user" ? (
+            message.type == "message" ? (
               <div
                 ref={refs.setFloating}
                 style={floatingStyles}

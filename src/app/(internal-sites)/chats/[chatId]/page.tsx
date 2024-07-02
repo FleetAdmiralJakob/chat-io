@@ -104,7 +104,7 @@ export default function Page({ params }: { params: { chatId: string } }) {
         _creationTime: now,
         content,
         deleted: false,
-        type: "user",
+        type: "message",
         privateChatId: chatId,
         from: userInfo.data,
         readBy: [userInfo.data],

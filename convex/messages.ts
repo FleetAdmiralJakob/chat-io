@@ -134,7 +134,7 @@ export const createMessage = mutation({
       userId: convexUser._id,
       privateChatId: parsedChatId,
       content: args.content.trim(),
-      type: "user",
+      type: "message",
       deleted: false,
       readBy: [convexUser._id],
     });
