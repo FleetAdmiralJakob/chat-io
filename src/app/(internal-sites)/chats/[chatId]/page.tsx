@@ -104,6 +104,7 @@ export default function Page({ params }: { params: { chatId: string } }) {
         _creationTime: now,
         content,
         deleted: false,
+        type: "message",
         privateChatId: chatId,
         from: userInfo.data,
         readBy: [userInfo.data],
@@ -203,6 +204,13 @@ export default function Page({ params }: { params: { chatId: string } }) {
     setInputValue("");
     scrollToBottom(true);
   }
+
+  const createDeleteRequest = useMutation(api.messages.createDeleteRequest);
+
+  const createMessageRequestHandler = (chatId: string) => async () => {
+    await createDeleteRequest({ chatId });
+  };
+
   const [menuActive, setMenuActive] = useState(false);
 
   const menuClick = () => {
@@ -234,7 +242,10 @@ export default function Page({ params }: { params: { chatId: string } }) {
           className="relative flex flex-col"
         >
           <DevMode className="top-20 z-10">
-            chatId: {params.chatId}
+            <button onClick={createMessageRequestHandler(params.chatId)}>
+              Delete Chat Request
+            </button>
+            <p>chatId: {params.chatId}</p>
             <div onClick={() => devMode$.set(false)}>Disable dev mode</div>
           </DevMode>
           <div className="flex h-20 w-full items-center justify-between bg-primary py-6">
