@@ -1,6 +1,5 @@
 import { mutation, query } from "./lib/functions";
 import { ConvexError, v } from "convex/values";
-import { commandScore } from "cmdk/dist/command-score";
 
 export const getMessages = query({
   args: { chatId: v.string() },
