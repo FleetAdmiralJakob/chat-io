@@ -6,6 +6,7 @@ export const viewport: Viewport = {
     { media: "(prefers-color-scheme: light)", color: "#FFFFFF" },
     { media: "(prefers-color-scheme: dark)", color: "#1A1A1A" },
   ],
+  userScalable: false,
 };
 
 function ChatPage({ params }: { params: { chatId: string } }) {
