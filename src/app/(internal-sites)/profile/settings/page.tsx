@@ -18,6 +18,8 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { Label } from "~/components/ui/label";
+import { Toaster } from "~/components/ui/sonner";
+import { toast } from "sonner";
 
 const SettingsPage = () => {
   const EmailValidator = z.object({
@@ -38,6 +40,7 @@ const SettingsPage = () => {
   const [firstName, setFirstName] = useState(clerkUser.user?.firstName || "");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [currentPasswordErrorMessage, setCurrentPasswordErrorMessage] =
     useState("");
   const [newPasswordErrorMessage, setNewPasswordErrorMessage] = useState("");
@@ -127,6 +130,8 @@ const SettingsPage = () => {
         currentPassword: currentPassword,
         newPassword: newPassword,
       });
+      setDialogOpen(false);
+      toast.success("Password changed successfully");
 
       console.log("Password changed successfully");
     } catch (e) {
@@ -154,6 +159,7 @@ const SettingsPage = () => {
 
   return (
     <>
+      <Toaster />
       <div className="flex justify-center text-destructive-foreground lg:hidden">
         <p className="absolute top-12 text-xl font-semibold">Settings</p>
         <ChevronLeft
@@ -242,7 +248,10 @@ const SettingsPage = () => {
               If you forgott your password we can send you a Email
             </p>
           </div>
-          <Dialog>
+          <Dialog
+            open={dialogOpen}
+            onOpenChange={() => setDialogOpen((prevState) => !prevState)}
+          >
             <DialogTrigger asChild>
               <div className="mt-4 flex cursor-pointer rounded-sm border-2 border-secondary bg-primary p-2 px-3 text-[100%] text-destructive-foreground">
                 <HardDriveUpload className="mr-1 h-5 w-5" />
