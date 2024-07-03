@@ -245,6 +245,12 @@ export const markMessageRead = mutation({
       );
     }
 
+    const message = await ctx.table("messages").get(args.messageId);
+
+    if (!message) {
+      return null;
+    }
+
     await ctx
       .table("messages")
       .getX(args.messageId)
@@ -253,5 +259,7 @@ export const markMessageRead = mutation({
           add: [convexUser._id],
         },
       });
+
+    return { success: true };
   },
 });
