@@ -4,23 +4,38 @@ import { ConvexError, v } from "convex/values";
 export const getMessages = query({
   args: { chatId: v.string() },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (identity === null) {
+      console.error("Unauthenticated call to mutation");
+      return null;
+    }
+
     const parsedChatId = ctx.table("privateChats").normalizeId(args.chatId);
 
     if (!parsedChatId) {
       throw new ConvexError("chatId was invalid");
     }
 
-    return ctx
-      .table("privateChats")
-      .getX(parsedChatId)
-      .edge("messages")
-      .map(async (message) => ({
-        ...message,
-        userId: undefined,
-        from: await ctx.table("users").getX(message.userId),
-        readBy: await message.edge("readBy"),
-        sent: true,
-      }));
+    const chat = ctx.table("privateChats").getX(parsedChatId);
+
+    const usersInChat = await chat.edge("users");
+
+    if (
+      !usersInChat.some((user) => user.clerkId === identity.tokenIdentifier)
+    ) {
+      throw new ConvexError(
+        "UNAUTHORIZED REQUEST: User requested messages from a chat in which he is not in.",
+      );
+    }
+
+    return chat.edge("messages").map(async (message) => ({
+      ...message,
+      userId: undefined,
+      from: await ctx.table("users").getX(message.userId),
+      readBy: await message.edge("readBy"),
+      sent: true,
+    }));
   },
 });
 
@@ -30,6 +45,7 @@ export const createMessage = mutation({
     const identity = await ctx.auth.getUserIdentity();
 
     if (identity === null) {
+      console.error("Unauthenticated call to mutation");
       return null;
     }
 
@@ -49,6 +65,19 @@ export const createMessage = mutation({
       );
     }
 
+    const usersInChat = await ctx
+      .table("privateChats")
+      .getX(parsedChatId)
+      .edge("users");
+
+    if (
+      !usersInChat.some((user) => user.clerkId === identity.tokenIdentifier)
+    ) {
+      throw new ConvexError(
+        "UNAUTHORIZED REQUEST: User tried to send a message in a chat in which he is not in.",
+      );
+    }
+
     if (args.content.trim() === "") throw new Error("Post cannot be empty");
 
     await ctx.table("messages").insert({
@@ -62,8 +91,15 @@ export const createMessage = mutation({
 });
 
 export const deleteMessage = mutation({
-  args: { messageId: v.string() },
+  args: { messageId: v.string(), chatId: v.string() },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (identity === null) {
+      console.error("Unauthenticated call to mutation");
+      return null;
+    }
+
     const parsedMessageId = ctx.table("messages").normalizeId(args.messageId);
 
     if (!parsedMessageId) {
@@ -73,14 +109,18 @@ export const deleteMessage = mutation({
     const message = await ctx.table("messages").getX(parsedMessageId);
     const chatId = message.privateChatId;
     const chat = await ctx.table("privateChats").getX(chatId);
-    const users = await chat.edge("users");
+    const usersInChat = await chat.edge("users");
 
-    await (
-      await ctx.table("messages").getX(parsedMessageId)
-    ).patch({
+    if ((await message.edge("user")).clerkId !== identity.tokenIdentifier) {
+      throw new ConvexError(
+        "UNAUTHORIZED REQUEST: User tried to delete a message from another person.",
+      );
+    }
+
+    await message.patch({
       content: "",
       deleted: true,
-      readBy: { add: users.map((user) => user._id) },
+      readBy: { add: usersInChat.map((user) => user._id) },
     });
   },
 });
@@ -91,6 +131,7 @@ export const markMessageRead = mutation({
     const identity = await ctx.auth.getUserIdentity();
 
     if (identity === null) {
+      console.error("Unauthenticated call to mutation");
       return null;
     }
 

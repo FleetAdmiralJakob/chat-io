@@ -11,6 +11,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { useFloating } from "@floating-ui/react";
 import { Toaster } from "~/components/ui/sonner";
 import { toast } from "sonner";
+import { Id } from "../../convex/_generated/dataModel";
 
 dayjs.extend(relativeTime);
 
@@ -19,13 +20,55 @@ export const Message = ({
   selectedMessageId,
   setSelectedMessageId,
 }: {
-  message: FunctionReturnType<typeof api.messages.getMessages>[number];
+  message: NonNullable<
+    FunctionReturnType<typeof api.messages.getMessages>
+  >[number];
   selectedMessageId: string | null;
   setSelectedMessageId: React.Dispatch<React.SetStateAction<string | null>>;
 }) => {
   const clerkUser = useUser();
 
-  const deleteMessage = useMutation(api.messages.deleteMessage);
+  const deleteMessage = useMutation(
+    api.messages.deleteMessage,
+  ).withOptimisticUpdate(async (localStore, args) => {
+    const messageId: Id<"messages"> = args.messageId as Id<"messages">;
+    const chatId: Id<"privateChats"> = args.chatId as Id<"privateChats">;
+
+    const existingMessages = localStore.getQuery(api.messages.getMessages, {
+      chatId,
+    });
+    const existingChats = localStore.getQuery(api.chats.getChats);
+
+    if (existingMessages && existingChats) {
+      localStore.setQuery(
+        api.messages.getMessages,
+        { chatId },
+        existingMessages.map((message) =>
+          message._id === messageId ? { ...message, deleted: true } : message,
+        ),
+      );
+
+      localStore.setQuery(
+        api.chats.getChats,
+        {},
+        existingChats.map((chat) => {
+          if (chat._id === chatId && chat.lastMessage?._id === messageId) {
+            return {
+              ...chat,
+              lastMessage: {
+                ...chat.lastMessage,
+                content: "",
+                deleted: true,
+              },
+            };
+          } else {
+            return chat;
+          }
+        }),
+      );
+    }
+  });
+
   const [isScreenTop, setScreenTop] = useState<boolean | null>(null);
 
   const checkClickPosition = (e: React.MouseEvent) => {
@@ -172,20 +215,19 @@ export const Message = ({
                       <Forward />
                       <p className="ml-1">Answer</p>
                     </div>
-                    <div className="flex p-2 text-accent">
+                    <button
+                      className="flex w-full p-2 text-accent"
+                      onMouseDown={() => {
+                        deleteMessage({
+                          messageId: message._id,
+                          chatId: message.privateChatId,
+                        });
+                        setIsModalOpen(!isModalOpen);
+                      }}
+                    >
                       <Trash2 />
-                      <button
-                        onMouseDown={() => {
-                          deleteMessage({
-                            messageId: message._id,
-                          });
-                          setIsModalOpen(!isModalOpen);
-                        }}
-                        className="ml-1"
-                      >
-                        Delete
-                      </button>
-                    </div>{" "}
+                      <div className="ml-1">Delete</div>
+                    </button>{" "}
                     <div className="flex border-t-2 border-secondary-foreground p-2 pr-8 text-secondary-foreground">
                       <Info />
                       <p className="ml-1">
