@@ -21,8 +21,8 @@ importers:
         specifier: ^3.6.0
         version: 3.7.0(react-hook-form@7.52.0(react@18.3.1))
       '@legendapp/state':
-        specifier: 3.0.0-alpha.20
-        version: 3.0.0-alpha.20(react@18.3.1)
+        specifier: 3.0.0-alpha.22
+        version: 3.0.0-alpha.22(react@18.3.1)
       '@radix-ui/react-avatar':
         specifier: ^1.0.4
         version: 1.1.0(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -469,8 +469,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
 
-  '@legendapp/state@3.0.0-alpha.20':
-    resolution: {integrity: sha512-0mq/tmL5qxj3d7Dh1xgk9Oa0+v8XdA/sUxeBKWcblLxFaD8z11PX5mR9A0Fk1Cbf818eAwz4jL61EbcwzB5+mw==}
+  '@legendapp/state@3.0.0-alpha.22':
+    resolution: {integrity: sha512-K4lHPc722gUWc2Efm8QFESlTwgmQzcCnxJ/CGxnD+hQcC6vnuHoF3qmO9VCqIpkWcxnkIldfoOpFp/nN3Jqkbg==}
 
   '@next/env@14.2.4':
     resolution: {integrity: sha512-3EtkY5VDkuV2+lNmKlbkibIJxcO4oIHEhBWne6PaAp+76J9KoSsGvNikp6ivzAT8dhhBMYrm6op2pS1ApG0Hzg==}
@@ -3326,7 +3326,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.4.15
 
-  '@legendapp/state@3.0.0-alpha.20(react@18.3.1)':
+  '@legendapp/state@3.0.0-alpha.22(react@18.3.1)':
     dependencies:
       use-sync-external-store: 1.2.2(react@18.3.1)
     transitivePeerDependencies:
