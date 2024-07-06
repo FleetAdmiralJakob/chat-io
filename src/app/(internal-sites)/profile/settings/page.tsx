@@ -4,7 +4,14 @@ import { Input } from "~/components/ui/input";
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import { isClerkAPIResponseError } from "@clerk/shared";
-import { ChevronLeft, HardDriveUpload, MailCheck, MailX } from "lucide-react";
+import {
+  ChevronLeft,
+  CircleCheck,
+  CircleX,
+  HardDriveUpload,
+  MailCheck,
+  MailX,
+} from "lucide-react";
 import { z, ZodError } from "zod";
 import { useRouter } from "next/navigation";
 import { Button } from "~/components/ui/button";
@@ -20,21 +27,43 @@ import {
 import { Label } from "~/components/ui/label";
 import { Toaster } from "~/components/ui/sonner";
 import { toast } from "sonner";
+import { formSchema } from "~/lib/validators";
+import { formSchemaUpdate } from "~/lib/updateValidators";
+
+const SettingValidator = z.object({
+  email: z.string().email(),
+  password: z
+    .string()
+    .min(8, {
+      message: "Password must be at least 8 characters.",
+    })
+    .max(20, {
+      message: "Password must be at most 20 characters.",
+    }),
+  firstName: z
+    .string()
+    .min(2, {
+      message: "Name must be at least 2 characters.",
+    })
+    .max(20, {
+      message: "Name must be at most 20 characters.",
+    }),
+  lastName: z
+    .string()
+    .min(2, {
+      message: "Name must be at least 2 characters.",
+    })
+    .max(20, {
+      message: "Name must be at most 20 characters.",
+    }),
+});
+
+const signUpResponseSchema = z.object({
+  message: z.string(),
+  statusText: z.string().optional(),
+});
 
 const SettingsPage = () => {
-  const EmailValidator = z.object({
-    email: z.string().email(),
-  });
-  const Password = z.object({
-    password: z
-      .string()
-      .min(8, {
-        message: "Password must be at least 8 characters.",
-      })
-      .max(20, {
-        message: "Password must be at most 20 characters.",
-      }),
-  });
   const clerkUser = useUser();
   const [lastName, setLastName] = useState(clerkUser.user?.lastName || "");
   const [firstName, setFirstName] = useState(clerkUser.user?.firstName || "");
@@ -47,6 +76,54 @@ const SettingsPage = () => {
   const [emailValue, setEmailValue] = useState(
     clerkUser.user?.emailAddresses.map((email) => email.emailAddress) || "",
   );
+  const [emailError, setEmailError] = useState(false);
+  const [firstNameError, setFirstNameError] = useState("");
+  const [lastNameError, setLastNameError] = useState("");
+
+  async function test() {
+    const email = JSON.stringify(emailValue).replace(/[\[\]"]+/g, "");
+
+    const valuesObject: z.infer<typeof formSchemaUpdate> = {
+      email: email,
+      firstName: firstName,
+      lastName: lastName,
+    };
+
+    const response = await fetch("/api/sign-up", {
+      method: "OPTIONS",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(valuesObject),
+    });
+
+    const responseBody = await response.text(); // Get the response body as text
+    if (!responseBody) {
+      return;
+    }
+
+    const parsedResponseBody = signUpResponseSchema.safeParse(
+      JSON.parse(responseBody),
+    );
+
+    if (parsedResponseBody.data?.message) {
+      const parsedJson = JSON.parse(parsedResponseBody.data.message) as
+        | any[]
+        | { [key: string]: any };
+
+      parsedJson.forEach((error: any) => {
+        if (error.path[0] == "email") {
+          setEmailError(true);
+        }
+        if (error.path[0] == "firstName") {
+          setFirstNameError(error.message);
+        }
+        if (error.path[0] == "lastName") {
+          setLastNameError(error.message);
+        }
+      });
+    }
+  }
 
   useEffect(() => {
     if (clerkUser.user?.firstName) {
@@ -59,7 +136,7 @@ const SettingsPage = () => {
 
     if (clerkUser.user?.emailAddresses.map((email) => email.emailAddress)) {
       setEmailValue(
-        clerkUser.user.emailAddresses.map((email) => email.emailAddress),
+        clerkUser.user?.emailAddresses.map((email) => email.emailAddress),
       );
     }
   }, [
@@ -69,25 +146,66 @@ const SettingsPage = () => {
   ]);
 
   const router = useRouter();
-  const [emailError, setEmailError] = useState(false);
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmailValue(e.target.value);
 
     try {
-      EmailValidator.parse({ email: e.target.value });
+      SettingValidator.parse({ email: e.target.value });
       setEmailError(false);
     } catch (error) {
       setEmailError(true);
+      if (error instanceof ZodError) {
+        const errorFound = error.errors.find(
+          (error) => error.path[0] == "email",
+        );
+        if (errorFound) {
+          setEmailError(true);
+        } else {
+          setEmailError(false);
+        }
+      }
     }
   };
 
   const handleFirstNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFirstName(e.target.value);
+
+    try {
+      SettingValidator.parse({ firstName: e.target.value });
+      setFirstNameError("");
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const errorFound = error.errors.find(
+          (error) => error.path[0] == "firstName",
+        );
+        if (errorFound) {
+          setFirstNameError(errorFound.message);
+        } else {
+          setFirstNameError("");
+        }
+      }
+    }
   };
 
   const handleLastNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLastName(e.target.value);
+
+    try {
+      SettingValidator.parse({ lastName: e.target.value });
+      setLastNameError("");
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const errorFound = error.errors.find(
+          (error) => error.path[0] == "lastName",
+        );
+        if (errorFound) {
+          setLastNameError(errorFound.message);
+        } else {
+          setLastNameError("");
+        }
+      }
+    }
   };
 
   const handleCurrentPassword = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -100,15 +218,25 @@ const SettingsPage = () => {
     setNewPasswordErrorMessage("");
 
     try {
-      Password.parse({ password: e.target.value });
+      SettingValidator.parse({ password: e.target.value });
       setNewPasswordErrorMessage("");
     } catch (e) {
       if (e instanceof ZodError) {
-        const firstErrorMessage = e.errors[0]?.message;
-        setNewPasswordErrorMessage(firstErrorMessage?.toString() || "");
+        const errorFound = e.errors.find((e) => e.path[0] == "password");
+        if (errorFound) {
+          setNewPasswordErrorMessage(errorFound.message);
+        } else {
+          setNewPasswordErrorMessage("");
+        }
       }
     }
   };
+
+  useEffect(() => {
+    if (emailValue != "" || firstName != "" || lastName != "") {
+      test();
+    }
+  }, [handleLastNameChange, handleFirstNameChange, handleEmailChange]);
 
   async function checkPasswordAgainstClerkRules(
     currentPassword: string,
@@ -116,13 +244,17 @@ const SettingsPage = () => {
   ) {
     try {
       try {
-        Password.parse({ password: newPassword });
+        SettingValidator.parse({ password: newPassword });
         setNewPasswordErrorMessage("");
       } catch (e) {
         if (e instanceof ZodError) {
-          const firstErrorMessage = e.errors[0]?.message;
-          setNewPasswordErrorMessage(firstErrorMessage?.toString() || "");
-          return;
+          const errorFound = e.errors.find((e) => e.path[0] == "password");
+          if (errorFound) {
+            setNewPasswordErrorMessage(errorFound.message);
+            return;
+          } else {
+            setNewPasswordErrorMessage("");
+          }
         }
       }
 
@@ -147,15 +279,36 @@ const SettingsPage = () => {
           )
         ) {
           setCurrentPasswordErrorMessage("Invalid Current Password");
-          console.log(
-            e.errors.some(
-              (error) => error.code === "form_password_validation_failed",
-            ),
-          );
         }
       }
     }
   }
+
+  const firstNameSuccess =
+    firstName != clerkUser.user?.firstName &&
+    firstName.length != 0 &&
+    firstNameError == "";
+  const lastNameSuccess =
+    lastName != clerkUser.user?.lastName &&
+    lastName.length != 0 &&
+    lastNameError == "";
+
+  const submitHandler = () => {
+    const successList = [];
+    if (firstNameSuccess) {
+      clerkUser.user?.update({ firstName: firstName });
+      successList.push(" First Name");
+    }
+    if (lastNameSuccess) {
+      clerkUser.user?.update({ firstName: firstName });
+      successList.push(" Last Name");
+    }
+    toast.success(
+      successList.map((update) => {
+        return update;
+      }) + " updated successfully",
+    );
+  };
 
   return (
     <>
@@ -179,23 +332,26 @@ const SettingsPage = () => {
                 onChange={handleFirstNameChange}
                 className="border-2 border-secondary"
               />
-              {firstName != "" && firstName != clerkUser.user?.firstName ? (
-                <div
-                  onClick={() => {
-                    clerkUser.user?.update({ firstName: firstName });
-                  }}
-                  className="absolute right-2 top-1/2 flex -translate-y-1/2 transform cursor-pointer rounded-sm bg-secondary p-2 px-3 text-[100%] text-destructive-foreground"
-                >
-                  <HardDriveUpload className="mr-1 h-5 w-5" />
-                  <p>Update</p>
-                </div>
+              {firstName != "" ? (
+                firstNameError == "" ? (
+                  <CircleCheck
+                    className="absolute right-3 top-1/2 -translate-y-1/2 transform"
+                    color="#3DC726"
+                  />
+                ) : (
+                  <CircleX className="absolute right-3 top-1/2 -translate-y-1/2 transform text-accent" />
+                )
               ) : (
                 ""
               )}
             </div>
-            <p className="ml-2 mt-0.5 text-[85%] text-secondary-foreground">
-              First name
-            </p>
+            <div className="ml-2 mt-0.5 text-[85%] text-secondary-foreground">
+              {firstNameError != "" && firstName != "" ? (
+                <p className="text-accent">{firstNameError}</p>
+              ) : (
+                "First Name"
+              )}
+            </div>
           </div>
           <div className="mb-4 w-11/12 lg:w-1/3">
             <div className="relative w-full">
@@ -205,23 +361,26 @@ const SettingsPage = () => {
                 onChange={handleLastNameChange}
                 className="border-2 border-secondary"
               />
-              {lastName != "" && lastName != clerkUser.user?.lastName ? (
-                <div
-                  onClick={() => {
-                    clerkUser.user?.update({ lastName: lastName });
-                  }}
-                  className="absolute right-2 top-1/2 flex -translate-y-1/2 transform cursor-pointer rounded-sm bg-secondary p-2 px-3 text-[100%] text-destructive-foreground"
-                >
-                  <HardDriveUpload className="mr-1 h-5 w-5" />
-                  <p>Update</p>
-                </div>
+              {lastName != "" ? (
+                lastNameError == "" ? (
+                  <CircleCheck
+                    className="absolute right-3 top-1/2 -translate-y-1/2 transform"
+                    color="#3DC726"
+                  />
+                ) : (
+                  <CircleX className="absolute right-3 top-1/2 -translate-y-1/2 transform text-accent" />
+                )
               ) : (
                 ""
               )}
             </div>
-            <p className="ml-2 mt-0.5 text-[85%] text-secondary-foreground">
-              Last name
-            </p>
+            <div className="ml-2 mt-0.5 text-[85%] text-secondary-foreground">
+              {lastNameError != "" && lastName != "" ? (
+                <p className="text-accent">{lastNameError}</p>
+              ) : (
+                "Last Name"
+              )}
+            </div>
           </div>
           <div className="mb-4 w-11/12 lg:w-1/3">
             <div className="relative w-full">
@@ -316,6 +475,20 @@ const SettingsPage = () => {
               </DialogFooter>
             </DialogContent>
           </Dialog>
+          {lastNameSuccess ||
+          firstNameSuccess ||
+          (emailValue.length != 0 &&
+            !emailError &&
+            emailValue.toString() !=
+              clerkUser.user?.emailAddresses
+                .map((email) => email.emailAddress)
+                .toString()) ||
+          "" ? (
+            <div className="mt-4 flex cursor-pointer rounded-sm border-2 border-secondary bg-primary p-2 px-3 text-[100%] text-destructive-foreground">
+              <CircleCheck className="mr-2 h-5 w-5" />
+              <p onClick={submitHandler}>Save Changes</p>
+            </div>
+          ) : null}
         </div>
       </main>
     </>

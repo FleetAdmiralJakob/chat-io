@@ -1,6 +1,23 @@
 import { type FormSchema, formSchema } from "~/lib/validators";
 import { clerkClient } from "@clerk/nextjs/server";
 import { isClerkAPIResponseError } from "@clerk/shared";
+import { FormSchemaUpdate, formSchemaUpdate } from "~/lib/updateValidators";
+
+export async function OPTIONS(request: Request) {
+  const unparsedSignUpHeaders = (await request.json()) as FormSchemaUpdate;
+  const parsedSignUpHeaders = formSchemaUpdate.safeParse(unparsedSignUpHeaders);
+  if (!parsedSignUpHeaders.success) {
+    return Response.json(
+      { message: parsedSignUpHeaders.error.message },
+      { status: 400 },
+    );
+  } else {
+    return Response.json(
+      { message: parsedSignUpHeaders.error },
+      { status: 200 },
+    );
+  }
+}
 
 // TODO: This probably deserves a rate limiter + a check for not creating a bunch of trash users to spam us.
 export async function POST(request: Request) {
