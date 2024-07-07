@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const formSchema = z.object({
+export const formSchemaSignUp = z.object({
   username: z
     .string()
     .min(7, {
@@ -53,4 +53,28 @@ export const formSchema = z.object({
     }),
 });
 
-export type FormSchema = z.infer<typeof formSchema>;
+export type FormSchemaSignUp = z.infer<typeof formSchemaSignUp>;
+
+export const formSchemaUserUpdate = z.object({
+  firstName: z
+    .string()
+    .min(2, {
+      message: "Name must be at least 2 characters.",
+    })
+    .max(20, {
+      message: "Name must be at most 20 characters.",
+    })
+    .optional(),
+  lastName: z
+    .string()
+    .min(2, {
+      message: "Name must be at least 2 characters.",
+    })
+    .max(20, {
+      message: "Name must be at most 20 characters.",
+    })
+    .optional(),
+  email: z.string().email().optional(),
+});
+
+export type FormSchemaUserUpdate = z.infer<typeof formSchemaUserUpdate>;

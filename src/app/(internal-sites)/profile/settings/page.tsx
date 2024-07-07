@@ -27,8 +27,7 @@ import {
 import { Label } from "~/components/ui/label";
 import { Toaster } from "~/components/ui/sonner";
 import { toast } from "sonner";
-import { formSchema } from "~/lib/validators";
-import { formSchemaUpdate } from "~/lib/updateValidators";
+import { formSchemaUserUpdate } from "~/lib/validators";
 
 const SettingValidator = z.object({
   email: z.string().email(),
@@ -74,17 +73,15 @@ const SettingsPage = () => {
     useState("");
   const [newPasswordErrorMessage, setNewPasswordErrorMessage] = useState("");
   const [emailValue, setEmailValue] = useState(
-    clerkUser.user?.emailAddresses.map((email) => email.emailAddress) || "",
+    clerkUser.user?.primaryEmailAddress?.emailAddress || "",
   );
   const [emailError, setEmailError] = useState(false);
   const [firstNameError, setFirstNameError] = useState("");
   const [lastNameError, setLastNameError] = useState("");
 
   async function test() {
-    const email = JSON.stringify(emailValue).replace(/[\[\]"]+/g, "");
-
-    const valuesObject: z.infer<typeof formSchemaUpdate> = {
-      email: email,
+    const valuesObject: z.infer<typeof formSchemaUserUpdate> = {
+      email: emailValue,
       firstName: firstName,
       lastName: lastName,
     };
@@ -135,9 +132,7 @@ const SettingsPage = () => {
     }
 
     if (clerkUser.user?.emailAddresses.map((email) => email.emailAddress)) {
-      setEmailValue(
-        clerkUser.user?.emailAddresses.map((email) => email.emailAddress),
-      );
+      setEmailValue(clerkUser.user?.primaryEmailAddress?.emailAddress ?? "");
     }
   }, [
     clerkUser.user?.firstName,
@@ -292,6 +287,10 @@ const SettingsPage = () => {
     lastName != clerkUser.user?.lastName &&
     lastName.length != 0 &&
     lastNameError == "";
+  const emailSuccess =
+    emailValue != clerkUser.user?.primaryEmailAddress?.emailAddress &&
+    emailValue.length != 0 &&
+    !emailError;
 
   const submitHandler = () => {
     const successList = [];
@@ -300,8 +299,14 @@ const SettingsPage = () => {
       successList.push(" First Name");
     }
     if (lastNameSuccess) {
-      clerkUser.user?.update({ firstName: firstName });
+      clerkUser.user?.update({ lastName: lastName });
       successList.push(" Last Name");
+    }
+
+    if (emailSuccess) {
+      const emailId = clerkUser.user?.primaryEmailAddressId ?? "";
+      const params = { verified: false, emailAdress: emailValue };
+      successList.push(" EmailAdress");
     }
     toast.success(
       successList.map((update) => {
