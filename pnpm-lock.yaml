@@ -70,13 +70,13 @@ importers:
         version: 1.0.0(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       convex:
         specifier: ^1.12.1
-        version: 1.12.2(@clerk/clerk-react@5.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 1.13.0(@clerk/clerk-react@5.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(eslint@9.6.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       convex-ents:
         specifier: ^0.7.7
-        version: 0.7.7(convex@1.12.2(@clerk/clerk-react@5.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        version: 0.7.7(convex@1.13.0(@clerk/clerk-react@5.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(eslint@9.6.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       convex-helpers:
         specifier: ^0.1.41
-        version: 0.1.43(convex@1.12.2(@clerk/clerk-react@5.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(zod@3.23.8)
+        version: 0.1.43(convex@1.13.0(@clerk/clerk-react@5.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(eslint@9.6.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(zod@3.23.8)
       dayjs:
         specifier: ^1.11.11
         version: 1.11.11
@@ -1576,8 +1576,8 @@ packages:
       zod:
         optional: true
 
-  convex@1.12.2:
-    resolution: {integrity: sha512-LQb5o2eritXTObYA/HqkUzHky60qTVU4pLefqTh09PU5xfBBAi0ObF9EmYvD657jKsWGjU5MVjdg8aZ5XhVl2A==}
+  convex@1.13.0:
+    resolution: {integrity: sha512-0FRRKEv38AkzZ+vNYzXcqK9wBm92+UUON8K5API6XAr6Jt6Qdwr3pK1kZ4mBd5NqD8UuTNpEcJE6vIDhkZvikw==}
     engines: {node: '>=16.15.1', npm: '>=7.0.0'}
     hasBin: true
     peerDependencies:
@@ -1817,6 +1817,12 @@ packages:
     engines: {node: '>=4'}
     peerDependencies:
       eslint: ^3 || ^4 || ^5 || ^6 || ^7 || ^8
+
+  eslint-plugin-require-extensions@0.1.3:
+    resolution: {integrity: sha512-T3c1PZ9PIdI3hjV8LdunfYI8gj017UQjzAnCrxuo3wAjneDbTPHdE3oNWInOjMA+z/aBkUtlW5vC0YepYMZIug==}
+    engines: {node: '>=16'}
+    peerDependencies:
+      eslint: '*'
 
   eslint-scope@8.0.1:
     resolution: {integrity: sha512-pL8XjgP4ZOmmwfFE8mEhSxA7ZY4C+LWyqjQ3o4yWkkmD0qcMT9kkW3zWHOczhWcjTSgqycYAgwSlXvZltv65og==}
@@ -4404,20 +4410,21 @@ snapshots:
 
   concat-map@0.0.1: {}
 
-  convex-ents@0.7.7(convex@1.12.2(@clerk/clerk-react@5.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)):
+  convex-ents@0.7.7(convex@1.13.0(@clerk/clerk-react@5.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(eslint@9.6.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)):
     dependencies:
-      convex: 1.12.2(@clerk/clerk-react@5.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      convex: 1.13.0(@clerk/clerk-react@5.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(eslint@9.6.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
 
-  convex-helpers@0.1.43(convex@1.12.2(@clerk/clerk-react@5.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(zod@3.23.8):
+  convex-helpers@0.1.43(convex@1.13.0(@clerk/clerk-react@5.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(eslint@9.6.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(zod@3.23.8):
     dependencies:
-      convex: 1.12.2(@clerk/clerk-react@5.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      convex: 1.13.0(@clerk/clerk-react@5.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(eslint@9.6.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
     optionalDependencies:
       react: 18.3.1
       zod: 3.23.8
 
-  convex@1.12.2(@clerk/clerk-react@5.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  convex@1.13.0(@clerk/clerk-react@5.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(eslint@9.6.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       esbuild: 0.17.19
+      eslint-plugin-require-extensions: 0.1.3(eslint@9.6.0)
       jwt-decode: 3.1.2
       node-fetch: 2.7.0
       prettier: 3.2.5
@@ -4427,6 +4434,7 @@ snapshots:
       react-dom: 18.3.1(react@18.3.1)
     transitivePeerDependencies:
       - encoding
+      - eslint
 
   cookie@0.5.0: {}
 
@@ -4781,6 +4789,10 @@ snapshots:
       resolve: 2.0.0-next.5
       semver: 6.3.1
       string.prototype.matchall: 4.0.11
+
+  eslint-plugin-require-extensions@0.1.3(eslint@9.6.0):
+    dependencies:
+      eslint: 9.6.0
 
   eslint-scope@8.0.1:
     dependencies:
