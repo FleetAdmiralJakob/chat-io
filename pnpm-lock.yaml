@@ -72,8 +72,8 @@ importers:
         specifier: ^1.12.1
         version: 1.12.2(@clerk/clerk-react@5.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       convex-ents:
-        specifier: ^0.7.7
-        version: 0.7.7(convex@1.12.2(@clerk/clerk-react@5.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        specifier: ^0.8.0
+        version: 0.8.0(convex@1.12.2(@clerk/clerk-react@5.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       convex-helpers:
         specifier: ^0.1.41
         version: 0.1.43(convex@1.12.2(@clerk/clerk-react@5.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(zod@3.23.8)
@@ -1556,10 +1556,10 @@ packages:
   concat-map@0.0.1:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
 
-  convex-ents@0.7.7:
-    resolution: {integrity: sha512-sxZ4D9I5veU/CHDceMhbPT3RzpT/DfT2vpYeHFhgt3DIV6zjqLG+DdEJ+4jKFV2OqNW2RwJV8NhEiUqN281Gcg==}
+  convex-ents@0.8.0:
+    resolution: {integrity: sha512-/Y2jwrSdCbViidq0wQRmjkSIdxQl12vGCbFVRfL2rmMfbYwgta8WeyEPh/QKZ7NzhZ22U8at7YLGTC3qKxmsZA==}
     peerDependencies:
-      convex: ^1.11.2
+      convex: ^1.13.0
 
   convex-helpers@0.1.43:
     resolution: {integrity: sha512-8Mka2+7b8/gN8Dexbk9c4iPaolBxl0pSTrQIN4swyq8wunMhtTJwoTEk79/VwQpUrEaqnmqS357ZMQWVluGv/A==}
@@ -4404,7 +4404,7 @@ snapshots:
 
   concat-map@0.0.1: {}
 
-  convex-ents@0.7.7(convex@1.12.2(@clerk/clerk-react@5.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)):
+  convex-ents@0.8.0(convex@1.12.2(@clerk/clerk-react@5.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)):
     dependencies:
       convex: 1.12.2(@clerk/clerk-react@5.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
 

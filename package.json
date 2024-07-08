@@ -35,7 +35,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
     "convex": "^1.12.1",
-    "convex-ents": "^0.7.7",
+    "convex-ents": "^0.8.0",
     "convex-helpers": "^0.1.41",
     "dayjs": "^1.11.11",
     "framer-motion": "^11.2.10",
