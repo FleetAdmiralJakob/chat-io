@@ -101,7 +101,7 @@ export const createMessage = mutation({
 });
 
 export const deleteMessage = mutation({
-  args: { messageId: v.string() },
+  args: { messageId: v.string(), chatId: v.string() },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
 
