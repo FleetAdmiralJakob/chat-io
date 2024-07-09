@@ -304,9 +304,9 @@ const SettingsPage = () => {
     }
 
     if (emailSuccess) {
-      const emailId = clerkUser.user?.primaryEmailAddressId ?? "";
-      const params = { verified: false, emailAdress: emailValue };
-      successList.push(" EmailAdress");
+      toast.error("This feature is not available yet. Sorry!");
+      setEmailValue(clerkUser.user?.primaryEmailAddress?.emailAddress || "");
+      return;
     }
     toast.success(
       successList.map((update) => {
