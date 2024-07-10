@@ -27,7 +27,9 @@ import {
 import { Label } from "~/components/ui/label";
 import { Toaster } from "~/components/ui/sonner";
 import { toast } from "sonner";
-import { formSchemaUserUpdate } from "~/lib/validators";
+import { FormSchemaUserUpdate, formSchemaUserUpdate } from "~/lib/validators";
+import { useMutation } from "convex/react";
+import { api } from "../../../../../convex/_generated/api";
 
 const SettingValidator = z.object({
   email: z.string().email(),
@@ -78,6 +80,8 @@ const SettingsPage = () => {
   const [emailError, setEmailError] = useState(false);
   const [firstNameError, setFirstNameError] = useState("");
   const [lastNameError, setLastNameError] = useState("");
+
+  const updateConvexUserData = useMutation(api.users.updateUserData);
 
   async function test() {
     const valuesObject: z.infer<typeof formSchemaUserUpdate> = {
@@ -292,22 +296,32 @@ const SettingsPage = () => {
     emailValue.length != 0 &&
     !emailError;
 
-  const submitHandler = () => {
+  const userDataHandler = async (data: FormSchemaUserUpdate) => {
+    await updateConvexUserData({
+      data: data,
+    });
+  };
+
+  const submitHandler = async () => {
     const successList = [];
+    const userDataToUpdate: FormSchemaUserUpdate = {};
     if (firstNameSuccess) {
       clerkUser.user?.update({ firstName: firstName });
       successList.push(" First Name");
+      userDataToUpdate.firstName = firstName;
     }
     if (lastNameSuccess) {
       clerkUser.user?.update({ lastName: lastName });
       successList.push(" Last Name");
+      userDataToUpdate.lastName = lastName;
     }
 
     if (emailSuccess) {
-      toast.error("This feature is not available yet. Sorry!");
+      userDataToUpdate.email = emailValue;
       setEmailValue(clerkUser.user?.primaryEmailAddress?.emailAddress || "");
-      return;
     }
+
+    await userDataHandler(userDataToUpdate);
     toast.success(
       successList.map((update) => {
         return update;
