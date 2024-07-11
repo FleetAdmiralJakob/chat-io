@@ -152,6 +152,23 @@ export const Message = ({
     }
   }, [inView, message._id, message.deleted, deleteMessage]);
 
+  const sentInfo = () => {
+    return (
+      <>
+        Sent at {dayjs(message._creationTime).hour()}:
+        {dayjs(message._creationTime).minute() < 10
+          ? "0" + dayjs(message._creationTime).minute()
+          : dayjs(message._creationTime).minute()}
+        {", "}
+        {dayjs(message._creationTime).date()}.
+        {dayjs(message._creationTime).month() + 1 < 10
+          ? "0" + (dayjs(message._creationTime).month() + 1).toString()
+          : dayjs(message._creationTime).month() + 1}
+        .{dayjs(message._creationTime).year()}
+      </>
+    );
+  };
+
   return (
     <>
       <Toaster />
@@ -276,12 +293,7 @@ export const Message = ({
                     </button>{" "}
                     <div className="flex border-t-2 border-secondary-foreground p-2 pr-8 text-secondary-foreground">
                       <Info />
-                      <p className="ml-1">
-                        Sent at {dayjs(message._creationTime).hour()}:
-                        {dayjs(message._creationTime).minute() < 10
-                          ? "0" + dayjs(message._creationTime).minute()
-                          : dayjs(message._creationTime).minute()}
-                      </p>
+                      <p className="ml-1">{sentInfo()}</p>
                     </div>
                   </div>
                 </div>
@@ -395,12 +407,7 @@ export const Message = ({
                     </div>
                     <div className="flex p-2 pr-8 text-secondary-foreground">
                       <Info />
-                      <p className="ml-1">
-                        Sent at {dayjs(message._creationTime).hour()}:
-                        {dayjs(message._creationTime).minute() < 10
-                          ? "0" + dayjs(message._creationTime).minute()
-                          : dayjs(message._creationTime).minute()}
-                      </p>
+                      <p className="ml-1">{sentInfo()}</p>
                     </div>
                   </div>
                 </div>
