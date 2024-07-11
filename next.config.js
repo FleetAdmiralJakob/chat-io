@@ -16,6 +16,8 @@ const jiti = createJiti(fileURLToPath(import.meta.url));
 jiti("./src/env.ts");
 
 /** @type {import("next").NextConfig} */
-const config = withSerwist({});
+const config = withSerwist({
+  transpilePackages: ["geist"],
+});
 
 export default config;

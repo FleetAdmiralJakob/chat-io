@@ -10,7 +10,7 @@ importers:
     dependencies:
       '@clerk/nextjs':
         specifier: ^5.1.5
-        version: 5.2.1(next@14.2.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 5.2.2(next@14.2.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@clerk/shared':
         specifier: ^2.3.0
         version: 2.3.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -19,10 +19,10 @@ importers:
         version: 0.26.19(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@hookform/resolvers':
         specifier: ^3.6.0
-        version: 3.7.0(react-hook-form@7.52.1(react@18.3.1))
+        version: 3.9.0(react-hook-form@7.52.1(react@18.3.1))
       '@legendapp/state':
-        specifier: 3.0.0-alpha.22
-        version: 3.0.0-alpha.22(react@18.3.1)
+        specifier: 3.0.0-alpha.26
+        version: 3.0.0-alpha.26(react@18.3.1)
       '@radix-ui/react-avatar':
         specifier: ^1.0.4
         version: 1.1.0(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -69,14 +69,14 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       convex:
-        specifier: ^1.12.1
-        version: 1.12.2(@clerk/clerk-react@5.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^1.13.0
+        version: 1.13.0(@clerk/clerk-react@5.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(eslint@9.6.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       convex-ents:
-        specifier: ^0.7.7
-        version: 0.7.7(convex@1.12.2(@clerk/clerk-react@5.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        specifier: ^0.8.0
+        version: 0.8.0(convex@1.13.0(@clerk/clerk-react@5.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(eslint@9.6.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       convex-helpers:
-        specifier: ^0.1.41
-        version: 0.1.43(convex@1.12.2(@clerk/clerk-react@5.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(zod@3.23.8)
+        specifier: ^0.1.45
+        version: 0.1.45(convex@1.13.0(@clerk/clerk-react@5.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(eslint@9.6.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(zod@3.23.8)
       dayjs:
         specifier: ^1.11.11
         version: 1.11.11
@@ -84,14 +84,14 @@ importers:
         specifier: ^11.2.10
         version: 11.2.11(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       geist:
-        specifier: ^1.3.0
-        version: 1.3.0(next@14.2.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        specifier: ^1.3.1
+        version: 1.3.1(next@14.2.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       jiti:
         specifier: ^1.21.6
         version: 1.21.6
       lucide-react:
-        specifier: ^0.400.0
-        version: 0.400.0(react@18.3.1)
+        specifier: ^0.407.0
+        version: 0.407.0(react@18.3.1)
       next:
         specifier: ^14.2.4
         version: 14.2.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -100,7 +100,7 @@ importers:
         version: 0.3.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       npm-run-all2:
         specifier: ^6.2.0
-        version: 6.2.1
+        version: 6.2.2
       providers:
         specifier: link:providers
         version: link:providers
@@ -130,7 +130,7 @@ importers:
         version: 1.5.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       tailwind-merge:
         specifier: ^2.3.0
-        version: 2.3.0
+        version: 2.4.0
       tailwindcss-animate:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@3.4.4)
@@ -215,8 +215,8 @@ packages:
       react: '>=18 || >=19.0.0-beta'
       react-dom: '>=18 || >=19.0.0-beta'
 
-  '@clerk/nextjs@5.2.1':
-    resolution: {integrity: sha512-0GYejY+99eKi8SNeQ0GhLb04MOjGriFNS8+fSNpYL5ItQPu7cSf9O/Mlg9WVbs3+kfaDG3VJCd1Q9O/pRCArww==}
+  '@clerk/nextjs@5.2.2':
+    resolution: {integrity: sha512-YX0OTwMEoYbAF4rquio5fm8TIp0zELSede8ul83x0uNkYx5pQE+YAqZYh0UbsP+Y0w777FgRsLIXz5zPGV1hQw==}
     engines: {node: '>=18.17.0'}
     peerDependencies:
       next: ^13.5.4 || ^14.0.3 || >=15.0.0-rc
@@ -434,8 +434,8 @@ packages:
   '@floating-ui/utils@0.2.4':
     resolution: {integrity: sha512-dWO2pw8hhi+WrXq1YJy2yCuWoL20PddgGaqTgVe4cOS9Q6qklXCiA1tJEqX6BEwRNSCP84/afac9hd4MS+zEUA==}
 
-  '@hookform/resolvers@3.7.0':
-    resolution: {integrity: sha512-42p5X18noBV3xqOpTlf2V5qJZwzNgO4eLzHzmKGh/w7z4+4XqRw5AsESVkqE+qwAuRRlg2QG12EVEjPkrRIbeg==}
+  '@hookform/resolvers@3.9.0':
+    resolution: {integrity: sha512-bU0Gr4EepJ/EQsH/IwEzYLsT/PEj5C0ynLQ4m+GSHS+xKH4TfSelhluTgOaoc4kA5s7eCsQbM4wvZLzELmWzUg==}
     peerDependencies:
       react-hook-form: ^7.0.0
 
@@ -469,8 +469,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
 
-  '@legendapp/state@3.0.0-alpha.22':
-    resolution: {integrity: sha512-K4lHPc722gUWc2Efm8QFESlTwgmQzcCnxJ/CGxnD+hQcC6vnuHoF3qmO9VCqIpkWcxnkIldfoOpFp/nN3Jqkbg==}
+  '@legendapp/state@3.0.0-alpha.26':
+    resolution: {integrity: sha512-gUy1IeW2J4k2bM9iiF/feKl2x+ZyC6yr2aHg7oxUFMtvjcNf/wBXW2PGA+bxXdxNXmXQ3xIShWimU764ONT5dA==}
 
   '@next/env@14.2.4':
     resolution: {integrity: sha512-3EtkY5VDkuV2+lNmKlbkibIJxcO4oIHEhBWne6PaAp+76J9KoSsGvNikp6ivzAT8dhhBMYrm6op2pS1ApG0Hzg==}
@@ -1556,15 +1556,15 @@ packages:
   concat-map@0.0.1:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
 
-  convex-ents@0.7.7:
-    resolution: {integrity: sha512-sxZ4D9I5veU/CHDceMhbPT3RzpT/DfT2vpYeHFhgt3DIV6zjqLG+DdEJ+4jKFV2OqNW2RwJV8NhEiUqN281Gcg==}
+  convex-ents@0.8.0:
+    resolution: {integrity: sha512-/Y2jwrSdCbViidq0wQRmjkSIdxQl12vGCbFVRfL2rmMfbYwgta8WeyEPh/QKZ7NzhZ22U8at7YLGTC3qKxmsZA==}
     peerDependencies:
-      convex: ^1.11.2
+      convex: ^1.13.0
 
-  convex-helpers@0.1.43:
-    resolution: {integrity: sha512-8Mka2+7b8/gN8Dexbk9c4iPaolBxl0pSTrQIN4swyq8wunMhtTJwoTEk79/VwQpUrEaqnmqS357ZMQWVluGv/A==}
+  convex-helpers@0.1.45:
+    resolution: {integrity: sha512-e20faCT1G3zHGLOy5SdRpxyqNc76jTiNZ96X+PF1fpdExvG4SYKVnPiYmCZSRaZEjIsS8DdDvKu4npkQjeO3/A==}
     peerDependencies:
-      convex: ^1.12.0
+      convex: ^1.13.0
       hono: ^4.0.5
       react: ^17.0.2 || ^18.0.0
       zod: ^3.22.4
@@ -1576,8 +1576,8 @@ packages:
       zod:
         optional: true
 
-  convex@1.12.2:
-    resolution: {integrity: sha512-LQb5o2eritXTObYA/HqkUzHky60qTVU4pLefqTh09PU5xfBBAi0ObF9EmYvD657jKsWGjU5MVjdg8aZ5XhVl2A==}
+  convex@1.13.0:
+    resolution: {integrity: sha512-0FRRKEv38AkzZ+vNYzXcqK9wBm92+UUON8K5API6XAr6Jt6Qdwr3pK1kZ4mBd5NqD8UuTNpEcJE6vIDhkZvikw==}
     engines: {node: '>=16.15.1', npm: '>=7.0.0'}
     hasBin: true
     peerDependencies:
@@ -1818,6 +1818,12 @@ packages:
     peerDependencies:
       eslint: ^3 || ^4 || ^5 || ^6 || ^7 || ^8
 
+  eslint-plugin-require-extensions@0.1.3:
+    resolution: {integrity: sha512-T3c1PZ9PIdI3hjV8LdunfYI8gj017UQjzAnCrxuo3wAjneDbTPHdE3oNWInOjMA+z/aBkUtlW5vC0YepYMZIug==}
+    engines: {node: '>=16'}
+    peerDependencies:
+      eslint: '*'
+
   eslint-scope@8.0.1:
     resolution: {integrity: sha512-pL8XjgP4ZOmmwfFE8mEhSxA7ZY4C+LWyqjQ3o4yWkkmD0qcMT9kkW3zWHOczhWcjTSgqycYAgwSlXvZltv65og==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
@@ -1933,10 +1939,10 @@ packages:
   functions-have-names@1.2.3:
     resolution: {integrity: sha512-xckBUXyTIqT97tq2x2AMb+g163b5JFysYk0x4qxNFwbfQkmNZoiRHb6sPzI9/QV33WeuvVYBUIiD4NzNIyqaRQ==}
 
-  geist@1.3.0:
-    resolution: {integrity: sha512-IoGBfcqVEYB4bEwsfHd35jF4+X9LHRPYZymHL4YOltHSs9LJa24DYs1Z7rEMQ/lsEvaAIc61Y9aUxgcJaQ8lrg==}
+  geist@1.3.1:
+    resolution: {integrity: sha512-Q4gC1pBVPN+D579pBaz0TRRnGA4p9UK6elDY/xizXdFk/g4EKR5g0I+4p/Kj6gM0SajDBZ/0FvDV9ey9ud7BWw==}
     peerDependencies:
-      next: '>=13.2.0 <15.0.0-0'
+      next: '>=13.2.0'
 
   get-intrinsic@1.2.4:
     resolution: {integrity: sha512-5uYhsJH8VJBTv7oslg4BznJYhDoRI6waYCxMmCdnTrcCrHA/fCFKoTFz2JKKE0HdDFUF7/oQuhzumXJK7paBRQ==}
@@ -2259,8 +2265,8 @@ packages:
     resolution: {integrity: sha512-9hp3Vp2/hFQUiIwKo8XCeFVnrg8Pk3TYNPIR7tJADKi5YfcF7vEaK7avFHTlSy3kOKYaJQaalfEo6YuXdceBOQ==}
     engines: {node: 14 || >=16.14}
 
-  lucide-react@0.400.0:
-    resolution: {integrity: sha512-rpp7pFHh3Xd93KHixNgB0SqThMHpYNzsGUu69UaQbSZ75Q/J3m5t6EhKyMT3m4w2WOxmJ2mY0tD3vebnXqQryQ==}
+  lucide-react@0.407.0:
+    resolution: {integrity: sha512-+dRIu9Sry+E8wPF9+sY5eKld2omrU4X5IKXxrgqBt+o11IIHVU0QOfNoVWFuj0ZRDrxr4Wci26o2mKZqLGE0lA==}
     peerDependencies:
       react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
@@ -2369,8 +2375,8 @@ packages:
     resolution: {integrity: sha512-dMxCf+zZ+3zeQZXKxmyuCKlIDPGuv8EF940xbkC4kQVDTtqoh6rJFO+JTKSA6/Rwi0getWmtuy4Itup0AMcaDQ==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
 
-  npm-run-all2@6.2.1:
-    resolution: {integrity: sha512-eX4MWsUYOSm1FhPh9LPAWbqq2quny3u8gEEWIY4HHECi10qOyi1dNaJFCyOOv2uP05ZuTPETwS2p1GZk9oLJsw==}
+  npm-run-all2@6.2.2:
+    resolution: {integrity: sha512-Q+alQAGIW7ZhKcxLt8GcSi3h3ryheD6xnmXahkMRVM5LYmajcUrSITm8h+OPC9RYWMV2GR0Q1ntTUCfxaNoOJw==}
     engines: {node: ^14.18.0 || ^16.13.0 || >=18.0.0, npm: '>= 8'}
     hasBin: true
 
@@ -2899,8 +2905,8 @@ packages:
   tabbable@6.2.0:
     resolution: {integrity: sha512-Cat63mxsVJlzYvN51JmVXIgNoUokrIaT2zLclCXjRd8boZ0004U4KCs/sToJ75C6sdlByWxpYnb5Boif1VSFew==}
 
-  tailwind-merge@2.3.0:
-    resolution: {integrity: sha512-vkYrLpIP+lgR0tQCG6AP7zZXCTLc1Lnv/CCRT3BqJ9CZ3ui2++GPaGb1x/ILsINIMSYqqvrpqjUFsMNLlW99EA==}
+  tailwind-merge@2.4.0:
+    resolution: {integrity: sha512-49AwoOQNKdqKPd9CViyH5wJoSKsCDjUlzL8DxuGp3P1FsGY36NJDAa18jLZcaHAUUuTj+JB8IAo8zWgBNvBF7A==}
 
   tailwindcss-animate@1.0.7:
     resolution: {integrity: sha512-bl6mpH3T7I3UFxuvDEXLxy/VuFxBk5bbzplh7tXI68mwMokNYd1t9qPBHlnyTwfa4JGC4zP516I1hYYtQ/vspA==}
@@ -3121,7 +3127,7 @@ snapshots:
       react-dom: 18.3.1(react@18.3.1)
       tslib: 2.4.1
 
-  '@clerk/nextjs@5.2.1(next@14.2.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@clerk/nextjs@5.2.2(next@14.2.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@clerk/backend': 1.3.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@clerk/clerk-react': 5.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -3288,7 +3294,7 @@ snapshots:
 
   '@floating-ui/utils@0.2.4': {}
 
-  '@hookform/resolvers@3.7.0(react-hook-form@7.52.1(react@18.3.1))':
+  '@hookform/resolvers@3.9.0(react-hook-form@7.52.1(react@18.3.1))':
     dependencies:
       react-hook-form: 7.52.1(react@18.3.1)
 
@@ -3322,7 +3328,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.4.15
 
-  '@legendapp/state@3.0.0-alpha.22(react@18.3.1)':
+  '@legendapp/state@3.0.0-alpha.26(react@18.3.1)':
     dependencies:
       use-sync-external-store: 1.2.2(react@18.3.1)
     transitivePeerDependencies:
@@ -4404,20 +4410,21 @@ snapshots:
 
   concat-map@0.0.1: {}
 
-  convex-ents@0.7.7(convex@1.12.2(@clerk/clerk-react@5.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)):
+  convex-ents@0.8.0(convex@1.13.0(@clerk/clerk-react@5.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(eslint@9.6.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)):
     dependencies:
-      convex: 1.12.2(@clerk/clerk-react@5.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      convex: 1.13.0(@clerk/clerk-react@5.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(eslint@9.6.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
 
-  convex-helpers@0.1.43(convex@1.12.2(@clerk/clerk-react@5.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(zod@3.23.8):
+  convex-helpers@0.1.45(convex@1.13.0(@clerk/clerk-react@5.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(eslint@9.6.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(zod@3.23.8):
     dependencies:
-      convex: 1.12.2(@clerk/clerk-react@5.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      convex: 1.13.0(@clerk/clerk-react@5.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(eslint@9.6.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
     optionalDependencies:
       react: 18.3.1
       zod: 3.23.8
 
-  convex@1.12.2(@clerk/clerk-react@5.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  convex@1.13.0(@clerk/clerk-react@5.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(eslint@9.6.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       esbuild: 0.17.19
+      eslint-plugin-require-extensions: 0.1.3(eslint@9.6.0)
       jwt-decode: 3.1.2
       node-fetch: 2.7.0
       prettier: 3.2.5
@@ -4427,6 +4434,7 @@ snapshots:
       react-dom: 18.3.1(react@18.3.1)
     transitivePeerDependencies:
       - encoding
+      - eslint
 
   cookie@0.5.0: {}
 
@@ -4782,6 +4790,10 @@ snapshots:
       semver: 6.3.1
       string.prototype.matchall: 4.0.11
 
+  eslint-plugin-require-extensions@0.1.3(eslint@9.6.0):
+    dependencies:
+      eslint: 9.6.0
+
   eslint-scope@8.0.1:
     dependencies:
       esrecurse: 4.3.0
@@ -4924,7 +4936,7 @@ snapshots:
 
   functions-have-names@1.2.3: {}
 
-  geist@1.3.0(next@14.2.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)):
+  geist@1.3.1(next@14.2.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)):
     dependencies:
       next: 14.2.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
 
@@ -5239,7 +5251,7 @@ snapshots:
 
   lru-cache@10.2.2: {}
 
-  lucide-react@0.400.0(react@18.3.1):
+  lucide-react@0.407.0(react@18.3.1):
     dependencies:
       react: 18.3.1
 
@@ -5335,7 +5347,7 @@ snapshots:
 
   npm-normalize-package-bin@3.0.1: {}
 
-  npm-run-all2@6.2.1:
+  npm-run-all2@6.2.2:
     dependencies:
       ansi-styles: 6.2.1
       cross-spawn: 7.0.3
@@ -5837,9 +5849,7 @@ snapshots:
 
   tabbable@6.2.0: {}
 
-  tailwind-merge@2.3.0:
-    dependencies:
-      '@babel/runtime': 7.24.5
+  tailwind-merge@2.4.0: {}
 
   tailwindcss-animate@1.0.7(tailwindcss@3.4.4):
     dependencies:
