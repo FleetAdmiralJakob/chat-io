@@ -15,3 +15,7 @@ syncObservable(devMode$, {
     name: "devMode",
   },
 });
+
+export const registration$ = observable<ServiceWorkerRegistration | null>(null);
+
+export const subscription$ = observable<PushSubscription | null>(null);

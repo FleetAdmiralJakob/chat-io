@@ -36,7 +36,7 @@ import { Message } from "~/components/message";
 import { Input } from "~/components/ui/input";
 import { Id } from "../../../../../convex/_generated/dataModel";
 import { FunctionReturnType } from "convex/server";
-import { useQueryWithStatus } from "~/app/convex-client-provider";
+import { useQueryWithStatus } from "~/components/providers/convex-client-provider";
 
 dayjs.extend(relativeTime);
 
@@ -291,7 +291,7 @@ export default function Page({ params }: { params: { chatId: string } }) {
                   {chatInfo.data ? (
                     chatInfo.data.basicChatInfo.support ? (
                       <Badge>Support</Badge>
-                    ) : !chatInfo.data?.otherUser[0] ? (
+                    ) : !chatInfo.data.otherUser[0] ? (
                       <Badge>Tool</Badge>
                     ) : null
                   ) : null}
