@@ -56,7 +56,7 @@
     "sonner": "^1.5.0",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
-    "zod": "3.23.8"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@total-typescript/ts-reset": "^0.5.1",
@@ -80,9 +80,9 @@
   "ct3aMetadata": {
     "initVersion": "7.30.0"
   },
-  "packageManager": "pnpm@9.5.0",
+  "packageManager": "pnpm@9.6.0",
   "engineStrict": true,
   "engines": {
-    "pnpm": "9.5.0"
+    "pnpm": "9.6.0"
   }
 }
