@@ -160,7 +160,10 @@ export const Message = ({
           ? "0" + dayjs(message._creationTime).minute()
           : dayjs(message._creationTime).minute()}
         {", "}
-        {dayjs(message._creationTime).date()}.
+        {dayjs(message._creationTime).date() < 10
+          ? "0" + dayjs(message._creationTime).date()
+          : dayjs(message._creationTime).date()}
+        .
         {dayjs(message._creationTime).month() + 1 < 10
           ? "0" + (dayjs(message._creationTime).month() + 1).toString()
           : dayjs(message._creationTime).month() + 1}
