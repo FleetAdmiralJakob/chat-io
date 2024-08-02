@@ -1,7 +1,15 @@
 import { useUser } from "@clerk/nextjs";
 import { useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import { Ban, CopyCheck, Forward, Info, Trash2 } from "lucide-react";
+import {
+  Ban,
+  CircleCheck,
+  CircleX,
+  CopyCheck,
+  Forward,
+  Info,
+  Trash2,
+} from "lucide-react";
 import { FunctionReturnType } from "convex/server";
 import { useInView } from "react-intersection-observer";
 import { useEffect, useState } from "react";
@@ -12,6 +20,7 @@ import { useFloating } from "@floating-ui/react";
 import { Toaster } from "~/components/ui/sonner";
 import { toast } from "sonner";
 import { Id } from "../../convex/_generated/dataModel";
+import { useQueryWithStatus } from "~/app/convex-client-provider";
 
 dayjs.extend(relativeTime);
 
@@ -118,27 +127,69 @@ export const Message = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const markRead = useMutation(api.messages.markMessageRead);
 
+  const deleteAllMessagesInChat = useMutation(
+    api.messages.deleteAllMessagesInChat,
+  );
+
+  const chatInfo = useQueryWithStatus(api.chats.getChatInfoFromId, {
+    chatId: message.privateChatId,
+  });
+
+  const rejectRequest = useMutation(api.messages.rejectRequest);
+
+  const rejectRequestHandler =
+    (chatId: string, messageId: string) => async () => {
+      await rejectRequest({ chatId, messageId });
+    };
+
+  const deleteAllMessagesinChat = (chatId: string) => async () => {
+    await deleteAllMessagesInChat({ chatId });
+  };
+
   useEffect(() => {
     if (inView && message.sent) {
       markRead({ messageId: message._id });
     }
   }, [inView, message._id, message.deleted, deleteMessage]);
 
+  const sentInfo = () => {
+    return (
+      <>
+        Sent at {dayjs(message._creationTime).hour()}:
+        {dayjs(message._creationTime).minute() < 10
+          ? "0" + dayjs(message._creationTime).minute()
+          : dayjs(message._creationTime).minute()}
+        {", "}
+        {dayjs(message._creationTime).date() < 10
+          ? "0" + dayjs(message._creationTime).date()
+          : dayjs(message._creationTime).date()}
+        .
+        {dayjs(message._creationTime).month() + 1 < 10
+          ? "0" + (dayjs(message._creationTime).month() + 1).toString()
+          : dayjs(message._creationTime).month() + 1}
+        .{dayjs(message._creationTime).year()}
+      </>
+    );
+  };
+
   return (
     <>
       <Toaster />
 
-      {isModalOpen && (
+      {isModalOpen && message.type == "message" ? (
         <div
           onClick={() => setIsModalOpen(!isModalOpen)}
           className="fixed inset-0 z-10 bg-black opacity-75"
         ></div>
-      )}
+      ) : null}
       <div className="flex" ref={ref}>
         {message.from.username == clerkUser.user?.username ? (
           <div
             ref={refs.setReference}
-            className="my-1 mr-4 flex w-full flex-col items-end"
+            className={cn("my-1 mr-4 flex w-full flex-col items-end", {
+              "mr-0 items-center":
+                message.type == "request" || message.type == "rejected",
+            })}
           >
             <div
               onContextMenu={(e) => {
@@ -161,6 +212,8 @@ export const Message = ({
                 "max-w-[66.6667%] cursor-default break-words rounded-sm bg-accent p-3",
                 {
                   "sticky z-50 opacity-100": message._id === selectedMessageId,
+                  "my-2 max-w-[80%] border-2 border-secondary bg-primary":
+                    message.type == "request" || message.type == "rejected",
                 },
               )}
             >
@@ -170,11 +223,22 @@ export const Message = ({
                   <p className="ml-2.5">This message was deleted</p>
                 </div>
               ) : (
-                <div>{message.content}</div>
+                <div>
+                  {message.type != "message" ? (
+                    <div className="font-semibold text-destructive-foreground">
+                      {message.type == "request"
+                        ? "You`ve send a request"
+                        : chatInfo.data?.otherUser[0]?.username +
+                          " has rejected the request"}
+                    </div>
+                  ) : (
+                    <div>{message.content}</div>
+                  )}
+                </div>
               )}
             </div>
             <div className="mr-2 text-[75%] font-bold text-secondary-foreground">
-              {!message.deleted
+              {!message.deleted && message.type == "message"
                 ? message.readBy
                   ? message.readBy.map((user) => {
                       if (user.username != clerkUser.user?.username) {
@@ -192,7 +256,9 @@ export const Message = ({
                   : null
                 : null}
             </div>
-            {message._id == selectedMessageId && isModalOpen ? (
+            {message._id == selectedMessageId &&
+            isModalOpen &&
+            message.type == "message" ? (
               <div
                 ref={refs.setFloating}
                 style={floatingStyles}
@@ -230,12 +296,7 @@ export const Message = ({
                     </button>{" "}
                     <div className="flex border-t-2 border-secondary-foreground p-2 pr-8 text-secondary-foreground">
                       <Info />
-                      <p className="ml-1">
-                        Sent at {dayjs(message._creationTime).hour()}:
-                        {dayjs(message._creationTime).minute() < 10
-                          ? "0" + dayjs(message._creationTime).minute()
-                          : dayjs(message._creationTime).minute()}
-                      </p>
+                      <p className="ml-1">{sentInfo()}</p>
                     </div>
                   </div>
                 </div>
@@ -243,7 +304,12 @@ export const Message = ({
             ) : null}
           </div>
         ) : (
-          <div className="my-1 ml-4 flex w-full justify-start">
+          <div
+            className={cn("my-1 ml-4 flex w-full justify-start", {
+              "ml-0 justify-center":
+                message.type == "request" || message.type == "rejected",
+            })}
+          >
             <div
               ref={refs.setReference}
               onContextMenu={(e) => {
@@ -266,6 +332,8 @@ export const Message = ({
                 "max-w-[66.6667%] cursor-default break-words rounded-sm bg-secondary p-3",
                 {
                   "sticky z-50 opacity-100": message._id == selectedMessageId,
+                  "my-2 max-w-[80%] border-2 border-secondary bg-primary":
+                    message.type == "request" || message.type == "rejected",
                 },
               )}
             >
@@ -274,11 +342,47 @@ export const Message = ({
                   <Ban />
                   <p className="ml-2.5">This message was deleted</p>
                 </div>
+              ) : message.type != "message" ? (
+                <div className="font-semibold text-destructive-foreground">
+                  <p>
+                    {message.type == "request"
+                      ? chatInfo.data?.otherUser[0]?.username +
+                        " has send a delete Chat request"
+                      : "You has rejected the request"}
+                  </p>
+                  <div className="flex justify-between">
+                    {message.type == "request" ? (
+                      <>
+                        <button
+                          onClick={deleteAllMessagesinChat(
+                            message.privateChatId,
+                          )}
+                          className="mt-4 flex rounded-sm bg-accept p-2 px-4"
+                        >
+                          <CircleCheck className="mr-1 p-0.5" />
+                          <p>Accept</p>
+                        </button>
+                        <button
+                          onClick={rejectRequestHandler(
+                            message.privateChatId,
+                            message._id,
+                          )}
+                          className="ml-4 mt-4 flex rounded-sm bg-accent p-2 px-4 lg:ml-0"
+                        >
+                          <CircleX className="mr-1 p-0.5" />
+                          <p>Reject</p>{" "}
+                        </button>{" "}
+                      </>
+                    ) : null}
+                  </div>
+                </div>
               ) : (
                 message.content
               )}
             </div>
-            {message._id == selectedMessageId && isModalOpen ? (
+            {message._id == selectedMessageId &&
+            isModalOpen &&
+            message.type == "message" ? (
               <div
                 ref={refs.setFloating}
                 style={floatingStyles}
@@ -306,12 +410,7 @@ export const Message = ({
                     </div>
                     <div className="flex p-2 pr-8 text-secondary-foreground">
                       <Info />
-                      <p className="ml-1">
-                        Sent at {dayjs(message._creationTime).hour()}:
-                        {dayjs(message._creationTime).minute() < 10
-                          ? "0" + dayjs(message._creationTime).minute()
-                          : dayjs(message._creationTime).minute()}
-                      </p>
+                      <p className="ml-1">{sentInfo()}</p>
                     </div>
                   </div>
                 </div>

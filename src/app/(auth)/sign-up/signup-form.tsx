@@ -16,7 +16,7 @@ import {
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import React, { useEffect } from "react";
-import { formSchema } from "~/lib/validators";
+import { formSchemaSignUp } from "~/lib/validators";
 import { useSignIn } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { cn } from "~/lib/utils";
@@ -38,8 +38,8 @@ export function SignUpForm() {
   const { isLoading, isAuthenticated } = useConvexAuth();
   const router = useRouter();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof formSchemaSignUp>>({
+    resolver: zodResolver(formSchemaSignUp),
     defaultValues: {
       username: "",
       usernameId: "",
@@ -62,7 +62,7 @@ export function SignUpForm() {
     }
   }, [initialConvexSetup, isAuthenticated, router, signUpComplete]);
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchemaSignUp>) {
     if (isAuthenticated || isLoading) {
       // TODO: Make a toast or something to tell the user has to sign out first
       return;
@@ -83,6 +83,15 @@ export function SignUpForm() {
     if (parsedResponseBody.data?.statusText === "username_is_taken") {
       form.setError("username", {
         message: "Username +  ID is already taken. Please choose another.",
+      });
+
+      setFormIsLoading(false);
+      return;
+    }
+
+    if (parsedResponseBody.data?.statusText === "email_is_taken") {
+      form.setError("email", {
+        message: "Email is already taken. Please choose another.",
       });
 
       setFormIsLoading(false);
@@ -244,6 +253,23 @@ export function SignUpForm() {
         >
           This is optional, so you can stay anonymous.
         </span>
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem className="flex-2">
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input placeholder="email" type="text" {...field} />
+              </FormControl>
+              <FormDescription>
+                This is optional, but if you forgot your password, we can send
+                you an email.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name="password"

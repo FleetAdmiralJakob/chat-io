@@ -11,6 +11,7 @@ const schema = defineEntSchema({
     .field("clerkId", v.string(), { unique: true })
     .field("username", v.string(), { unique: true })
     .field("firstName", v.optional(v.string()))
+    .field("email", v.optional(v.string()))
     .field("lastName", v.optional(v.string()))
     .edges("privateChats")
     .edges("messages", { ref: true })
@@ -22,6 +23,7 @@ const schema = defineEntSchema({
 
   messages: defineEnt({})
     .field("content", v.string())
+    .field("type", v.string(), { default: "message" })
     .field("deleted", v.boolean(), { default: false })
     .edge("privateChat")
     .edge("user")
