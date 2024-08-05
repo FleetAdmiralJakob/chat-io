@@ -13,7 +13,7 @@ importers:
         version: 5.2.12(next@14.2.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@clerk/shared':
         specifier: ^2.3.0
-        version: 2.4.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 2.4.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@floating-ui/react':
         specifier: ^0.26.17
         version: 0.26.20(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -235,8 +235,24 @@ packages:
       react-dom:
         optional: true
 
+  '@clerk/shared@2.4.4':
+    resolution: {integrity: sha512-DcyuVFoBzPC9ZIdLN8P0fIv+ACfWMc19hD9Jye4vXyM0HNh18X/2KUg8IPAaNBUusT5/RyBVtxK2g3MHR+x/0Q==}
+    engines: {node: '>=18.17.0'}
+    peerDependencies:
+      react: '>=18 || >=19.0.0-beta'
+      react-dom: '>=18 || >=19.0.0-beta'
+    peerDependenciesMeta:
+      react:
+        optional: true
+      react-dom:
+        optional: true
+
   '@clerk/types@4.11.0':
     resolution: {integrity: sha512-sMp3ATIH5ZoZ9veu9/LNH68GvahDm7sPLJf8xYyjc9hJYILz85xzI0JbwS6iFJw2NpTssvyl9viL7tgBrw46iA==}
+    engines: {node: '>=18.17.0'}
+
+  '@clerk/types@4.12.0':
+    resolution: {integrity: sha512-y5P36XMWRphFPwcC8NxptAvPbeH6MZcicULn4x7c1K6gHyGwoieGywwPHAdrc5c/aKGIVp8Zlg93iQi7Vj0qJg==}
     engines: {node: '>=18.17.0'}
 
   '@esbuild/android-arm64@0.17.19':
@@ -3149,7 +3165,22 @@ snapshots:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
+  '@clerk/shared@2.4.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@clerk/types': 4.12.0
+      glob-to-regexp: 0.4.1
+      js-cookie: 3.0.5
+      std-env: 3.7.0
+      swr: 2.2.5(react@18.3.1)
+    optionalDependencies:
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+
   '@clerk/types@4.11.0':
+    dependencies:
+      csstype: 3.1.1
+
+  '@clerk/types@4.12.0':
     dependencies:
       csstype: 3.1.1
 
