@@ -70,13 +70,13 @@ importers:
         version: 1.0.0(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       convex:
         specifier: ^1.13.0
-        version: 1.13.2(@clerk/clerk-react@5.3.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(eslint@9.8.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 1.14.0(@clerk/clerk-react@5.3.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       convex-ents:
         specifier: ^0.9.0
-        version: 0.9.5(convex@1.13.2(@clerk/clerk-react@5.3.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(eslint@9.8.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        version: 0.9.5(convex@1.14.0(@clerk/clerk-react@5.3.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       convex-helpers:
         specifier: ^0.1.45
-        version: 0.1.49(convex@1.13.2(@clerk/clerk-react@5.3.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(eslint@9.8.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(zod@3.23.8)
+        version: 0.1.49(convex@1.14.0(@clerk/clerk-react@5.3.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(zod@3.23.8)
       dayjs:
         specifier: ^1.11.11
         version: 1.11.12
@@ -1560,9 +1560,9 @@ packages:
       zod:
         optional: true
 
-  convex@1.13.2:
-    resolution: {integrity: sha512-XtXv5f5QXQgpcd+zcgecfIdUn1JmusGuHlP0c6XKxLEdA6v9dXI43/s5CgB3ioX1vwVTHpJBp0bqtpe37XXbuA==}
-    engines: {node: '>=16.15.1', npm: '>=7.0.0'}
+  convex@1.14.0:
+    resolution: {integrity: sha512-dx0blWhpck8SOQwbnb6Y78CI2CpfuSlkgV+hLxNZb9eYLWN9U8ybNCFLf09BRI3umOFg0oRJO0qNN0Iu0IFWJw==}
+    engines: {node: '>=18.0.0', npm: '>=7.0.0'}
     hasBin: true
     peerDependencies:
       '@auth0/auth0-react': ^2.0.1
@@ -1801,12 +1801,6 @@ packages:
     engines: {node: '>=4'}
     peerDependencies:
       eslint: ^3 || ^4 || ^5 || ^6 || ^7 || ^8
-
-  eslint-plugin-require-extensions@0.1.3:
-    resolution: {integrity: sha512-T3c1PZ9PIdI3hjV8LdunfYI8gj017UQjzAnCrxuo3wAjneDbTPHdE3oNWInOjMA+z/aBkUtlW5vC0YepYMZIug==}
-    engines: {node: '>=16'}
-    peerDependencies:
-      eslint: '*'
 
   eslint-scope@8.0.2:
     resolution: {integrity: sha512-6E4xmrTw5wtxnLA5wYL3WDfhZ/1bUBGOXV0zQvVRDOtrR8D0p6W7fs3JweNYhwRYeGvd/1CKX2se0/2s7Q/nJA==}
@@ -2344,15 +2338,6 @@ packages:
 
   no-case@3.0.4:
     resolution: {integrity: sha512-fgAN3jGAh+RoxUGZHTSOLJIqUc2wmoBwGR4tbpNAKmmovFoWq0OdRkb0VkldReO2a2iBT/OEulG9XSUc10r3zg==}
-
-  node-fetch@2.7.0:
-    resolution: {integrity: sha512-c4FRfUm/dbcWZ7U+1Wq0AwCyFL+3nt2bEw05wfxSz+DWpWsitgmSgYmy2dQdWyKC1694ELPqMs/YzUSNozLt8A==}
-    engines: {node: 4.x || >=6.0.0}
-    peerDependencies:
-      encoding: ^0.1.0
-    peerDependenciesMeta:
-      encoding:
-        optional: true
 
   node-releases@2.0.18:
     resolution: {integrity: sha512-d9VeXT4SJ7ZeOqGX6R5EM022wpL+eWPooLI+5UpWn2jCT1aosUQEhQP214x33Wkwx3JQMvIm+tIoVOdodFS40g==}
@@ -2933,9 +2918,6 @@ packages:
     resolution: {integrity: sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==}
     engines: {node: '>=8.0'}
 
-  tr46@0.0.3:
-    resolution: {integrity: sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==}
-
   tr46@1.0.1:
     resolution: {integrity: sha512-dTpowEjclQ7Kgx5SdBkqRzVhERQXov8/l9Ft9dVM9fmg0W0KQSVaXX9T4i6twCPNtYiZM53lpSSUAwJbFPOHxA==}
 
@@ -3037,14 +3019,8 @@ packages:
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
 
-  webidl-conversions@3.0.1:
-    resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}
-
   webidl-conversions@4.0.2:
     resolution: {integrity: sha512-YQ+BmxuTgd6UXZW3+ICGfyqRyHXVlD5GtQr5+qjiNW7bF0cqrzX500HVXPBOvgXb5YnzDd+h0zqyv61KUD7+Sg==}
-
-  whatwg-url@5.0.0:
-    resolution: {integrity: sha512-saE57nupxk6v3HY35+jzBwYa0rKSy0XR8JSxZPwgLr7ys0IBzhGviA1/TUGJLmSVqs8pb9AnvICXEuOHLprYTw==}
 
   whatwg-url@7.1.0:
     resolution: {integrity: sha512-WUu7Rg1DroM7oQvGWfOiAK21n74Gg+T4elXEQYkOhtyLeWiJFoOGLXPKI/9gzIie9CtwVLm8wtw6YJdKyxSjeg==}
@@ -4393,31 +4369,26 @@ snapshots:
 
   concat-map@0.0.1: {}
 
-  convex-ents@0.9.5(convex@1.13.2(@clerk/clerk-react@5.3.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(eslint@9.8.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)):
+  convex-ents@0.9.5(convex@1.14.0(@clerk/clerk-react@5.3.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)):
     dependencies:
-      convex: 1.13.2(@clerk/clerk-react@5.3.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(eslint@9.8.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      convex: 1.14.0(@clerk/clerk-react@5.3.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
 
-  convex-helpers@0.1.49(convex@1.13.2(@clerk/clerk-react@5.3.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(eslint@9.8.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(zod@3.23.8):
+  convex-helpers@0.1.49(convex@1.14.0(@clerk/clerk-react@5.3.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(zod@3.23.8):
     dependencies:
-      convex: 1.13.2(@clerk/clerk-react@5.3.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(eslint@9.8.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      convex: 1.14.0(@clerk/clerk-react@5.3.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
     optionalDependencies:
       react: 18.3.1
       zod: 3.23.8
 
-  convex@1.13.2(@clerk/clerk-react@5.3.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(eslint@9.8.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  convex@1.14.0(@clerk/clerk-react@5.3.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       esbuild: 0.17.19
-      eslint-plugin-require-extensions: 0.1.3(eslint@9.8.0)
       jwt-decode: 3.1.2
-      node-fetch: 2.7.0
       prettier: 3.2.5
     optionalDependencies:
       '@clerk/clerk-react': 5.3.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
-    transitivePeerDependencies:
-      - encoding
-      - eslint
 
   cookie@0.5.0: {}
 
@@ -4772,10 +4743,6 @@ snapshots:
       resolve: 2.0.0-next.5
       semver: 6.3.1
       string.prototype.matchall: 4.0.11
-
-  eslint-plugin-require-extensions@0.1.3(eslint@9.8.0):
-    dependencies:
-      eslint: 9.8.0
 
   eslint-scope@8.0.2:
     dependencies:
@@ -5331,10 +5298,6 @@ snapshots:
     dependencies:
       lower-case: 2.0.2
       tslib: 2.4.1
-
-  node-fetch@2.7.0:
-    dependencies:
-      whatwg-url: 5.0.0
 
   node-releases@2.0.18: {}
 
@@ -5897,8 +5860,6 @@ snapshots:
     dependencies:
       is-number: 7.0.0
 
-  tr46@0.0.3: {}
-
   tr46@1.0.1:
     dependencies:
       punycode: 2.3.1
@@ -6004,14 +5965,7 @@ snapshots:
 
   util-deprecate@1.0.2: {}
 
-  webidl-conversions@3.0.1: {}
-
   webidl-conversions@4.0.2: {}
-
-  whatwg-url@5.0.0:
-    dependencies:
-      tr46: 0.0.3
-      webidl-conversions: 3.0.1
 
   whatwg-url@7.1.0:
     dependencies:
