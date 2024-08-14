@@ -13,7 +13,7 @@ importers:
         version: 5.3.1(next@14.2.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@clerk/shared':
         specifier: ^2.3.0
-        version: 2.5.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 2.5.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@floating-ui/react':
         specifier: ^0.26.17
         version: 0.26.22(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -223,18 +223,6 @@ packages:
       react: '>=18 || >=19.0.0-beta'
       react-dom: '>=18 || >=19.0.0-beta'
 
-  '@clerk/shared@2.5.0':
-    resolution: {integrity: sha512-dYRlFQJN4YIQbYJHCDKd5yLF7rcI42pw2JOQEKiOAWPiAMlmhTtiEL0YWMVoGNaGRI72fyIge6/+V7r9WWT0wg==}
-    engines: {node: '>=18.17.0'}
-    peerDependencies:
-      react: '>=18 || >=19.0.0-beta'
-      react-dom: '>=18 || >=19.0.0-beta'
-    peerDependenciesMeta:
-      react:
-        optional: true
-      react-dom:
-        optional: true
-
   '@clerk/shared@2.5.1':
     resolution: {integrity: sha512-RslzZvjolG8ToZlegV8XPEkINQ4XM23lO2xS6ZtJEeGzRzchkpEBUOYywjG6aGtJDByWBY2OxyrPaa5rwx1XEg==}
     engines: {node: '>=18.17.0'}
@@ -246,10 +234,6 @@ packages:
         optional: true
       react-dom:
         optional: true
-
-  '@clerk/types@4.13.0':
-    resolution: {integrity: sha512-W/iZ5ig35UgJHmZqqgO1tosHuGtdKR8e+f8FJWphpdIW6KNCK+Oxc5lOO/hJU1c9aih0x5QdlLrKsqF3S8JKdA==}
-    engines: {node: '>=18.17.0'}
 
   '@clerk/types@4.13.1':
     resolution: {integrity: sha512-AfFTA1Du0pog62CSl23Y8NNDN+iHwXdUQAp/sQ/LbE+/wYBOMSaV5d+cS5F4HX+/uzXgKsc3BpCNI/Th3CLNHg==}
@@ -3129,17 +3113,6 @@ snapshots:
       server-only: 0.0.1
       tslib: 2.4.1
 
-  '@clerk/shared@2.5.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
-    dependencies:
-      '@clerk/types': 4.13.0
-      glob-to-regexp: 0.4.1
-      js-cookie: 3.0.5
-      std-env: 3.7.0
-      swr: 2.2.5(react@18.3.1)
-    optionalDependencies:
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
-
   '@clerk/shared@2.5.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@clerk/types': 4.13.1
@@ -3150,10 +3123,6 @@ snapshots:
     optionalDependencies:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
-
-  '@clerk/types@4.13.0':
-    dependencies:
-      csstype: 3.1.1
 
   '@clerk/types@4.13.1':
     dependencies:
