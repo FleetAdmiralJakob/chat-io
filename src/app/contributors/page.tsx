@@ -8,9 +8,13 @@ import Image, { type StaticImageData } from "next/image";
 import { cn } from "~/lib/utils";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ArrowLeft, Link as LinkChain, CircleChevronUp } from "lucide-react";
+import {
+  ArrowLeft,
+  Link as LinkChain,
+  CircleChevronUp,
+  UsersRound,
+} from "lucide-react";
 import { SiGithub } from "react-icons/si";
-import { BsPeopleFill } from "react-icons/bs";
 import Link from "next/link";
 
 interface ContributorsProps {
@@ -58,7 +62,7 @@ const Contributors = () => {
             <span className="hidden xl:block">Back</span>
           </div>
           <div className="flex border-b-2 border-white">
-            <BsPeopleFill />
+            <UsersRound className="mt-0.5 h-8 w-8" />
             <p className="mb-1 ml-2 font-bold">Contributors</p>
           </div>
         </div>
