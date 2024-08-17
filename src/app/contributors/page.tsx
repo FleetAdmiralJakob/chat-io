@@ -130,7 +130,7 @@ const Contributors = () => {
                         <p className={"hidden cursor-pointer lg:flex"}>
                           Website
                         </p>
-                        <LinkChain className="ml-1 mt-1" />
+                        <LinkChain className="ml-1 mt-1 h-5 w-5" />
                       </Link>
                     ) : null}
 
@@ -139,7 +139,7 @@ const Contributors = () => {
                         <p className={"hidden cursor-pointer lg:flex"}>
                           LinkedIn
                         </p>
-                        <FaLinkedin className="ml-1 mt-2.5 lg:mt-1" />
+                        <FaLinkedin className="ml-1 mt-2.5 h-5 w-5 lg:mt-1" />
                       </Link>
                     ) : null}
 
@@ -151,7 +151,7 @@ const Contributors = () => {
                         <p className={"hidden cursor-pointer lg:flex"}>
                           GitHub
                         </p>
-                        <SiGithub className="ml-1 mt-2.5 lg:mt-1" />
+                        <SiGithub className="ml-1 mt-2.5 h-5 w-5 lg:mt-1" />
                       </Link>
                     ) : null}
                   </div>
