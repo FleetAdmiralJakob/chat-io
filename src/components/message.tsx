@@ -144,7 +144,11 @@ export const Message = ({
     };
 
   const deleteAllMessagesinChat = (chatId: string) => async () => {
-    await deleteAllMessagesInChat({ chatId });
+    if (message.type == "request") {
+      await deleteAllMessagesInChat({ chatId });
+    } else {
+      console.error("Error");
+    }
   };
 
   useEffect(() => {

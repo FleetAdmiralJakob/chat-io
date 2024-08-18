@@ -167,6 +167,42 @@ export const deleteAllMessagesInChat = mutation({
       throw new ConvexError("chatId was invalid");
     }
 
+    const usersInChat = await ctx
+      .table("privateChats")
+      .getX(parsedChatId)
+      .edge("users");
+
+    const filteredMessages = await ctx
+      .table("messages")
+      .filter((q) =>
+        q.and(
+          q.eq(q.field("type"), "request"),
+          q.eq(q.field("privateChatId"), args.chatId),
+        ),
+      );
+
+    const user = await Promise.all(
+      filteredMessages.map(async (message) => {
+        return await ctx.table("users").getX(message.userId);
+      }),
+    );
+
+    const userClerkId = user.map((u) => u.clerkId);
+
+    if (
+      !usersInChat.some((user) => user.clerkId === identity.tokenIdentifier)
+    ) {
+      throw new ConvexError(
+        "UNAUTHORIZED REQUEST: User tried to send a  in a chat in which he is not in.",
+      );
+    }
+
+    if (userClerkId.includes(identity.tokenIdentifier)) {
+      throw new ConvexError(
+        "UNAUTHORIZED REQUEST: User tried to delete all messages in a chat but the user is Unauthenticated.",
+      );
+    }
+
     const chat = ctx.table("privateChats").getX(parsedChatId);
     const messagesInChat = await chat.edge("messages");
 
