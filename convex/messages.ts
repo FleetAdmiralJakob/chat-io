@@ -78,6 +78,16 @@ export const createDeleteRequest = mutation({
       );
     }
 
+    const openRequests = await ctx
+      .table("privateChats")
+      .get(parsedChatId)
+      .edge("messages")
+      .filter((q) => q.eq(q.field("type"), "request"));
+
+    if (openRequests && openRequests?.length > 0) {
+      throw new ConvexError("There is already at least one open request.");
+    }
+
     await ctx.table("messages").insert({
       userId: convexUser._id,
       privateChatId: parsedChatId,
