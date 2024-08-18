@@ -1,4 +1,4 @@
-import { mutation, query } from "./lib/functions";
+import { internalMutation, mutation, query } from "./lib/functions";
 import { ConvexError, v } from "convex/values";
 
 export const getMessages = query({
@@ -74,7 +74,7 @@ export const createDeleteRequest = mutation({
       !usersInChat.some((user) => user.clerkId === identity.tokenIdentifier)
     ) {
       throw new ConvexError(
-        "UNAUTHORIZED REQUEST: User tried to send a message in a chat in which he is not in.",
+        "UNAUTHORIZED REQUEST: User tried to send a request in a chat in which he is not in.",
       );
     }
 
@@ -162,6 +162,21 @@ export const deleteAllMessagesInChat = mutation({
 
     for (const message of messagesInChat) {
       await message.delete();
+    }
+  },
+});
+
+export const expireOpenRequests = internalMutation({
+  handler: async (ctx) => {
+    for (const q1 of await ctx
+      .table("messages")
+      .filter((q) =>
+        q.and(
+          q.eq(q.field("type"), "request"),
+          q.lte(q.field("_creationTime"), Date.now() - 24 * 60 * 60 * 1000),
+        ),
+      )) {
+      await q1.delete();
     }
   },
 });
