@@ -8,3 +8,5 @@ crons.interval(
   { minutes: 1 },
   internal.messages.expireOpenRequests,
 );
+
+export default crons;
