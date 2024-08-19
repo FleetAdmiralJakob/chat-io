@@ -92,7 +92,7 @@ export const createDeleteRequest = mutation({
       userId: convexUser._id,
       privateChatId: parsedChatId,
       content: "",
-      type: "request",
+      type: "openRequest",
       deleted: false,
       readBy: [convexUser._id],
     });
@@ -222,7 +222,9 @@ export const expireOpenRequests = internalMutation({
           q.lte(q.field("_creationTime"), Date.now() - 24 * 60 * 60 * 1000),
         ),
       )) {
-      await q1.delete();
+      await q1.patch({
+        type: "expiredRequest",
+      });
     }
   },
 });
@@ -246,7 +248,7 @@ export const rejectRequest = mutation({
     const message = await ctx.table("messages").getX(parsedMessageId);
 
     await message.patch({
-      type: "rejected",
+      type: "rejectedRequest",
     });
   },
 });

@@ -143,7 +143,7 @@ export const Message = ({
     };
 
   const deleteAllMessagesinChat = (chatId: string) => async () => {
-    if (message.type == "request") {
+    if (message.type == "openRequest") {
       await deleteAllMessagesInChat({ chatId });
     } else {
       console.error("Error");
@@ -192,7 +192,8 @@ export const Message = ({
             ref={refs.setReference}
             className={cn("my-1 mr-4 flex w-full flex-col items-end", {
               "mr-0 items-center":
-                message.type == "request" || message.type == "rejected",
+                message.type == "openRequest" ||
+                message.type == "rejectedRequest",
             })}
           >
             <div
@@ -217,7 +218,8 @@ export const Message = ({
                 {
                   "sticky z-50 opacity-100": message._id === selectedMessageId,
                   "my-2 max-w-[80%] border-2 border-secondary bg-primary":
-                    message.type == "request" || message.type == "rejected",
+                    message.type == "openRequest" ||
+                    message.type == "rejectedRequest",
                 },
               )}
             >
@@ -230,8 +232,8 @@ export const Message = ({
                 <div>
                   {message.type != "message" ? (
                     <div className="font-semibold text-destructive-foreground">
-                      {message.type == "request"
-                        ? "You`ve send a request"
+                      {message.type == "openRequest"
+                        ? "You've sent a request"
                         : chatInfo.data?.otherUser[0]?.username +
                           " has rejected the request"}
                     </div>
@@ -311,7 +313,8 @@ export const Message = ({
           <div
             className={cn("my-1 ml-4 flex w-full justify-start", {
               "ml-0 justify-center":
-                message.type == "request" || message.type == "rejected",
+                message.type === "openRequest" ||
+                message.type === "rejectedRequest",
             })}
           >
             <div
@@ -337,7 +340,8 @@ export const Message = ({
                 {
                   "sticky z-50 opacity-100": message._id == selectedMessageId,
                   "my-2 max-w-[80%] border-2 border-secondary bg-primary":
-                    message.type == "request" || message.type == "rejected",
+                    message.type === "openRequest" ||
+                    message.type === "rejectedRequest",
                 },
               )}
             >
@@ -349,13 +353,13 @@ export const Message = ({
               ) : message.type != "message" ? (
                 <div className="font-semibold text-destructive-foreground">
                   <p>
-                    {message.type == "request"
+                    {message.type === "openRequest"
                       ? chatInfo.data?.otherUser[0]?.username +
                         " has send a delete Chat request"
                       : "You has rejected the request"}
                   </p>
                   <div className="flex justify-between">
-                    {message.type == "request" ? (
+                    {message.type === "openRequest" ? (
                       <>
                         <button
                           onClick={deleteAllMessagesinChat(
