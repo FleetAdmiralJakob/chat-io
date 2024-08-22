@@ -82,7 +82,7 @@ export const createDeleteRequest = mutation({
       .table("privateChats")
       .get(parsedChatId)
       .edge("messages")
-      .filter((q) => q.eq(q.field("type"), "request"));
+      .filter((q) => q.eq(q.field("type"), "openRequest"));
 
     if (openRequests && openRequests?.length > 0) {
       throw new ConvexError("There is already at least one open request.");
@@ -172,25 +172,26 @@ export const deleteAllMessagesInChat = mutation({
       .getX(parsedChatId)
       .edge("users");
 
-    const filteredMessages = await ctx
+    const filteredMessages = await ctx // Get all open requests in the chat
       .table("messages")
       .filter((q) =>
         q.and(
-          q.eq(q.field("type"), "request"),
+          q.eq(q.field("type"), "openRequest"),
           q.eq(q.field("privateChatId"), args.chatId),
         ),
       );
 
     const user = await Promise.all(
+      // Get the user Data from the user who sent the open request
       filteredMessages.map(async (message) => {
         return await ctx.table("users").getX(message.userId);
       }),
     );
 
-    const userClerkId = user.map((u) => u.clerkId);
+    const userClerkId = user.map((u) => u.clerkId); // Get the clerkId of the user who sent the open request
 
     if (
-      !usersInChat.some((user) => user.clerkId === identity.tokenIdentifier)
+      !usersInChat.some((user) => user.clerkId === identity.tokenIdentifier) // Check if the user is in the chat
     ) {
       throw new ConvexError(
         "UNAUTHORIZED REQUEST: User tried to send a  in a chat in which he is not in.",
@@ -198,6 +199,7 @@ export const deleteAllMessagesInChat = mutation({
     }
 
     if (userClerkId.includes(identity.tokenIdentifier)) {
+      // Check if the user who sent the open request is not the one who is trying to delete all messages
       throw new ConvexError(
         "UNAUTHORIZED REQUEST: User tried to delete all messages in a chat but the user is Unauthenticated.",
       );
@@ -218,7 +220,7 @@ export const expireOpenRequests = internalMutation({
       .table("messages")
       .filter((q) =>
         q.and(
-          q.eq(q.field("type"), "request"),
+          q.eq(q.field("type"), "openRequest"),
           q.lte(q.field("_creationTime"), Date.now() - 24 * 60 * 60 * 1000),
         ),
       )) {
