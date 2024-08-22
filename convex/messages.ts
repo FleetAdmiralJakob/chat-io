@@ -1,4 +1,4 @@
-import { mutation, query } from "./lib/functions";
+import { internalMutation, mutation, query } from "./lib/functions";
 import { ConvexError, v } from "convex/values";
 
 export const getMessages = query({
@@ -74,15 +74,25 @@ export const createDeleteRequest = mutation({
       !usersInChat.some((user) => user.clerkId === identity.tokenIdentifier)
     ) {
       throw new ConvexError(
-        "UNAUTHORIZED REQUEST: User tried to send a message in a chat in which he is not in.",
+        "UNAUTHORIZED REQUEST: User tried to send a request in a chat in which he is not in.",
       );
+    }
+
+    const openRequests = await ctx
+      .table("privateChats")
+      .get(parsedChatId)
+      .edge("messages")
+      .filter((q) => q.eq(q.field("type"), "request"));
+
+    if (openRequests && openRequests?.length > 0) {
+      throw new ConvexError("There is already at least one open request.");
     }
 
     await ctx.table("messages").insert({
       userId: convexUser._id,
       privateChatId: parsedChatId,
       content: "",
-      type: "request",
+      type: "openRequest",
       deleted: false,
       readBy: [convexUser._id],
     });
@@ -157,11 +167,64 @@ export const deleteAllMessagesInChat = mutation({
       throw new ConvexError("chatId was invalid");
     }
 
+    const usersInChat = await ctx
+      .table("privateChats")
+      .getX(parsedChatId)
+      .edge("users");
+
+    const filteredMessages = await ctx
+      .table("messages")
+      .filter((q) =>
+        q.and(
+          q.eq(q.field("type"), "request"),
+          q.eq(q.field("privateChatId"), args.chatId),
+        ),
+      );
+
+    const user = await Promise.all(
+      filteredMessages.map(async (message) => {
+        return await ctx.table("users").getX(message.userId);
+      }),
+    );
+
+    const userClerkId = user.map((u) => u.clerkId);
+
+    if (
+      !usersInChat.some((user) => user.clerkId === identity.tokenIdentifier)
+    ) {
+      throw new ConvexError(
+        "UNAUTHORIZED REQUEST: User tried to send a  in a chat in which he is not in.",
+      );
+    }
+
+    if (userClerkId.includes(identity.tokenIdentifier)) {
+      throw new ConvexError(
+        "UNAUTHORIZED REQUEST: User tried to delete all messages in a chat but the user is Unauthenticated.",
+      );
+    }
+
     const chat = ctx.table("privateChats").getX(parsedChatId);
     const messagesInChat = await chat.edge("messages");
 
     for (const message of messagesInChat) {
       await message.delete();
+    }
+  },
+});
+
+export const expireOpenRequests = internalMutation({
+  handler: async (ctx) => {
+    for (const q1 of await ctx
+      .table("messages")
+      .filter((q) =>
+        q.and(
+          q.eq(q.field("type"), "request"),
+          q.lte(q.field("_creationTime"), Date.now() - 24 * 60 * 60 * 1000),
+        ),
+      )) {
+      await q1.patch({
+        type: "expiredRequest",
+      });
     }
   },
 });
@@ -185,7 +248,7 @@ export const rejectRequest = mutation({
     const message = await ctx.table("messages").getX(parsedMessageId);
 
     await message.patch({
-      type: "rejected",
+      type: "rejectedRequest",
     });
   },
 });
