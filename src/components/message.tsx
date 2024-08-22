@@ -227,7 +227,7 @@ export const Message = ({
                   {message.type != "message" ? (
                     <div className="font-semibold text-destructive-foreground">
                       {message.type == "request"
-                        ? "You`ve send a request"
+                        ? "You've sent a request"
                         : chatInfo.data?.otherUser[0]?.username +
                           " has rejected the request"}
                     </div>
