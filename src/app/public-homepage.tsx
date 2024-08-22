@@ -5,14 +5,14 @@ import Image from "next/image";
 import icon from "~/assets/chatio.png";
 import Link from "next/link";
 import { Button } from "~/components/ui/button";
-import { FaCircleArrowDown, FaGithub } from "react-icons/fa6";
-import { IoCloudDownloadOutline } from "react-icons/io5";
-import { MdPrivacyTip } from "react-icons/md";
+import { FaCircleArrowDown } from "react-icons/fa6";
 import Footer from "~/components/footer";
 import { devMode$ } from "~/states";
 import { DevMode } from "~/components/dev-mode-info";
 import { AuroraBackground } from "~/components/ui/aurora-background";
 import { motion } from "framer-motion";
+import { SiGithub } from "react-icons/si";
+import { CloudDownload, ShieldCheck } from "lucide-react";
 
 export default function PublicHomepage() {
   const aboutRef = useRef<HTMLParagraphElement | null>(null);
@@ -101,26 +101,25 @@ export default function PublicHomepage() {
           </p>
 
           <div className={"block"}>
-            <IoCloudDownloadOutline className={"mb-2 ml-7 text-4xl"} />
-            <p className={"mb-5 text-xl"}>Installable</p>
+            <CloudDownload className="mb-2 ml-7 h-10 w-10" />
+            <p className="mb-5 text-xl">Installable</p>
           </div>
           <p className={"w-3/4 text-secondary-foreground md:w-1/2 lg:w-1/4"}>
-            Whether you have on iOS, Android, Windows, or Mac, Weather.io
-            installs smoothly across all major platforms, ensuring a consistent
-            and reliable weather experience across all your devices.
+            Whether you have on iOS, Android, Windows, or Mac, Chat.io installs
+            smoothly across all major platforms, ensuring a consistent and
+            reliable weather experience across all your devices.
           </p>
           <div>
-            <FaGithub className={"mb-2 ml-10 mt-16 text-4xl"} />
+            <SiGithub className={"mb-2 ml-10 mt-16 text-4xl"} />
             <p className={"mb-5 text-xl"}>Open Source</p>
           </div>
           <p className={"w-3/4 text-secondary-foreground md:w-1/2 lg:w-1/4"}>
-            By embracing open-source principles, Weather.io invites
-            collaboration and innovation from a global community of developers,
-            ensuring a robust and customizable weather solution tailored to your
-            needs.
+            By embracing open-source principles, Chat.io invites collaboration
+            and innovation from a global community of developers, ensuring a
+            robust and customizable chat solution tailored to your needs.
           </p>
           <div>
-            <MdPrivacyTip className={"mb-2 ml-4 mt-16 text-4xl"} />
+            <ShieldCheck className="mb-2 ml-4 mt-16 h-10 w-10" />
             <p className={"mb-5 text-xl"}>Privacy</p>
           </div>
           <p
