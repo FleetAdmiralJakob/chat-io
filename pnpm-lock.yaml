@@ -76,7 +76,7 @@ importers:
         version: 0.11.0(convex@1.15.0(@clerk/clerk-react@5.5.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       convex-helpers:
         specifier: ^0.1.45
-        version: 0.1.54(convex@1.15.0(@clerk/clerk-react@5.5.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(zod@3.23.8)
+        version: 0.1.55(convex@1.15.0(@clerk/clerk-react@5.5.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(zod@3.23.8)
       dayjs:
         specifier: ^1.11.11
         version: 1.11.13
@@ -1545,8 +1545,8 @@ packages:
     peerDependencies:
       convex: ^1.13.0
 
-  convex-helpers@0.1.54:
-    resolution: {integrity: sha512-oYBjdfOUJdPRn9lPtH27B2rXsEPr2liiuFHIaZxgKhEwp/+f5uu1T8U5iOpNo+luavgjckO2IgNRBHnMmwfcSg==}
+  convex-helpers@0.1.55:
+    resolution: {integrity: sha512-ieEXZimFb8ZDT2KFL0eTW8/BLLFKx3NLKjgbpZOixRP9l+7vaaLZs6uuQAtAfYr9DIeQb4cga+q7R85QgiZ0eg==}
     hasBin: true
     peerDependencies:
       convex: ^1.13.0
@@ -4357,7 +4357,7 @@ snapshots:
     dependencies:
       convex: 1.15.0(@clerk/clerk-react@5.5.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
 
-  convex-helpers@0.1.54(convex@1.15.0(@clerk/clerk-react@5.5.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(zod@3.23.8):
+  convex-helpers@0.1.55(convex@1.15.0(@clerk/clerk-react@5.5.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(zod@3.23.8):
     dependencies:
       convex: 1.15.0(@clerk/clerk-react@5.5.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
     optionalDependencies:
