@@ -182,7 +182,7 @@ importers:
         version: 0.6.8(prettier@3.3.3)
       serwist:
         specifier: ^9.0.3
-        version: 9.0.8(typescript@5.6.2)
+        version: 9.0.9(typescript@5.6.2)
       tailwindcss:
         specifier: ^3.4.4
         version: 3.4.13
@@ -2695,14 +2695,6 @@ packages:
   server-only@0.0.1:
     resolution: {integrity: sha512-qepMx2JxAa5jjfzxG79yPPq+8BuFToHd1hm7kI+Z4zAq1ftQiP7HcxMhDDItrbtwVeLg/cY2JnKnrcFkmiswNA==}
 
-  serwist@9.0.8:
-    resolution: {integrity: sha512-pE9sG0GROVdqjIK51kjghH7RrMY8MOkekLCPid3KOuhxllKZnp7PU4F1qDAPgMN2zrGvmKs4CewYCKobuvBiSg==}
-    peerDependencies:
-      typescript: '>=5.0.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-
   serwist@9.0.9:
     resolution: {integrity: sha512-T3WzdvUjvK1AzNSTSuZkHWWKm0X5UuUaD3jvukHDFaJDmsLZBq0HGlrZ+bpOHoRFwhJSXwuH/V5ksE0I78wwvQ==}
     peerDependencies:
@@ -4558,7 +4550,7 @@ snapshots:
       debug: 4.3.7
       enhanced-resolve: 5.17.0
       eslint: 9.9.1(jiti@2.1.0)
-      eslint-module-utils: 2.8.1(@typescript-eslint/parser@7.2.0(eslint@9.9.1(jiti@2.1.0))(typescript@5.6.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.2.0(eslint@9.9.1(jiti@2.1.0))(typescript@5.6.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@9.9.1(jiti@2.1.0)))(eslint@9.9.1(jiti@2.1.0))
+      eslint-module-utils: 2.8.1(@typescript-eslint/parser@7.2.0(eslint@9.9.1(jiti@2.1.0))(typescript@5.6.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1)(eslint@9.9.1(jiti@2.1.0))
       eslint-plugin-import: 2.29.1(@typescript-eslint/parser@8.6.0(eslint@9.9.1(jiti@2.1.0))(typescript@5.6.2))(eslint@9.9.1(jiti@2.1.0))
       fast-glob: 3.3.2
       get-tsconfig: 4.7.5
@@ -4570,7 +4562,7 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-module-utils@2.8.1(@typescript-eslint/parser@7.2.0(eslint@9.9.1(jiti@2.1.0))(typescript@5.6.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.2.0(eslint@9.9.1(jiti@2.1.0))(typescript@5.6.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@9.9.1(jiti@2.1.0)))(eslint@9.9.1(jiti@2.1.0)):
+  eslint-module-utils@2.8.1(@typescript-eslint/parser@7.2.0(eslint@9.9.1(jiti@2.1.0))(typescript@5.6.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1)(eslint@9.9.1(jiti@2.1.0)):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
@@ -4578,6 +4570,16 @@ snapshots:
       eslint: 9.9.1(jiti@2.1.0)
       eslint-import-resolver-node: 0.3.9
       eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@7.2.0(eslint@9.9.1(jiti@2.1.0))(typescript@5.6.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@9.9.1(jiti@2.1.0))
+    transitivePeerDependencies:
+      - supports-color
+
+  eslint-module-utils@2.8.1(@typescript-eslint/parser@8.6.0(eslint@9.9.1(jiti@2.1.0))(typescript@5.6.2))(eslint-import-resolver-node@0.3.9)(eslint@9.9.1(jiti@2.1.0)):
+    dependencies:
+      debug: 3.2.7
+    optionalDependencies:
+      '@typescript-eslint/parser': 8.6.0(eslint@9.9.1(jiti@2.1.0))(typescript@5.6.2)
+      eslint: 9.9.1(jiti@2.1.0)
+      eslint-import-resolver-node: 0.3.9
     transitivePeerDependencies:
       - supports-color
 
@@ -4591,7 +4593,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 9.9.1(jiti@2.1.0)
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.8.1(@typescript-eslint/parser@7.2.0(eslint@9.9.1(jiti@2.1.0))(typescript@5.6.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.2.0(eslint@9.9.1(jiti@2.1.0))(typescript@5.6.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@9.9.1(jiti@2.1.0)))(eslint@9.9.1(jiti@2.1.0))
+      eslint-module-utils: 2.8.1(@typescript-eslint/parser@8.6.0(eslint@9.9.1(jiti@2.1.0))(typescript@5.6.2))(eslint-import-resolver-node@0.3.9)(eslint@9.9.1(jiti@2.1.0))
       hasown: 2.0.2
       is-core-module: 2.13.1
       is-glob: 4.0.3
@@ -5530,12 +5532,6 @@ snapshots:
   semver@7.6.3: {}
 
   server-only@0.0.1: {}
-
-  serwist@9.0.8(typescript@5.6.2):
-    dependencies:
-      idb: 8.0.0
-    optionalDependencies:
-      typescript: 5.6.2
 
   serwist@9.0.9(typescript@5.6.2):
     dependencies:
