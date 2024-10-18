@@ -60,7 +60,7 @@
   },
   "devDependencies": {
     "@total-typescript/ts-reset": "^0.6.0",
-    "@types/eslint": "^8.56.10",
+    "@types/eslint": "^9.0.0",
     "@types/node": "^20.14.2",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
