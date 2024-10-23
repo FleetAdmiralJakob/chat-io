@@ -100,7 +100,7 @@ importers:
         version: 0.3.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       npm-run-all2:
         specifier: ^7.0.0
-        version: 7.0.0
+        version: 7.0.1
       providers:
         specifier: link:providers
         version: link:providers
@@ -2252,10 +2252,6 @@ packages:
     resolution: {integrity: sha512-PXwfBhYu0hBCPw8Dn0E+WDYb7af3dSLVWKi3HGv84IdF4TyFoC0ysxFd0Goxw7nSv4T/PzEJQxsYsEiFCKo2BA==}
     engines: {node: '>=8.6'}
 
-  minimatch@10.0.1:
-    resolution: {integrity: sha512-ethXTt3SGGR+95gudmqJ1eNhRO7eGEGIgYA9vnPatK4/etz2MEVDno5GMCibdMTuBMyElzIlgxMna3K94XDIDQ==}
-    engines: {node: 20 || >=22}
-
   minimatch@3.1.2:
     resolution: {integrity: sha512-J7p63hRiAjw1NDEww1W7i37+ByIrOWO5XQQAzZ3VOcL0PNybwpfmV/N05zFAzwQ9USyEcX6t3UO+K5aqBQOIHw==}
 
@@ -2333,9 +2329,9 @@ packages:
     resolution: {integrity: sha512-TZKxPvItzai9kN9H/TkmCtx/ZN/hvr3vUycjlfmH0ootY9yFBzNOpiXAdIn1Iteqsvk4lQn6B5PTrt+n6h8k/w==}
     engines: {node: ^18.17.0 || >=20.5.0}
 
-  npm-run-all2@7.0.0:
-    resolution: {integrity: sha512-hXQT0BFU0G37H516ZJgISho4FslbdqMj7U8A7xoj81mhYSyxnwfF6dsraWAA1xL7ak/8yUVvAN4Lx4PpTc5Ohg==}
-    engines: {node: ^20.5.0 || >=22.0.0, npm: '>= 9'}
+  npm-run-all2@7.0.1:
+    resolution: {integrity: sha512-Adbv+bJQ8UTAM03rRODqrO5cx0YU5KCG2CvHtSURiadvdTjjgGJXdbc1oQ9CXBh9dnGfHSoSB1Web/0Dzp6kOQ==}
+    engines: {node: ^18.17.0 || >=20.5.0, npm: '>= 9'}
     hasBin: true
 
   object-assign@4.1.1:
@@ -4617,6 +4613,16 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  eslint-module-utils@2.8.1(@typescript-eslint/parser@8.11.0(eslint@9.9.1(jiti@2.3.3))(typescript@5.6.3))(eslint-import-resolver-node@0.3.9)(eslint@9.9.1(jiti@2.3.3)):
+    dependencies:
+      debug: 3.2.7
+    optionalDependencies:
+      '@typescript-eslint/parser': 8.11.0(eslint@9.9.1(jiti@2.3.3))(typescript@5.6.3)
+      eslint: 9.9.1(jiti@2.3.3)
+      eslint-import-resolver-node: 0.3.9
+    transitivePeerDependencies:
+      - supports-color
+
   eslint-plugin-import@2.29.1(@typescript-eslint/parser@8.11.0(eslint@9.9.1(jiti@2.3.3))(typescript@5.6.3))(eslint@9.9.1(jiti@2.3.3)):
     dependencies:
       array-includes: 3.1.8
@@ -4627,7 +4633,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 9.9.1(jiti@2.3.3)
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.8.1(@typescript-eslint/parser@7.2.0(eslint@9.9.1(jiti@2.3.3))(typescript@5.6.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1)(eslint@9.9.1(jiti@2.3.3))
+      eslint-module-utils: 2.8.1(@typescript-eslint/parser@8.11.0(eslint@9.9.1(jiti@2.3.3))(typescript@5.6.3))(eslint-import-resolver-node@0.3.9)(eslint@9.9.1(jiti@2.3.3))
       hasown: 2.0.2
       is-core-module: 2.13.1
       is-glob: 4.0.3
@@ -5174,10 +5180,6 @@ snapshots:
       braces: 3.0.3
       picomatch: 2.3.1
 
-  minimatch@10.0.1:
-    dependencies:
-      brace-expansion: 2.0.1
-
   minimatch@3.1.2:
     dependencies:
       brace-expansion: 1.1.11
@@ -5251,12 +5253,12 @@ snapshots:
 
   npm-normalize-package-bin@4.0.0: {}
 
-  npm-run-all2@7.0.0:
+  npm-run-all2@7.0.1:
     dependencies:
       ansi-styles: 6.2.1
       cross-spawn: 7.0.3
       memorystream: 0.3.1
-      minimatch: 10.0.1
+      minimatch: 9.0.5
       pidtree: 0.6.0
       read-package-json-fast: 4.0.0
       shell-quote: 1.8.1
