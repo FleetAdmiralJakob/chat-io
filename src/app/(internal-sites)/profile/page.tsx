@@ -1,13 +1,14 @@
 "use client";
-import { Avatar, AvatarFallback } from "~/components/ui/avatar";
-import {ArrowRight, Lock} from "lucide-react";
+import { ArrowRight, Lock } from "lucide-react";
 import { Bell } from "lucide-react";
 import Link from "next/link";
 import { SendHorizontal } from "lucide-react";
 import { Settings } from "lucide-react";
 import { UsersRound } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
-import {cn} from "~/lib/utils";
+import { cn } from "~/lib/utils";
+
+import type { JSX } from "react";
 
 interface settingsCard {
   title: string;
@@ -16,7 +17,7 @@ interface settingsCard {
 
 export default function Profile() {
   const clerkUser = useUser();
-  const username = clerkUser.user ? clerkUser.user.username || "" : "";
+  const username = clerkUser.user ? (clerkUser.user.username ?? "") : "";
 
   const settings: settingsCard[] = [
     { title: username },
@@ -34,10 +35,13 @@ export default function Profile() {
       </div>
       <div className="flex w-full flex-col items-center justify-center">
         <div className="mb-8 flex w-11/12 flex-col items-center justify-center rounded-xl border-2 border-secondary lg:w-2/3 xl:w-1/3">
-          {settings.map((item) => {
+          {settings.map((item, index) => {
             if (item.title == username) {
               return (
-                <div className="flex w-full cursor-pointer rounded-lg bg-primary p-6 text-xl sm:text-2xl xl:text-lg">
+                <div
+                  key={index}
+                  className="flex w-full cursor-pointer rounded-lg bg-primary p-6 text-xl sm:text-2xl xl:text-lg"
+                >
                   <div className="mr-5 flex h-10 w-10 items-center justify-center rounded-3xl bg-background text-sm font-medium text-destructive-foreground">
                     {item.title.slice(0, 2).toUpperCase()}
                   </div>

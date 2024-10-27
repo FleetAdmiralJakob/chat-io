@@ -14,7 +14,7 @@ import Badge from "~/components/ui/badge";
 import { SendHorizontal } from "lucide-react";
 import { Plus } from "lucide-react";
 import { z } from "zod";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, use, useCallback } from "react";
 import { useMediaQuery } from "react-responsive";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -34,8 +34,8 @@ import { DevMode } from "~/components/dev-mode-info";
 import { devMode$ } from "~/states";
 import { Message } from "~/components/message";
 import { Input } from "~/components/ui/input";
-import { Id } from "../../../../../convex/_generated/dataModel";
-import { FunctionReturnType } from "convex/server";
+import { type Id } from "../../../../../convex/_generated/dataModel";
+import { type FunctionReturnType } from "convex/server";
 import { useQueryWithStatus } from "~/app/convex-client-provider";
 
 dayjs.extend(relativeTime);
@@ -68,7 +68,8 @@ const SkeletonMessages = ({ count }: { count: number }) => {
   );
 };
 
-export default function Page({ params }: { params: { chatId: string } }) {
+export default function Page(props: { params: Promise<{ chatId: string }> }) {
+  const params = use(props.params);
   const [progress, setProgress] = React.useState(13);
 
   const [selectedMessageId, setSelectedMessageId] = useState<string | null>(
@@ -152,7 +153,7 @@ export default function Page({ params }: { params: { chatId: string } }) {
     ) {
       router.push("/chats");
     }
-  }, [userInfo, messages, chatInfo]);
+  }, [userInfo, messages, chatInfo, router]);
 
   const is2xlOrmore = useMediaQuery({ query: "(max-width: 1537px)" });
   const maxSize = is2xlOrmore ? 50 : 60;
@@ -178,19 +179,22 @@ export default function Page({ params }: { params: { chatId: string } }) {
     }
   };
 
-  const scrollToBottom = (messageUser: boolean) => {
-    if (messagesEndRef.current && messageUser) {
-      messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
-    } else if (messagesEndRef.current && scrollPosition < 100) {
-      messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
-    }
-  };
+  const scrollToBottom = useCallback(
+    (messageUser: boolean) => {
+      if (messagesEndRef.current && messageUser) {
+        messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
+      } else if (messagesEndRef.current && scrollPosition < 100) {
+        messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
+      }
+    },
+    [scrollPosition],
+  );
 
   const formRef = useRef<HTMLFormElement | null>(null);
 
   useEffect(() => {
     scrollToBottom(false);
-  }, [messages.data]);
+  }, [messages.data, scrollToBottom]);
 
   const [inputValue, setInputValue] = useState("");
 
@@ -198,8 +202,10 @@ export default function Page({ params }: { params: { chatId: string } }) {
     setInputValue(event.target.value);
   };
 
-  function onTextMessageFormSubmit(values: z.infer<typeof textMessageSchema>) {
-    sendMessage({ content: values.message, chatId: params.chatId });
+  async function onTextMessageFormSubmit(
+    values: z.infer<typeof textMessageSchema>,
+  ) {
+    void sendMessage({ content: values.message, chatId: params.chatId });
     textMessageForm.reset();
     setInputValue("");
     scrollToBottom(true);
@@ -332,8 +338,9 @@ export default function Page({ params }: { params: { chatId: string } }) {
             ref={messagesEndRef}
           >
             {messages.data ? (
-              messages.data.map((message) => (
+              messages.data.map((message, key) => (
                 <Message
+                  key={key}
                   selectedMessageId={selectedMessageId}
                   setSelectedMessageId={setSelectedMessageId}
                   message={message}
@@ -396,7 +403,9 @@ export default function Page({ params }: { params: { chatId: string } }) {
                 <SendHorizontal
                   onClick={(e) => {
                     setAnimationInput(!animationInput);
-                    textMessageForm.handleSubmit(onTextMessageFormSubmit)(e);
+                    void textMessageForm.handleSubmit(onTextMessageFormSubmit)(
+                      e,
+                    );
                   }}
                   className={cn(
                     "mx-4 h-11 w-11 cursor-pointer rounded-sm border-2 border-secondary-foreground bg-primary p-2 lg:hidden lg:h-14 lg:w-14 lg:p-3",

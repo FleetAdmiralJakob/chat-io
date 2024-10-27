@@ -10,7 +10,7 @@ import {
   Info,
   Trash2,
 } from "lucide-react";
-import { FunctionReturnType } from "convex/server";
+import { type FunctionReturnType } from "convex/server";
 import { useInView } from "react-intersection-observer";
 import { useEffect, useState } from "react";
 import { cn } from "~/lib/utils";
@@ -19,8 +19,9 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { useFloating } from "@floating-ui/react";
 import { Toaster } from "~/components/ui/sonner";
 import { toast } from "sonner";
-import { Id } from "../../convex/_generated/dataModel";
+import { type Id } from "../../convex/_generated/dataModel";
 import { useQueryWithStatus } from "~/app/convex-client-provider";
+import React from "react";
 
 dayjs.extend(relativeTime);
 
@@ -28,18 +29,20 @@ export const Message = ({
   message,
   selectedMessageId,
   setSelectedMessageId,
+  key,
 }: {
   message: NonNullable<
     FunctionReturnType<typeof api.messages.getMessages>
   >[number];
   selectedMessageId: string | null;
   setSelectedMessageId: React.Dispatch<React.SetStateAction<string | null>>;
+  key?: number;
 }) => {
   const clerkUser = useUser();
 
   const deleteMessage = useMutation(
     api.messages.deleteMessage,
-  ).withOptimisticUpdate(async (localStore, args) => {
+  ).withOptimisticUpdate((localStore, args) => {
     const messageId: Id<"messages"> = args.messageId as Id<"messages">;
     const chatId: Id<"privateChats"> = args.chatId as Id<"privateChats">;
 
@@ -148,9 +151,16 @@ export const Message = ({
 
   useEffect(() => {
     if (inView && message.sent) {
-      markRead({ messageId: message._id });
+      void markRead({ messageId: message._id });
     }
-  }, [inView, message._id, message.deleted, deleteMessage]);
+  }, [
+    inView,
+    message._id,
+    message.deleted,
+    deleteMessage,
+    message.sent,
+    markRead,
+  ]);
 
   const sentInfo = () => {
     return (
@@ -269,7 +279,7 @@ export const Message = ({
                     <div
                       className="flex cursor-pointer p-2"
                       onClick={() => {
-                        navigator.clipboard.writeText(message.content);
+                        void navigator.clipboard.writeText(message.content);
                         setIsModalOpen(!isModalOpen);
                         toast.success("Copied to clipboard");
                       }}
@@ -284,7 +294,7 @@ export const Message = ({
                     <button
                       className="flex w-full p-2 text-accent"
                       onMouseDown={() => {
-                        deleteMessage({
+                        void deleteMessage({
                           messageId: message._id,
                           chatId: message.privateChatId,
                         });
@@ -395,7 +405,7 @@ export const Message = ({
                   <div className="rounded-sm bg-secondary">
                     <div
                       onClick={() => {
-                        navigator.clipboard.writeText(message.content);
+                        void navigator.clipboard.writeText(message.content);
                         setIsModalOpen(!isModalOpen);
                         toast.success("Copied to clipboard");
                       }}

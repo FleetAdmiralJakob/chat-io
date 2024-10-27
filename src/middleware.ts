@@ -14,14 +14,14 @@ const isPublicRoute = createRouteMatcher([
 const isApiRoute = createRouteMatcher(["/api/(.*)"]);
 
 export default clerkMiddleware(
-  (auth, req) => {
+  async (auth, req) => {
     if (isApiRoute(req)) return NextResponse.next();
 
-    const { userId, redirectToSignIn, protect } = auth();
+    const { userId, redirectToSignIn } = await auth();
     const isPublic = isPublicRoute(req);
 
     if (!userId && !isPublic) redirectToSignIn();
-    if (!isPublic) protect();
+    if (!isPublic) await auth.protect();
 
     return NextResponse.next();
   },

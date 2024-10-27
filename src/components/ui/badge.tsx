@@ -1,5 +1,5 @@
 import { Check } from "lucide-react";
-import { ReactNode } from "react";
+import { type ReactNode } from "react";
 
 const Badge = ({ children }: { children: ReactNode }) => {
   return (
