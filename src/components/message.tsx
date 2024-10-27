@@ -29,14 +29,12 @@ export const Message = ({
   message,
   selectedMessageId,
   setSelectedMessageId,
-  key,
 }: {
   message: NonNullable<
     FunctionReturnType<typeof api.messages.getMessages>
   >[number];
   selectedMessageId: string | null;
   setSelectedMessageId: React.Dispatch<React.SetStateAction<string | null>>;
-  key?: number;
 }) => {
   const clerkUser = useUser();
 

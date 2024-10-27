@@ -339,12 +339,13 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
           >
             {messages.data ? (
               messages.data.map((message, key) => (
-                <Message
-                  key={key}
-                  selectedMessageId={selectedMessageId}
-                  setSelectedMessageId={setSelectedMessageId}
-                  message={message}
-                />
+                <React.Fragment key={key}>
+                  <Message
+                    selectedMessageId={selectedMessageId}
+                    setSelectedMessageId={setSelectedMessageId}
+                    message={message}
+                  />
+                </React.Fragment>
               ))
             ) : (
               <>
