@@ -363,8 +363,8 @@ export const Message = ({
                   <p>
                     {message.type === "openRequest"
                       ? chatInfo.data?.otherUser[0]?.username +
-                        " has send a delete Chat request"
-                      : "You has rejected the request"}
+                        " has sent a delete chat request"
+                      : "You have rejected the request"}
                   </p>
                   <div className="flex justify-between">
                     {message.type === "openRequest" ? (
