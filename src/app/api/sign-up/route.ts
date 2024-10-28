@@ -1,7 +1,10 @@
 import { type FormSchemaSignUp, formSchemaSignUp } from "~/lib/validators";
 import { clerkClient } from "@clerk/nextjs/server";
 import { isClerkAPIResponseError } from "@clerk/shared";
-import { formSchemaUserUpdate, FormSchemaUserUpdate } from "~/lib/validators";
+import {
+  formSchemaUserUpdate,
+  type FormSchemaUserUpdate,
+} from "~/lib/validators";
 
 export async function OPTIONS(request: Request) {
   const unparsedSignUpHeaders = (await request.json()) as FormSchemaUserUpdate;
@@ -33,7 +36,8 @@ export async function POST(request: Request) {
   }
 
   try {
-    await clerkClient.users.createUser({
+    const awaitedClerkClient = await clerkClient();
+    await awaitedClerkClient.users.createUser({
       username:
         parsedSignUpHeaders.data.username + parsedSignUpHeaders.data.usernameId,
       firstName: parsedSignUpHeaders.data.firstName,

@@ -2,7 +2,7 @@
 
 import { Input } from "~/components/ui/input";
 import { useUser } from "@clerk/nextjs";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { isClerkAPIResponseError } from "@clerk/shared";
 import {
   ChevronLeft,
@@ -27,7 +27,10 @@ import {
 import { Label } from "~/components/ui/label";
 import { Toaster } from "~/components/ui/sonner";
 import { toast } from "sonner";
-import { FormSchemaUserUpdate, formSchemaUserUpdate } from "~/lib/validators";
+import {
+  type FormSchemaUserUpdate,
+  type formSchemaUserUpdate,
+} from "~/lib/validators";
 import { useMutation } from "convex/react";
 import { api } from "../../../../../convex/_generated/api";
 
@@ -64,10 +67,19 @@ const signUpResponseSchema = z.object({
   statusText: z.string().optional(),
 });
 
+// Define the error schema using Zod
+const errorSchema = z.object({
+  path: z.array(z.string()),
+  message: z.string(),
+});
+
+// Define the parsed JSON schema using Zod
+const parsedJsonSchema = z.array(errorSchema);
+
 const SettingsPage = () => {
   const clerkUser = useUser();
-  const [lastName, setLastName] = useState(clerkUser.user?.lastName || "");
-  const [firstName, setFirstName] = useState(clerkUser.user?.firstName || "");
+  const [lastName, setLastName] = useState(clerkUser.user?.lastName ?? "");
+  const [firstName, setFirstName] = useState(clerkUser.user?.firstName ?? "");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -75,7 +87,7 @@ const SettingsPage = () => {
     useState("");
   const [newPasswordErrorMessage, setNewPasswordErrorMessage] = useState("");
   const [emailValue, setEmailValue] = useState(
-    clerkUser.user?.primaryEmailAddress?.emailAddress || "",
+    clerkUser.user?.primaryEmailAddress?.emailAddress ?? "",
   );
   const [emailError, setEmailError] = useState(false);
   const [firstNameError, setFirstNameError] = useState("");
@@ -83,7 +95,7 @@ const SettingsPage = () => {
 
   const updateConvexUserData = useMutation(api.users.updateUserData);
 
-  async function test() {
+  const test = useCallback(async () => {
     const valuesObject: z.infer<typeof formSchemaUserUpdate> = {
       email: emailValue,
       firstName: firstName,
@@ -108,23 +120,25 @@ const SettingsPage = () => {
     );
 
     if (parsedResponseBody.data?.message) {
-      const parsedJson = JSON.parse(parsedResponseBody.data.message) as
-        | any[]
-        | { [key: string]: any };
+      const parsedJson = parsedJsonSchema.safeParse(
+        JSON.parse(parsedResponseBody.data.message),
+      );
 
-      parsedJson.forEach((error: any) => {
-        if (error.path[0] == "email") {
-          setEmailError(true);
-        }
-        if (error.path[0] == "firstName") {
-          setFirstNameError(error.message);
-        }
-        if (error.path[0] == "lastName") {
-          setLastNameError(error.message);
-        }
-      });
+      if (parsedJson.success) {
+        parsedJson.data.forEach((error) => {
+          if (error.path[0] == "email") {
+            setEmailError(true);
+          }
+          if (error.path[0] == "firstName") {
+            setFirstNameError(error.message);
+          }
+          if (error.path[0] == "lastName") {
+            setLastNameError(error.message);
+          }
+        });
+      }
     }
-  }
+  }, [emailValue, firstName, lastName]);
 
   useEffect(() => {
     if (clerkUser.user?.firstName) {
@@ -142,70 +156,80 @@ const SettingsPage = () => {
     clerkUser.user?.firstName,
     clerkUser.user?.lastName,
     clerkUser.user?.emailAddresses,
+    clerkUser.user?.primaryEmailAddress?.emailAddress,
   ]);
 
   const router = useRouter();
 
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmailValue(e.target.value);
+  const handleEmailChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setEmailValue(e.target.value);
 
-    try {
-      SettingValidator.parse({ email: e.target.value });
-      setEmailError(false);
-    } catch (error) {
-      setEmailError(true);
-      if (error instanceof ZodError) {
-        const errorFound = error.errors.find(
-          (error) => error.path[0] == "email",
-        );
-        if (errorFound) {
-          setEmailError(true);
-        } else {
-          setEmailError(false);
+      try {
+        SettingValidator.parse({ email: e.target.value });
+        setEmailError(false);
+      } catch (error) {
+        setEmailError(true);
+        if (error instanceof ZodError) {
+          const errorFound = error.errors.find(
+            (error) => error.path[0] == "email",
+          );
+          if (errorFound) {
+            setEmailError(true);
+          } else {
+            setEmailError(false);
+          }
         }
       }
-    }
-  };
+    },
+    [],
+  );
 
-  const handleFirstNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFirstName(e.target.value);
+  const handleFirstNameChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setFirstName(e.target.value);
 
-    try {
-      SettingValidator.parse({ firstName: e.target.value });
-      setFirstNameError("");
-    } catch (error) {
-      if (error instanceof ZodError) {
-        const errorFound = error.errors.find(
-          (error) => error.path[0] == "firstName",
-        );
-        if (errorFound) {
-          setFirstNameError(errorFound.message);
-        } else {
-          setFirstNameError("");
+      try {
+        SettingValidator.parse({ firstName: e.target.value });
+        setFirstNameError("");
+      } catch (error) {
+        if (error instanceof ZodError) {
+          const errorFound = error.errors.find(
+            (error) => error.path[0] == "firstName",
+          );
+          if (errorFound) {
+            setFirstNameError(errorFound.message);
+          } else {
+            setFirstNameError("");
+          }
         }
       }
-    }
-  };
+    },
+    [],
+  );
 
-  const handleLastNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLastName(e.target.value);
+  const handleLastNameChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setLastName(e.target.value);
 
-    try {
-      SettingValidator.parse({ lastName: e.target.value });
-      setLastNameError("");
-    } catch (error) {
-      if (error instanceof ZodError) {
-        const errorFound = error.errors.find(
-          (error) => error.path[0] == "lastName",
-        );
-        if (errorFound) {
-          setLastNameError(errorFound.message);
-        } else {
-          setLastNameError("");
+      try {
+        SettingValidator.parse({ lastName: e.target.value });
+        setLastNameError("");
+      } catch (error) {
+        if (error instanceof ZodError) {
+          const errorFound = error.errors.find(
+            (error) => error.path[0] == "lastName",
+          );
+          if (errorFound) {
+            setLastNameError(errorFound.message);
+          } else {
+            setLastNameError("");
+          }
         }
       }
-    }
-  };
+    },
+    [],
+  );
 
   const handleCurrentPassword = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCurrentPassword(e.target.value);
@@ -233,9 +257,17 @@ const SettingsPage = () => {
 
   useEffect(() => {
     if (emailValue != "" || firstName != "" || lastName != "") {
-      test();
+      void test();
     }
-  }, [handleLastNameChange, handleFirstNameChange, handleEmailChange]);
+  }, [
+    handleLastNameChange,
+    handleFirstNameChange,
+    handleEmailChange,
+    emailValue,
+    firstName,
+    lastName,
+    test,
+  ]);
 
   async function checkPasswordAgainstClerkRules(
     currentPassword: string,
@@ -306,27 +338,23 @@ const SettingsPage = () => {
     const successList = [];
     const userDataToUpdate: FormSchemaUserUpdate = {};
     if (firstNameSuccess) {
-      clerkUser.user?.update({ firstName: firstName });
-      successList.push(" First Name");
+      void clerkUser.user?.update({ firstName: firstName });
+      successList.push("First Name");
       userDataToUpdate.firstName = firstName;
     }
     if (lastNameSuccess) {
-      clerkUser.user?.update({ lastName: lastName });
-      successList.push(" Last Name");
+      void clerkUser.user?.update({ lastName: lastName });
+      successList.push("Last Name");
       userDataToUpdate.lastName = lastName;
     }
 
     if (emailSuccess) {
       userDataToUpdate.email = emailValue;
-      setEmailValue(clerkUser.user?.primaryEmailAddress?.emailAddress || "");
+      setEmailValue(clerkUser.user?.primaryEmailAddress?.emailAddress ?? "");
     }
 
     await userDataHandler(userDataToUpdate);
-    toast.success(
-      successList.map((update) => {
-        return update;
-      }) + " updated successfully",
-    );
+    toast.success(successList.join(", ") + " updated successfully");
   };
 
   return (
@@ -483,7 +511,7 @@ const SettingsPage = () => {
                 <Button
                   type="submit"
                   onClick={() => {
-                    checkPasswordAgainstClerkRules(
+                    void checkPasswordAgainstClerkRules(
                       currentPassword,
                       newPassword,
                     );

@@ -31,9 +31,6 @@ export default function PublicHomepage() {
             <div onClick={() => devMode$.set(false)}>Disable dev mode</div>
           </DevMode>
           <motion.div
-            className={
-              "container flex min-h-screen flex-col items-center justify-center gap-12 py-14"
-            }
             initial={{ opacity: 0.0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{
@@ -42,53 +39,48 @@ export default function PublicHomepage() {
               ease: "easeInOut",
             }}
           >
-            <div className={"flex items-center justify-center"}>
-              <Image
-                src={icon}
-                alt="logo of Chat.io"
-                className={"h-1/4 w-1/4"}
-                onClick={() => {
-                  setDevModeClick((prevState) => prevState + 1);
-                  if (devModeClick >= 9) {
-                    devMode$.set(true);
-                  }
-                }}
-              />
-              <h2 className="mr-8 text-3xl font-bold tracking-tight text-foreground sm:text-[5rem]">
-                Chat.io
-              </h2>
-            </div>
-            <p
-              className={
-                "w-3/4 bg-gradient-to-b from-gray-600 via-gray-500 to-gray-800 bg-clip-text text-2xl text-transparent dark:from-gray-300 dark:to-gray-600 sm:w-7/12"
-              }
-            >
-              Introducing Chat.io, the next evolution in messaging apps from the
-              creators of the beloved Weather.io. Building on our experience
-              crafting intuitive and feature-rich applications, we have designed
-              Chat.io to revolutionize the way you connect with others.
-            </p>
-            <div className="flex flex-col items-center gap-1 py-11">
-              <Link href="/sign-up">
-                <Button
-                  className={
-                    "b bg-foreground p-6 text-2xl transition delay-150 duration-200 ease-in-out hover:bg-secondary-foreground hover:text-amber-50"
-                  }
-                >
-                  Sign Up
-                </Button>
-              </Link>
-            </div>
+            <div className="container flex min-h-screen flex-col items-center justify-center gap-12 py-14">
+              <div className="flex items-center justify-center">
+                <Image
+                  src={icon}
+                  alt="logo of Chat.io"
+                  className="h-1/4 w-1/4"
+                  onClick={() => {
+                    setDevModeClick((prevState) => prevState + 1);
+                    if (devModeClick >= 9) {
+                      devMode$.set(true);
+                    }
+                  }}
+                />
+                <h2 className="mr-8 text-3xl font-bold tracking-tight text-foreground sm:text-[5rem]">
+                  Chat.io
+                </h2>
+              </div>
+              <p className="w-3/4 bg-gradient-to-b from-gray-600 via-gray-500 to-gray-800 bg-clip-text text-2xl text-transparent dark:from-gray-300 dark:to-gray-600 sm:w-7/12">
+                Introducing Chat.io, the next evolution in messaging apps from
+                the creators of the beloved Weather.io. Building on our
+                experience crafting intuitive and feature-rich applications, we
+                have designed Chat.io to revolutionize the way you connect with
+                others.
+              </p>
+              <div className="flex flex-col items-center gap-1 py-11">
+                <Link href="/sign-up">
+                  <Button className="b bg-foreground p-6 text-2xl transition delay-150 duration-200 ease-in-out hover:bg-secondary-foreground hover:text-amber-50">
+                    Sign Up
+                  </Button>
+                </Link>
+              </div>
 
-            <p className={"h-0 text-xl"}>Why us ?</p>
-            <button
-              onClick={() => {
-                scrollCallback();
-              }}
-              aria-label="Automatically scroll down to all the features of Chat.io"
-            >
-              <FaCircleArrowDown className={"h-7 animate-bounce text-2xl"} />
-            </button>
+              <p className="h-0 text-xl">Why us ?</p>
+              <button
+                onClick={() => {
+                  scrollCallback();
+                }}
+                aria-label="Automatically scroll down to all the features of Chat.io"
+              >
+                <FaCircleArrowDown className="h-7 animate-bounce text-2xl" />
+              </button>
+            </div>
           </motion.div>
 
           <p

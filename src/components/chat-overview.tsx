@@ -13,7 +13,6 @@ import { ArrowRight } from "lucide-react";
 import Badge from "~/components/ui/badge";
 import Link from "next/link";
 import { cn } from "~/lib/utils";
-import type { Viewport } from "next";
 
 type Chats = FunctionReturnType<typeof api.chats.getChats>;
 
