@@ -141,6 +141,8 @@ export const getChats = query({
         let firstReadMessageIndex = -1;
         for (let i = 0; i < sortedMessages.length; i++) {
           const message = sortedMessages[i];
+          if (!message) continue;
+          
           if (
             (message.type === "message" && message.deleted) ||
             (message.type !== "message" &&
