@@ -1,5 +1,6 @@
 import { mutation, query } from "./lib/functions";
-import { ConvexError, v } from "convex/values";
+import { ConvexError, type Infer, v } from "convex/values";
+import { type status } from "./schema";
 
 export const getMessages = query({
   args: { chatId: v.string() },
@@ -29,63 +30,28 @@ export const getMessages = query({
       );
     }
 
-    return chat.edge("messages").map(async (message) => ({
+    const messages = await chat.edge("messages").map(async (message) => ({
       ...message,
       userId: undefined,
+      type: "message" as const,
       from: await ctx.table("users").getX(message.userId),
       readBy: await message.edge("readBy"),
       sent: true,
     }));
-  },
-});
 
-export const createDeleteRequest = mutation({
-  args: { chatId: v.string() },
-  handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
+    const requests = await chat.edge("clearRequests").map(async (request) => ({
+      ...request,
+      userId: undefined,
+      status: undefined,
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- ESLint rule is broken
+      type: `${request.status}Request` as `${Infer<typeof status>}Request`,
+      from: await ctx.table("users").getX(request.userId),
+      sent: true,
+    }));
 
-    if (identity === null) {
-      console.error("Unauthenticated call to mutation");
-      return null;
-    }
-
-    const convexUser = await ctx
-      .table("users")
-      .get("clerkId", identity.tokenIdentifier);
-
-    const parsedChatId = ctx.table("privateChats").normalizeId(args.chatId);
-
-    if (!parsedChatId) {
-      throw new ConvexError("chatId was invalid");
-    }
-
-    if (!convexUser) {
-      throw new ConvexError(
-        "Mismatch between Clerk and Convex. This is an error by us.",
-      );
-    }
-
-    const usersInChat = await ctx
-      .table("privateChats")
-      .getX(parsedChatId)
-      .edge("users");
-
-    if (
-      !usersInChat.some((user) => user.clerkId === identity.tokenIdentifier)
-    ) {
-      throw new ConvexError(
-        "UNAUTHORIZED REQUEST: User tried to send a message in a chat in which he is not in.",
-      );
-    }
-
-    await ctx.table("messages").insert({
-      userId: convexUser._id,
-      privateChatId: parsedChatId,
-      content: "",
-      type: "request",
-      deleted: false,
-      readBy: [convexUser._id],
-    });
+    return [...messages, ...requests].sort(
+      (a, b) => a._creationTime - b._creationTime,
+    );
   },
 });
 
@@ -134,58 +100,8 @@ export const createMessage = mutation({
       userId: convexUser._id,
       privateChatId: parsedChatId,
       content: args.content.trim(),
-      type: "message",
       deleted: false,
       readBy: [convexUser._id],
-    });
-  },
-});
-
-export const deleteAllMessagesInChat = mutation({
-  args: { chatId: v.string() },
-  handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-
-    if (identity === null) {
-      console.error("Unauthenticated call to mutation");
-      return null;
-    }
-
-    const parsedChatId = ctx.table("privateChats").normalizeId(args.chatId);
-
-    if (!parsedChatId) {
-      throw new ConvexError("chatId was invalid");
-    }
-
-    const chat = ctx.table("privateChats").getX(parsedChatId);
-    const messagesInChat = await chat.edge("messages");
-
-    for (const message of messagesInChat) {
-      await message.delete();
-    }
-  },
-});
-
-export const rejectRequest = mutation({
-  args: { messageId: v.string(), chatId: v.string() },
-  handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-
-    if (identity === null) {
-      console.error("Unauthenticated call to mutation");
-      return null;
-    }
-
-    const parsedMessageId = ctx.table("messages").normalizeId(args.messageId);
-
-    if (!parsedMessageId) {
-      throw new ConvexError("chatId was invalid");
-    }
-
-    const message = await ctx.table("messages").getX(parsedMessageId);
-
-    await message.patch({
-      type: "rejected",
     });
   },
 });

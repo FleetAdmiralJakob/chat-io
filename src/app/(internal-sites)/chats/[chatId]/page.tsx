@@ -211,10 +211,10 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
     scrollToBottom(true);
   }
 
-  const createDeleteRequest = useMutation(api.messages.createDeleteRequest);
+  const createClearRequest = useMutation(api.clearRequests.createClearRequest);
 
-  const createMessageRequestHandler = (chatId: string) => async () => {
-    await createDeleteRequest({ chatId });
+  const createClearRequestHandler = (chatId: string) => async () => {
+    await createClearRequest({ chatId });
   };
 
   const [menuActive, setMenuActive] = useState(false);
@@ -248,7 +248,7 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
           className="relative flex flex-col"
         >
           <DevMode className="top-20 z-10">
-            <button onClick={createMessageRequestHandler(params.chatId)}>
+            <button onClick={createClearRequestHandler(params.chatId)}>
               Delete Chat Request
             </button>
             <p>chatId: {params.chatId}</p>

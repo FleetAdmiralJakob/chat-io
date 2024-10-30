@@ -110,7 +110,7 @@ const Chats: React.FC<{
                           </div>
                           <Badge>Support</Badge>
                         </div>
-                        <p className="ml-4 mt-0.5 text-sm text-destructive-foreground">
+                        <div className="ml-4 mt-0.5 text-sm text-destructive-foreground">
                           {chat.lastMessage?.content != "" ? (
                             chat.lastMessage?.content != undefined ? (
                               chat.lastMessage?.readBy.some(
@@ -134,7 +134,7 @@ const Chats: React.FC<{
                               </p>
                             </div>
                           )}
-                        </p>
+                        </div>
                       </div>
                     </div>
                     <ArrowRight className="ml-3 text-secondary-foreground lg:mr-10" />
@@ -175,7 +175,7 @@ const Chats: React.FC<{
                           <p className="truncate text-lg">
                             {chat.users[0].username}
                           </p>
-                          <p
+                          <div
                             className={cn(
                               "mt-0.5 w-10/12 truncate text-sm font-normal text-destructive-foreground",
                               { "w-full": chat.lastMessage?.content == "" },
@@ -204,7 +204,7 @@ const Chats: React.FC<{
                                 </p>
                               </div>
                             )}
-                          </p>
+                          </div>
                         </div>
                       ) : (
                         <div className="flex flex-col">
@@ -214,7 +214,7 @@ const Chats: React.FC<{
                             </p>
                             <Badge>Tool</Badge>
                           </div>
-                          <p className="mt-0.5 w-10/12 truncate text-sm font-normal text-destructive-foreground">
+                          <div className="mt-0.5 w-10/12 truncate text-sm font-normal text-destructive-foreground">
                             {chat.lastMessage?.content != "" ? (
                               chat.lastMessage?.content != undefined ? (
                                 chat.lastMessage?.readBy.some(
@@ -238,7 +238,7 @@ const Chats: React.FC<{
                                 </p>
                               </div>
                             )}
-                          </p>
+                          </div>
                         </div>
                       )}
                     </div>
