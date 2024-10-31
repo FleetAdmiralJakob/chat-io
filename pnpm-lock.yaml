@@ -162,7 +162,7 @@ importers:
         version: 8.42.3
       '@types/node':
         specifier: ^22.8.1
-        version: 22.8.5
+        version: 22.8.6
       '@types/react':
         specifier: npm:types-react@19.0.0-rc.1
         version: types-react@19.0.0-rc.1
@@ -1167,8 +1167,8 @@ packages:
   '@types/json5@0.0.29':
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
 
-  '@types/node@22.8.5':
-    resolution: {integrity: sha512-5iYk6AMPtsMbkZqCO1UGF9W5L38twq11S2pYWkybGHH2ogPUvXWNlQqJBzuEZWKj/WRH+QTeiv6ySWqJtvIEgA==}
+  '@types/node@22.8.6':
+    resolution: {integrity: sha512-tosuJYKrIqjQIlVCM4PEGxOmyg3FCPa/fViuJChnGeEIhjA46oy8FMVoF9su1/v8PNs2a8Q0iFNyOx0uOF91nw==}
 
   '@types/trusted-types@2.0.7':
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
@@ -3773,7 +3773,7 @@ snapshots:
 
   '@types/json5@0.0.29': {}
 
-  '@types/node@22.8.5':
+  '@types/node@22.8.6':
     dependencies:
       undici-types: 6.19.8
 
