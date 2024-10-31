@@ -105,7 +105,7 @@ export const getChats = query({
       return null;
     }
 
-    return await ctx
+    return ctx
       .table("users")
       .getX("clerkId", identity.tokenIdentifier)
       .edge("privateChats")

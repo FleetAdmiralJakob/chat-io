@@ -7,7 +7,7 @@ import {
 } from "~/components/ui/resize";
 import { Avatar, AvatarFallback } from "~/components/ui/avatar";
 import ChatsWithSearch from "~/components/chats-with-search";
-import { Video } from "lucide-react";
+import { ChevronDown, Video } from "lucide-react";
 import { Mic } from "lucide-react";
 import { Phone } from "lucide-react";
 import Badge from "~/components/ui/badge";
@@ -66,6 +66,45 @@ const SkeletonMessages = ({ count }: { count: number }) => {
       ))}
     </div>
   );
+};
+
+const useScrollBehavior = (
+  messages: FunctionReturnType<typeof api.messages.getMessages> | undefined,
+) => {
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [isNearBottom, setIsNearBottom] = useState(true);
+
+  const handleScroll = useCallback(() => {
+    if (messagesEndRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = messagesEndRef.current;
+      const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+
+      // Consider "near bottom" if within 100px of bottom
+      const nearBottom = distanceFromBottom < 100;
+      setIsNearBottom(nearBottom);
+    }
+  }, []);
+
+  const scrollToBottom = useCallback(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollTo({
+        top: messagesEndRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  }, []);
+
+  // Scroll handling for new messages
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, scrollToBottom]);
+
+  return {
+    messagesEndRef,
+    handleScroll,
+    scrollToBottom,
+    isNearBottom,
+  };
 };
 
 export default function Page(props: { params: Promise<{ chatId: string }> }) {
@@ -145,6 +184,9 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
     chatId: params.chatId,
   });
 
+  const { messagesEndRef, handleScroll, scrollToBottom, isNearBottom } =
+    useScrollBehavior(messages.data);
+
   useEffect(() => {
     if (
       userInfo.error?.message.includes("UNAUTHORIZED REQUEST") ||
@@ -168,33 +210,7 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
 
   const [animationInput, setAnimationInput] = useState(true);
 
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [scrollPosition, setScrollPosition] = useState(0);
-
-  const handleScroll = () => {
-    if (messagesEndRef.current) {
-      const { scrollTop, scrollHeight, clientHeight } = messagesEndRef.current;
-      const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
-      setScrollPosition(distanceFromBottom);
-    }
-  };
-
-  const scrollToBottom = useCallback(
-    (messageUser: boolean) => {
-      if (messagesEndRef.current && messageUser) {
-        messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
-      } else if (messagesEndRef.current && scrollPosition < 100) {
-        messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
-      }
-    },
-    [scrollPosition],
-  );
-
   const formRef = useRef<HTMLFormElement | null>(null);
-
-  useEffect(() => {
-    scrollToBottom(false);
-  }, [messages.data, scrollToBottom]);
 
   const [inputValue, setInputValue] = useState("");
 
@@ -208,7 +224,7 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
     void sendMessage({ content: values.message, chatId: params.chatId });
     textMessageForm.reset();
     setInputValue("");
-    scrollToBottom(true);
+    scrollToBottom();
   }
 
   const createClearRequest = useMutation(api.clearRequests.createClearRequest);
@@ -333,31 +349,49 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
             </div>
           </div>
           <div
-            className="relative flex-grow overflow-x-hidden"
+            className="relative h-full flex-grow overflow-x-hidden"
             onScroll={handleScroll}
             ref={messagesEndRef}
           >
-            {messages.data ? (
-              messages.data.map((message, key) => (
-                <React.Fragment key={key}>
-                  <Message
-                    selectedMessageId={selectedMessageId}
-                    setSelectedMessageId={setSelectedMessageId}
-                    message={message}
-                  />
-                </React.Fragment>
-              ))
-            ) : (
-              <>
-                <div className="flex justify-center lg:hidden">
-                  <SkeletonMessages count={10} />
-                </div>
-                <div className="hidden h-full w-full items-center justify-center lg:flex">
-                  <Progress value={progress} className="w-[60%]" />
-                </div>
-              </>
-            )}
+            <div className="relative min-h-full w-full">
+              {messages.data ? (
+                <>
+                  {messages.data.map((message, key) => (
+                    <React.Fragment key={key}>
+                      <Message
+                        selectedMessageId={selectedMessageId}
+                        setSelectedMessageId={setSelectedMessageId}
+                        message={message}
+                      />
+                    </React.Fragment>
+                  ))}
+                  {!isNearBottom && messages.data.length > 0 && (
+                    <div className="sticky bottom-4 w-full px-4">
+                      <div className="flex justify-end">
+                        <button
+                          onClick={() => scrollToBottom()}
+                          className="flex h-10 w-10 items-center justify-center rounded-full bg-primary shadow-lg hover:bg-accent"
+                          aria-label="Scroll to bottom"
+                        >
+                          <ChevronDown className="h-6 w-6 text-destructive-foreground" />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <>
+                  <div className="flex justify-center lg:hidden">
+                    <SkeletonMessages count={10} />
+                  </div>
+                  <div className="hidden h-full w-full items-center justify-center lg:flex">
+                    <Progress value={progress} className="w-[60%]" />
+                  </div>
+                </>
+              )}
+            </div>
           </div>
+
           <div className="flex h-28 w-full items-center justify-start bg-primary p-4 pb-10 lg:h-24 lg:pb-4">
             <div className="flex w-full justify-between">
               <Form {...textMessageForm}>

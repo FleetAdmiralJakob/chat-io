@@ -150,17 +150,14 @@ export const Message = ({
   };
 
   useEffect(() => {
-    if (inView && message.sent && message.type == "message") {
-      void markRead({ messageId: message._id });
-    }
-  }, [
-    inView,
-    message._id,
-    deleteMessage,
-    message.sent,
-    markRead,
-    message.type,
-  ]);
+    const markMessageAsRead = async () => {
+      if (inView && message.sent && message.type == "message") {
+        await markRead({ messageId: message._id });
+      }
+    };
+
+    void markMessageAsRead();
+  }, [inView, markRead, message._id, message.sent, message.type]);
 
   const sentInfo = () => {
     return (
