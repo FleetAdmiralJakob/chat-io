@@ -1,6 +1,5 @@
 import { mutation, query } from "./lib/functions";
-import { ConvexError, type Infer, v } from "convex/values";
-import { type status } from "./schema";
+import { ConvexError, v } from "convex/values";
 
 export const createChat = mutation({
   args: { friendsUsername: v.string(), friendsUsernameId: v.string() },
@@ -124,7 +123,7 @@ export const getChats = query({
           .map(async (request) => {
             return {
               ...request,
-              type: `${request.status}Request` satisfies `${Infer<typeof status>}Request`,
+              type: `${request.status}Request` as const,
               clerkId: (await ctx.table("users").getX(request.userId)).clerkId,
             };
           });
@@ -141,7 +140,7 @@ export const getChats = query({
         for (let i = 0; i < sortedMessages.length; i++) {
           const message = sortedMessages[i];
           if (!message) continue;
-          
+
           if (
             (message.type === "message" && message.deleted) ||
             (message.type !== "message" &&

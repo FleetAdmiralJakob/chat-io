@@ -1,6 +1,5 @@
 import { mutation, query } from "./lib/functions";
-import { ConvexError, type Infer, v } from "convex/values";
-import { type status } from "./schema";
+import { ConvexError, v } from "convex/values";
 
 export const getMessages = query({
   args: { chatId: v.string() },
@@ -43,7 +42,7 @@ export const getMessages = query({
       ...request,
       userId: undefined,
       status: undefined,
-      type: `${request.status}Request` satisfies `${Infer<typeof status>}Request`,
+      type: `${request.status}Request` as const,
       from: await ctx.table("users").getX(request.userId),
       sent: true,
     }));

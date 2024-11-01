@@ -265,7 +265,7 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
         >
           <DevMode className="top-20 z-10">
             <button onClick={createClearRequestHandler(params.chatId)}>
-              Delete Chat Request
+              Clear Chat Request
             </button>
             <p>chatId: {params.chatId}</p>
             <div onClick={() => devMode$.set(false)}>Disable dev mode</div>

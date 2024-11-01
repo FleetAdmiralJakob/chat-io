@@ -1,12 +1,6 @@
 import { defineEnt, defineEntSchema, getEntDefinitions } from "convex-ents";
 import { v } from "convex/values";
 
-export const status = v.union(
-  v.literal("pending"),
-  v.literal("rejected"),
-  v.literal("expired"),
-);
-
 const schema = defineEntSchema({
   privateChats: defineEnt({})
     .field("support", v.boolean(), { default: false })
@@ -30,7 +24,14 @@ const schema = defineEntSchema({
     }),
 
   clearRequests: defineEnt({})
-    .field("status", status)
+    .field(
+      "status",
+      v.union(
+        v.literal("pending"),
+        v.literal("rejected"),
+        v.literal("expired"),
+      ),
+    )
     .edge("user")
     .edge("privateChat"),
 

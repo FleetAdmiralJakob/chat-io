@@ -360,9 +360,9 @@ export const Message = ({
                   <p>
                     {message.type === "pendingRequest"
                       ? chatInfo.data?.otherUser[0]?.username +
-                        " has sent a request to delete the chat"
+                        " has sent a request to clear the chat"
                       : message.type === "expiredRequest"
-                        ? `The request of ${chatInfo.data?.otherUser[0]?.username + " to delete the chat"} has expired`
+                        ? `The request of ${chatInfo.data?.otherUser[0]?.username + " to clear the chat"} has expired`
                         : "You have rejected the request to clear the chat"}
                   </p>
                   <div className="flex justify-between">
