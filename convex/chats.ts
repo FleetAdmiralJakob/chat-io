@@ -124,8 +124,7 @@ export const getChats = query({
           .map(async (request) => {
             return {
               ...request,
-              // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- ESLint rule is broken
-              type: `${request.status}Request` as `${Infer<typeof status>}Request`,
+              type: `${request.status}Request` satisfies `${Infer<typeof status>}Request`,
               clerkId: (await ctx.table("users").getX(request.userId)).clerkId,
             };
           });
