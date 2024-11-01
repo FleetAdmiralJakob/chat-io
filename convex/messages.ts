@@ -43,8 +43,7 @@ export const getMessages = query({
       ...request,
       userId: undefined,
       status: undefined,
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- ESLint rule is broken
-      type: `${request.status}Request` as `${Infer<typeof status>}Request`,
+      type: `${request.status}Request` satisfies `${Infer<typeof status>}Request`,
       from: await ctx.table("users").getX(request.userId),
       sent: true,
     }));
