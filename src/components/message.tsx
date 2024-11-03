@@ -128,37 +128,36 @@ export const Message = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const markRead = useMutation(api.messages.markMessageRead);
 
-  const deleteAllMessagesInChat = useMutation(
-    api.messages.deleteAllMessagesInChat,
-  );
+  const acceptClearRequest = useMutation(api.clearRequests.acceptClearRequest);
 
   const chatInfo = useQueryWithStatus(api.chats.getChatInfoFromId, {
     chatId: message.privateChatId,
   });
 
-  const rejectRequest = useMutation(api.messages.rejectRequest);
+  const rejectClearRequest = useMutation(api.clearRequests.rejectClearRequest);
 
-  const rejectRequestHandler =
-    (chatId: string, messageId: string) => async () => {
-      await rejectRequest({ chatId, messageId });
+  const rejectClearRequestHandler =
+    (chatId: string, requestId: string) => async () => {
+      await rejectClearRequest({ chatId, requestId });
     };
 
-  const deleteAllMessagesinChat = (chatId: string) => async () => {
-    await deleteAllMessagesInChat({ chatId });
+  const acceptClearRequestHandler = (requestId: string) => async () => {
+    if (message.type == "pendingRequest") {
+      await acceptClearRequest({ requestId });
+    } else {
+      console.error("Error");
+    }
   };
 
   useEffect(() => {
-    if (inView && message.sent) {
-      void markRead({ messageId: message._id });
-    }
-  }, [
-    inView,
-    message._id,
-    message.deleted,
-    deleteMessage,
-    message.sent,
-    markRead,
-  ]);
+    const markMessageAsRead = async () => {
+      if (inView && message.sent && message.type == "message") {
+        await markRead({ messageId: message._id });
+      }
+    };
+
+    void markMessageAsRead();
+  }, [inView, markRead, message._id, message.sent, message.type]);
 
   const sentInfo = () => {
     return (
@@ -196,13 +195,14 @@ export const Message = ({
             ref={refs.setReference}
             className={cn("my-1 mr-4 flex w-full flex-col items-end", {
               "mr-0 items-center":
-                message.type == "request" || message.type == "rejected",
+                message.type == "pendingRequest" ||
+                message.type == "rejectedRequest",
             })}
           >
             <div
               onContextMenu={(e) => {
                 e.preventDefault();
-                if (message.deleted) return;
+                if (message.type === "message" && message.deleted) return;
                 checkClickPosition(e);
                 setIsModalOpen(!isModalOpen);
                 setSelectedMessageId(message._id);
@@ -210,7 +210,7 @@ export const Message = ({
               }}
               onClick={(e) => {
                 if (!isMobile) return;
-                if (message.deleted) return;
+                if (message.type === "message" && message.deleted) return;
                 checkClickPosition(e);
                 setIsModalOpen(!isModalOpen);
                 setSelectedMessageId(message._id);
@@ -221,11 +221,12 @@ export const Message = ({
                 {
                   "sticky z-50 opacity-100": message._id === selectedMessageId,
                   "my-2 max-w-[80%] border-2 border-secondary bg-primary":
-                    message.type == "request" || message.type == "rejected",
+                    message.type == "pendingRequest" ||
+                    message.type == "rejectedRequest",
                 },
               )}
             >
-              {message.deleted ? (
+              {message.type === "message" && message.deleted ? (
                 <div className="flex font-medium">
                   <Ban />
                   <p className="ml-2.5">This message was deleted</p>
@@ -234,10 +235,12 @@ export const Message = ({
                 <div>
                   {message.type != "message" ? (
                     <div className="font-semibold text-destructive-foreground">
-                      {message.type == "request"
-                        ? "You've sent a request"
-                        : chatInfo.data?.otherUser[0]?.username +
-                          " has rejected the request"}
+                      {message.type === "pendingRequest"
+                        ? "You've sent a request to clear the chat"
+                        : message.type === "expiredRequest"
+                          ? "Your request to clear the chat has expired"
+                          : chatInfo.data?.otherUser[0]?.username +
+                            " has rejected the request to clear the chat"}
                     </div>
                   ) : (
                     <div>{message.content}</div>
@@ -246,7 +249,7 @@ export const Message = ({
               )}
             </div>
             <div className="mr-2 text-[75%] font-bold text-secondary-foreground">
-              {!message.deleted && message.type == "message"
+              {message.type == "message" && !message.deleted
                 ? message.readBy
                   ? message.readBy.map((user) => {
                       if (user.username != clerkUser.user?.username) {
@@ -315,14 +318,15 @@ export const Message = ({
           <div
             className={cn("my-1 ml-4 flex w-full justify-start", {
               "ml-0 justify-center":
-                message.type == "request" || message.type == "rejected",
+                message.type === "pendingRequest" ||
+                message.type === "rejectedRequest",
             })}
           >
             <div
               ref={refs.setReference}
               onContextMenu={(e) => {
                 e.preventDefault();
-                if (message.deleted) return;
+                if (message.type === "message" && message.deleted) return;
                 checkClickPosition(e);
                 setIsModalOpen(!isModalOpen);
                 setSelectedMessageId(message._id);
@@ -330,7 +334,7 @@ export const Message = ({
               }}
               onClick={(e) => {
                 if (!isMobile) return;
-                if (message.deleted) return;
+                if (message.type === "message" && message.deleted) return;
                 checkClickPosition(e);
                 setIsModalOpen(!isModalOpen);
                 setSelectedMessageId(message._id);
@@ -341,11 +345,12 @@ export const Message = ({
                 {
                   "sticky z-50 opacity-100": message._id == selectedMessageId,
                   "my-2 max-w-[80%] border-2 border-secondary bg-primary":
-                    message.type == "request" || message.type == "rejected",
+                    message.type === "pendingRequest" ||
+                    message.type === "rejectedRequest",
                 },
               )}
             >
-              {message.deleted ? (
+              {message.type === "message" && message.deleted ? (
                 <div className="flex font-medium">
                   <Ban />
                   <p className="ml-2.5">This message was deleted</p>
@@ -353,25 +358,25 @@ export const Message = ({
               ) : message.type != "message" ? (
                 <div className="font-semibold text-destructive-foreground">
                   <p>
-                    {message.type == "request"
+                    {message.type === "pendingRequest"
                       ? chatInfo.data?.otherUser[0]?.username +
-                        " has send a delete Chat request"
-                      : "You has rejected the request"}
+                        " has sent a request to clear the chat"
+                      : message.type === "expiredRequest"
+                        ? `The request of ${chatInfo.data?.otherUser[0]?.username + " to clear the chat"} has expired`
+                        : "You have rejected the request to clear the chat"}
                   </p>
                   <div className="flex justify-between">
-                    {message.type == "request" ? (
+                    {message.type === "pendingRequest" ? (
                       <>
                         <button
-                          onClick={deleteAllMessagesinChat(
-                            message.privateChatId,
-                          )}
+                          onClick={acceptClearRequestHandler(message._id)}
                           className="mt-4 flex rounded-sm bg-accept p-2 px-4"
                         >
                           <CircleCheck className="mr-1 p-0.5" />
                           <p>Accept</p>
                         </button>
                         <button
-                          onClick={rejectRequestHandler(
+                          onClick={rejectClearRequestHandler(
                             message.privateChatId,
                             message._id,
                           )}

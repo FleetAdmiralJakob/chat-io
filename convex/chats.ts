@@ -104,63 +104,73 @@ export const getChats = query({
       return null;
     }
 
-    return await ctx
+    return ctx
       .table("users")
       .getX("clerkId", identity.tokenIdentifier)
       .edge("privateChats")
       .map(async (chat) => {
-        const messages = await chat.edge("messages");
-        const sortedMessages = messages.sort(
+        const textMessages = await chat
+          .edge("messages")
+          .map(async (message) => {
+            return {
+              ...message,
+              readBy: await message.edge("readBy"),
+              type: "message" as const,
+            };
+          });
+        const requests = await chat
+          .edge("clearRequests")
+          .map(async (request) => {
+            return {
+              ...request,
+              type: `${request.status}Request` as const,
+              clerkId: (await ctx.table("users").getX(request.userId)).clerkId,
+            };
+          });
+
+        const allMessages = [...textMessages, ...requests];
+
+        const sortedMessages = allMessages.sort(
           (a, b) => b._creationTime - a._creationTime,
         );
         const latestMessage = sortedMessages[0];
-        const readBy = latestMessage ? await latestMessage.edge("readBy") : [];
-
-        const extendedMessagesPromises = sortedMessages.map(async (message) => {
-          return {
-            ...message,
-            readBy: await message.edge("readBy"),
-            deleted: message.deleted,
-          };
-        });
-
-        const extendedMessages = await Promise.all(extendedMessagesPromises);
-
-        const sortedMessagesAgain = extendedMessages.sort(
-          (a, b) => b._creationTime - a._creationTime,
-        );
 
         let deletedCount = 0;
-        const firstReadMessageIndex = sortedMessagesAgain.findIndex(
-          (message) => {
-            if (message.deleted) {
-              deletedCount++;
-            }
-            return (
-              message.readBy.some(
-                (user) => user.clerkId === identity.tokenIdentifier,
-              ) && !message.deleted
-            );
-          },
-        );
+        let firstReadMessageIndex = -1;
+        for (let i = 0; i < sortedMessages.length; i++) {
+          const message = sortedMessages[i];
+          if (!message) continue;
 
-        let numberOfUnreadMessages;
-        if (firstReadMessageIndex === -1) {
-          numberOfUnreadMessages = sortedMessages.length - deletedCount;
-        } else {
-          numberOfUnreadMessages = firstReadMessageIndex - deletedCount;
+          if (
+            (message.type === "message" && message.deleted) ||
+            (message.type !== "message" &&
+              (await ctx.table("users").getX(message.userId)).clerkId ===
+                identity.tokenIdentifier)
+          ) {
+            deletedCount++;
+          }
+          const isReadMessage =
+            message.type === "message" &&
+            message.readBy.some(
+              (user) => user.clerkId === identity.tokenIdentifier,
+            ) &&
+            !message.deleted;
+          if (isReadMessage) {
+            firstReadMessageIndex = i;
+            break;
+          }
         }
+
+        const numberOfUnreadMessages =
+          firstReadMessageIndex === -1
+            ? sortedMessages.length - deletedCount
+            : firstReadMessageIndex - deletedCount;
 
         return {
           ...chat,
           users: await chat.edge("users"),
           numberOfUnreadMessages: numberOfUnreadMessages,
-          lastMessage: latestMessage
-            ? {
-                ...latestMessage,
-                readBy,
-              }
-            : null,
+          lastMessage: latestMessage,
         };
       });
   },

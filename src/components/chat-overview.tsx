@@ -110,31 +110,56 @@ const Chats: React.FC<{
                           </div>
                           <Badge>Support</Badge>
                         </div>
-                        <p className="ml-4 mt-0.5 text-sm text-destructive-foreground">
-                          {chat.lastMessage?.content != "" ? (
-                            chat.lastMessage?.content != undefined ? (
-                              chat.lastMessage?.readBy.some(
-                                (user) =>
-                                  user.username === clerkUser.user?.username,
-                              ) ? (
-                                chat.lastMessage.content
+                        <div className="ml-4 mt-0.5 text-sm text-destructive-foreground">
+                          {chat.lastMessage &&
+                            chat.lastMessage.type != "message" && (
+                              <div className="font-semibold text-destructive-foreground">
+                                {chat.lastMessage.type === "pendingRequest"
+                                  ? chat.lastMessage.clerkId
+                                      .split("|")
+                                      .pop() === clerkUser.user?.id
+                                    ? "You've sent a request to clear the chat"
+                                    : `The support has sent a request to clear the chat`
+                                  : chat.lastMessage?.type === "expiredRequest"
+                                    ? chat.lastMessage.clerkId
+                                        .split("|")
+                                        .pop() === clerkUser.user?.id
+                                      ? "Your request to clear the chat has expired"
+                                      : `The support's request to clear the chat has expired`
+                                    : chat.lastMessage.clerkId
+                                          .split("|")
+                                          .pop() === clerkUser.user?.username
+                                      ? "The support has rejected your request to clear the chat"
+                                      : "You have rejected the request to clear the chat"}
+                              </div>
+                            )}
+
+                          {chat.lastMessage ? (
+                            chat.lastMessage.type === "message" ? (
+                              chat.lastMessage.content != "" ? (
+                                chat.lastMessage.readBy.some(
+                                  (user) =>
+                                    user.username === clerkUser.user?.username,
+                                ) ? (
+                                  chat.lastMessage.content
+                                ) : (
+                                  <p className="truncate font-bold">
+                                    {chat.lastMessage.content}
+                                  </p>
+                                )
                               ) : (
-                                <p className="truncate font-bold">
-                                  {chat.lastMessage.content}
-                                </p>
+                                <div className="flex truncate">
+                                  <Ban className="p-1 pt-0" />
+                                  <p className="truncate">
+                                    This message was deleted
+                                  </p>
+                                </div>
                               )
-                            ) : (
-                              "No messages yet"
-                            )
+                            ) : null
                           ) : (
-                            <div className="flex truncate">
-                              <Ban className="p-1 pt-0" />
-                              <p className="truncate">
-                                This message was deleted
-                              </p>
-                            </div>
+                            "No messages yet"
                           )}
-                        </p>
+                        </div>
                       </div>
                     </div>
                     <ArrowRight className="ml-3 text-secondary-foreground lg:mr-10" />
@@ -175,36 +200,62 @@ const Chats: React.FC<{
                           <p className="truncate text-lg">
                             {chat.users[0].username}
                           </p>
-                          <p
+                          <div
                             className={cn(
                               "mt-0.5 w-10/12 truncate text-sm font-normal text-destructive-foreground",
-                              { "w-full": chat.lastMessage?.content == "" },
                             )}
                           >
-                            {chat.lastMessage?.content != "" ? (
-                              chat.lastMessage?.content != undefined ? (
-                                chat.lastMessage?.readBy.some(
-                                  (user) =>
-                                    user.username === clerkUser.user?.username,
-                                ) ? (
-                                  chat.lastMessage?.content
+                            {chat.lastMessage &&
+                              chat.lastMessage.type != "message" && (
+                                <div className="font-semibold text-destructive-foreground">
+                                  {chat.lastMessage.type === "pendingRequest"
+                                    ? chat.lastMessage.clerkId
+                                        .split("|")
+                                        .pop() === clerkUser.user?.id
+                                      ? "You've sent a request to clear the chat"
+                                      : `${chat.users[0].username} has sent a request to clear the chat`
+                                    : chat.lastMessage?.type ===
+                                        "expiredRequest"
+                                      ? chat.lastMessage.clerkId
+                                          .split("|")
+                                          .pop() === clerkUser.user?.id
+                                        ? "Your request to clear the chat has expired"
+                                        : `${chat.users[0].username}'s request to clear the chat has expired`
+                                      : chat.lastMessage.clerkId
+                                            .split("|")
+                                            .pop() === clerkUser.user?.username
+                                        ? `${chat.users[0].username} has rejected your request to clear the chat`
+                                        : "You have rejected the request to clear the chat"}
+                                </div>
+                              )}
+
+                            {chat.lastMessage ? (
+                              chat.lastMessage.type === "message" ? (
+                                chat.lastMessage.content != "" ? (
+                                  chat.lastMessage.readBy.some(
+                                    (user) =>
+                                      user.username ===
+                                      clerkUser.user?.username,
+                                  ) ? (
+                                    chat.lastMessage.content
+                                  ) : (
+                                    <p className="truncate font-bold">
+                                      {chat.lastMessage.content}
+                                    </p>
+                                  )
                                 ) : (
-                                  <p className="truncate font-bold">
-                                    {chat.lastMessage?.content}
-                                  </p>
+                                  <div className="flex truncate">
+                                    <Ban className="p-1 pt-0" />
+                                    <p className="truncate">
+                                      This message was deleted
+                                    </p>
+                                  </div>
                                 )
-                              ) : (
-                                "No messages yet"
-                              )
+                              ) : null
                             ) : (
-                              <div className="flex truncate">
-                                <Ban className="p-1 pt-0" />
-                                <p className="truncate">
-                                  This message was deleted
-                                </p>
-                              </div>
+                              "No messages yet"
                             )}
-                          </p>
+                          </div>
                         </div>
                       ) : (
                         <div className="flex flex-col">
@@ -214,52 +265,66 @@ const Chats: React.FC<{
                             </p>
                             <Badge>Tool</Badge>
                           </div>
-                          <p className="mt-0.5 w-10/12 truncate text-sm font-normal text-destructive-foreground">
-                            {chat.lastMessage?.content != "" ? (
-                              chat.lastMessage?.content != undefined ? (
-                                chat.lastMessage?.readBy.some(
-                                  (user) =>
-                                    user.username === clerkUser.user?.username,
-                                ) ? (
-                                  chat.lastMessage.content
+                          <div className="mt-0.5 w-10/12 truncate text-sm font-normal text-destructive-foreground">
+                            {chat.lastMessage &&
+                              chat.lastMessage.type != "message" && (
+                                <div className="font-semibold text-destructive-foreground">
+                                  {chat.lastMessage.type === "pendingRequest"
+                                    ? chat.lastMessage.clerkId
+                                        .split("|")
+                                        .pop() === clerkUser.user?.id
+                                      ? "You've sent a request to clear the chat"
+                                      : `Your notes have sent a request to clear the chat`
+                                    : chat.lastMessage?.type ===
+                                        "expiredRequest"
+                                      ? chat.lastMessage.clerkId
+                                          .split("|")
+                                          .pop() === clerkUser.user?.id
+                                        ? "Your request to clear the chat has expired"
+                                        : `Your notes' request to clear the chat has expired`
+                                      : chat.lastMessage.clerkId
+                                            .split("|")
+                                            .pop() === clerkUser.user?.username
+                                        ? "Your notes have rejected your request to clear the chat"
+                                        : "You have rejected the request to clear the chat"}
+                                </div>
+                              )}
+                            {chat.lastMessage ? (
+                              chat.lastMessage.type === "message" ? (
+                                chat.lastMessage.content != "" ? (
+                                  chat.lastMessage.readBy.some(
+                                    (user) =>
+                                      user.username ===
+                                      clerkUser.user?.username,
+                                  ) ? (
+                                    chat.lastMessage.content
+                                  ) : (
+                                    <p className="truncate font-bold">
+                                      {chat.lastMessage.content}
+                                    </p>
+                                  )
                                 ) : (
-                                  <p className="truncate font-bold">
-                                    {chat.lastMessage.content}
-                                  </p>
+                                  <div className="flex truncate">
+                                    <Ban className="p-1 pt-0" />
+                                    <p className="truncate">
+                                      This message was deleted
+                                    </p>
+                                  </div>
                                 )
-                              ) : (
-                                "No messages yet"
-                              )
+                              ) : null
                             ) : (
-                              <div className="flex truncate">
-                                <Ban className="p-1 pt-0" />
-                                <p className="truncate">
-                                  This message was deleted
-                                </p>
-                              </div>
+                              "No messages yet"
                             )}
-                          </p>
+                          </div>
                         </div>
                       )}
                     </div>
                   </div>
                   <div className="flex">
-                    {chat.lastMessage?.content != "" ? (
-                      chat.lastMessage?.content != undefined ? (
-                        chat.lastMessage?.readBy.some(
-                          (user) => user.username === clerkUser.user?.username,
-                        ) ? (
-                          ""
-                        ) : (
-                          <div className="flex h-6 w-9 items-center justify-center rounded-full bg-accent p-1 text-[70%] font-medium">
-                            {chat.numberOfUnreadMessages}
-                          </div>
-                        )
-                      ) : (
-                        ""
-                      )
-                    ) : (
-                      ""
+                    {chat.numberOfUnreadMessages > 0 && (
+                      <div className="flex h-6 w-9 items-center justify-center rounded-full bg-accent p-1 text-[70%] font-medium">
+                        {chat.numberOfUnreadMessages}
+                      </div>
                     )}
                     <ArrowRight className="!important ml-3 h-6 w-6 text-secondary-foreground lg:mr-10" />
                   </div>

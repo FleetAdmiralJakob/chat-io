@@ -5,7 +5,8 @@ const schema = defineEntSchema({
   privateChats: defineEnt({})
     .field("support", v.boolean(), { default: false })
     .edges("users")
-    .edges("messages", { ref: true }),
+    .edges("messages", { ref: true })
+    .edges("clearRequests", { ref: true }),
 
   users: defineEnt({})
     .field("clerkId", v.string(), { unique: true })
@@ -15,15 +16,27 @@ const schema = defineEntSchema({
     .field("lastName", v.optional(v.string()))
     .edges("privateChats")
     .edges("messages", { ref: true })
+    .edges("clearRequests", { ref: true })
     .edges("readMessages", {
       to: "messages",
       inverseField: "readBy",
       table: "readMessages",
     }),
 
+  clearRequests: defineEnt({})
+    .field(
+      "status",
+      v.union(
+        v.literal("pending"),
+        v.literal("rejected"),
+        v.literal("expired"),
+      ),
+    )
+    .edge("user")
+    .edge("privateChat"),
+
   messages: defineEnt({})
     .field("content", v.string())
-    .field("type", v.string(), { default: "message" })
     .field("deleted", v.boolean(), { default: false })
     .edge("privateChat")
     .edge("user")
