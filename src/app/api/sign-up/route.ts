@@ -83,6 +83,7 @@ export async function POST(request: Request) {
         );
       }
     }
+    console.error(parsedSignUpHeaders, e);
     return Response.json(
       { message: "Failed to create an account" },
       { status: 400 },
