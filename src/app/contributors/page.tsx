@@ -1,22 +1,21 @@
 "use client";
 
-import Footer from "~/components/footer";
-import jakobProfile from "/src/assets/jakob-profile.png";
 import fabiusProfile from "/src/assets/fabius-profile.png";
-import { FaLinkedin } from "react-icons/fa";
-import Image, { type StaticImageData } from "next/image";
+import jakobProfile from "/src/assets/jakob-profile.png";
+import Footer from "~/components/footer";
 import { cn } from "~/lib/utils";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
 import {
   ArrowLeft,
-  Link as LinkChain,
   CircleChevronUp,
+  Link as LinkChain,
   UsersRound,
 } from "lucide-react";
-import { SiGithub } from "react-icons/si";
+import Image, { type StaticImageData } from "next/image";
 import Link from "next/link";
-import React from "react";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
+import { FaLinkedin } from "react-icons/fa";
+import { SiGithub } from "react-icons/si";
 
 interface ContributorsProps {
   name: string;

@@ -1,5 +1,5 @@
-import { mutation, query } from "./lib/functions";
 import { v } from "convex/values";
+import { mutation, query } from "./lib/functions";
 
 export const getUserData = query({
   handler: async (ctx) => {
@@ -34,6 +34,7 @@ export const updateUserData = mutation({
 
     if (args.data.email) {
       await user.patch({
+        // This is safe to do and doesn't need to be hashed/encrypted because Convex already encrypts the data.
         email: args.data.email,
       });
     }

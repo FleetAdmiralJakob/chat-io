@@ -1,15 +1,15 @@
+import { entsTableFactory } from "convex-ents";
 import {
   customCtx,
   customMutation,
   customQuery,
 } from "convex-helpers/server/customFunctions";
 import {
-  query as baseQuery,
-  mutation as baseMutation,
-  internalQuery as baseInternalQuery,
   internalMutation as baseInternalMutation,
+  internalQuery as baseInternalQuery,
+  mutation as baseMutation,
+  query as baseQuery,
 } from "../_generated/server";
-import { entsTableFactory } from "convex-ents";
 import { entDefinitions } from "../schema";
 
 export const query = customQuery(

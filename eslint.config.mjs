@@ -1,11 +1,11 @@
 /// <reference types="./eslint-types.d.ts" />
 
-import { fixupConfigRules } from "@eslint/compat";
-import tsParser from "@typescript-eslint/parser";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import js from "@eslint/js";
+import { fixupConfigRules } from "@eslint/compat";
 import { FlatCompat } from "@eslint/eslintrc";
+import js from "@eslint/js";
+import tsParser from "@typescript-eslint/parser";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -17,6 +17,9 @@ const compat = new FlatCompat({
 });
 
 export default [
+  {
+    ignores: [".next/**", "convex/_generated/**", "public/sw.js"],
+  },
   ...fixupConfigRules(
     compat.extends(
       "next/core-web-vitals",
@@ -80,6 +83,13 @@ export default [
             "Use `import { env } from '~/env'` instead to ensure validated types.",
         },
       ],
+    },
+  },
+  {
+    files: ["convex/**", "src/env.ts"],
+    rules: {
+      "no-restricted-properties": "off",
+      "no-restricted-imports": "off",
     },
   },
 ];

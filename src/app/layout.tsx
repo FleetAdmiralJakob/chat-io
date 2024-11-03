@@ -1,11 +1,11 @@
 import "~/styles/globals.css";
-import { ThemeProvider } from "~/components/theme-provider";
-import type { Metadata, Viewport } from "next";
-import { cn } from "~/lib/utils";
 import { ClerkProvider } from "@clerk/nextjs";
-import React from "react";
-import { GeistSans } from "geist/font/sans";
 import ConvexClientProvider from "~/app/convex-client-provider";
+import { ThemeProvider } from "~/components/theme-provider";
+import { cn } from "~/lib/utils";
+import { GeistSans } from "geist/font/sans";
+import type { Metadata, Viewport } from "next";
+import React from "react";
 
 const APP_NAME = "Chat.io";
 const APP_DEFAULT_TITLE = "Chat.io";

@@ -1,8 +1,9 @@
-import { type FormSchemaSignUp, formSchemaSignUp } from "~/lib/validators";
 import { clerkClient } from "@clerk/nextjs/server";
 import { isClerkAPIResponseError } from "@clerk/shared";
 import {
+  formSchemaSignUp,
   formSchemaUserUpdate,
+  type FormSchemaSignUp,
   type FormSchemaUserUpdate,
 } from "~/lib/validators";
 

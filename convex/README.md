@@ -7,8 +7,8 @@ A query function that takes two arguments looks like:
 
 ```ts
 // functions.js
-import { query } from "./_generated/server";
 import { v } from "convex/values";
+import { query } from "./_generated/server";
 
 export const myQueryFunction = query({
   // Validators for arguments.
@@ -46,8 +46,8 @@ A mutation function looks like:
 
 ```ts
 // functions.js
-import { mutation } from "./_generated/server";
 import { v } from "convex/values";
+import { mutation } from "./_generated/server";
 
 export const myMutationFunction = mutation({
   // Validators for arguments.

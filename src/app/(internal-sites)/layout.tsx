@@ -1,6 +1,6 @@
+import { currentUser } from "@clerk/nextjs/server";
 import Navbar from "~/components/navbar";
 import { redirect } from "next/navigation";
-import { currentUser } from "@clerk/nextjs/server";
 
 export default async function Layout({
   children,

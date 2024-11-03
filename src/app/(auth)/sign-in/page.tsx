@@ -1,6 +1,6 @@
+import { SignInForm } from "~/app/(auth)/sign-in/signin-form";
 import icon from "~/assets/chatio.png";
 import Image from "next/image";
-import { SignInForm } from "~/app/(auth)/sign-in/signin-form";
 import Link from "next/link";
 
 const SignInPage = () => {

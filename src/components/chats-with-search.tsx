@@ -1,11 +1,11 @@
 "use client";
 
-import { AddUserDialog } from "~/components/add-user-dialog";
 import { SignOutButton, useUser } from "@clerk/nextjs";
+import { AddUserDialog } from "~/components/add-user-dialog";
 import Chats from "~/components/chat-overview";
+import { DevMode } from "~/components/dev-mode-info";
 import { devMode$ } from "~/states";
 import { useState } from "react";
-import { DevMode } from "~/components/dev-mode-info";
 
 const ChatsWithSearch = ({
   classNameChatList,

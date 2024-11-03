@@ -1,5 +1,5 @@
-import { internalMutation, mutation } from "./lib/functions";
 import { ConvexError, v } from "convex/values";
+import { internalMutation, mutation } from "./lib/functions";
 
 export const createClearRequest = mutation({
   args: { chatId: v.string() },

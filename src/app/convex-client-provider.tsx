@@ -1,10 +1,11 @@
 "use client";
-import { type ReactNode } from "react";
+
+import { useAuth } from "@clerk/nextjs";
+import { env } from "~/env";
+import { makeUseQueryWithStatus } from "convex-helpers/react";
 import { ConvexReactClient, useQueries } from "convex/react";
 import { ConvexProviderWithClerk } from "convex/react-clerk";
-import { env } from "~/env";
-import { useAuth } from "@clerk/nextjs";
-import { makeUseQueryWithStatus } from "convex-helpers/react";
+import { type ReactNode } from "react";
 
 const convex = new ConvexReactClient(env.NEXT_PUBLIC_CONVEX_URL);
 

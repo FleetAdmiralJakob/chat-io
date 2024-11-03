@@ -1,19 +1,7 @@
 "use client";
 
-import { Input } from "~/components/ui/input";
 import { useUser } from "@clerk/nextjs";
-import { useCallback, useEffect, useState } from "react";
 import { isClerkAPIResponseError } from "@clerk/shared";
-import {
-  ChevronLeft,
-  CircleCheck,
-  CircleX,
-  HardDriveUpload,
-  MailCheck,
-  MailX,
-} from "lucide-react";
-import { z, ZodError } from "zod";
-import { useRouter } from "next/navigation";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -24,14 +12,26 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
+import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Toaster } from "~/components/ui/sonner";
-import { toast } from "sonner";
 import {
   type FormSchemaUserUpdate,
   type formSchemaUserUpdate,
 } from "~/lib/validators";
 import { useMutation } from "convex/react";
+import {
+  ChevronLeft,
+  CircleCheck,
+  CircleX,
+  HardDriveUpload,
+  MailCheck,
+  MailX,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
+import { z, ZodError } from "zod";
 import { api } from "../../../../../convex/_generated/api";
 
 const SettingValidator = z.object({
