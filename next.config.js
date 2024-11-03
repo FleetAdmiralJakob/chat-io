@@ -1,7 +1,6 @@
 import { fileURLToPath } from "node:url";
 import withSerwistInit from "@serwist/next";
 import createJiti from "jiti";
-import { type NextConfig } from "next";
 
 const withSerwist = withSerwistInit({
   swSrc: "src/sw.ts",
@@ -16,11 +15,9 @@ const jiti = createJiti(fileURLToPath(import.meta.url));
  */
 jiti("./src/env.ts");
 
+/** @type {import("next").NextConfig} */
 const config = withSerwist({
   transpilePackages: ["geist"],
-  experimental: {
-    reactCompiler: true,
-  },
-}) satisfies NextConfig;
+});
 
 export default config;
