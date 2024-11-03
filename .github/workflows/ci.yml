@@ -20,6 +20,10 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
+      - name: Copy env
+        shell: bash
+        run: cp .env.example .env
+
       - name: Lint
         run: pnpm lint
 
