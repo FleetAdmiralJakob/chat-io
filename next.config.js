@@ -18,6 +18,9 @@ jiti("./src/env.ts");
 /** @type {import("next").NextConfig} */
 const config = withSerwist({
   transpilePackages: ["geist"],
+  experimental: {
+    reactCompiler: true,
+  },
 });
 
 export default config;
