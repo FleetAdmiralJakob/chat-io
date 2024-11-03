@@ -1,42 +1,44 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryWithStatus } from "~/app/convex-client-provider";
+import ChatsWithSearch from "~/components/chats-with-search";
+import { DevMode } from "~/components/dev-mode-info";
+import { Message } from "~/components/message";
+import { Avatar, AvatarFallback } from "~/components/ui/avatar";
+import Badge from "~/components/ui/badge";
+import { Form, FormControl, FormField } from "~/components/ui/form";
+import { Input } from "~/components/ui/input";
+import { Progress } from "~/components/ui/progress";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "~/components/ui/resize";
-import { Avatar, AvatarFallback } from "~/components/ui/avatar";
-import ChatsWithSearch from "~/components/chats-with-search";
-import { ChevronDown, Video } from "lucide-react";
-import { Mic } from "lucide-react";
-import { Phone } from "lucide-react";
-import Badge from "~/components/ui/badge";
-import { SendHorizontal } from "lucide-react";
-import { Plus } from "lucide-react";
-import { z } from "zod";
-import React, { useEffect, useState, use, useCallback } from "react";
-import { useMediaQuery } from "react-responsive";
-import { Controller, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { Skeleton } from "~/components/ui/skeleton";
+import { cn } from "~/lib/utils";
+import { devMode$ } from "~/states";
 import { useMutation } from "convex/react";
-import { api } from "../../../../../convex/_generated/api";
-import { Form, FormControl, FormField } from "~/components/ui/form";
-import { useRef } from "react";
-import { Progress } from "~/components/ui/progress";
+import { type FunctionReturnType } from "convex/server";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { ChevronLeft } from "lucide-react";
-import { cn } from "~/lib/utils";
-import { Skeleton } from "~/components/ui/skeleton";
-import { NotebookText } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronLeft,
+  Mic,
+  NotebookText,
+  Phone,
+  Plus,
+  SendHorizontal,
+  Video,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
-import { DevMode } from "~/components/dev-mode-info";
-import { devMode$ } from "~/states";
-import { Message } from "~/components/message";
-import { Input } from "~/components/ui/input";
+import React, { use, useCallback, useEffect, useRef, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { useMediaQuery } from "react-responsive";
+import { z } from "zod";
+import { api } from "../../../../../convex/_generated/api";
 import { type Id } from "../../../../../convex/_generated/dataModel";
-import { type FunctionReturnType } from "convex/server";
-import { useQueryWithStatus } from "~/app/convex-client-provider";
 
 dayjs.extend(relativeTime);
 

@@ -1,13 +1,16 @@
 "use client";
-import { ArrowRight, Lock } from "lucide-react";
-import { Bell } from "lucide-react";
-import Link from "next/link";
-import { SendHorizontal } from "lucide-react";
-import { Settings } from "lucide-react";
-import { UsersRound } from "lucide-react";
+
 import { useUser } from "@clerk/nextjs";
 import { cn } from "~/lib/utils";
-
+import {
+  ArrowRight,
+  Bell,
+  Lock,
+  SendHorizontal,
+  Settings,
+  UsersRound,
+} from "lucide-react";
+import Link from "next/link";
 import type { JSX } from "react";
 
 interface settingsCard {

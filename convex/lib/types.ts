@@ -1,8 +1,8 @@
-import { CustomCtx } from "convex-helpers/server/customFunctions";
-import { GenericEnt, GenericEntWriter } from "convex-ents";
-import { TableNames } from "../_generated/dataModel";
-import { mutation, query } from "./functions";
-import { entDefinitions } from "../schema";
+import { type GenericEnt, type GenericEntWriter } from "convex-ents";
+import { type CustomCtx } from "convex-helpers/server/customFunctions";
+import { type TableNames } from "../_generated/dataModel";
+import { type entDefinitions } from "../schema";
+import { type mutation, type query } from "./functions";
 
 export type QueryCtx = CustomCtx<typeof query>;
 export type MutationCtx = CustomCtx<typeof mutation>;

@@ -1,14 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
-import { CalendarCheck } from "lucide-react";
-import { CircleUser } from "lucide-react";
-import Link from "next/link";
-import { MessagesSquare } from "lucide-react";
-import { UsersRound } from "lucide-react";
 import { cn } from "~/lib/utils";
+import {
+  CalendarCheck,
+  CircleUser,
+  MessagesSquare,
+  UsersRound,
+} from "lucide-react";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const Navbar = () => {
   const [isIOS, setIsIOS] = useState(false);

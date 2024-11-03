@@ -1,5 +1,8 @@
 "use client";
 
+import { useSignIn } from "@clerk/nextjs";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "~/components/ui/button";
 import {
   Form,
   FormControl,
@@ -8,18 +11,14 @@ import {
   FormLabel,
   FormMessage,
 } from "~/components/ui/form";
-import React, { useEffect, useState } from "react";
-
-import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { cn } from "~/lib/utils";
 import { useConvexAuth } from "convex/react";
-import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
-import { useSignIn } from "@clerk/nextjs";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { LoaderCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 export const formSchema = z.object({
   username: z

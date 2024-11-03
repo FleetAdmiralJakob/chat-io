@@ -1,5 +1,5 @@
-import { mutation, query } from "./lib/functions";
 import { ConvexError, v } from "convex/values";
+import { mutation, query } from "./lib/functions";
 
 export const createChat = mutation({
   args: { friendsUsername: v.string(), friendsUsernameId: v.string() },
@@ -79,6 +79,7 @@ export const initialConvexSetup = mutation({
         username: identity.nickname,
         clerkId: identity.tokenIdentifier,
         firstName: identity.givenName,
+        // This is safe to do and doesn't need to be hashed/encrypted because Convex already encrypts the data.
         email: identity.email,
         lastName: identity.familyName,
       })

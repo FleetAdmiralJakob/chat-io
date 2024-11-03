@@ -1,5 +1,5 @@
-import { mutation, query } from "./lib/functions";
 import { ConvexError, v } from "convex/values";
+import { mutation, query } from "./lib/functions";
 
 export const getMessages = query({
   args: { chatId: v.string() },

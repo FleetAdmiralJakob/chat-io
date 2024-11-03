@@ -1,18 +1,18 @@
 "use client";
 
-import React, { useRef, useState } from "react";
-import Image from "next/image";
 import icon from "~/assets/chatio.png";
-import Link from "next/link";
-import { Button } from "~/components/ui/button";
-import { FaCircleArrowDown } from "react-icons/fa6";
-import Footer from "~/components/footer";
-import { devMode$ } from "~/states";
 import { DevMode } from "~/components/dev-mode-info";
+import Footer from "~/components/footer";
 import { AuroraBackground } from "~/components/ui/aurora-background";
+import { Button } from "~/components/ui/button";
+import { devMode$ } from "~/states";
 import { motion } from "framer-motion";
-import { SiGithub } from "react-icons/si";
 import { CloudDownload, ShieldCheck } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import React, { useRef, useState } from "react";
+import { FaCircleArrowDown } from "react-icons/fa6";
+import { SiGithub } from "react-icons/si";
 
 export default function PublicHomepage() {
   const aboutRef = useRef<HTMLParagraphElement | null>(null);

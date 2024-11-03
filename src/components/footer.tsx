@@ -1,4 +1,9 @@
+import { Book, Globe, UsersRound } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
+import { SiGithub, SiYoutube } from "react-icons/si";
+import germany from "src/assets/germany.png";
+import england from "src/assets/united-kingdom.png";
 import {
   Select,
   SelectContent,
@@ -8,11 +13,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import Image from "next/image";
-import england from "src/assets/united-kingdom.png";
-import germany from "src/assets/germany.png";
-import { SiGithub, SiYoutube } from "react-icons/si";
-import { Book, Globe, UsersRound } from "lucide-react";
 
 const Footer = () => {
   return (

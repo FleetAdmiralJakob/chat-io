@@ -1,9 +1,7 @@
 "use client";
 
+import { useSignIn } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-
 import { Button } from "~/components/ui/button";
 import {
   Form,
@@ -15,14 +13,15 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
-import React, { useEffect } from "react";
-import { formSchemaSignUp } from "~/lib/validators";
-import { useSignIn } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
 import { cn } from "~/lib/utils";
+import { formSchemaSignUp } from "~/lib/validators";
 import { useConvexAuth, useMutation } from "convex/react";
-import { api } from "../../../../convex/_generated/api";
 import { LoaderCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
+import React, { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { api } from "../../../../convex/_generated/api";
 
 const signUpResponseSchema = z.object({
   message: z.string(),

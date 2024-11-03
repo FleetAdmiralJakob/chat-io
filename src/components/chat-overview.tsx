@@ -1,18 +1,16 @@
 "use client";
 
-import { Input } from "~/components/ui/input";
-import { useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
 import { useUser } from "@clerk/nextjs";
-import { useEffect, useState } from "react";
-import { type FunctionReturnType } from "convex/server";
-import { NotebookText } from "lucide-react";
-import { Avatar, AvatarFallback } from "./ui/avatar";
-import { Ban } from "lucide-react";
-import { ArrowRight } from "lucide-react";
 import Badge from "~/components/ui/badge";
-import Link from "next/link";
+import { Input } from "~/components/ui/input";
 import { cn } from "~/lib/utils";
+import { useQuery } from "convex/react";
+import { type FunctionReturnType } from "convex/server";
+import { ArrowRight, Ban, NotebookText } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { api } from "../../convex/_generated/api";
+import { Avatar, AvatarFallback } from "./ui/avatar";
 
 type Chats = FunctionReturnType<typeof api.chats.getChats>;
 

@@ -1,4 +1,7 @@
 "use client";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "~/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -8,13 +11,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
-import { Input } from "~/components/ui/input";
-import { Button } from "~/components/ui/button";
-import { UserRoundPlus } from "lucide-react";
-import { cn } from "~/lib/utils";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
   FormControl,
@@ -23,16 +19,21 @@ import {
   FormLabel,
   FormMessage,
 } from "~/components/ui/form";
-import { useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import { useState } from "react";
-import { ConvexError } from "convex/values";
+import { Input } from "~/components/ui/input";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "~/components/ui/tooltip";
+import { cn } from "~/lib/utils";
+import { useMutation } from "convex/react";
+import { ConvexError } from "convex/values";
+import { UserRoundPlus } from "lucide-react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { api } from "../../convex/_generated/api";
 
 export const formSchema = z.object({
   username: z
