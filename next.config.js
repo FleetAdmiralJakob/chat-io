@@ -21,6 +21,15 @@ const config = withSerwist({
   experimental: {
     reactCompiler: true,
   },
+  async redirects() {
+    return [
+      {
+        source: "/github",
+        destination: "https://github.com/FleetAdmiralJakob/chat-io",
+        permanent: true,
+      },
+    ];
+  },
 });
 
 export default config;
