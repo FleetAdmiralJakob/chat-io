@@ -31,7 +31,7 @@ type Message = NonNullable<
 
 const ModifiedLabel = ({ message }: { message: Message }) => (
   <div className="mr-2 text-[75%] font-bold text-secondary-foreground">
-    {message.type === "message" && message.modified ? "Modified" : null}
+    {message.type === "message" && message.modified && "Modified"}
   </div>
 );
 
