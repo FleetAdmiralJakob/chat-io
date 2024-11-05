@@ -75,6 +75,7 @@ const useScrollBehavior = (
 ) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [isNearBottom, setIsNearBottom] = useState(true);
+  const isFirstLoad = useRef(true);
 
   const handleScroll = useCallback(() => {
     if (messagesEndRef.current) {
@@ -87,18 +88,25 @@ const useScrollBehavior = (
     }
   }, []);
 
-  const scrollToBottom = useCallback(() => {
+  const scrollToBottom = useCallback((smooth = true) => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollTo({
         top: messagesEndRef.current.scrollHeight,
-        behavior: "smooth",
+        behavior: smooth ? "smooth" : "instant",
       });
     }
   }, []);
 
-  // Scroll handling for new messages
+  // Handle initial scroll and subsequent message updates
   useEffect(() => {
-    scrollToBottom();
+    if (messages) {
+      if (isFirstLoad.current) {
+        scrollToBottom(false); // Instant scroll on the first load (it should be at the bottom of the messages without scrolling on the first load)
+        isFirstLoad.current = false;
+      } else {
+        scrollToBottom(true); // Smooth scroll for new messages
+      }
+    }
   }, [messages, scrollToBottom]);
 
   return {
@@ -355,7 +363,7 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
             onScroll={handleScroll}
             ref={messagesEndRef}
           >
-            <div className="relative min-h-full w-full">
+            <div className="relative h-full w-full">
               {messages.data ? (
                 <>
                   {messages.data.map((message, key) => (
