@@ -198,7 +198,7 @@ export function SignUpForm() {
           })}
         >
           This is your display name and the way friends can add you. It consists
-          of the username and a ID.
+          of the username and an ID.
         </span>
         <div className="block gap-1 xl:flex">
           <FormField
