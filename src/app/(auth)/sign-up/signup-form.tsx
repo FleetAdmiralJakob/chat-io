@@ -81,7 +81,7 @@ export function SignUpForm() {
 
     if (parsedResponseBody.data?.statusText === "username_is_taken") {
       form.setError("username", {
-        message: "Username +  ID is already taken. Please choose another.",
+        message: "Username + ID has already been taken. Please choose another.",
       });
 
       setFormIsLoading(false);
