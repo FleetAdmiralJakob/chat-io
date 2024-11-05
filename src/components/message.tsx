@@ -25,15 +25,23 @@ import { type Id } from "../../convex/_generated/dataModel";
 
 dayjs.extend(relativeTime);
 
+type Message = NonNullable<
+  FunctionReturnType<typeof api.messages.getMessages>
+>[number];
+
+const ModifiedLabel = ({ message }: { message: Message }) => (
+  <div className="mr-2 text-[75%] font-bold text-secondary-foreground">
+    {message.type === "message" && message.modified ? "Modified" : null}
+  </div>
+);
+
 export const Message = ({
   message,
   selectedMessageId,
   setSelectedMessageId,
   setEditingMessageId,
 }: {
-  message: NonNullable<
-    FunctionReturnType<typeof api.messages.getMessages>
-  >[number];
+  message: Message;
   selectedMessageId: string | null;
   setSelectedMessageId: React.Dispatch<React.SetStateAction<string | null>>;
   setEditingMessageId: React.Dispatch<
@@ -203,11 +211,7 @@ export const Message = ({
                 message.type == "rejectedRequest",
             })}
           >
-            <div className="mr-2 text-[75%] font-bold text-secondary-foreground">
-              {message.type == "message" && message.modified
-                ? "Modified"
-                : null}
-            </div>
+            <ModifiedLabel message={message} />
             <div
               onContextMenu={(e) => {
                 e.preventDefault();
@@ -342,11 +346,7 @@ export const Message = ({
                 message.type == "rejectedRequest",
             })}
           >
-            <div className="mr-2 text-[75%] font-bold text-secondary-foreground">
-              {message.type == "message" && message.modified
-                ? "Modified"
-                : null}
-            </div>
+            <ModifiedLabel message={message} />
             <div
               ref={refs.setReference}
               onContextMenu={(e) => {

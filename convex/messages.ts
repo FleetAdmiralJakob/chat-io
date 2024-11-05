@@ -204,6 +204,7 @@ export const editMessage = mutation({
     await message.patch({
       content: args.newContent.trim(),
       modified: true,
+      modifiedAt: Date.now().toString(),
     });
   },
 });

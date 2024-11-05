@@ -193,7 +193,7 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
     api.messages.editMessage,
   ).withOptimisticUpdate((localStore, args) => {
     const chatId: Id<"privateChats"> = params.chatId as Id<"privateChats">;
-    const newContent = args.newContent;
+    const { newContent, messageId } = args;
 
     const existingMessages = localStore.getQuery(api.messages.getMessages, {
       chatId,
@@ -201,50 +201,49 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
     const existingChats = localStore.getQuery(api.chats.getChats);
     // If we've loaded the api.messages.getMessages and api.chats.getChats query, push an optimistic message
     // onto the lists.
-    if (existingMessages && existingChats) {
+    if (!existingMessages || !existingChats) return;
+
+    localStore.setQuery(
+      api.messages.getMessages,
+      { chatId },
+      existingMessages.map((message) => {
+        if (message.type === "message" && message._id === messageId) {
+          return {
+            ...message,
+            content: newContent,
+            modified: true,
+            modifiedAt: Date.now().toString(),
+          };
+        } else {
+          return message;
+        }
+      }),
+    );
+
+    const lastMessage = existingChats.find(
+      (chat) => chat._id === chatId,
+    )?.lastMessage;
+
+    if (lastMessage?._id === messageId && lastMessage.type === "message") {
       localStore.setQuery(
-        api.messages.getMessages,
-        { chatId },
-        existingMessages.map((message) => {
-          if (message.type === "message" && message._id === args.messageId) {
+        api.chats.getChats,
+        {},
+        existingChats.map((chat) => {
+          if (chat._id === chatId) {
             return {
-              ...message,
-              content: newContent,
-              modified: true,
+              ...chat,
+              lastMessage: {
+                ...lastMessage,
+                content: newContent,
+                modified: true,
+                modifiedAt: Date.now().toString(),
+              },
             };
           } else {
-            return message;
+            return chat;
           }
         }),
       );
-
-      const lastMessage = existingChats?.find(
-        (chat) => chat._id === chatId,
-      )?.lastMessage;
-
-      if (
-        lastMessage?._id === args.messageId &&
-        lastMessage.type === "message"
-      ) {
-        localStore.setQuery(
-          api.chats.getChats,
-          {},
-          existingChats.map((chat) => {
-            if (chat._id === chatId) {
-              return {
-                ...chat,
-                lastMessage: {
-                  ...lastMessage,
-                  newContent,
-                  modified: true,
-                },
-              };
-            } else {
-              return chat;
-            }
-          }),
-        );
-      }
     }
   });
 
@@ -310,26 +309,25 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
   async function onTextMessageFormSubmit(
     values: z.infer<typeof textMessageSchema>,
   ) {
+    const trimmedMessage = values.message.trim();
+    if (!trimmedMessage) return;
+
     if (editingMessageId) {
       const message = messages.data?.find((message) => {
         return message._id === editingMessageId;
       });
 
-      if (
-        !(
-          message?.type === "message" &&
-          message.content === values.message.trim()
-        )
-      ) {
+      if (message?.type === "message" && message.content !== trimmedMessage) {
         void editMessage({
-          newContent: values.message,
+          newContent: trimmedMessage,
           messageId: editingMessageId,
         });
       }
       setEditingMessageId(null);
     } else {
-      void sendMessage({ content: values.message, chatId: params.chatId });
+      void sendMessage({ content: trimmedMessage, chatId: params.chatId });
     }
+
     textMessageForm.reset();
     setInputValue("");
     scrollToBottom();
