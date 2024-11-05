@@ -200,10 +200,10 @@ export const editMessage = mutation({
         "UNAUTHORIZED REQUEST: User tried to edit a message from another person.",
       );
     }
-    
+
     if (message.deleted) {
       throw new Error("Cannot edit deleted message");
-   }
+    }
 
     await message.patch({
       content: args.newContent.trim(),
