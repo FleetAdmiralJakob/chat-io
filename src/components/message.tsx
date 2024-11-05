@@ -14,6 +14,7 @@ import {
   CopyCheck,
   Forward,
   Info,
+  Pen,
   Trash2,
 } from "lucide-react";
 import React, { useEffect, useState } from "react";
@@ -24,16 +25,28 @@ import { type Id } from "../../convex/_generated/dataModel";
 
 dayjs.extend(relativeTime);
 
+type Message = NonNullable<
+  FunctionReturnType<typeof api.messages.getMessages>
+>[number];
+
+const ModifiedLabel = ({ message }: { message: Message }) => (
+  <div className="mr-2 text-[75%] font-bold text-secondary-foreground">
+    {message.type === "message" && message.modified && "Modified"}
+  </div>
+);
+
 export const Message = ({
   message,
   selectedMessageId,
   setSelectedMessageId,
+  setEditingMessageId,
 }: {
-  message: NonNullable<
-    FunctionReturnType<typeof api.messages.getMessages>
-  >[number];
+  message: Message;
   selectedMessageId: string | null;
   setSelectedMessageId: React.Dispatch<React.SetStateAction<string | null>>;
+  setEditingMessageId: React.Dispatch<
+    React.SetStateAction<Id<"messages"> | null>
+  >;
 }) => {
   const clerkUser = useUser();
 
@@ -198,6 +211,7 @@ export const Message = ({
                 message.type == "rejectedRequest",
             })}
           >
+            <ModifiedLabel message={message} />
             <div
               onContextMenu={(e) => {
                 e.preventDefault();
@@ -287,10 +301,20 @@ export const Message = ({
                       <CopyCheck />
                       <p className="ml-1">Copy</p>
                     </div>
-                    <div className="flex cursor-pointer border-y-2 border-secondary-foreground p-2 pr-8">
+                    <div className="flex w-full cursor-pointer border-t-2 border-secondary-foreground p-2 pr-8">
                       <Forward />
                       <p className="ml-1">Answer</p>
                     </div>
+                    <button
+                      className="flex w-full cursor-pointer border-y-2 border-secondary-foreground p-2 pr-8"
+                      onClick={() => {
+                        setEditingMessageId(message._id);
+                        setIsModalOpen(!isModalOpen);
+                      }}
+                    >
+                      <Pen />
+                      <p className="ml-1">Edit</p>
+                    </button>
                     <button
                       className="flex w-full p-2 text-accent"
                       onMouseDown={() => {
@@ -315,12 +339,14 @@ export const Message = ({
           </div>
         ) : (
           <div
-            className={cn("my-1 ml-4 flex w-full justify-start", {
-              "ml-0 justify-center":
-                message.type === "pendingRequest" ||
-                message.type === "rejectedRequest",
+            ref={refs.setReference}
+            className={cn("my-1 ml-4 flex w-full flex-col items-start", {
+              "ml-0 items-center":
+                message.type == "pendingRequest" ||
+                message.type == "rejectedRequest",
             })}
           >
+            <ModifiedLabel message={message} />
             <div
               ref={refs.setReference}
               onContextMenu={(e) => {

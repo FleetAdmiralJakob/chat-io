@@ -31,6 +31,7 @@ import {
   Plus,
   SendHorizontal,
   Video,
+  X,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { use, useCallback, useEffect, useRef, useState } from "react";
@@ -82,7 +83,7 @@ const useScrollBehavior = (
       const { scrollTop, scrollHeight, clientHeight } = messagesEndRef.current;
       const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
 
-      // Consider "near bottom" if within 100px of bottom
+      // Consider "near bottom" if within 100 px of the bottom
       const nearBottom = distanceFromBottom < 100;
       setIsNearBottom(nearBottom);
     }
@@ -121,13 +122,16 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
   const params = use(props.params);
   const [progress, setProgress] = React.useState(13);
 
+  const [editingMessageId, setEditingMessageId] =
+    useState<Id<"messages"> | null>(null);
+
   const [selectedMessageId, setSelectedMessageId] = useState<string | null>(
     null,
   );
 
   const router = useRouter();
 
-  React.useEffect(() => {
+  useEffect(() => {
     const timer = setTimeout(() => setProgress(66), 500);
     return () => clearTimeout(timer);
   }, []);
@@ -159,6 +163,7 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
         from: userInfo.data,
         readBy: [userInfo.data],
         sent: false,
+        modified: false,
       };
       localStore.setQuery(api.messages.getMessages, { chatId }, [
         ...(Array.isArray(existingMessages) ? existingMessages : []),
@@ -174,6 +179,64 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
               lastMessage: {
                 ...newMessage,
                 userId: userInfo.data!._id,
+              },
+            };
+          } else {
+            return chat;
+          }
+        }),
+      );
+    }
+  });
+
+  const editMessage = useMutation(
+    api.messages.editMessage,
+  ).withOptimisticUpdate((localStore, args) => {
+    const chatId: Id<"privateChats"> = params.chatId as Id<"privateChats">;
+    const { newContent, messageId } = args;
+
+    const existingMessages = localStore.getQuery(api.messages.getMessages, {
+      chatId,
+    });
+    const existingChats = localStore.getQuery(api.chats.getChats);
+    // If we've loaded the api.messages.getMessages and api.chats.getChats query, push an optimistic message
+    // onto the lists.
+    if (!existingMessages || !existingChats) return;
+
+    localStore.setQuery(
+      api.messages.getMessages,
+      { chatId },
+      existingMessages.map((message) => {
+        if (message.type === "message" && message._id === messageId) {
+          return {
+            ...message,
+            content: newContent,
+            modified: true,
+            modifiedAt: Date.now().toString(),
+          };
+        } else {
+          return message;
+        }
+      }),
+    );
+
+    const lastMessage = existingChats.find(
+      (chat) => chat._id === chatId,
+    )?.lastMessage;
+
+    if (lastMessage?._id === messageId && lastMessage.type === "message") {
+      localStore.setQuery(
+        api.chats.getChats,
+        {},
+        existingChats.map((chat) => {
+          if (chat._id === chatId) {
+            return {
+              ...chat,
+              lastMessage: {
+                ...lastMessage,
+                content: newContent,
+                modified: true,
+                modifiedAt: Date.now().toString(),
               },
             };
           } else {
@@ -207,9 +270,9 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
     }
   }, [userInfo, messages, chatInfo, router]);
 
-  const is2xlOrmore = useMediaQuery({ query: "(max-width: 1537px)" });
-  const maxSize = is2xlOrmore ? 50 : 60;
-  const minSize = is2xlOrmore ? 45 : 30;
+  const is2xlOrMore = useMediaQuery({ query: "(max-width: 1537px)" });
+  const maxSize = is2xlOrMore ? 50 : 60;
+  const minSize = is2xlOrMore ? 45 : 30;
 
   const textMessageForm = useForm<z.infer<typeof textMessageSchema>>({
     resolver: zodResolver(textMessageSchema),
@@ -221,6 +284,21 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
   const [animationInput, setAnimationInput] = useState(true);
 
   const formRef = useRef<HTMLFormElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (editingMessageId) {
+      const message = messages.data?.find((message) => {
+        return message._id === editingMessageId;
+      });
+      if (message && message.type === "message") {
+        setInputValue(message.content);
+        inputRef.current?.focus();
+      } else {
+        console.error("Message not found");
+      }
+    }
+  }, [editingMessageId, messages.data]);
 
   const [inputValue, setInputValue] = useState("");
 
@@ -231,7 +309,25 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
   async function onTextMessageFormSubmit(
     values: z.infer<typeof textMessageSchema>,
   ) {
-    void sendMessage({ content: values.message, chatId: params.chatId });
+    const trimmedMessage = values.message.trim();
+    if (!trimmedMessage) return;
+
+    if (editingMessageId) {
+      const message = messages.data?.find((message) => {
+        return message._id === editingMessageId;
+      });
+
+      if (message?.type === "message" && message.content !== trimmedMessage) {
+        void editMessage({
+          newContent: trimmedMessage,
+          messageId: editingMessageId,
+        });
+      }
+      setEditingMessageId(null);
+    } else {
+      void sendMessage({ content: trimmedMessage, chatId: params.chatId });
+    }
+
     textMessageForm.reset();
     setInputValue("");
     scrollToBottom();
@@ -283,7 +379,7 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
           <div className="flex h-20 w-full items-center justify-between bg-primary py-6">
             <div className="text-lg lg:hidden">
               <ChevronLeft
-                className="ml-2 mr-1"
+                className="ml-2 mr-1 cursor-pointer"
                 onClick={() => {
                   router.back();
                 }}
@@ -371,6 +467,7 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
                       <Message
                         selectedMessageId={selectedMessageId}
                         setSelectedMessageId={setSelectedMessageId}
+                        setEditingMessageId={setEditingMessageId}
                         message={message}
                       />
                     </React.Fragment>
@@ -403,10 +500,10 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
           </div>
 
           <div className="flex h-28 w-full items-center justify-start bg-primary p-4 pb-10 lg:h-24 lg:pb-4">
-            <div className="flex w-full justify-between">
+            <div className="flex w-full justify-between gap-8">
               <Form {...textMessageForm}>
                 <form
-                  className="w-10/12"
+                  className="w-full"
                   ref={formRef}
                   onSubmit={textMessageForm.handleSubmit(
                     onTextMessageFormSubmit,
@@ -422,14 +519,17 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
                           control={textMessageForm.control}
                           render={({ field }) => (
                             <Input
-                              className="ml-4 h-11 w-10/12 rounded-2xl border-2 border-secondary-foreground bg-secondary p-2 lg:h-16"
+                              className="h-11 w-full rounded-2xl border-2 border-secondary-foreground bg-secondary p-2 lg:h-16"
                               placeholder="Message ..."
                               value={inputValue}
                               onChange={(e) => {
                                 handleChange(e);
                                 field.onChange(e);
                               }}
-                              ref={field.ref}
+                              ref={(e) => {
+                                field.ref(e);
+                                inputRef.current = e;
+                              }}
                             />
                           )}
                         />
@@ -438,13 +538,26 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
                   />
                 </form>
               </Form>
-              <div className="flex items-center">
+              <div className="flex items-center gap-8">
                 <Mic
                   className={cn(
-                    "mx-4 h-11 w-11 cursor-pointer rounded-sm border-2 border-secondary-foreground bg-primary p-2 lg:h-14 lg:w-14 lg:p-3",
-                    { "hidden lg:flex": inputValue != "" },
+                    "h-11 w-11 cursor-pointer rounded-sm border-2 border-secondary-foreground bg-primary p-2 lg:h-14 lg:w-14 lg:p-3",
+                    { hidden: inputValue !== "" },
                   )}
                 />
+
+                <X
+                  className={cn(
+                    "h-11 w-11 cursor-pointer rounded-sm border-2 border-secondary-foreground bg-primary p-2 lg:h-14 lg:w-14 lg:p-3",
+                    { hidden: editingMessageId === null },
+                  )}
+                  onClick={() => {
+                    setEditingMessageId(null);
+                    textMessageForm.reset();
+                    setInputValue("");
+                  }}
+                />
+
                 <SendHorizontal
                   onClick={(e) => {
                     setAnimationInput(!animationInput);
@@ -453,14 +566,15 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
                     );
                   }}
                   className={cn(
-                    "mx-4 h-11 w-11 cursor-pointer rounded-sm border-2 border-secondary-foreground bg-primary p-2 lg:hidden lg:h-14 lg:w-14 lg:p-3",
-                    { hidden: inputValue == "" },
+                    "h-11 w-11 cursor-pointer rounded-sm border-2 border-secondary-foreground bg-primary p-2 lg:h-14 lg:w-14 lg:p-3",
+                    { hidden: inputValue === "" },
                   )}
                 />
+
                 <Plus
                   className={cn(
-                    "mx-4 h-11 w-11 cursor-pointer rounded-sm border-2 border-secondary-foreground bg-primary p-2 lg:h-14 lg:w-14 lg:p-3",
-                    { "hidden lg:flex": inputValue != "" },
+                    "h-11 w-11 cursor-pointer rounded-sm border-2 border-secondary-foreground bg-primary p-2 lg:h-14 lg:w-14 lg:p-3",
+                    { hidden: inputValue !== "" },
                   )}
                   onClick={menuClick}
                 />
