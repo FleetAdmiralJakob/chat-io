@@ -92,7 +92,7 @@ export const createMessage = mutation({
       );
     }
 
-    if (args.content.trim() === "") throw new Error("Post cannot be empty");
+    if (args.content.trim() === "") throw new Error("Message cannot be empty");
 
     await ctx.table("messages").insert({
       userId: convexUser._id,
@@ -100,6 +100,7 @@ export const createMessage = mutation({
       content: args.content.trim(),
       deleted: false,
       readBy: [convexUser._id],
+      modified: false,
     });
   },
 });
@@ -121,15 +122,16 @@ export const deleteMessage = mutation({
     }
 
     const message = await ctx.table("messages").getX(parsedMessageId);
-    const chatId = message.privateChatId;
-    const chat = await ctx.table("privateChats").getX(chatId);
-    const usersInChat = await chat.edge("users");
 
     if ((await message.edge("user")).clerkId !== identity.tokenIdentifier) {
       throw new ConvexError(
         "UNAUTHORIZED REQUEST: User tried to delete a message from another person.",
       );
     }
+
+    const chatId = message.privateChatId;
+    const chat = await ctx.table("privateChats").getX(chatId);
+    const usersInChat = await chat.edge("users");
 
     await message.patch({
       content: "",
@@ -175,5 +177,33 @@ export const markMessageRead = mutation({
       });
 
     return { success: true };
+  },
+});
+
+export const editMessage = mutation({
+  args: { messageId: v.id("messages"), newContent: v.string() },
+  handler: async (ctx, args) => {
+    if (args.newContent.trim() === "")
+      throw new Error("Message cannot be empty");
+
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (identity === null) {
+      console.error("Unauthenticated call to mutation");
+      return null;
+    }
+
+    const message = await ctx.table("messages").getX(args.messageId);
+
+    if ((await message.edge("user")).clerkId !== identity.tokenIdentifier) {
+      throw new ConvexError(
+        "UNAUTHORIZED REQUEST: User tried to edit a message from another person.",
+      );
+    }
+
+    await message.patch({
+      content: args.newContent.trim(),
+      modified: true,
+    });
   },
 });
