@@ -250,7 +250,7 @@ export function SignUpForm() {
               form.formState.errors.firstName ?? form.formState.errors.lastName,
           })}
         >
-          This is optional, so you can stay anonymous.
+          This is optional so that you can stay anonymous.
         </span>
         <FormField
           control={form.control}
@@ -259,7 +259,7 @@ export function SignUpForm() {
             <FormItem className="flex-2">
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="email" type="text" {...field} />
+                <Input placeholder="Email" type="text" {...field} />
               </FormControl>
               <FormDescription>
                 This is optional, but if you forgot your password, we can send
