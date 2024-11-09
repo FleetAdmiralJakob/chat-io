@@ -23,7 +23,7 @@ importers:
         version: 0.26.27(react-dom@19.0.0-rc-02c0e824-20241028(react@19.0.0-rc-02c0e824-20241028))(react@19.0.0-rc-02c0e824-20241028)
       '@hookform/resolvers':
         specifier: ^3.9.1
-        version: 3.9.1(react-hook-form@7.53.1(react@19.0.0-rc-02c0e824-20241028))
+        version: 3.9.1(react-hook-form@7.53.2(react@19.0.0-rc-02c0e824-20241028))
       '@ianvs/prettier-plugin-sort-imports':
         specifier: ^4.3.1
         version: 4.4.0(prettier@3.3.3)
@@ -122,7 +122,7 @@ importers:
         version: 19.0.0-rc-02c0e824-20241028(react@19.0.0-rc-02c0e824-20241028)
       react-hook-form:
         specifier: ^7.53.1
-        version: 7.53.1(react@19.0.0-rc-02c0e824-20241028)
+        version: 7.53.2(react@19.0.0-rc-02c0e824-20241028)
       react-icons:
         specifier: ^5.3.0
         version: 5.3.0(react@19.0.0-rc-02c0e824-20241028)
@@ -2560,8 +2560,8 @@ packages:
     peerDependencies:
       react: 19.0.0-rc-02c0e824-20241028
 
-  react-hook-form@7.53.1:
-    resolution: {integrity: sha512-6aiQeBda4zjcuaugWvim9WsGqisoUk+etmFEsSUMm451/Ic8L/UAb7sRtMj3V+Hdzm6mMjU1VhiSzYUZeBm0Vg==}
+  react-hook-form@7.53.2:
+    resolution: {integrity: sha512-YVel6fW5sOeedd1524pltpHX+jgU2u3DSDtXEaBORNdqiNrsX/nUI/iGXONegttg0mJVnfrIkiV0cmTU6Oo2xw==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       react: ^16.8.0 || ^17 || ^18 || ^19
@@ -3295,9 +3295,9 @@ snapshots:
 
   '@floating-ui/utils@0.2.8': {}
 
-  '@hookform/resolvers@3.9.1(react-hook-form@7.53.1(react@19.0.0-rc-02c0e824-20241028))':
+  '@hookform/resolvers@3.9.1(react-hook-form@7.53.2(react@19.0.0-rc-02c0e824-20241028))':
     dependencies:
-      react-hook-form: 7.53.1(react@19.0.0-rc-02c0e824-20241028)
+      react-hook-form: 7.53.2(react@19.0.0-rc-02c0e824-20241028)
 
   '@humanfs/core@0.19.1': {}
 
@@ -5359,7 +5359,7 @@ snapshots:
       react: 19.0.0-rc-02c0e824-20241028
       scheduler: 0.25.0-rc-02c0e824-20241028
 
-  react-hook-form@7.53.1(react@19.0.0-rc-02c0e824-20241028):
+  react-hook-form@7.53.2(react@19.0.0-rc-02c0e824-20241028):
     dependencies:
       react: 19.0.0-rc-02c0e824-20241028
 
