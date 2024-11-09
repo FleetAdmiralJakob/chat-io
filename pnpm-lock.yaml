@@ -204,7 +204,7 @@ importers:
         version: 0.6.8(@ianvs/prettier-plugin-sort-imports@4.4.0(prettier@3.3.3))(prettier@3.3.3)
       serwist:
         specifier: ^9.0.9
-        version: 9.0.9(typescript@5.6.3)
+        version: 9.0.10(typescript@5.6.3)
       tailwindcss:
         specifier: ^3.4.14
         version: 3.4.14
@@ -2679,14 +2679,6 @@ packages:
 
   serwist@9.0.10:
     resolution: {integrity: sha512-r6DiPmR99ZqfSo1T0SePgyUnQz0QmbVF6XywjWtCk1Qgk4EBAdrYRr9Y4Ul8Xge/jAnpEMyrmdSX9N1vgxWVgA==}
-    peerDependencies:
-      typescript: '>=5.0.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-
-  serwist@9.0.9:
-    resolution: {integrity: sha512-T3WzdvUjvK1AzNSTSuZkHWWKm0X5UuUaD3jvukHDFaJDmsLZBq0HGlrZ+bpOHoRFwhJSXwuH/V5ksE0I78wwvQ==}
     peerDependencies:
       typescript: '>=5.0.0'
     peerDependenciesMeta:
@@ -5466,12 +5458,6 @@ snapshots:
   server-only@0.0.1: {}
 
   serwist@9.0.10(typescript@5.6.3):
-    dependencies:
-      idb: 8.0.0
-    optionalDependencies:
-      typescript: 5.6.3
-
-  serwist@9.0.9(typescript@5.6.3):
     dependencies:
       idb: 8.0.0
     optionalDependencies:
