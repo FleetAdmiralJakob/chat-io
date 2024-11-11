@@ -24,7 +24,6 @@ export const updateUserData = mutation({
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
-
     if (identity === null) {
       console.error("Unauthenticated call to mutation");
       return null;
@@ -32,23 +31,18 @@ export const updateUserData = mutation({
 
     const user = ctx.table("users").getX("clerkId", identity.tokenIdentifier);
 
+    const updates: { email?: string; lastName?: string; firstName?: string } =
+      {};
     if (args.data.email) {
-      await user.patch({
-        // This is safe to do and doesn't need to be hashed/encrypted because Convex already encrypts the data.
-        email: args.data.email,
-      });
+      updates.email = args.data.email;
     }
-
     if (args.data.lastName) {
-      await user.patch({
-        lastName: args.data.lastName,
-      });
+      updates.lastName = args.data.lastName;
+    }
+    if (args.data.firstName) {
+      updates.firstName = args.data.firstName;
     }
 
-    if (args.data.firstName) {
-      await user.patch({
-        firstName: args.data.firstName,
-      });
-    }
+    await user.patch(updates);
   },
 });

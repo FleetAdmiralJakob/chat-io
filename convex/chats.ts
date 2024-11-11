@@ -10,13 +10,12 @@ export const createChat = mutation({
       return null;
     }
 
-    const user1 = await ctx
-      .table("users")
-      .get("username", args.friendsUsername + args.friendsUsernameId);
-
-    const user2 = await ctx
-      .table("users")
-      .get("clerkId", identity.tokenIdentifier);
+    const [user1, user2] = await Promise.all([
+      ctx
+        .table("users")
+        .get("username", args.friendsUsername + args.friendsUsernameId),
+      ctx.table("users").get("clerkId", identity.tokenIdentifier),
+    ]);
 
     if (!user1) {
       throw new ConvexError(
@@ -110,24 +109,22 @@ export const getChats = query({
       .getX("clerkId", identity.tokenIdentifier)
       .edge("privateChats")
       .map(async (chat) => {
-        const textMessages = await chat
-          .edge("messages")
-          .map(async (message) => {
+        const [textMessages, requests] = await Promise.all([
+          chat.edge("messages").map(async (message) => {
             return {
               ...message,
               readBy: await message.edge("readBy"),
               type: "message" as const,
             };
-          });
-        const requests = await chat
-          .edge("clearRequests")
-          .map(async (request) => {
+          }),
+          chat.edge("clearRequests").map(async (request) => {
             return {
               ...request,
               type: `${request.status}Request` as const,
               clerkId: (await ctx.table("users").getX(request.userId)).clerkId,
             };
-          });
+          }),
+        ]);
 
         const allMessages = [...textMessages, ...requests];
 

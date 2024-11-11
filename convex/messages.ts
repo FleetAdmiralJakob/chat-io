@@ -29,23 +29,24 @@ export const getMessages = query({
       );
     }
 
-    const messages = await chat.edge("messages").map(async (message) => ({
-      ...message,
-      userId: undefined,
-      type: "message" as const,
-      from: await ctx.table("users").getX(message.userId),
-      readBy: await message.edge("readBy"),
-      sent: true,
-    }));
-
-    const requests = await chat.edge("clearRequests").map(async (request) => ({
-      ...request,
-      userId: undefined,
-      status: undefined,
-      type: `${request.status}Request` as const,
-      from: await ctx.table("users").getX(request.userId),
-      sent: true,
-    }));
+    const [messages, requests] = await Promise.all([
+      chat.edge("messages").map(async (message) => ({
+        ...message,
+        userId: undefined,
+        type: "message" as const,
+        from: await ctx.table("users").getX(message.userId),
+        readBy: await message.edge("readBy"),
+        sent: true,
+      })),
+      chat.edge("clearRequests").map(async (request) => ({
+        ...request,
+        userId: undefined,
+        status: undefined,
+        type: `${request.status}Request` as const,
+        from: await ctx.table("users").getX(request.userId),
+        sent: true,
+      })),
+    ]);
 
     return [...messages, ...requests].sort(
       (a, b) => a._creationTime - b._creationTime,
