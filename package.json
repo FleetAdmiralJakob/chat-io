@@ -7,7 +7,7 @@
     "build": "next build",
     "dev": "npm-run-all --parallel next:dev convex:dev ",
     "convex:dev": "convex dev --tail-logs",
-    "next:dev": "next dev --turbo",
+    "next:dev": "next dev",
     "format": "prettier --check . --ignore-path .gitignore --ignore-path .prettierignore",
     "lint": "next lint",
     "start": "next start",
@@ -59,6 +59,7 @@
     "sonner": "^1.6.1",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
+    "web-push": "^3.6.7",
     "zod": "^3.23.8"
   },
   "devDependencies": {

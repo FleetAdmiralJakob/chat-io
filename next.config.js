@@ -3,6 +3,7 @@ import withSerwistInit from "@serwist/next";
 import createJiti from "jiti";
 
 const withSerwist = withSerwistInit({
+  cacheOnNavigation: true,
   swSrc: "src/sw.ts",
   swDest: "public/sw.js",
 });

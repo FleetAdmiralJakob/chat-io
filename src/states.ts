@@ -15,3 +15,16 @@ syncObservable(devMode$, {
     name: "devMode",
   },
 });
+
+// Create a persistent state for notification settings
+export const notificationSettings$ = observable({
+  isEnabled: false,
+  hasPrompted: false,
+  subscription: null as PushSubscription | null,
+});
+
+syncObservable(notificationSettings$, {
+  persist: {
+    name: "notificationSettings",
+  },
+});
