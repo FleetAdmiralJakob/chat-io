@@ -43,6 +43,7 @@ export const updateUserData = mutation({
       updates.firstName = args.data.firstName;
     }
 
+    // Use one patch instead of a few singular patches for better performance
     await user.patch(updates);
   },
 });
