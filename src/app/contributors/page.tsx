@@ -1,7 +1,5 @@
 "use client";
 
-import fabiusProfile from "/src/assets/fabius-profile.png";
-import jakobProfile from "/src/assets/jakob-profile.png";
 import Footer from "~/components/footer";
 import { cn } from "~/lib/utils";
 import {
@@ -10,17 +8,19 @@ import {
   Link as LinkChain,
   UsersRound,
 } from "lucide-react";
-import Image, { type StaticImageData } from "next/image";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { FaLinkedin } from "react-icons/fa";
 import { SiGithub } from "react-icons/si";
 
+export const dynamic = "force-static";
+
 interface ContributorsProps {
   name: string;
   job: string;
-  image: StaticImageData;
+  image: string;
   github?: string;
   website?: string;
   linkedin?: string;
@@ -30,7 +30,7 @@ const contributorList: ContributorsProps[] = [
   {
     name: "Fabius Schurig",
     job: "Engineer & Designer",
-    image: fabiusProfile,
+    image: "/contributors/fabius-profile.png",
     github: "https://github.com/Gamius00",
     website: "https://schurig.tech",
     linkedin: "https://www.linkedin.com/in/fabius-schurig-80713b284/",
@@ -38,7 +38,7 @@ const contributorList: ContributorsProps[] = [
   {
     name: "Jakob Rössner",
     job: "Engineer",
-    image: jakobProfile,
+    image: "/contributors/jakob-profile.png",
     github: "https://github.com/FleetAdmiralJakob",
     website: "https://roessner.tech",
     linkedin: "https://www.linkedin.com/in/jakobroessner/",
