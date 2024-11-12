@@ -122,7 +122,16 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
   const params = use(props.params);
   const [progress, setProgress] = React.useState(13);
 
+  // We could change this to contain the whole message instead of just the id
+  // to reduce the .find searches whenever we want to do something with the message,
+  // but I leave this up for a future commit.
   const [editingMessageId, setEditingMessageId] =
+    useState<Id<"messages"> | null>(null);
+
+  // We could change this to contain the whole message instead of just the id
+  // to reduce the .find searches whenever we want to do something with the message,
+  // but I leave this up for a future commit.
+  const [replyToMessageId, setReplyToMessageId] =
     useState<Id<"messages"> | null>(null);
 
   const [selectedMessageId, setSelectedMessageId] = useState<string | null>(
@@ -286,12 +295,26 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
   const formRef = useRef<HTMLFormElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
+  const [inputValue, setInputValue] = useState("");
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(event.target.value);
+  };
+
+  const fullyResetInput = () => {
+    setEditingMessageId(null);
+    setReplyToMessageId(null);
+    textMessageForm.reset();
+    setInputValue("");
+  };
+
   useEffect(() => {
     if (editingMessageId) {
       const message = messages.data?.find((message) => {
         return message._id === editingMessageId;
       });
       if (message && message.type === "message") {
+        setReplyToMessageId(null);
         setInputValue(message.content);
         inputRef.current?.focus();
       } else {
@@ -300,11 +323,21 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
     }
   }, [editingMessageId, messages.data]);
 
-  const [inputValue, setInputValue] = useState("");
+  const editingMessageIdRef = useRef(editingMessageId);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(event.target.value);
-  };
+  useEffect(() => {
+    editingMessageIdRef.current = editingMessageId;
+  }, [editingMessageId]);
+
+  useEffect(() => {
+    if (replyToMessageId) {
+      if (editingMessageIdRef.current) {
+        setEditingMessageId(null);
+        setInputValue("");
+      }
+      inputRef.current?.focus();
+    }
+  }, [replyToMessageId]);
 
   async function onTextMessageFormSubmit(
     values: z.infer<typeof textMessageSchema>,
@@ -468,6 +501,7 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
                         selectedMessageId={selectedMessageId}
                         setSelectedMessageId={setSelectedMessageId}
                         setEditingMessageId={setEditingMessageId}
+                        setReplyToMessageId={setReplyToMessageId}
                         message={message}
                       />
                     </React.Fragment>
@@ -499,85 +533,114 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
             </div>
           </div>
 
-          <div className="flex h-28 w-full items-center justify-start bg-primary p-4 pb-10 lg:h-24 lg:pb-4">
-            <div className="flex w-full justify-between gap-8">
-              <Form {...textMessageForm}>
-                <form
-                  className="w-full"
-                  ref={formRef}
-                  onSubmit={textMessageForm.handleSubmit(
-                    onTextMessageFormSubmit,
-                  )}
-                >
-                  <FormField
-                    control={textMessageForm.control}
-                    name="message"
-                    render={() => (
-                      <FormControl>
-                        <Controller
-                          name="message"
-                          control={textMessageForm.control}
-                          render={({ field }) => (
-                            <Input
-                              className="h-11 w-full rounded-2xl border-2 border-secondary-foreground bg-secondary p-2 lg:h-16"
-                              placeholder="Message ..."
-                              value={inputValue}
-                              onChange={(e) => {
-                                handleChange(e);
-                                field.onChange(e);
-                              }}
-                              ref={(e) => {
-                                field.ref(e);
-                                inputRef.current = e;
-                              }}
-                            />
-                          )}
-                        />
-                      </FormControl>
+          <div className="flex w-full items-center justify-start bg-primary p-4 pb-10 lg:pb-4">
+            <div className="flex w-full flex-col gap-2">
+              {replyToMessageId && (
+                <div className="animate-slide-up relative mb-2 rounded-lg border border-secondary-foreground bg-secondary p-2">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm text-destructive-foreground">
+                      Replying to:
+                    </p>
+                  </div>
+                  <button
+                    className="absolute right-4 top-1/2 flex h-8 w-8 -translate-y-1/2 transform cursor-pointer items-center justify-center rounded-sm border-2 border-secondary-foreground bg-primary p-1 lg:h-10 lg:w-10 lg:p-2"
+                    onClick={() => setReplyToMessageId(null)}
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+
+                  <p className="text-sm">
+                    {(() => {
+                      const message = messages.data?.find(
+                        (msg) => msg._id === replyToMessageId,
+                      );
+                      return message?.type === "message" ? (
+                        <>
+                          <strong>{message.from.username}</strong>:{" "}
+                          {message.content}
+                        </>
+                      ) : null;
+                    })()}
+                  </p>
+                </div>
+              )}
+              <div className="flex w-full justify-between gap-8">
+                <Form {...textMessageForm}>
+                  <form
+                    className="w-full"
+                    ref={formRef}
+                    onSubmit={textMessageForm.handleSubmit(
+                      onTextMessageFormSubmit,
+                    )}
+                  >
+                    <FormField
+                      control={textMessageForm.control}
+                      name="message"
+                      render={() => (
+                        <FormControl>
+                          <Controller
+                            name="message"
+                            control={textMessageForm.control}
+                            render={({ field }) => (
+                              <Input
+                                className="h-11 w-full rounded-2xl border-2 border-secondary-foreground bg-secondary p-2 lg:h-16"
+                                placeholder="Message ..."
+                                value={inputValue}
+                                onChange={(e) => {
+                                  handleChange(e);
+                                  field.onChange(e);
+                                }}
+                                ref={(e) => {
+                                  field.ref(e);
+                                  inputRef.current = e;
+                                }}
+                              />
+                            )}
+                          />
+                        </FormControl>
+                      )}
+                    />
+                  </form>
+                </Form>
+                <div className="flex items-center gap-8">
+                  <Mic
+                    className={cn(
+                      "h-11 w-11 cursor-pointer rounded-sm border-2 border-secondary-foreground bg-primary p-2 lg:h-14 lg:w-14 lg:p-3",
+                      { hidden: inputValue !== "" },
                     )}
                   />
-                </form>
-              </Form>
-              <div className="flex items-center gap-8">
-                <Mic
-                  className={cn(
-                    "h-11 w-11 cursor-pointer rounded-sm border-2 border-secondary-foreground bg-primary p-2 lg:h-14 lg:w-14 lg:p-3",
-                    { hidden: inputValue !== "" },
-                  )}
-                />
 
-                <X
-                  className={cn(
-                    "h-11 w-11 cursor-pointer rounded-sm border-2 border-secondary-foreground bg-primary p-2 lg:h-14 lg:w-14 lg:p-3",
-                    { hidden: editingMessageId === null },
-                  )}
-                  onClick={() => {
-                    setEditingMessageId(null);
-                    textMessageForm.reset();
-                    setInputValue("");
-                  }}
-                />
+                  <X
+                    className={cn(
+                      "h-11 w-11 cursor-pointer rounded-sm border-2 border-secondary-foreground bg-primary p-2 lg:h-14 lg:w-14 lg:p-3",
+                      { hidden: editingMessageId === null },
+                    )}
+                    onClick={() => {
+                      fullyResetInput();
+                    }}
+                  />
 
-                <SendHorizontal
-                  onClick={(e) => {
-                    setAnimationInput(!animationInput);
-                    void textMessageForm.handleSubmit(onTextMessageFormSubmit)(
-                      e,
-                    );
-                  }}
-                  className={cn(
-                    "h-11 w-11 cursor-pointer rounded-sm border-2 border-secondary-foreground bg-primary p-2 lg:h-14 lg:w-14 lg:p-3",
-                    { hidden: inputValue === "" },
-                  )}
-                />
+                  <SendHorizontal
+                    onClick={(e) => {
+                      setAnimationInput(!animationInput);
+                      void textMessageForm.handleSubmit(
+                        onTextMessageFormSubmit,
+                      )(e);
+                    }}
+                    className={cn(
+                      "h-11 w-11 cursor-pointer rounded-sm border-2 border-secondary-foreground bg-primary p-2 lg:h-14 lg:w-14 lg:p-3",
+                      { hidden: inputValue === "" },
+                    )}
+                  />
 
-                <Plus
-                  className={cn(
-                    "h-11 w-11 cursor-pointer rounded-sm border-2 border-secondary-foreground bg-primary p-2 lg:h-14 lg:w-14 lg:p-3",
-                    { hidden: inputValue !== "" },
-                  )}
-                  onClick={menuClick}
-                />
+                  <Plus
+                    className={cn(
+                      "h-11 w-11 cursor-pointer rounded-sm border-2 border-secondary-foreground bg-primary p-2 lg:h-14 lg:w-14 lg:p-3",
+                      { hidden: inputValue !== "" },
+                    )}
+                    onClick={menuClick}
+                  />
+                </div>
               </div>
             </div>
           </div>

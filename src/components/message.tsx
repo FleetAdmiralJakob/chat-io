@@ -41,11 +41,15 @@ export const Message = ({
   selectedMessageId,
   setSelectedMessageId,
   setEditingMessageId,
+  setReplyToMessageId,
 }: {
   message: Message;
   selectedMessageId: string | null;
   setSelectedMessageId: React.Dispatch<React.SetStateAction<string | null>>;
   setEditingMessageId: React.Dispatch<
+    React.SetStateAction<Id<"messages"> | null>
+  >;
+  setReplyToMessageId: React.Dispatch<
     React.SetStateAction<Id<"messages"> | null>
   >;
 }) => {
@@ -186,6 +190,11 @@ export const Message = ({
     );
   };
 
+  const replyToMessageHandler = (messageId: Id<"messages">) => {
+    setReplyToMessageId(messageId);
+    setIsModalOpen(!isModalOpen);
+  };
+
   return (
     <>
       <Toaster />
@@ -296,10 +305,13 @@ export const Message = ({
                       <CopyCheck />
                       <p className="ml-1">Copy</p>
                     </div>
-                    <div className="flex w-full cursor-pointer border-t-2 border-secondary-foreground p-2 pr-8">
+                    <button
+                      onClick={() => replyToMessageHandler(message._id)}
+                      className="flex w-full cursor-pointer border-t-2 border-secondary-foreground p-2 pr-8"
+                    >
                       <Reply />
                       <p className="ml-1">Reply</p>
-                    </div>
+                    </button>
                     <div className="flex w-full cursor-pointer border-t-2 border-secondary-foreground p-2 pr-8">
                       <Forward />
                       <p className="ml-1">Forward</p>
@@ -441,10 +453,13 @@ export const Message = ({
                       <CopyCheck />
                       <p className="ml-1">Copy</p>
                     </div>
-                    <div className="flex cursor-pointer border-y-2 border-secondary-foreground p-2 pr-8">
+                    <button
+                      onClick={() => replyToMessageHandler(message._id)}
+                      className="flex cursor-pointer border-y-2 border-secondary-foreground p-2 pr-8"
+                    >
                       <Reply />
                       <p className="ml-1">Reply</p>
-                    </div>
+                    </button>
                     <div className="flex cursor-pointer border-y-2 border-secondary-foreground p-2 pr-8">
                       <Forward />
                       <p className="ml-1">Forward</p>
