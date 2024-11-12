@@ -15,6 +15,7 @@ import {
   Forward,
   Info,
   Pen,
+  Reply,
   Trash2,
 } from "lucide-react";
 import React, { useEffect, useState } from "react";
@@ -91,18 +92,12 @@ export const Message = ({
     }
   });
 
-  const [isScreenTop, setScreenTop] = useState<boolean | null>(null);
+  const [isInBottomHalf, setIsInBottomHalf] = useState<boolean | null>(null);
 
   const checkClickPosition = (e: React.MouseEvent) => {
     const clickPosition = e.clientY;
     const windowHeight = window.innerHeight;
-    const isInBottomHalf = clickPosition >= windowHeight / 2;
-
-    if (isInBottomHalf) {
-      setScreenTop(true);
-    } else {
-      setScreenTop(false);
-    }
+    setIsInBottomHalf(clickPosition >= windowHeight / 2);
   };
 
   const { ref, inView } = useInView({
@@ -129,10 +124,10 @@ export const Message = ({
   const [messageOwner, setMessageOwner] = useState<boolean | null>(null);
   const { refs, floatingStyles } = useFloating({
     placement: messageOwner
-      ? isScreenTop
+      ? isInBottomHalf
         ? "top-end"
         : "bottom-end"
-      : isScreenTop
+      : isInBottomHalf
         ? "top-start"
         : "bottom-start",
   });
@@ -302,8 +297,12 @@ export const Message = ({
                       <p className="ml-1">Copy</p>
                     </div>
                     <div className="flex w-full cursor-pointer border-t-2 border-secondary-foreground p-2 pr-8">
+                      <Reply />
+                      <p className="ml-1">Reply</p>
+                    </div>
+                    <div className="flex w-full cursor-pointer border-t-2 border-secondary-foreground p-2 pr-8">
                       <Forward />
-                      <p className="ml-1">Answer</p>
+                      <p className="ml-1">Forward</p>
                     </div>
                     <button
                       className="flex w-full cursor-pointer border-y-2 border-secondary-foreground p-2 pr-8"
@@ -426,7 +425,7 @@ export const Message = ({
                 style={floatingStyles}
                 className={cn(
                   "z-50 mt-4 pb-3 opacity-100",
-                  isScreenTop ? "mt-0" : null,
+                  isInBottomHalf ? "mt-0" : null,
                 )}
               >
                 <div className="rounded-sm border-2 border-secondary-foreground">
@@ -443,8 +442,12 @@ export const Message = ({
                       <p className="ml-1">Copy</p>
                     </div>
                     <div className="flex cursor-pointer border-y-2 border-secondary-foreground p-2 pr-8">
+                      <Reply />
+                      <p className="ml-1">Reply</p>
+                    </div>
+                    <div className="flex cursor-pointer border-y-2 border-secondary-foreground p-2 pr-8">
                       <Forward />
-                      <p className="ml-1">Answer</p>
+                      <p className="ml-1">Forward</p>
                     </div>
                     <div className="flex p-2 pr-8 text-secondary-foreground">
                       <Info />
