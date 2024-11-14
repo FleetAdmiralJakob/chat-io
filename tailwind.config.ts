@@ -83,16 +83,11 @@ const config = {
             backgroundPosition: "350% 50%, 350% 50%",
           },
         },
-        "slide-up": {
-          "0%": { transform: "translateY(100%)", opacity: "0" },
-          "100%": { transform: "translateY(0)", opacity: "1" },
-        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         aurora: "aurora 60s linear infinite",
-        "slide-up": "slide-up 0.1s ease-out",
       },
     },
   },

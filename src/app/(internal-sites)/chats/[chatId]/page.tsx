@@ -22,6 +22,7 @@ import { useMutation } from "convex/react";
 import { type FunctionReturnType } from "convex/server";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   ChevronDown,
   ChevronLeft,
@@ -131,8 +132,9 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
   // We could change this to contain the whole message instead of just the id
   // to reduce the .find searches whenever we want to do something with the message,
   // but I leave this up for a future commit.
-  const [replyToMessageId, setReplyToMessageId] =
-    useState<Id<"messages"> | null>(null);
+  const [replyToMessageId, setReplyToMessageId] = useState<
+    Id<"messages"> | undefined
+  >(undefined);
 
   const [selectedMessageId, setSelectedMessageId] = useState<string | null>(
     null,
@@ -158,6 +160,9 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
     // If we've loaded the api.messages.getMessages and api.chats.getChats query, push an optimistic message
     // onto the lists.
     if (existingMessages !== undefined && existingChats && userInfo.data) {
+      const replyTo = existingMessages?.find(
+        (msg) => msg._id === args.replyToId,
+      );
       const now = Date.now();
       const newMessage: NonNullable<
         FunctionReturnType<typeof api.messages.getMessages>
@@ -173,6 +178,10 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
         readBy: [userInfo.data],
         sent: false,
         modified: false,
+        replyTo:
+          existingMessages && args.replyToId && replyTo?.type === "message"
+            ? { ...replyTo, replyTo: undefined }
+            : null,
       };
       localStore.setQuery(api.messages.getMessages, { chatId }, [
         ...(Array.isArray(existingMessages) ? existingMessages : []),
@@ -188,6 +197,7 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
               lastMessage: {
                 ...newMessage,
                 userId: userInfo.data!._id,
+                replyTo: undefined,
               },
             };
           } else {
@@ -303,7 +313,7 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
 
   const fullyResetInput = () => {
     setEditingMessageId(null);
-    setReplyToMessageId(null);
+    setReplyToMessageId(undefined);
     textMessageForm.reset();
     setInputValue("");
   };
@@ -314,7 +324,7 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
         return message._id === editingMessageId;
       });
       if (message && message.type === "message") {
-        setReplyToMessageId(null);
+        setReplyToMessageId(undefined);
         setInputValue(message.content);
         inputRef.current?.focus();
       } else {
@@ -356,13 +366,15 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
           messageId: editingMessageId,
         });
       }
-      setEditingMessageId(null);
     } else {
-      void sendMessage({ content: trimmedMessage, chatId: params.chatId });
+      void sendMessage({
+        content: trimmedMessage,
+        chatId: params.chatId,
+        replyToId: replyToMessageId,
+      });
     }
 
-    textMessageForm.reset();
-    setInputValue("");
+    fullyResetInput();
     scrollToBottom();
   }
 
@@ -401,6 +413,7 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
           minSize={30}
           maxSize={70}
           className="relative flex flex-col"
+          id="resizable-panel-chat"
         >
           <DevMode className="top-20 z-10">
             <button onClick={createClearRequestHandler(params.chatId)}>
@@ -533,38 +546,47 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
             </div>
           </div>
 
-          <div className="flex w-full items-center justify-start bg-primary p-4 pb-10 lg:pb-4">
+          <div className="flex w-full items-center justify-start">
             <div className="flex w-full flex-col gap-2">
-              {replyToMessageId && (
-                <div className="animate-slide-up relative mb-2 rounded-lg border border-secondary-foreground bg-secondary p-2">
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm text-destructive-foreground">
-                      Replying to:
-                    </p>
-                  </div>
-                  <button
-                    className="absolute right-4 top-1/2 flex h-8 w-8 -translate-y-1/2 transform cursor-pointer items-center justify-center rounded-sm border-2 border-secondary-foreground bg-primary p-1 lg:h-10 lg:w-10 lg:p-2"
-                    onClick={() => setReplyToMessageId(null)}
+              <AnimatePresence>
+                {replyToMessageId && (
+                  <motion.div
+                    initial={{ opacity: 0, translateY: 70 }}
+                    animate={{ opacity: 1, translateY: 0 }}
+                    exit={{ opacity: 0, translateY: 70 }}
+                    transition={{ duration: 0.5 }}
                   >
-                    <X className="h-4 w-4" />
-                  </button>
+                    <div className="relative m-4 mb-2 rounded-lg border border-secondary-foreground bg-secondary p-2">
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm text-destructive-foreground">
+                          Replying to:
+                        </p>
+                      </div>
+                      <button
+                        className="absolute right-4 top-1/2 flex h-8 w-8 -translate-y-1/2 transform cursor-pointer items-center justify-center rounded-sm border-2 border-secondary-foreground bg-primary p-1 lg:h-10 lg:w-10 lg:p-2"
+                        onClick={() => setReplyToMessageId(undefined)}
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
 
-                  <p className="text-sm">
-                    {(() => {
-                      const message = messages.data?.find(
-                        (msg) => msg._id === replyToMessageId,
-                      );
-                      return message?.type === "message" ? (
-                        <>
-                          <strong>{message.from.username}</strong>:{" "}
-                          {message.content}
-                        </>
-                      ) : null;
-                    })()}
-                  </p>
-                </div>
-              )}
-              <div className="flex w-full justify-between gap-8">
+                      <p className="text-sm">
+                        {(() => {
+                          const message = messages.data?.find(
+                            (msg) => msg._id === replyToMessageId,
+                          );
+                          return message?.type === "message" ? (
+                            <>
+                              <strong>{message.from.username}</strong>:{" "}
+                              {message.content}
+                            </>
+                          ) : null;
+                        })()}
+                      </p>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              <div className="z-10 flex w-full justify-between gap-8 bg-primary p-4 pb-10 lg:pb-4">
                 <Form {...textMessageForm}>
                   <form
                     className="w-full"
