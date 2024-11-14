@@ -87,10 +87,10 @@
   "ct3aMetadata": {
     "initVersion": "7.30.0"
   },
-  "packageManager": "pnpm@9.13.0",
+  "packageManager": "pnpm@9.13.1",
   "engineStrict": true,
   "engines": {
-    "pnpm": "9.13.0"
+    "pnpm": "9.13.1"
   },
   "pnpm": {
     "overrides": {
