@@ -31,9 +31,9 @@ type Message = NonNullable<
   FunctionReturnType<typeof api.messages.getMessages>
 >[number];
 
-const ModifiedLabel = ({ message }: { message: Message }) => (
+const EditedLabel = ({ message }: { message: Message }) => (
   <div className="mr-2 text-[75%] font-bold text-secondary-foreground">
-    {message.type === "message" && message.modified && "Modified"}
+    {message.type === "message" && message.modified && "Edited"}
   </div>
 );
 
@@ -237,7 +237,7 @@ export const Message = ({
                 message.type == "rejectedRequest",
             })}
           >
-            <ModifiedLabel message={message} />
+            <EditedLabel message={message} />
             <ReplyToMessage message={message} />
             <div
               onContextMenu={(e) => {
@@ -386,7 +386,7 @@ export const Message = ({
               "my-3": message.type === "message" && message.replyTo,
             })}
           >
-            <ModifiedLabel message={message} />
+            <EditedLabel message={message} />
             <ReplyToMessage message={message} />
             <div
               ref={refs.setReference}
