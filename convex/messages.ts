@@ -126,6 +126,19 @@ export const createMessage = mutation({
 
     if (args.content.trim() === "") throw new Error("Message cannot be empty");
 
+    if (args.replyToId) {
+      const replyMessage = await ctx.table("messages").get(args.replyToId);
+      if (!replyMessage) {
+        throw new ConvexError("Reply message not found");
+      }
+      if (replyMessage.privateChatId !== parsedChatId) {
+        throw new ConvexError("Cannot reply to message from different chat");
+      }
+      if (replyMessage.deleted) {
+        throw new ConvexError("Cannot reply to deleted message");
+      }
+    }
+
     await ctx.table("messages").insert({
       userId: convexUser._id,
       privateChatId: parsedChatId,

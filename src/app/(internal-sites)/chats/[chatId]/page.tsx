@@ -565,6 +565,12 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
                       <button
                         className="absolute right-4 top-1/2 flex h-8 w-8 -translate-y-1/2 transform cursor-pointer items-center justify-center rounded-sm border-2 border-secondary-foreground bg-primary p-1 lg:h-10 lg:w-10 lg:p-2"
                         onClick={() => setReplyToMessageId(undefined)}
+                        aria-label="Cancel reply"
+                        onKeyDown={(e) => {
+                          if (e.key === "Escape") {
+                            setReplyToMessageId(undefined);
+                          }
+                        }}
                       >
                         <X className="h-4 w-4" />
                       </button>
@@ -612,6 +618,11 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
                                   handleChange(e);
                                   field.onChange(e);
                                 }}
+                                aria-label="Message input"
+                                aria-expanded={replyToMessageId !== undefined}
+                                aria-describedby={
+                                  replyToMessageId ? "reply-context" : undefined
+                                }
                                 ref={(e) => {
                                   field.ref(e);
                                   inputRef.current = e;
