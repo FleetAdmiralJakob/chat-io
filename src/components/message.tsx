@@ -15,9 +15,11 @@ import {
   Forward,
   Info,
   Pen,
+  Reply,
   Trash2,
 } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { useInView } from "react-intersection-observer";
 import { toast } from "sonner";
 import { api } from "../../convex/_generated/api";
@@ -29,23 +31,46 @@ type Message = NonNullable<
   FunctionReturnType<typeof api.messages.getMessages>
 >[number];
 
-const ModifiedLabel = ({ message }: { message: Message }) => (
+const EditedLabel = ({ message }: { message: Message }) => (
   <div className="mr-2 text-[75%] font-bold text-secondary-foreground">
-    {message.type === "message" && message.modified && "Modified"}
+    {message.type === "message" && message.modified && "Edited"}
   </div>
 );
+
+const ReplyToMessage = ({ message }: { message: Message }) => {
+  if (message.type === "message" && message.replyTo) {
+    return (
+      <div className="mb-2 rounded-lg border border-secondary-foreground bg-primary p-2">
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-destructive-foreground">Replied to:</p>
+        </div>
+
+        <p className="text-sm">
+          <strong>{message.replyTo.from.username}</strong>:{" "}
+          {message.replyTo.content}
+        </p>
+      </div>
+    );
+  } else {
+    return null;
+  }
+};
 
 export const Message = ({
   message,
   selectedMessageId,
   setSelectedMessageId,
   setEditingMessageId,
+  setReplyToMessageId,
 }: {
   message: Message;
   selectedMessageId: string | null;
   setSelectedMessageId: React.Dispatch<React.SetStateAction<string | null>>;
   setEditingMessageId: React.Dispatch<
     React.SetStateAction<Id<"messages"> | null>
+  >;
+  setReplyToMessageId: React.Dispatch<
+    React.SetStateAction<Id<"messages"> | undefined>
   >;
 }) => {
   const clerkUser = useUser();
@@ -91,18 +116,12 @@ export const Message = ({
     }
   });
 
-  const [isScreenTop, setScreenTop] = useState<boolean | null>(null);
+  const [isInBottomHalf, setIsInBottomHalf] = useState<boolean | null>(null);
 
   const checkClickPosition = (e: React.MouseEvent) => {
     const clickPosition = e.clientY;
     const windowHeight = window.innerHeight;
-    const isInBottomHalf = clickPosition >= windowHeight / 2;
-
-    if (isInBottomHalf) {
-      setScreenTop(true);
-    } else {
-      setScreenTop(false);
-    }
+    setIsInBottomHalf(clickPosition >= windowHeight / 2);
   };
 
   const { ref, inView } = useInView({
@@ -129,10 +148,10 @@ export const Message = ({
   const [messageOwner, setMessageOwner] = useState<boolean | null>(null);
   const { refs, floatingStyles } = useFloating({
     placement: messageOwner
-      ? isScreenTop
+      ? isInBottomHalf
         ? "top-end"
         : "bottom-end"
-      : isScreenTop
+      : isInBottomHalf
         ? "top-start"
         : "bottom-start",
   });
@@ -191,6 +210,13 @@ export const Message = ({
     );
   };
 
+  const replyToMessageHandler = (messageId: Id<"messages">) => {
+    setReplyToMessageId(messageId);
+    setIsModalOpen(!isModalOpen);
+  };
+
+  const chatContainerElement = document.getElementById("resizable-panel-chat");
+
   return (
     <>
       <Toaster />
@@ -211,7 +237,8 @@ export const Message = ({
                 message.type == "rejectedRequest",
             })}
           >
-            <ModifiedLabel message={message} />
+            <EditedLabel message={message} />
+            <ReplyToMessage message={message} />
             <div
               onContextMenu={(e) => {
                 e.preventDefault();
@@ -232,7 +259,7 @@ export const Message = ({
               className={cn(
                 "max-w-[66.6667%] cursor-default break-words rounded-sm bg-accent p-3",
                 {
-                  "sticky z-50 opacity-100": message._id === selectedMessageId,
+                  "sticky z-10 opacity-100": message._id === selectedMessageId,
                   "my-2 max-w-[80%] border-2 border-secondary bg-primary":
                     message.type == "pendingRequest" ||
                     message.type == "rejectedRequest",
@@ -280,62 +307,74 @@ export const Message = ({
                   : null
                 : null}
             </div>
-            {message._id == selectedMessageId &&
+            {chatContainerElement &&
+            message._id == selectedMessageId &&
             isModalOpen &&
-            message.type == "message" ? (
-              <div
-                ref={refs.setFloating}
-                style={floatingStyles}
-                className="z-50 pb-3 opacity-100"
-              >
-                <div className="rounded-sm border-2 border-secondary-foreground">
-                  <div className="rounded-sm bg-secondary">
-                    <div
-                      className="flex cursor-pointer p-2"
-                      onClick={() => {
-                        void navigator.clipboard.writeText(message.content);
-                        setIsModalOpen(!isModalOpen);
-                        toast.success("Copied to clipboard");
-                      }}
-                    >
-                      <CopyCheck />
-                      <p className="ml-1">Copy</p>
+            message.type == "message"
+              ? // The reason for the creation of the portal is that we need the portal at a point where it is over EVERYTHING even the input etc.
+                createPortal(
+                  <div
+                    ref={refs.setFloating}
+                    style={floatingStyles}
+                    className="z-50 overflow-x-visible pb-3 opacity-100"
+                  >
+                    <div className="rounded-sm border-2 border-secondary-foreground">
+                      <div className="rounded-sm bg-secondary">
+                        <div
+                          className="flex w-full cursor-pointer p-2"
+                          onClick={() => {
+                            void navigator.clipboard.writeText(message.content);
+                            setIsModalOpen(!isModalOpen);
+                            toast.success("Copied to clipboard");
+                          }}
+                        >
+                          <CopyCheck />
+                          <p className="ml-1">Copy</p>
+                        </div>
+                        <button
+                          onClick={() => replyToMessageHandler(message._id)}
+                          className="flex w-full cursor-pointer border-t-2 border-secondary-foreground p-2 pr-8"
+                        >
+                          <Reply />
+                          <p className="ml-1">Reply</p>
+                        </button>
+                        <div className="flex w-full cursor-pointer border-t-2 border-secondary-foreground p-2 pr-8">
+                          <Forward />
+                          <p className="ml-1">Forward</p>
+                        </div>
+                        <button
+                          className="flex w-full cursor-pointer border-y-2 border-secondary-foreground p-2 pr-8"
+                          onClick={() => {
+                            setEditingMessageId(message._id);
+                            setIsModalOpen(!isModalOpen);
+                          }}
+                        >
+                          <Pen />
+                          <p className="ml-1">Edit</p>
+                        </button>
+                        <button
+                          className="flex w-full p-2 text-accent"
+                          onMouseDown={() => {
+                            void deleteMessage({
+                              messageId: message._id,
+                              chatId: message.privateChatId,
+                            });
+                            setIsModalOpen(!isModalOpen);
+                          }}
+                        >
+                          <Trash2 />
+                          <div className="ml-1">Delete</div>
+                        </button>{" "}
+                        <div className="flex border-t-2 border-secondary-foreground p-2 pr-8 text-secondary-foreground">
+                          <Info />
+                          <p className="ml-1">{sentInfo()}</p>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex w-full cursor-pointer border-t-2 border-secondary-foreground p-2 pr-8">
-                      <Forward />
-                      <p className="ml-1">Answer</p>
-                    </div>
-                    <button
-                      className="flex w-full cursor-pointer border-y-2 border-secondary-foreground p-2 pr-8"
-                      onClick={() => {
-                        setEditingMessageId(message._id);
-                        setIsModalOpen(!isModalOpen);
-                      }}
-                    >
-                      <Pen />
-                      <p className="ml-1">Edit</p>
-                    </button>
-                    <button
-                      className="flex w-full p-2 text-accent"
-                      onMouseDown={() => {
-                        void deleteMessage({
-                          messageId: message._id,
-                          chatId: message.privateChatId,
-                        });
-                        setIsModalOpen(!isModalOpen);
-                      }}
-                    >
-                      <Trash2 />
-                      <div className="ml-1">Delete</div>
-                    </button>{" "}
-                    <div className="flex border-t-2 border-secondary-foreground p-2 pr-8 text-secondary-foreground">
-                      <Info />
-                      <p className="ml-1">{sentInfo()}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ) : null}
+                  </div>,
+                  chatContainerElement,
+                )
+              : null}
           </div>
         ) : (
           <div
@@ -344,9 +383,11 @@ export const Message = ({
               "ml-0 items-center":
                 message.type == "pendingRequest" ||
                 message.type == "rejectedRequest",
+              "my-3": message.type === "message" && message.replyTo,
             })}
           >
-            <ModifiedLabel message={message} />
+            <EditedLabel message={message} />
+            <ReplyToMessage message={message} />
             <div
               ref={refs.setReference}
               onContextMenu={(e) => {
@@ -368,7 +409,7 @@ export const Message = ({
               className={cn(
                 "max-w-[66.6667%] cursor-default break-words rounded-sm bg-secondary p-3",
                 {
-                  "sticky z-50 opacity-100": message._id == selectedMessageId,
+                  "sticky z-10 opacity-100": message._id == selectedMessageId,
                   "my-2 max-w-[80%] border-2 border-secondary bg-primary":
                     message.type === "pendingRequest" ||
                     message.type === "rejectedRequest",
@@ -418,42 +459,53 @@ export const Message = ({
                 message.content
               )}
             </div>
-            {message._id == selectedMessageId &&
+            {chatContainerElement &&
+            message._id == selectedMessageId &&
             isModalOpen &&
-            message.type == "message" ? (
-              <div
-                ref={refs.setFloating}
-                style={floatingStyles}
-                className={cn(
-                  "z-50 mt-4 pb-3 opacity-100",
-                  isScreenTop ? "mt-0" : null,
-                )}
-              >
-                <div className="rounded-sm border-2 border-secondary-foreground">
-                  <div className="rounded-sm bg-secondary">
-                    <div
-                      onClick={() => {
-                        void navigator.clipboard.writeText(message.content);
-                        setIsModalOpen(!isModalOpen);
-                        toast.success("Copied to clipboard");
-                      }}
-                      className="flex cursor-pointer p-2"
-                    >
-                      <CopyCheck />
-                      <p className="ml-1">Copy</p>
+            message.type == "message"
+              ? createPortal(
+                  <div
+                    ref={refs.setFloating}
+                    style={floatingStyles}
+                    className={cn(
+                      "z-50 mt-4 pb-3 opacity-100",
+                      isInBottomHalf ? "mt-0" : null,
+                    )}
+                  >
+                    <div className="rounded-sm border-2 border-secondary-foreground">
+                      <div className="rounded-sm bg-secondary">
+                        <div
+                          onClick={() => {
+                            void navigator.clipboard.writeText(message.content);
+                            setIsModalOpen(!isModalOpen);
+                            toast.success("Copied to clipboard");
+                          }}
+                          className="flex cursor-pointer p-2"
+                        >
+                          <CopyCheck />
+                          <p className="ml-1">Copy</p>
+                        </div>
+                        <button
+                          onClick={() => replyToMessageHandler(message._id)}
+                          className="flex w-full cursor-pointer border-y-2 border-secondary-foreground p-2 pr-8"
+                        >
+                          <Reply />
+                          <p className="ml-1">Reply</p>
+                        </button>
+                        <div className="flex w-full cursor-pointer border-b-2 border-secondary-foreground p-2 pr-8">
+                          <Forward />
+                          <p className="ml-1">Forward</p>
+                        </div>
+                        <div className="flex p-2 pr-8 text-secondary-foreground">
+                          <Info />
+                          <p className="ml-1">{sentInfo()}</p>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex cursor-pointer border-y-2 border-secondary-foreground p-2 pr-8">
-                      <Forward />
-                      <p className="ml-1">Answer</p>
-                    </div>
-                    <div className="flex p-2 pr-8 text-secondary-foreground">
-                      <Info />
-                      <p className="ml-1">{sentInfo()}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ) : null}
+                  </div>,
+                  chatContainerElement,
+                )
+              : null}
           </div>
         )}
       </div>

@@ -40,6 +40,8 @@ const schema = defineEntSchema({
     .field("deleted", v.boolean(), { default: false })
     .field("modified", v.boolean(), { default: false })
     .field("modifiedAt", v.optional(v.string()))
+    // This can't be an edge because assymetrical, self-directed, optional 1:many edges are not supported yet.
+    .field("replyTo", v.optional(v.id("messages")))
     .edge("privateChat")
     .edge("user")
     .edges("readBy", {

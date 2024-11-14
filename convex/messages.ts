@@ -30,14 +30,41 @@ export const getMessages = query({
     }
 
     const [messages, requests] = await Promise.all([
-      chat.edge("messages").map(async (message) => ({
-        ...message,
-        userId: undefined,
-        type: "message" as const,
-        from: await ctx.table("users").getX(message.userId),
-        readBy: await message.edge("readBy"),
-        sent: true,
-      })),
+      chat.edge("messages").map(async (message) => {
+        const [from, readBy, replyTo] = await Promise.all([
+          ctx.table("users").getX(message.userId),
+          message.edge("readBy"),
+          message.replyTo
+            ? ctx
+                .table("messages")
+                .getX(message.replyTo)
+                .then(async (replyToMessage) => {
+                  if (replyToMessage) {
+                    const replyToUser = await ctx
+                      .table("users")
+                      .getX(replyToMessage.userId);
+                    return {
+                      ...replyToMessage,
+                      userId: undefined,
+                      type: "message" as const,
+                      from: replyToUser,
+                    };
+                  }
+                  return null;
+                })
+            : null,
+        ]);
+
+        return {
+          ...message,
+          userId: undefined,
+          type: "message" as const,
+          from,
+          readBy,
+          replyTo,
+          sent: true,
+        };
+      }),
       chat.edge("clearRequests").map(async (request) => ({
         ...request,
         userId: undefined,
@@ -55,7 +82,11 @@ export const getMessages = query({
 });
 
 export const createMessage = mutation({
-  args: { chatId: v.string(), content: v.string() },
+  args: {
+    chatId: v.string(),
+    content: v.string(),
+    replyToId: v.optional(v.id("messages")),
+  },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
 
@@ -95,6 +126,19 @@ export const createMessage = mutation({
 
     if (args.content.trim() === "") throw new Error("Message cannot be empty");
 
+    if (args.replyToId) {
+      const replyMessage = await ctx.table("messages").get(args.replyToId);
+      if (!replyMessage) {
+        throw new ConvexError("Reply message not found");
+      }
+      if (replyMessage.privateChatId !== parsedChatId) {
+        throw new ConvexError("Cannot reply to message from different chat");
+      }
+      if (replyMessage.deleted) {
+        throw new ConvexError("Cannot reply to deleted message");
+      }
+    }
+
     await ctx.table("messages").insert({
       userId: convexUser._id,
       privateChatId: parsedChatId,
@@ -102,6 +146,7 @@ export const createMessage = mutation({
       deleted: false,
       readBy: [convexUser._id],
       modified: false,
+      replyTo: args.replyToId,
     });
   },
 });
