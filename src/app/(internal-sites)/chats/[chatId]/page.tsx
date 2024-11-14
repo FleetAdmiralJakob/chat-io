@@ -520,7 +520,7 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
                     </React.Fragment>
                   ))}
                   {!isNearBottom && messages.data.length > 0 && (
-                    <div className="sticky bottom-4 w-full px-4">
+                    <div className="sticky bottom-4 z-50 w-full px-4">
                       <div className="flex justify-end">
                         <button
                           onClick={() => scrollToBottom()}

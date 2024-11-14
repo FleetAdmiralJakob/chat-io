@@ -46,7 +46,7 @@ const ReplyToMessage = ({ message }: { message: Message }) => {
         </div>
 
         <p className="text-sm">
-          <strong>{message.replyTo.from.username}</strong>:
+          <strong>{message.replyTo.from.username}</strong>:{" "}
           {message.replyTo.content}
         </p>
       </div>
@@ -259,7 +259,7 @@ export const Message = ({
               className={cn(
                 "max-w-[66.6667%] cursor-default break-words rounded-sm bg-accent p-3",
                 {
-                  "sticky z-50 opacity-100": message._id === selectedMessageId,
+                  "sticky z-10 opacity-100": message._id === selectedMessageId,
                   "my-2 max-w-[80%] border-2 border-secondary bg-primary":
                     message.type == "pendingRequest" ||
                     message.type == "rejectedRequest",
@@ -321,7 +321,7 @@ export const Message = ({
                     <div className="rounded-sm border-2 border-secondary-foreground">
                       <div className="rounded-sm bg-secondary">
                         <div
-                          className="flex cursor-pointer p-2"
+                          className="flex w-full cursor-pointer p-2"
                           onClick={() => {
                             void navigator.clipboard.writeText(message.content);
                             setIsModalOpen(!isModalOpen);
@@ -409,7 +409,7 @@ export const Message = ({
               className={cn(
                 "max-w-[66.6667%] cursor-default break-words rounded-sm bg-secondary p-3",
                 {
-                  "sticky z-50 opacity-100": message._id == selectedMessageId,
+                  "sticky z-10 opacity-100": message._id == selectedMessageId,
                   "my-2 max-w-[80%] border-2 border-secondary bg-primary":
                     message.type === "pendingRequest" ||
                     message.type === "rejectedRequest",
