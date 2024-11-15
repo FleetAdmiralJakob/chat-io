@@ -1,6 +1,7 @@
 "use client";
 
-import { useSignIn } from "@clerk/nextjs";
+import { useAuth, useSignIn } from "@clerk/nextjs";
+import { isClerkAPIResponseError } from "@clerk/nextjs/errors";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "~/components/ui/button";
 import {
@@ -15,8 +16,9 @@ import { Input } from "~/components/ui/input";
 import { cn } from "~/lib/utils";
 import { useConvexAuth } from "convex/react";
 import { LoaderCircle } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -55,14 +57,17 @@ export const formSchema = z.object({
 });
 
 export function SignInForm() {
-  const [, setFormIsLoading] = useState(false);
+  const [formIsLoading, setFormIsLoading] = useState(false);
   const [signInComplete, setSignInComplete] = React.useState(false);
 
   const { isLoaded, signIn, setActive } = useSignIn();
+  const { signOut } = useAuth();
 
-  const { isLoading, isAuthenticated } = useConvexAuth();
+  const { isAuthenticated } = useConvexAuth();
 
-  const [wholeFormError, setWholeFormError] = useState<null | string>(null);
+  const [wholeFormError, setWholeFormError] = useState<
+    null | string | ReactNode
+  >(null);
   const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -99,10 +104,42 @@ export function SignInForm() {
         await setActive({ session: result.createdSessionId });
         setSignInComplete(true);
       }
-    } catch {
-      setWholeFormError(
-        "The Username + ID or Password you entered is incorrect. Please try again.",
-      );
+    } catch (err) {
+      if (isClerkAPIResponseError(err)) {
+        if (err.errors.some((err) => err.code === "session_exists")) {
+          setWholeFormError(
+            // "You are already signed in. Please sign out before signing in again.",
+            <div>
+              You are already signed in. Please{" "}
+              <button className="underline" onMouseDown={() => signOut()}>
+                sign out
+              </button>{" "}
+              before signing in again. Alternatively you can go back to the{" "}
+              <Link className="underline" href="/chats">
+                home page
+              </Link>
+              .
+            </div>,
+          );
+        } else if (
+          err.errors.some((err) => err.code === "form_identifier_not_found")
+        ) {
+          setWholeFormError(
+            "The username + id you entered does not exist. Please try again.",
+          );
+        } else if (
+          err.errors.some((err) => err.code === "form_password_incorrect")
+        ) {
+          form.setError("password", {
+            type: "manual",
+            message: "The password you entered is incorrect. Please try again.",
+          });
+        } else {
+          setWholeFormError("Something went wrong. Please try again.");
+        }
+      } else {
+        setWholeFormError("Something went wrong. Please try again.");
+      }
     }
 
     setFormIsLoading(false);
@@ -195,8 +232,12 @@ export function SignInForm() {
             </FormItem>
           )}
         />
-        <Button disabled={isLoading} type="submit" aria-disabled={isLoading}>
-          {isLoading ? (
+        <Button
+          disabled={formIsLoading}
+          type="submit"
+          aria-disabled={formIsLoading}
+        >
+          {formIsLoading ? (
             <>
               <LoaderCircle className="mr-1.5 animate-spin p-0.5" />{" "}
               Processing...
@@ -208,9 +249,9 @@ export function SignInForm() {
         {wholeFormError && (
           <>
             <br />
-            <span className="text-sm font-medium text-destructive">
+            <div className="text-sm font-medium text-destructive">
               {wholeFormError}
-            </span>
+            </div>
           </>
         )}
       </form>
