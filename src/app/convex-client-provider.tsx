@@ -3,7 +3,8 @@
 import { useAuth } from "@clerk/nextjs";
 import { env } from "~/env";
 import { makeUseQueryWithStatus } from "convex-helpers/react";
-import { ConvexReactClient, useQueries } from "convex/react";
+import { useQueries } from "convex-helpers/react/cache/hooks";
+import { ConvexReactClient } from "convex/react";
 import { ConvexProviderWithClerk } from "convex/react-clerk";
 import { type ReactNode } from "react";
 

@@ -3,6 +3,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import ConvexClientProvider from "~/app/convex-client-provider";
 import { ThemeProvider } from "~/components/theme-provider";
 import { cn } from "~/lib/utils";
+import { ConvexQueryCacheProvider } from "convex-helpers/react/cache/provider";
 import { GeistSans } from "geist/font/sans";
 import type { Metadata, Viewport } from "next";
 import React from "react";
@@ -74,7 +75,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <ClerkProvider dynamic>
-            <ConvexClientProvider>{children}</ConvexClientProvider>
+            <ConvexClientProvider>
+              <ConvexQueryCacheProvider>{children}</ConvexQueryCacheProvider>
+            </ConvexClientProvider>
           </ClerkProvider>
         </ThemeProvider>
       </body>

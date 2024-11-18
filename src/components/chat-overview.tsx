@@ -4,7 +4,7 @@ import { useUser } from "@clerk/nextjs";
 import Badge from "~/components/ui/badge";
 import { Input } from "~/components/ui/input";
 import { cn } from "~/lib/utils";
-import { useQuery } from "convex/react";
+import { useQuery } from "convex-helpers/react/cache/hooks";
 import { type FunctionReturnType } from "convex/server";
 import { ArrowRight, Ban, NotebookText } from "lucide-react";
 import Link from "next/link";

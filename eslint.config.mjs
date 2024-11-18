@@ -82,6 +82,12 @@ export default [
           message:
             "Use `import { env } from '~/env'` instead to ensure validated types.",
         },
+        {
+          name: "convex/react",
+          importNames: ["useQueries", "useQuery"],
+          message:
+            "Use `import { useQuery, useQueries } from 'convex-helpers/react/cache/hooks'` instead to have a full in-memory cache.",
+        },
       ],
     },
   },
