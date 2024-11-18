@@ -86,7 +86,7 @@ export default [
           name: "convex/react",
           importNames: ["useQueries", "useQuery"],
           message:
-            "Use `import { useQuery, useQueries from 'convex-helpers/react/cache/hooks'` instead to have a full in-memory cache.",
+            "Use `import { useQuery, useQueries } from 'convex-helpers/react/cache/hooks'` instead to have a full in-memory cache.",
         },
       ],
     },
