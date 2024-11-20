@@ -47,7 +47,9 @@ const ReplyToMessage = ({ message }: { message: Message }) => {
 
         <p className="text-sm">
           <strong>{message.replyTo.from.username}</strong>:{" "}
-          {message.replyTo.content}
+          {message.replyTo.content.length < 20
+            ? message.replyTo.content
+            : `${message.replyTo.content.slice(0, 20)}...`}
         </p>
       </div>
     );
