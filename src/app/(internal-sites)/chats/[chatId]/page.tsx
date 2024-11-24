@@ -619,7 +619,6 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
                                   field.onChange(e);
                                 }}
                                 aria-label="Message input"
-                                aria-expanded={replyToMessageId !== undefined}
                                 aria-describedby={
                                   replyToMessageId ? "reply-context" : undefined
                                 }
