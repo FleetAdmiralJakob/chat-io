@@ -91,15 +91,20 @@ export function SignInForm() {
 
   // Reset the form to clear it when the user switches between email and username login
   useEffect(() => {
-    form.reset({
-      identifier: isEmailLogin
-        ? ""
-        : {
-            username: "",
-            usernameId: "",
-          },
-      password: "",
-    });
+    form.reset(
+      {
+        identifier: isEmailLogin
+          ? ""
+          : {
+              username: "",
+              usernameId: "",
+            },
+        password: "",
+      },
+      {
+        keepErrors: false,
+      },
+    );
   }, [isEmailLogin, form]);
 
   useEffect(() => {
@@ -228,7 +233,7 @@ export function SignInForm() {
                         field.onChange(
                           e.target.value
                             .toLowerCase()
-                            .replace(" ", "")
+                            .replace(/\s/g, "")
                             .substring(0, 15),
                         )
                       }
