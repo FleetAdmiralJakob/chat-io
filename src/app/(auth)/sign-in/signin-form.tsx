@@ -187,6 +187,7 @@ export function SignInForm() {
         <Button
           type="button"
           variant="outline"
+          aria-label={`Switch to ${isEmailLogin ? "Username" : "Email"} login mode`}
           onClick={() => setIsEmailLogin(!isEmailLogin)}
         >
           Switch to {isEmailLogin ? "Username" : "Email"} Login
