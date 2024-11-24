@@ -90,7 +90,8 @@ export function SignUpForm() {
 
     if (parsedResponseBody.data?.statusText === "email_is_taken") {
       form.setError("email", {
-        message: "Email is already taken. Please choose another.",
+        message:
+          "Email is already taken. Please choose another. If you already have an account, please sign in.",
       });
 
       setFormIsLoading(false);
