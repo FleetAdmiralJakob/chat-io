@@ -37,7 +37,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.4",
-    "convex": "^1.17.0",
+    "convex": "^1.17.2",
     "convex-ents": "^0.13.0",
     "convex-helpers": "^0.1.65",
     "dayjs": "^1.11.13",
