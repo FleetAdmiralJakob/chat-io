@@ -30,8 +30,8 @@ const Navbar = () => {
     >
       <div className="flex w-full justify-around lg:h-full lg:flex-col">
         <Link
-          className={"flex flex-col items-center"}
-          href={"/"}
+          className="flex flex-col items-center"
+          href="/chats"
           aria-label="Go to the chat-overview page"
         >
           <MessagesSquare
@@ -39,11 +39,11 @@ const Navbar = () => {
               "text-accent": pathname.includes("/chats"),
             })}
           />
-          <p className={"mt-0.5 text-sm lg:hidden"}>Chats</p>
+          <p className="mt-0.5 text-sm lg:hidden">Chats</p>
         </Link>
         <Link
-          className={"flex flex-col items-center"}
-          href={"/todo"}
+          className="flex flex-col items-center"
+          href="/todo"
           aria-label="Go to the todo-overview page"
         >
           <CalendarCheck
@@ -51,19 +51,19 @@ const Navbar = () => {
               "text-accent": pathname === "/todo",
             })}
           />
-          <p className={"mt-0.5 text-sm lg:hidden"}>Todo</p>
+          <p className="mt-0.5 text-sm lg:hidden">Todo</p>
         </Link>
         <Link
-          className={"flex flex-col items-center"}
-          href={"/"}
+          className="flex flex-col items-center"
+          href="/"
           aria-label="Go to the group page"
         >
           <UsersRound />
-          <p className={"mt-0.5 text-sm lg:hidden"}>Group</p>
+          <p className="mt-0.5 text-sm lg:hidden">Group</p>
         </Link>
         <Link
-          className={"flex flex-col items-center"}
-          href={"/profile"}
+          className="flex flex-col items-center"
+          href="/profile"
           aria-label="Go to the profile page, where you can change your personal settings"
         >
           <CircleUser
@@ -71,7 +71,7 @@ const Navbar = () => {
               "text-accent": pathname === "/profile",
             })}
           />
-          <p className={"mt-0.5 text-sm lg:hidden"}>Profile</p>
+          <p className="mt-0.5 text-sm lg:hidden">Profile</p>
         </Link>
       </div>
     </div>
