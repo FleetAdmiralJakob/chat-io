@@ -4,7 +4,6 @@ import { useQueryWithStatus } from "~/app/convex-client-provider";
 import { cn } from "~/lib/utils";
 import { useMutation } from "convex/react";
 import { type FunctionReturnType } from "convex/server";
-import { ConvexError } from "convex/values";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import {
@@ -284,7 +283,7 @@ export const Message = ({
                     <div className="font-semibold text-destructive-foreground">
                       {message.type === "pendingRequest" ? (
                         <>
-                          <p>You've sent a request to clear the chat</p>
+                          <p>You&apos;ve sent a request to clear the chat</p>
                           <div className="mt-2 flex items-center text-xs">
                             <Clock className="mr-1 h-4 w-4" />
                             <span>Expires {getTimeRemaining()}</span>
