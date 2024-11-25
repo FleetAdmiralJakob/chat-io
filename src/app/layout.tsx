@@ -2,12 +2,12 @@ import "~/styles/globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import ConvexClientProvider from "~/app/convex-client-provider";
 import { ThemeProvider } from "~/components/theme-provider";
+import { Toaster } from "~/components/ui/sonner";
 import { cn } from "~/lib/utils";
 import { ConvexQueryCacheProvider } from "convex-helpers/react/cache/provider";
 import { GeistSans } from "geist/font/sans";
 import type { Metadata, Viewport } from "next";
 import React from "react";
-import { Toaster } from "sonner";
 
 const APP_NAME = "Chat.io";
 const APP_DEFAULT_TITLE = "Chat.io";
@@ -78,7 +78,8 @@ export default function RootLayout({
           <ClerkProvider dynamic>
             <ConvexClientProvider>
               <ConvexQueryCacheProvider>
-                {children} <Toaster />
+                {children}
+                <Toaster />
               </ConvexQueryCacheProvider>
             </ConvexClientProvider>
           </ClerkProvider>
