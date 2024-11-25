@@ -20,6 +20,7 @@ import { cn } from "~/lib/utils";
 import { devMode$ } from "~/states";
 import { useMutation } from "convex/react";
 import { type FunctionReturnType } from "convex/server";
+import { ConvexError } from "convex/values";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { AnimatePresence, motion } from "framer-motion";
@@ -38,6 +39,7 @@ import { useRouter } from "next/navigation";
 import React, { use, useCallback, useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useMediaQuery } from "react-responsive";
+import { toast } from "sonner";
 import { z } from "zod";
 import { api } from "../../../../../convex/_generated/api";
 import { type Id } from "../../../../../convex/_generated/dataModel";
@@ -381,7 +383,29 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
   const createClearRequest = useMutation(api.clearRequests.createClearRequest);
 
   const createClearRequestHandler = (chatId: string) => async () => {
-    await createClearRequest({ chatId });
+    try {
+      await createClearRequest({ chatId });
+    } catch (error) {
+      console.error("Failed to create clear chat request:", {
+        error,
+        chatId,
+      });
+
+      if (error instanceof ConvexError) {
+        type ConvexErrorData = { errorCode: string };
+        const errorData = error.data as ConvexErrorData;
+
+        if (errorData.errorCode === "ALREADY_OPEN_REQUEST") {
+          toast.error("A request to clear this chat is already pending");
+        } else {
+          toast.error(
+            "Failed to create clear chat request. Please try again later.",
+          );
+        }
+      } else {
+        toast.error("An unexpected error occurred. Please try again later.");
+      }
+    }
   };
 
   const [menuActive, setMenuActive] = useState(false);

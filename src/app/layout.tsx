@@ -2,6 +2,7 @@ import "~/styles/globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import ConvexClientProvider from "~/app/convex-client-provider";
 import { ThemeProvider } from "~/components/theme-provider";
+import { Toaster } from "~/components/ui/sonner";
 import { cn } from "~/lib/utils";
 import { ConvexQueryCacheProvider } from "convex-helpers/react/cache/provider";
 import { GeistSans } from "geist/font/sans";
@@ -76,7 +77,10 @@ export default function RootLayout({
         >
           <ClerkProvider dynamic>
             <ConvexClientProvider>
-              <ConvexQueryCacheProvider>{children}</ConvexQueryCacheProvider>
+              <ConvexQueryCacheProvider>
+                {children}
+                <Toaster />
+              </ConvexQueryCacheProvider>
             </ConvexClientProvider>
           </ClerkProvider>
         </ThemeProvider>

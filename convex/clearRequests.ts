@@ -47,7 +47,10 @@ export const createClearRequest = mutation({
       .filter((q) => q.eq(q.field("status"), "pending"));
 
     if (openRequests && openRequests?.length > 0) {
-      throw new ConvexError("There is already at least one open request.");
+      throw new ConvexError({
+        fullMessage: "There is already at least one open request.",
+        errorCode: "ALREADY_OPEN_REQUEST",
+      });
     }
 
     await ctx.table("clearRequests").insert({

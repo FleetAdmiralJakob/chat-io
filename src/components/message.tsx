@@ -1,7 +1,6 @@
 import { useUser } from "@clerk/nextjs";
 import { useFloating } from "@floating-ui/react";
 import { useQueryWithStatus } from "~/app/convex-client-provider";
-import { Toaster } from "~/components/ui/sonner";
 import { cn } from "~/lib/utils";
 import { useMutation } from "convex/react";
 import { type FunctionReturnType } from "convex/server";
@@ -11,6 +10,7 @@ import {
   Ban,
   CircleCheck,
   CircleX,
+  Clock,
   CopyCheck,
   Forward,
   Info,
@@ -180,6 +180,14 @@ export const Message = ({
     }
   };
 
+  // A clear chat request remains pending for 24 hours. If it is not accepted within that time,
+  // it will be marked as expired. This function calculates the remaining time
+  // before the request expires, in order to inform the user about the time left.
+  const getTimeRemaining = () => {
+    const expiryTime = dayjs(message._creationTime).add(24, "hours");
+    return dayjs().to(expiryTime);
+  };
+
   useEffect(() => {
     const markMessageAsRead = async () => {
       if (inView && message.sent && message.type == "message") {
@@ -219,8 +227,6 @@ export const Message = ({
 
   return (
     <>
-      <Toaster />
-
       {isModalOpen && message.type == "message" ? (
         <div
           onClick={() => setIsModalOpen(!isModalOpen)}
@@ -275,12 +281,20 @@ export const Message = ({
                 <div>
                   {message.type != "message" ? (
                     <div className="font-semibold text-destructive-foreground">
-                      {message.type === "pendingRequest"
-                        ? "You've sent a request to clear the chat"
-                        : message.type === "expiredRequest"
-                          ? "Your request to clear the chat has expired"
-                          : chatInfo.data?.otherUser[0]?.username +
-                            " has rejected the request to clear the chat"}
+                      {message.type === "pendingRequest" ? (
+                        <>
+                          <p>You&apos;ve sent a request to clear the chat</p>
+                          <div className="mt-2 flex items-center text-xs">
+                            <Clock className="mr-1 h-4 w-4" />
+                            <span>Expires {getTimeRemaining()}</span>
+                          </div>
+                        </>
+                      ) : message.type === "expiredRequest" ? (
+                        "Your request to clear the chat has expired"
+                      ) : (
+                        chatInfo.data?.otherUser[0]?.username +
+                        " has rejected the request to clear the chat"
+                      )}
                     </div>
                   ) : (
                     <div>{message.content}</div>
@@ -423,14 +437,24 @@ export const Message = ({
                 </div>
               ) : message.type != "message" ? (
                 <div className="font-semibold text-destructive-foreground">
-                  <p>
-                    {message.type === "pendingRequest"
-                      ? chatInfo.data?.otherUser[0]?.username +
-                        " has sent a request to clear the chat"
-                      : message.type === "expiredRequest"
-                        ? `The request of ${chatInfo.data?.otherUser[0]?.username + " to clear the chat"} has expired`
-                        : "You have rejected the request to clear the chat"}
-                  </p>
+                  <div>
+                    {message.type === "pendingRequest" ? (
+                      <>
+                        <span>
+                          {chatInfo.data?.otherUser[0]?.username} has sent a
+                          request to clear the chat
+                        </span>
+                        <div className="mt-2 flex items-center text-xs">
+                          <Clock className="mr-1 h-4 w-4" />
+                          <span>Expires {getTimeRemaining()}</span>
+                        </div>
+                      </>
+                    ) : message.type === "expiredRequest" ? (
+                      `The request of ${chatInfo.data?.otherUser[0]?.username + " to clear the chat"} has expired`
+                    ) : (
+                      "You have rejected the request to clear the chat"
+                    )}
+                  </div>
                   <div className="flex justify-between">
                     {message.type === "pendingRequest" ? (
                       <>

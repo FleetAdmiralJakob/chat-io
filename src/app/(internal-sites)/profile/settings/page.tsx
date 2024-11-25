@@ -14,7 +14,6 @@ import {
 } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-import { Toaster } from "~/components/ui/sonner";
 import {
   type FormSchemaUserUpdate,
   type formSchemaUserUpdate,
@@ -359,7 +358,6 @@ const SettingsPage = () => {
 
   return (
     <>
-      <Toaster />
       <div className="flex justify-center text-destructive-foreground lg:hidden">
         <p className="absolute top-12 text-xl font-semibold">Settings</p>
         <ChevronLeft
