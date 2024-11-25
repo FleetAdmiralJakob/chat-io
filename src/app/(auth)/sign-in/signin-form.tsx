@@ -18,7 +18,7 @@ import { useConvexAuth } from "convex/react";
 import { LoaderCircle } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { ReactNode, useEffect, useState } from "react";
+import React, { useEffect, useState, type ReactNode } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
