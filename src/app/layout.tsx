@@ -7,6 +7,7 @@ import { ConvexQueryCacheProvider } from "convex-helpers/react/cache/provider";
 import { GeistSans } from "geist/font/sans";
 import type { Metadata, Viewport } from "next";
 import React from "react";
+import { Toaster } from "sonner";
 
 const APP_NAME = "Chat.io";
 const APP_DEFAULT_TITLE = "Chat.io";
@@ -76,7 +77,9 @@ export default function RootLayout({
         >
           <ClerkProvider dynamic>
             <ConvexClientProvider>
-              <ConvexQueryCacheProvider>{children}</ConvexQueryCacheProvider>
+              <ConvexQueryCacheProvider>
+                {children} <Toaster />
+              </ConvexQueryCacheProvider>
             </ConvexClientProvider>
           </ClerkProvider>
         </ThemeProvider>
