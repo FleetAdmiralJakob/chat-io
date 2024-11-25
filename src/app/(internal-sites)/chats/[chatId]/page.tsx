@@ -386,17 +386,24 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
     try {
       await createClearRequest({ chatId });
     } catch (error) {
-      console.error(
-        "Error occured while trying to create a clear chat request",
+      console.error("Failed to create clear chat request:", {
         error,
-      );
+        chatId,
+      });
+
       if (error instanceof ConvexError) {
-        if (
-          (error.data as { errorCode: string }).errorCode ===
-          "ALREADY_OPEN_REQUEST"
-        ) {
-          toast.error("You already have an open request to clear this chat");
+        type ConvexErrorData = { errorCode: string };
+        const errorData = error.data as ConvexErrorData;
+
+        if (errorData.errorCode === "ALREADY_OPEN_REQUEST") {
+          toast.error("A request to clear this chat is already pending");
+        } else {
+          toast.error(
+            "Failed to create clear chat request. Please try again later.",
+          );
         }
+      } else {
+        toast.error("An unexpected error occurred. Please try again later.");
       }
     }
   };
