@@ -10,6 +10,7 @@ const isPublicRoute = createRouteMatcher([
   "/legal",
   "/contributors",
   "/sign-in",
+  "/reset-password",
 ]);
 const isApiRoute = createRouteMatcher(["/api/(.*)"]);
 

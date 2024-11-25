@@ -15,6 +15,7 @@
     "convex:deploy": "convex deploy"
   },
   "dependencies": {
+    "@clerk/elements": "^0.19.7",
     "@clerk/nextjs": "^6.3.4",
     "@clerk/shared": "^2.14.0",
     "@floating-ui/react": "^0.26.28",
