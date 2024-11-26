@@ -118,10 +118,15 @@ export const getChats = query({
             };
           }),
           chat.edge("clearRequests").map(async (request) => {
+            const [readBy, user] = await Promise.all([
+              request.edge("readBy"),
+              ctx.table("users").getX(request.userId),
+            ]);
             return {
               ...request,
               type: `${request.status}Request` as const,
-              clerkId: (await ctx.table("users").getX(request.userId)).clerkId,
+              readBy,
+              clerkId: user.clerkId,
             };
           }),
         ]);
@@ -139,20 +144,14 @@ export const getChats = query({
           const message = sortedMessages[i];
           if (!message) continue;
 
-          if (
-            (message.type === "message" && message.deleted) ||
-            (message.type !== "message" &&
-              (await ctx.table("users").getX(message.userId)).clerkId ===
-                identity.tokenIdentifier)
-          ) {
+          if (message.type === "message" && message.deleted) {
             deletedCount++;
           }
           const isReadMessage =
-            message.type === "message" &&
             message.readBy.some(
               (user) => user.clerkId === identity.tokenIdentifier,
             ) &&
-            !message.deleted;
+            (message.type !== "message" || !message.deleted);
           if (isReadMessage) {
             firstReadMessageIndex = i;
             break;

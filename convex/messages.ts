@@ -188,7 +188,7 @@ export const deleteMessage = mutation({
 });
 
 export const markMessageRead = mutation({
-  args: { messageId: v.id("messages") },
+  args: { messageId: v.union(v.id("messages"), v.id("clearRequests")) },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
 
@@ -207,20 +207,61 @@ export const markMessageRead = mutation({
       );
     }
 
-    const message = await ctx.table("messages").get(args.messageId);
+    const messageId = ctx.table("messages").normalizeId(args.messageId);
 
-    if (!message) {
-      return null;
-    }
+    if (messageId) {
+      const message = await ctx.table("messages").get(messageId);
 
-    await ctx
-      .table("messages")
-      .getX(args.messageId)
-      .patch({
+      if (!message) {
+        return null;
+      }
+
+      const chat = await ctx.table("privateChats").getX(message.privateChatId);
+      const usersInChat = await chat.edge("users");
+      if (
+        !usersInChat.some((user) => user.clerkId === identity.tokenIdentifier)
+      ) {
+        throw new ConvexError(
+          "User not authorized to mark messages in this chat",
+        );
+      }
+
+      await message.patch({
         readBy: {
           add: [convexUser._id],
         },
       });
+    } else {
+      const requestId = ctx.table("clearRequests").normalizeId(args.messageId);
+
+      if (requestId) {
+        const request = await ctx.table("clearRequests").get(requestId);
+
+        if (!request) {
+          return null;
+        }
+
+        const chat = await ctx
+          .table("privateChats")
+          .getX(request.privateChatId);
+        const usersInChat = await chat.edge("users");
+        if (
+          !usersInChat.some((user) => user.clerkId === identity.tokenIdentifier)
+        ) {
+          throw new ConvexError(
+            "User not authorized to mark messages in this chat",
+          );
+        }
+
+        await request.patch({
+          readBy: {
+            add: [convexUser._id],
+          },
+        });
+      } else {
+        return { success: false };
+      }
+    }
 
     return { success: true };
   },
