@@ -216,14 +216,21 @@ export const markMessageRead = mutation({
         return null;
       }
 
-      await ctx
-        .table("messages")
-        .getX(messageId)
-        .patch({
-          readBy: {
-            add: [convexUser._id],
-          },
-        });
+      const chat = await ctx.table("privateChats").getX(message.privateChatId);
+      const usersInChat = await chat.edge("users");
+      if (
+        !usersInChat.some((user) => user.clerkId === identity.tokenIdentifier)
+      ) {
+        throw new ConvexError(
+          "User not authorized to mark messages in this chat",
+        );
+      }
+
+      await message.patch({
+        readBy: {
+          add: [convexUser._id],
+        },
+      });
     } else {
       const requestId = ctx.table("clearRequests").normalizeId(args.messageId);
 
@@ -234,14 +241,23 @@ export const markMessageRead = mutation({
           return null;
         }
 
-        await ctx
-          .table("clearRequests")
-          .getX(requestId)
-          .patch({
-            readBy: {
-              add: [convexUser._id],
-            },
-          });
+        const chat = await ctx
+          .table("privateChats")
+          .getX(request.privateChatId);
+        const usersInChat = await chat.edge("users");
+        if (
+          !usersInChat.some((user) => user.clerkId === identity.tokenIdentifier)
+        ) {
+          throw new ConvexError(
+            "User not authorized to mark messages in this chat",
+          );
+        }
+
+        await request.patch({
+          readBy: {
+            add: [convexUser._id],
+          },
+        });
       } else {
         return { success: false };
       }
