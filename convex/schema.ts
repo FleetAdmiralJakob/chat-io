@@ -21,6 +21,11 @@ const schema = defineEntSchema({
       to: "messages",
       inverseField: "readBy",
       table: "readMessages",
+    })
+    .edges("readRequests", {
+      to: "clearRequests",
+      inverseField: "readBy",
+      table: "readRequests",
     }),
 
   clearRequests: defineEnt({})
@@ -32,6 +37,11 @@ const schema = defineEntSchema({
         v.literal("expired"),
       ),
     )
+    .edges("readBy", {
+      to: "users",
+      inverseField: "readRequests",
+      table: "readRequests",
+    })
     .edge("user")
     .edge("privateChat"),
 

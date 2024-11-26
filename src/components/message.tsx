@@ -190,7 +190,7 @@ export const Message = ({
 
   useEffect(() => {
     const markMessageAsRead = async () => {
-      if (inView && message.sent && message.type == "message") {
+      if (inView && message.sent) {
         await markRead({ messageId: message._id });
       }
     };

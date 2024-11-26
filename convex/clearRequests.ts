@@ -57,6 +57,7 @@ export const createClearRequest = mutation({
       userId: convexUser._id,
       privateChatId: parsedChatId,
       status: "pending",
+      readBy: [convexUser._id],
     });
   },
 });

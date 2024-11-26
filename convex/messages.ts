@@ -188,7 +188,7 @@ export const deleteMessage = mutation({
 });
 
 export const markMessageRead = mutation({
-  args: { messageId: v.id("messages") },
+  args: { messageId: v.union(v.id("messages"), v.id("clearRequests")) },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
 
@@ -207,20 +207,45 @@ export const markMessageRead = mutation({
       );
     }
 
-    const message = await ctx.table("messages").get(args.messageId);
+    const messageId = ctx.table("messages").normalizeId(args.messageId);
 
-    if (!message) {
-      return null;
+    if (messageId) {
+      const message = await ctx.table("messages").get(messageId);
+
+      if (!message) {
+        return null;
+      }
+
+      await ctx
+        .table("messages")
+        .getX(messageId)
+        .patch({
+          readBy: {
+            add: [convexUser._id],
+          },
+        });
+    } else {
+      const requestId = ctx.table("clearRequests").normalizeId(args.messageId);
+
+      if (requestId) {
+        const request = await ctx.table("clearRequests").get(requestId);
+
+        if (!request) {
+          return null;
+        }
+
+        await ctx
+          .table("clearRequests")
+          .getX(requestId)
+          .patch({
+            readBy: {
+              add: [convexUser._id],
+            },
+          });
+      } else {
+        return { success: false };
+      }
     }
-
-    await ctx
-      .table("messages")
-      .getX(args.messageId)
-      .patch({
-        readBy: {
-          add: [convexUser._id],
-        },
-      });
 
     return { success: true };
   },
