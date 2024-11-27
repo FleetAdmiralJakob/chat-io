@@ -8,6 +8,7 @@ import { ConvexQueryCacheProvider } from "convex-helpers/react/cache/provider";
 import { GeistSans } from "geist/font/sans";
 import type { Metadata, Viewport } from "next";
 import React from "react";
+import { CSPostHogProvider } from "./_analytics/provider";
 
 const APP_NAME = "Chat.io";
 const APP_DEFAULT_TITLE = "Chat.io";
@@ -76,12 +77,14 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <ClerkProvider dynamic>
-            <ConvexClientProvider>
-              <ConvexQueryCacheProvider>
-                {children}
-                <Toaster />
-              </ConvexQueryCacheProvider>
-            </ConvexClientProvider>
+            <CSPostHogProvider>
+              <ConvexClientProvider>
+                <ConvexQueryCacheProvider>
+                  {children}
+                  <Toaster />
+                </ConvexQueryCacheProvider>
+              </ConvexClientProvider>
+            </CSPostHogProvider>
           </ClerkProvider>
         </ThemeProvider>
       </body>

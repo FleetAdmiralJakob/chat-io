@@ -30,6 +30,7 @@ import { cn } from "~/lib/utils";
 import { useMutation } from "convex/react";
 import { ConvexError } from "convex/values";
 import { UserRoundPlus } from "lucide-react";
+import { usePostHog } from "posthog-js/react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -78,6 +79,8 @@ export function AddUserDialog({
 
   const addChatWithFriend = useMutation(api.chats.createChat);
 
+  const posthog = usePostHog();
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       await addChatWithFriend({
@@ -86,6 +89,7 @@ export function AddUserDialog({
       });
       form.reset();
       setDialogOpen(false);
+      posthog.capture("new_connection_added");
     } catch (e) {
       if (e instanceof ConvexError) {
         if (e.message.includes("Cannot create a chat with yourself")) {

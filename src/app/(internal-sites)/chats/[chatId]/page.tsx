@@ -36,6 +36,7 @@ import {
   X,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { usePostHog } from "posthog-js/react";
 import React, { use, useCallback, useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useMediaQuery } from "react-responsive";
@@ -148,6 +149,8 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
     const timer = setTimeout(() => setProgress(66), 500);
     return () => clearTimeout(timer);
   }, []);
+
+  const posthog = usePostHog();
 
   const sendMessage = useMutation(
     api.messages.createMessage,
@@ -367,6 +370,7 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
           newContent: trimmedMessage,
           messageId: editingMessageId,
         });
+        posthog.capture("message_edited");
       }
     } else {
       void sendMessage({
@@ -374,6 +378,7 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
         chatId: params.chatId,
         replyToId: replyToMessageId,
       });
+      posthog.capture("message_sent");
     }
 
     fullyResetInput();
