@@ -92,7 +92,12 @@ export default [
     },
   },
   {
-    files: ["convex/**", "src/env.ts"],
+    files: [
+      "convex/**",
+      "src/env.ts",
+      "next.config.js",
+      "src/instrumentation.ts",
+    ],
     rules: {
       "no-restricted-properties": "off",
       "no-restricted-imports": "off",
