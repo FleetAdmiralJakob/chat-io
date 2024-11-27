@@ -41,8 +41,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 
-# PWA
-public/sw.js
+# PWA / Serwist
+public/sw*
+public/swe-worker*
 .env.local
 
 # Sentry Config File
