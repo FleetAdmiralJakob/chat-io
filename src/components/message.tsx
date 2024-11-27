@@ -237,7 +237,7 @@ export const Message = ({
         {message.from.username == clerkUser.user?.username ? (
           <div
             ref={refs.setReference}
-            className={cn("my-1 mr-4 flex w-full flex-col items-end", {
+            className={cn("my-1 flex w-full flex-col items-end", {
               "mr-0 items-center":
                 message.type == "pendingRequest" ||
                 message.type == "rejectedRequest",
@@ -393,7 +393,7 @@ export const Message = ({
         ) : (
           <div
             ref={refs.setReference}
-            className={cn("my-1 ml-4 flex w-full flex-col items-start", {
+            className={cn("my-1 flex w-full flex-col items-start", {
               "ml-0 items-center":
                 message.type == "pendingRequest" ||
                 message.type == "rejectedRequest",

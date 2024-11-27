@@ -27,11 +27,13 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   ChevronDown,
   ChevronLeft,
+  MessageSquare,
   Mic,
   NotebookText,
   Phone,
   Plus,
   SendHorizontal,
+  Sparkles,
   Video,
   X,
 } from "lucide-react";
@@ -451,7 +453,7 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
             <p>chatId: {params.chatId}</p>
             <div onClick={() => devMode$.set(false)}>Disable dev mode</div>
           </DevMode>
-          <div className="flex h-20 w-full items-center justify-between bg-primary py-6">
+          <div className="flex h-20 w-full items-center justify-between bg-primary py-6 lg:px-3">
             <div className="text-lg lg:hidden">
               <ChevronLeft
                 className="ml-2 mr-1 cursor-pointer"
@@ -534,45 +536,61 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
             onScroll={handleScroll}
             ref={messagesEndRef}
           >
-            <div className="relative h-full w-full">
-              {messages.data ? (
-                <>
-                  {messages.data.map((message, key) => (
-                    <React.Fragment key={key}>
-                      <Message
-                        selectedMessageId={selectedMessageId}
-                        setSelectedMessageId={setSelectedMessageId}
-                        setEditingMessageId={setEditingMessageId}
-                        setReplyToMessageId={setReplyToMessageId}
-                        message={message}
-                      />
-                    </React.Fragment>
-                  ))}
-                  {!isNearBottom && messages.data.length > 0 && (
-                    <div className="sticky bottom-4 z-50 w-full px-4">
-                      <div className="flex justify-end">
-                        <button
-                          onClick={() => scrollToBottom()}
-                          className="flex h-10 w-10 items-center justify-center rounded-full bg-primary shadow-lg hover:bg-accent"
-                          aria-label="Scroll to bottom"
-                        >
-                          <ChevronDown className="h-6 w-6 text-destructive-foreground" />
-                        </button>
-                      </div>
+            {messages.data ? (
+              <div className="relative w-full p-3">
+                <div className="mb-8 flex w-full flex-col items-center justify-center gap-4 space-y-4 rounded-lg bg-secondary p-6 text-center shadow-lg">
+                  <div className="flex items-center justify-center gap-4 space-x-2 text-accent-foreground">
+                    <NotebookText className="h-6 w-6" />
+                    <span className="text-xl font-semibold">
+                      Let the Conversation Begin!
+                    </span>
+                    <NotebookText className="h-6 w-6" />
+                  </div>
+                  <p className="text-md text-accent-foreground">
+                    This is the beginning of an amazing chat. Share ideas,
+                    express yourself, and connect!
+                  </p>
+                  <div className="flex space-x-4 text-destructive-foreground">
+                    <SendHorizontal className="h-5 w-5 animate-pulse" />
+                    <MessageSquare className="h-5 w-5 animate-pulse delay-500" />
+                    <Sparkles className="h-5 w-5 animate-pulse delay-1000" />
+                  </div>
+                </div>
+                {messages.data.map((message, key) => (
+                  <React.Fragment key={key}>
+                    <Message
+                      selectedMessageId={selectedMessageId}
+                      setSelectedMessageId={setSelectedMessageId}
+                      setEditingMessageId={setEditingMessageId}
+                      setReplyToMessageId={setReplyToMessageId}
+                      message={message}
+                    />
+                  </React.Fragment>
+                ))}
+                {!isNearBottom && messages.data.length > 0 && (
+                  <div className="sticky bottom-4 z-50 w-full px-4">
+                    <div className="flex justify-end">
+                      <button
+                        onClick={() => scrollToBottom()}
+                        className="flex h-10 w-10 items-center justify-center rounded-full bg-primary shadow-lg hover:bg-accent"
+                        aria-label="Scroll to bottom"
+                      >
+                        <ChevronDown className="h-6 w-6 text-destructive-foreground" />
+                      </button>
                     </div>
-                  )}
-                </>
-              ) : (
-                <>
-                  <div className="flex justify-center lg:hidden">
-                    <SkeletonMessages count={10} />
                   </div>
-                  <div className="hidden h-full w-full items-center justify-center lg:flex">
-                    <Progress value={progress} className="w-[60%]" />
-                  </div>
-                </>
-              )}
-            </div>
+                )}
+              </div>
+            ) : (
+              <>
+                <div className="flex justify-center lg:hidden">
+                  <SkeletonMessages count={10} />
+                </div>
+                <div className="hidden h-full w-full items-center justify-center lg:flex">
+                  <Progress value={progress} className="w-[60%]" />
+                </div>
+              </>
+            )}
           </div>
 
           <div className="flex w-full items-center justify-start">
