@@ -47,6 +47,8 @@ import { z } from "zod";
 import { api } from "../../../../../convex/_generated/api";
 import { type Id } from "../../../../../convex/_generated/dataModel";
 
+export const dynamic = "force-static";
+
 dayjs.extend(relativeTime);
 
 const textMessageSchema = z.object({

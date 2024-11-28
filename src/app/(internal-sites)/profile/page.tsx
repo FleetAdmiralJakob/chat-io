@@ -18,6 +18,8 @@ interface settingsCard {
   icon?: JSX.Element;
 }
 
+export const dynamic = "force-static";
+
 export default function Profile() {
   const clerkUser = useUser();
   const username = clerkUser.user ? (clerkUser.user.username ?? "") : "";
