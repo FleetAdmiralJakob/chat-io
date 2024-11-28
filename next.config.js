@@ -2,6 +2,7 @@ import { fileURLToPath } from "node:url";
 import { withSentryConfig } from "@sentry/nextjs";
 import withSerwistInit from "@serwist/next";
 import createJiti from "jiti";
+import { withAxiom } from "next-axiom";
 
 const withSerwist = withSerwistInit({
   swSrc: "src/sw.ts",
@@ -17,39 +18,41 @@ const jiti = createJiti(fileURLToPath(import.meta.url));
 jiti("./src/env.ts");
 
 /** @type {import("next").NextConfig} */
-const baseConfig = withSerwist({
-  transpilePackages: ["geist"],
-  experimental: {
-    reactCompiler: true,
-  },
-  async redirects() {
-    return [
-      {
-        source: "/github",
-        destination: "https://github.com/FleetAdmiralJakob/chat-io",
-        permanent: true,
-      },
-    ];
-  },
-  async rewrites() {
-    return [
-      {
-        source: "/ingest/static/:path*",
-        destination: process.env.NEXT_PUBLIC_POSTHOG_HOST + "/static/:path*",
-      },
-      {
-        source: "/ingest/:path*",
-        destination: process.env.NEXT_PUBLIC_POSTHOG_HOST + "/:path*",
-      },
-      {
-        source: "/ingest/decide",
-        destination: process.env.NEXT_PUBLIC_POSTHOG_HOST + "/decide",
-      },
-    ];
-  },
-  // This is required to support PostHog trailing slash API requests
-  skipTrailingSlashRedirect: true,
-});
+const baseConfig = withAxiom(
+  withSerwist({
+    transpilePackages: ["geist"],
+    experimental: {
+      reactCompiler: true,
+    },
+    async redirects() {
+      return [
+        {
+          source: "/github",
+          destination: "https://github.com/FleetAdmiralJakob/chat-io",
+          permanent: true,
+        },
+      ];
+    },
+    async rewrites() {
+      return [
+        {
+          source: "/ingest/static/:path*",
+          destination: process.env.NEXT_PUBLIC_POSTHOG_HOST + "/static/:path*",
+        },
+        {
+          source: "/ingest/:path*",
+          destination: process.env.NEXT_PUBLIC_POSTHOG_HOST + "/:path*",
+        },
+        {
+          source: "/ingest/decide",
+          destination: process.env.NEXT_PUBLIC_POSTHOG_HOST + "/decide",
+        },
+      ];
+    },
+    // This is required to support PostHog trailing slash API requests
+    skipTrailingSlashRedirect: true,
+  }),
+);
 
 const config = withSentryConfig(baseConfig, {
   // For all available options, see:
