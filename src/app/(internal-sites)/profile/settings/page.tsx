@@ -33,8 +33,6 @@ import { toast } from "sonner";
 import { z, ZodError } from "zod";
 import { api } from "../../../../../convex/_generated/api";
 
-export const dynamic = "force-static";
-
 const SettingValidator = z.object({
   email: z.string().email(),
   password: z
