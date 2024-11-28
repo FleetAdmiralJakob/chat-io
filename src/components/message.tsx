@@ -128,22 +128,12 @@ export const Message = ({
     threshold: 0.9,
   });
 
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkIfMobile = () => {
-      const userAgent = navigator.userAgent;
-      if (/android/i.test(userAgent)) {
-        setIsMobile(true);
-      } else if (/iPad|iPhone|iPod/.test(userAgent)) {
-        setIsMobile(true);
-      } else {
-        setIsMobile(false);
-      }
-    };
-
-    checkIfMobile();
-  }, []);
+  const userAgent = navigator.userAgent;
+  const isMobile = /android/i.test(userAgent)
+    ? true
+    : /iPad|iPhone|iPod/.test(userAgent)
+      ? true
+      : false;
 
   const [messageOwner, setMessageOwner] = useState<boolean | null>(null);
   const { refs, floatingStyles } = useFloating({
