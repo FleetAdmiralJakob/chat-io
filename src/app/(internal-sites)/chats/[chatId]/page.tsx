@@ -189,6 +189,7 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
           existingMessages && args.replyToId && replyTo?.type === "message"
             ? { ...replyTo, replyTo: undefined }
             : null,
+        reactions: [],
       };
       localStore.setQuery(api.messages.getMessages, { chatId }, [
         ...(Array.isArray(existingMessages) ? existingMessages : []),
@@ -423,6 +424,12 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
 
   return (
     <main className="flex h-screen flex-col">
+      {selectedMessageId ? (
+        <div
+          onClick={() => setSelectedMessageId(null)}
+          className="fixed inset-0 z-40 bg-black opacity-75"
+        ></div>
+      ) : null}
       <ResizablePanelGroup className="w-full flex-grow" direction="horizontal">
         <ResizablePanel
           className="hidden w-full lg:block"
@@ -564,6 +571,7 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
                       setEditingMessageId={setEditingMessageId}
                       setReplyToMessageId={setReplyToMessageId}
                       message={message}
+                      userInfo={userInfo.data}
                     />
                   </React.Fragment>
                 ))}
