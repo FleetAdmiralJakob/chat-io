@@ -546,14 +546,14 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
             {messages.data ? (
               <div className="relative w-full p-3">
                 <div className="mb-8 flex w-full flex-col items-center justify-center gap-4 space-y-4 rounded-lg bg-secondary p-6 text-center shadow-lg">
-                  <div className="flex items-center justify-center gap-4 space-x-2 text-accent-foreground">
+                  <div className="flex items-center justify-center gap-4 space-x-2 text-destructive-foreground dark:text-accent-foreground">
                     <NotebookText className="h-6 w-6" />
                     <span className="text-xl font-semibold">
                       Let the Conversation Begin!
                     </span>
                     <NotebookText className="h-6 w-6" />
                   </div>
-                  <p className="text-md text-accent-foreground">
+                  <p className="text-md text-destructive-foreground dark:text-accent-foreground">
                     This is the beginning of an amazing chat. Share ideas,
                     express yourself, and connect!
                   </p>
