@@ -1,5 +1,8 @@
 "use client";
 
+import data from "@emoji-mart/data";
+import Picker from "@emoji-mart/react";
+import { autoPlacement, useFloating } from "@floating-ui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryWithStatus } from "~/app/convex-client-provider";
 import ChatsWithSearch from "~/components/chats-with-search";
@@ -52,6 +55,40 @@ dayjs.extend(relativeTime);
 const textMessageSchema = z.object({
   message: z.string().min(1).max(4000),
 });
+
+const EmojiPicker = ({
+  showFullEmojiPicker,
+  refsFullEmojiPicker,
+  floatingStylesFullEmojiPicker,
+  reactToMessageHandler,
+  selectedMessageId,
+}: {
+  showFullEmojiPicker: boolean;
+  refsFullEmojiPicker: {
+    setFloating: (ref: HTMLElement | null) => void;
+  };
+  selectedMessageId: Id<"messages"> | null;
+  floatingStylesFullEmojiPicker: React.CSSProperties;
+  reactToMessageHandler: (messageId: Id<"messages">, emoji: string) => void;
+}) => {
+  if (!showFullEmojiPicker || !selectedMessageId) return null;
+
+  return (
+    <div
+      ref={refsFullEmojiPicker.setFloating}
+      style={floatingStylesFullEmojiPicker}
+      className="z-[1000] opacity-100"
+    >
+      <Picker
+        data={data}
+        onEmojiSelect={(emoji: { native: string }) => {
+          console.log(emoji);
+          reactToMessageHandler(selectedMessageId, emoji.native);
+        }}
+      />
+    </div>
+  );
+};
 
 const SkeletonMessage = () => {
   return (
@@ -141,9 +178,8 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
     Id<"messages"> | undefined
   >(undefined);
 
-  const [selectedMessageId, setSelectedMessageId] = useState<string | null>(
-    null,
-  );
+  const [selectedMessageId, setSelectedMessageId] =
+    useState<Id<"messages"> | null>(null);
 
   const router = useRouter();
 
@@ -422,11 +458,76 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
     setMenuActive(!menuActive);
   };
 
+  const [showFullEmojiPicker, setShowFullEmojiPicker] = useState(false);
+
+  const [isInBottomHalf, setIsInBottomHalf] = useState<boolean | null>(null);
+
+  const {
+    refs: refsFullEmojiPicker,
+    floatingStyles: floatingStylesFullEmojiPicker,
+  } = useFloating({
+    middleware: [autoPlacement({ padding: 4 })],
+  });
+
+  const reactToMessage = useMutation(
+    api.messages.reactToMessage,
+  ).withOptimisticUpdate((localStore, args) => {
+    const messageId = args.messageId;
+    const emoji = args.reaction;
+
+    if (!userInfo.data) return;
+
+    const reaction = {
+      _id: crypto.randomUUID() as Id<"reactions">,
+      _creationTime: Date.now(),
+      messageId,
+      userId: userInfo.data._id,
+      emoji,
+      userInfo,
+    };
+
+    const existingMessages = localStore.getQuery(api.messages.getMessages, {
+      chatId: params.chatId,
+    });
+
+    if (existingMessages) {
+      localStore.setQuery(
+        api.messages.getMessages,
+        { chatId: params.chatId },
+        existingMessages.map((message) =>
+          message._id === messageId && message.type === "message"
+            ? {
+                ...message,
+                reactions: message.reactions?.find(
+                  (reaction) => reaction.userId === userInfo.data?._id,
+                )
+                  ? message.reactions.map((reaction) =>
+                      reaction.userId === userInfo.data?._id
+                        ? { ...reaction, emoji }
+                        : reaction,
+                    )
+                  : [...(message.reactions || []), reaction],
+              }
+            : message,
+        ),
+      );
+    }
+  });
+
+  const reactToMessageHandler = (messageId: Id<"messages">, emoji: string) => {
+    void reactToMessage({ messageId, reaction: emoji });
+    setSelectedMessageId(null);
+    setShowFullEmojiPicker(false);
+  };
+
   return (
     <main className="flex h-screen flex-col">
       {selectedMessageId ? (
         <div
-          onClick={() => setSelectedMessageId(null)}
+          onClick={() => {
+            setSelectedMessageId(null);
+            setShowFullEmojiPicker(false);
+          }}
           className="fixed inset-0 z-50 bg-black opacity-75"
         ></div>
       ) : null}
@@ -453,6 +554,15 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
           className="relative flex flex-col"
           id="resizable-panel-chat"
         >
+          <EmojiPicker
+            {...{
+              showFullEmojiPicker,
+              refsFullEmojiPicker,
+              floatingStylesFullEmojiPicker,
+              reactToMessageHandler,
+              selectedMessageId,
+            }}
+          />
           <DevMode className="top-20 z-10">
             <button onClick={createClearRequestHandler(params.chatId)}>
               Clear Chat Request
@@ -568,10 +678,15 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
                     <Message
                       selectedMessageId={selectedMessageId}
                       setSelectedMessageId={setSelectedMessageId}
+                      reactToMessageHandler={reactToMessageHandler}
                       setEditingMessageId={setEditingMessageId}
                       setReplyToMessageId={setReplyToMessageId}
                       message={message}
                       userInfo={userInfo.data}
+                      refsFullEmojiPicker={refsFullEmojiPicker}
+                      setShowFullEmojiPicker={setShowFullEmojiPicker}
+                      isInBottomHalf={isInBottomHalf}
+                      setIsInBottomHalf={setIsInBottomHalf}
                     />
                   </React.Fragment>
                 ))}

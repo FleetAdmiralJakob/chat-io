@@ -1,5 +1,5 @@
 import { useUser } from "@clerk/nextjs";
-import { useFloating } from "@floating-ui/react";
+import { useFloating, type ReferenceType } from "@floating-ui/react";
 import { useQueryWithStatus } from "~/app/convex-client-provider";
 import { cn } from "~/lib/utils";
 import { useMutation } from "convex/react";
@@ -15,10 +15,11 @@ import {
   Forward,
   Info,
   Pen,
+  Plus,
   Reply,
   Trash2,
 } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useInView } from "react-intersection-observer";
 import { toast } from "sonner";
@@ -63,10 +64,17 @@ export const Message = ({
   setEditingMessageId,
   setReplyToMessageId,
   userInfo,
+  setShowFullEmojiPicker,
+  refsFullEmojiPicker,
+  isInBottomHalf,
+  setIsInBottomHalf,
+  reactToMessageHandler,
 }: {
   message: Message;
-  selectedMessageId: string | null;
-  setSelectedMessageId: React.Dispatch<React.SetStateAction<string | null>>;
+  selectedMessageId: Id<"messages"> | null;
+  setSelectedMessageId: React.Dispatch<
+    React.SetStateAction<Id<"messages"> | null>
+  >;
   setEditingMessageId: React.Dispatch<
     React.SetStateAction<Id<"messages"> | null>
   >;
@@ -74,6 +82,13 @@ export const Message = ({
     React.SetStateAction<Id<"messages"> | undefined>
   >;
   userInfo: FunctionReturnType<typeof api.users.getUserData> | undefined;
+  setShowFullEmojiPicker: React.Dispatch<React.SetStateAction<boolean>>;
+  isInBottomHalf: boolean | null;
+  refsFullEmojiPicker: {
+    setReference: (node: ReferenceType | null) => void;
+  };
+  setIsInBottomHalf: React.Dispatch<React.SetStateAction<boolean | null>>;
+  reactToMessageHandler: (messageId: Id<"messages">, emoji: string) => void;
 }) => {
   const clerkUser = useUser();
 
@@ -118,51 +133,6 @@ export const Message = ({
     }
   });
 
-  const reactToMessage = useMutation(
-    api.messages.reactToMessage,
-  ).withOptimisticUpdate((localStore, args) => {
-    const messageId = args.messageId;
-    const emoji = args.reaction;
-
-    if (!userInfo) return;
-
-    const reaction = {
-      _id: crypto.randomUUID() as Id<"reactions">,
-      _creationTime: Date.now(),
-      messageId,
-      userId: userInfo._id,
-      emoji,
-      userInfo,
-    };
-
-    const existingMessages = localStore.getQuery(api.messages.getMessages, {
-      chatId: message.privateChatId,
-    });
-
-    if (existingMessages) {
-      localStore.setQuery(
-        api.messages.getMessages,
-        { chatId: message.privateChatId },
-        existingMessages.map((message) =>
-          message._id === messageId && message.type === "message"
-            ? {
-                ...message,
-                reactions: message.reactions?.find(
-                  (reaction) => reaction.emoji === emoji,
-                )
-                  ? message.reactions.filter(
-                      (reaction) => reaction.emoji !== emoji,
-                    )
-                  : [...(message.reactions || []), reaction],
-              }
-            : message,
-        ),
-      );
-    }
-  });
-
-  const [isInBottomHalf, setIsInBottomHalf] = useState<boolean | null>(null);
-
   const checkClickPosition = (e: React.MouseEvent) => {
     const clickPosition = e.clientY;
     const windowHeight = window.innerHeight;
@@ -192,17 +162,19 @@ export const Message = ({
             : "bottom-start",
     });
 
-  const { refs: refsEmojiPicker, floatingStyles: floatingStylesEmojiPicker } =
-    useFloating({
-      placement:
-        message.from._id === userInfo?._id
-          ? isInBottomHalf
-            ? "bottom-end"
-            : "top-end"
-          : isInBottomHalf
-            ? "bottom-start"
-            : "top-start",
-    });
+  const {
+    refs: refsEmojiPickerQuickReaction,
+    floatingStyles: floatingStylesEmojiPickerQuickReaction,
+  } = useFloating({
+    placement:
+      message.from._id === userInfo?._id
+        ? isInBottomHalf
+          ? "bottom-end"
+          : "top-end"
+        : isInBottomHalf
+          ? "bottom-start"
+          : "top-start",
+  });
 
   const markRead = useMutation(api.messages.markMessageRead);
 
@@ -268,15 +240,80 @@ export const Message = ({
   const replyToMessageHandler = (messageId: Id<"messages">) => {
     setReplyToMessageId(messageId);
     setSelectedMessageId(null);
+    setShowFullEmojiPicker(false);
   };
 
   const chatContainerElement = document.getElementById("resizable-panel-chat");
 
   return (
     <div className="flex" ref={ref}>
+      {chatContainerElement &&
+      message._id == selectedMessageId &&
+      message.type == "message"
+        ? // The reason for the creation of the portal is that we need the portal at a point where it is over EVERYTHING even the input etc.
+          createPortal(
+            <div
+              ref={(ref) => {
+                refsEmojiPickerQuickReaction.setFloating(ref);
+                refsFullEmojiPicker.setReference(ref);
+              }}
+              style={floatingStylesEmojiPickerQuickReaction}
+              className="z-50 py-3 opacity-100"
+            >
+              <div className="flex gap-4 rounded-lg border-2 border-secondary-foreground bg-secondary p-2 text-2xl">
+                <span className="flex aspect-square h-10 items-center justify-center rounded-full bg-primary p-1 hover:cursor-pointer">
+                  <span
+                    onMouseDown={() => reactToMessageHandler(message._id, "😂")}
+                    className="transition-transform hover:scale-125"
+                  >
+                    😂
+                  </span>
+                </span>
+                <span
+                  onMouseDown={() => reactToMessageHandler(message._id, "❤️")}
+                  className="flex aspect-square h-10 items-center justify-center rounded-full bg-primary p-1 hover:cursor-pointer"
+                >
+                  <span className="transition-transform hover:scale-125">
+                    ❤️
+                  </span>
+                </span>
+                <span
+                  onMouseDown={() => reactToMessageHandler(message._id, "👍")}
+                  className="flex aspect-square h-10 items-center justify-center rounded-full bg-primary p-1 hover:cursor-pointer"
+                >
+                  <span className="transition-transform hover:scale-125">
+                    👍
+                  </span>
+                </span>
+                <span
+                  onMouseDown={() => reactToMessageHandler(message._id, "👎")}
+                  className="flex aspect-square h-10 items-center justify-center rounded-full bg-primary p-1 hover:cursor-pointer"
+                >
+                  <span className="transition-transform hover:scale-125">
+                    👎
+                  </span>
+                </span>
+                <span
+                  onMouseDown={() => reactToMessageHandler(message._id, "😮")}
+                  className="flex aspect-square h-10 items-center justify-center rounded-full bg-primary p-1 hover:cursor-pointer"
+                >
+                  <span className="transition-transform hover:scale-125">
+                    😮
+                  </span>
+                </span>
+                <span
+                  onMouseDown={() => setShowFullEmojiPicker(true)}
+                  className="flex aspect-square h-10 items-center justify-center rounded-full bg-primary p-1 hover:cursor-pointer"
+                >
+                  <Plus className="transition-transform hover:scale-125" />
+                </span>
+              </div>
+            </div>,
+            chatContainerElement,
+          )
+        : null}
       {message.from.username == clerkUser.user?.username ? (
         <div
-          ref={refsContextModal.setReference}
           className={cn("my-1 flex w-full flex-col items-end", {
             "mr-0 items-center":
               message.type == "pendingRequest" ||
@@ -286,15 +323,27 @@ export const Message = ({
           <EditedLabel message={message} />
           <ReplyToMessage message={message} />
           <div
+            ref={(ref) => {
+              refsContextModal.setReference(ref);
+              refsEmojiPickerQuickReaction.setReference(ref);
+            }}
             onContextMenu={(e) => {
               e.preventDefault();
-              if (message.type === "message" && message.deleted) return;
+              if (
+                (message.type === "message" && message.deleted) ||
+                message.type !== "message"
+              )
+                return;
               checkClickPosition(e);
               setSelectedMessageId(message._id);
             }}
             onClick={(e) => {
               if (!isMobile) return;
-              if (message.type === "message" && message.deleted) return;
+              if (
+                (message.type === "message" && message.deleted) ||
+                message.type !== "message"
+              )
+                return;
               checkClickPosition(e);
               setSelectedMessageId(message._id);
             }}
@@ -333,7 +382,39 @@ export const Message = ({
                     )}
                   </div>
                 ) : (
-                  <div>{message.content}</div>
+                  <div className="space-y-2">
+                    <div>{message.content}</div>
+                    {message.reactions && message.reactions.length > 0 && (
+                      <div className="flex flex-wrap gap-1">
+                        {message.reactions
+                          .reduce(
+                            (acc, reaction) => {
+                              const existingReaction = acc.find(
+                                (r) => r.emoji === reaction.emoji,
+                              );
+                              if (existingReaction) {
+                                existingReaction.count++;
+                              } else {
+                                acc.push({ emoji: reaction.emoji, count: 1 });
+                              }
+                              return acc;
+                            },
+                            [] as { emoji: string; count: number }[],
+                          )
+                          .map((reaction, index) => (
+                            <div
+                              key={index}
+                              className="flex items-center rounded-full bg-primary/20 px-2 py-1 text-sm"
+                            >
+                              <span className="mr-1">{reaction.emoji}</span>
+                              <span className="text-xs text-secondary-foreground">
+                                {reaction.count}
+                              </span>
+                            </div>
+                          ))}
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
             )}
@@ -365,7 +446,7 @@ export const Message = ({
                 <div
                   ref={refsContextModal.setFloating}
                   style={floatingStylesContextModal}
-                  className="z-50 overflow-x-visible pb-3 opacity-100"
+                  className="z-50 overflow-x-visible py-3 opacity-100"
                 >
                   <div className="rounded-sm border-2 border-secondary-foreground">
                     <div className="rounded-sm bg-secondary">
@@ -374,6 +455,7 @@ export const Message = ({
                         onClick={() => {
                           void navigator.clipboard.writeText(message.content);
                           setSelectedMessageId(null);
+                          setShowFullEmojiPicker(false);
                           toast.success("Copied to clipboard");
                         }}
                       >
@@ -396,6 +478,7 @@ export const Message = ({
                         onClick={() => {
                           setEditingMessageId(message._id);
                           setSelectedMessageId(null);
+                          setShowFullEmojiPicker(false);
                         }}
                       >
                         <Pen />
@@ -409,6 +492,7 @@ export const Message = ({
                             chatId: message.privateChatId,
                           });
                           setSelectedMessageId(null);
+                          setShowFullEmojiPicker(false);
                         }}
                       >
                         <Trash2 />
@@ -427,7 +511,10 @@ export const Message = ({
         </div>
       ) : (
         <div
-          ref={refsContextModal.setReference}
+          ref={(ref) => {
+            refsContextModal.setReference(ref);
+            refsEmojiPickerQuickReaction.setReference(ref);
+          }}
           className={cn("my-1 flex w-full flex-col items-start", {
             "ml-0 items-center":
               message.type == "pendingRequest" ||
@@ -438,16 +525,27 @@ export const Message = ({
           <EditedLabel message={message} />
           <ReplyToMessage message={message} />
           <div
-            ref={refsContextModal.setReference}
+            ref={(ref) => {
+              refsContextModal.setReference(ref);
+              refsEmojiPickerQuickReaction.setReference(ref);
+            }}
             onContextMenu={(e) => {
               e.preventDefault();
-              if (message.type === "message" && message.deleted) return;
+              if (
+                (message.type === "message" && message.deleted) ||
+                message.type !== "message"
+              )
+                return;
               checkClickPosition(e);
               setSelectedMessageId(message._id);
             }}
             onClick={(e) => {
               if (!isMobile) return;
-              if (message.type === "message" && message.deleted) return;
+              if (
+                (message.type === "message" && message.deleted) ||
+                message.type !== "message"
+              )
+                return;
               checkClickPosition(e);
               setSelectedMessageId(message._id);
             }}
@@ -517,14 +615,12 @@ export const Message = ({
           {chatContainerElement &&
           message._id == selectedMessageId &&
           message.type == "message"
-            ? createPortal(
+            ? // The reason for the creation of the portal is that we need the portal at a point where it is over EVERYTHING even the input etc.
+              createPortal(
                 <div
                   ref={refsContextModal.setFloating}
                   style={floatingStylesContextModal}
-                  className={cn(
-                    "z-50 mt-4 pb-3 opacity-100",
-                    isInBottomHalf ? "mt-0" : null,
-                  )}
+                  className="z-50 py-3 opacity-100"
                 >
                   <div className="rounded-sm border-2 border-secondary-foreground">
                     <div className="rounded-sm bg-secondary">
@@ -532,6 +628,7 @@ export const Message = ({
                         onClick={() => {
                           void navigator.clipboard.writeText(message.content);
                           setSelectedMessageId(null);
+                          setShowFullEmojiPicker(false);
                           toast.success("Copied to clipboard");
                         }}
                         className="flex cursor-pointer p-2"

@@ -1,4 +1,5 @@
 import { ConvexError, v } from "convex/values";
+import emojiRegex from "emoji-regex";
 import { mutation, query } from "./lib/functions";
 
 export const getMessages = query({
@@ -322,11 +323,15 @@ export const reactToMessage = mutation({
       );
     }
 
-    // Check if reaction is an emoji
-    const emojiRegex = /^\p{Emoji}$/u;
-    if (!emojiRegex.test(args.reaction)) {
+    // Check if emoji
+    if (
+      !emojiRegex().test(args.reaction) ||
+      args.reaction.match(emojiRegex())!.length > 1
+    ) {
       throw new ConvexError("Reaction must be a single emoji");
     }
+
+    const trimmedReaction = args.reaction.trim();
 
     // Check if message exists
     const messageId = ctx.table("messages").normalizeId(args.messageId);
@@ -351,7 +356,7 @@ export const reactToMessage = mutation({
 
     // Create new reaction if none exists
     const reaction = await ctx.table("reactions").insert({
-      emoji: args.reaction,
+      emoji: trimmedReaction,
       userId: convexUser._id,
       messageId,
     });
