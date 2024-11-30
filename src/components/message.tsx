@@ -180,16 +180,29 @@ export const Message = ({
       ? true
       : false;
 
-  const [messageOwner, setMessageOwner] = useState<boolean | null>(null);
-  const { refs, floatingStyles } = useFloating({
-    placement: messageOwner
-      ? isInBottomHalf
-        ? "top-end"
-        : "bottom-end"
-      : isInBottomHalf
-        ? "top-start"
-        : "bottom-start",
-  });
+  const { refs: refsContextModal, floatingStyles: floatingStylesContextModal } =
+    useFloating({
+      placement:
+        message.from._id === userInfo?._id
+          ? isInBottomHalf
+            ? "top-end"
+            : "bottom-end"
+          : isInBottomHalf
+            ? "top-start"
+            : "bottom-start",
+    });
+
+  const { refs: refsEmojiPicker, floatingStyles: floatingStylesEmojiPicker } =
+    useFloating({
+      placement:
+        message.from._id === userInfo?._id
+          ? isInBottomHalf
+            ? "bottom-end"
+            : "top-end"
+          : isInBottomHalf
+            ? "bottom-start"
+            : "top-start",
+    });
 
   const markRead = useMutation(api.messages.markMessageRead);
 
@@ -263,7 +276,7 @@ export const Message = ({
     <div className="flex" ref={ref}>
       {message.from.username == clerkUser.user?.username ? (
         <div
-          ref={refs.setReference}
+          ref={refsContextModal.setReference}
           className={cn("my-1 flex w-full flex-col items-end", {
             "mr-0 items-center":
               message.type == "pendingRequest" ||
@@ -278,14 +291,12 @@ export const Message = ({
               if (message.type === "message" && message.deleted) return;
               checkClickPosition(e);
               setSelectedMessageId(message._id);
-              setMessageOwner(true);
             }}
             onClick={(e) => {
               if (!isMobile) return;
               if (message.type === "message" && message.deleted) return;
               checkClickPosition(e);
               setSelectedMessageId(message._id);
-              setMessageOwner(true);
             }}
             className={cn(
               "max-w-[66.6667%] cursor-default break-words rounded-sm bg-accent p-3",
@@ -352,8 +363,8 @@ export const Message = ({
             ? // The reason for the creation of the portal is that we need the portal at a point where it is over EVERYTHING even the input etc.
               createPortal(
                 <div
-                  ref={refs.setFloating}
-                  style={floatingStyles}
+                  ref={refsContextModal.setFloating}
+                  style={floatingStylesContextModal}
                   className="z-50 overflow-x-visible pb-3 opacity-100"
                 >
                   <div className="rounded-sm border-2 border-secondary-foreground">
@@ -416,7 +427,7 @@ export const Message = ({
         </div>
       ) : (
         <div
-          ref={refs.setReference}
+          ref={refsContextModal.setReference}
           className={cn("my-1 flex w-full flex-col items-start", {
             "ml-0 items-center":
               message.type == "pendingRequest" ||
@@ -427,20 +438,18 @@ export const Message = ({
           <EditedLabel message={message} />
           <ReplyToMessage message={message} />
           <div
-            ref={refs.setReference}
+            ref={refsContextModal.setReference}
             onContextMenu={(e) => {
               e.preventDefault();
               if (message.type === "message" && message.deleted) return;
               checkClickPosition(e);
               setSelectedMessageId(message._id);
-              setMessageOwner(false);
             }}
             onClick={(e) => {
               if (!isMobile) return;
               if (message.type === "message" && message.deleted) return;
               checkClickPosition(e);
               setSelectedMessageId(message._id);
-              setMessageOwner(false);
             }}
             className={cn(
               "max-w-[66.6667%] cursor-default break-words rounded-sm bg-secondary p-3",
@@ -510,8 +519,8 @@ export const Message = ({
           message.type == "message"
             ? createPortal(
                 <div
-                  ref={refs.setFloating}
-                  style={floatingStyles}
+                  ref={refsContextModal.setFloating}
+                  style={floatingStylesContextModal}
                   className={cn(
                     "z-50 mt-4 pb-3 opacity-100",
                     isInBottomHalf ? "mt-0" : null,

@@ -427,7 +427,7 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
       {selectedMessageId ? (
         <div
           onClick={() => setSelectedMessageId(null)}
-          className="fixed inset-0 z-40 bg-black opacity-75"
+          className="fixed inset-0 z-50 bg-black opacity-75"
         ></div>
       ) : null}
       <ResizablePanelGroup className="w-full flex-grow" direction="horizontal">
@@ -576,7 +576,7 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
                   </React.Fragment>
                 ))}
                 {!isNearBottom && messages.data.length > 0 && (
-                  <div className="sticky bottom-4 z-50 w-full px-4">
+                  <div className="sticky bottom-4 z-40 w-full px-4">
                     <div className="flex justify-end">
                       <button
                         onClick={() => scrollToBottom()}
