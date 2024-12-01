@@ -263,7 +263,17 @@ export const Message = ({
               <div className="flex gap-4 rounded-lg border-2 border-secondary-foreground bg-secondary p-2 text-2xl">
                 <span
                   onMouseDown={() => reactToMessageHandler(message._id, "😂")}
-                  className="flex aspect-square h-10 items-center justify-center rounded-full bg-card p-1 hover:cursor-pointer dark:bg-primary"
+                  className={cn(
+                    "flex aspect-square h-10 items-center justify-center rounded-full bg-card p-1 pt-1.5 hover:cursor-pointer dark:bg-primary",
+                    {
+                      "bg-muted-foreground dark:bg-card":
+                        message.reactions.find(
+                          (reaction) =>
+                            reaction.emoji === "😂" &&
+                            reaction.userId === userInfo?._id,
+                        ),
+                    },
+                  )}
                 >
                   <span className="transition-transform hover:scale-125">
                     😂
@@ -271,7 +281,17 @@ export const Message = ({
                 </span>
                 <span
                   onMouseDown={() => reactToMessageHandler(message._id, "❤️")}
-                  className="flex aspect-square h-10 items-center justify-center rounded-full bg-card p-1 hover:cursor-pointer dark:bg-primary"
+                  className={cn(
+                    "flex aspect-square h-10 items-center justify-center rounded-full bg-card p-1 pt-1.5 hover:cursor-pointer dark:bg-primary",
+                    {
+                      "bg-muted-foreground dark:bg-card":
+                        message.reactions.find(
+                          (reaction) =>
+                            reaction.emoji === "❤️" &&
+                            reaction.userId === userInfo?._id,
+                        ),
+                    },
+                  )}
                 >
                   <span className="transition-transform hover:scale-125">
                     ❤️
@@ -279,7 +299,17 @@ export const Message = ({
                 </span>
                 <span
                   onMouseDown={() => reactToMessageHandler(message._id, "👍")}
-                  className="flex aspect-square h-10 items-center justify-center rounded-full bg-card p-1 hover:cursor-pointer dark:bg-primary"
+                  className={cn(
+                    "flex aspect-square h-10 items-center justify-center rounded-full bg-card p-1 pt-1.5 hover:cursor-pointer dark:bg-primary",
+                    {
+                      "bg-muted-foreground dark:bg-card":
+                        message.reactions.find(
+                          (reaction) =>
+                            reaction.emoji === "👍" &&
+                            reaction.userId === userInfo?._id,
+                        ),
+                    },
+                  )}
                 >
                   <span className="transition-transform hover:scale-125">
                     👍
@@ -287,7 +317,17 @@ export const Message = ({
                 </span>
                 <span
                   onMouseDown={() => reactToMessageHandler(message._id, "👎")}
-                  className="flex aspect-square h-10 items-center justify-center rounded-full bg-card p-1 hover:cursor-pointer dark:bg-primary"
+                  className={cn(
+                    "flex aspect-square h-10 items-center justify-center rounded-full bg-card p-1 pt-1.5 hover:cursor-pointer dark:bg-primary",
+                    {
+                      "bg-muted-foreground dark:bg-card":
+                        message.reactions.find(
+                          (reaction) =>
+                            reaction.emoji === "👎" &&
+                            reaction.userId === userInfo?._id,
+                        ),
+                    },
+                  )}
                 >
                   <span className="transition-transform hover:scale-125">
                     👎
@@ -295,7 +335,17 @@ export const Message = ({
                 </span>
                 <span
                   onMouseDown={() => reactToMessageHandler(message._id, "😮")}
-                  className="flex aspect-square h-10 items-center justify-center rounded-full bg-card p-1 hover:cursor-pointer dark:bg-primary"
+                  className={cn(
+                    "flex aspect-square h-10 items-center justify-center rounded-full bg-card p-1 pt-1.5 hover:cursor-pointer dark:bg-primary",
+                    {
+                      "bg-muted-foreground dark:bg-card":
+                        message.reactions.find(
+                          (reaction) =>
+                            reaction.emoji === "😮" &&
+                            reaction.userId === userInfo?._id,
+                        ),
+                    },
+                  )}
                 >
                   <span className="transition-transform hover:scale-125">
                     😮
@@ -356,6 +406,8 @@ export const Message = ({
                 "my-2 max-w-[80%] border-2 border-secondary bg-primary":
                   message.type == "pendingRequest" ||
                   message.type == "rejectedRequest",
+                "mb-3":
+                  message.type === "message" && message.reactions.length > 0,
               },
             )}
           >
@@ -384,10 +436,10 @@ export const Message = ({
                     )}
                   </div>
                 ) : (
-                  <div className="space-y-2">
+                  <div className="relative">
                     <div>{message.content}</div>
                     {message.reactions && message.reactions.length > 0 && (
-                      <div className="flex flex-wrap gap-1">
+                      <div className="absolute right-0 flex -translate-x-[0%] items-center justify-center gap-1 rounded-full bg-secondary px-1">
                         {message.reactions
                           .reduce(
                             (acc, reaction) => {
@@ -406,12 +458,16 @@ export const Message = ({
                           .map((reaction, index) => (
                             <div
                               key={index}
-                              className="flex items-center rounded-full bg-primary/20 px-2 py-1 text-sm"
+                              className="flex items-center justify-center rounded-full bg-primary/20 text-sm"
                             >
-                              <span className="mr-1">{reaction.emoji}</span>
-                              <span className="text-xs text-secondary-foreground">
-                                {reaction.count}
+                              <span className="flex aspect-square h-6 items-center justify-center pt-0.5">
+                                {reaction.emoji}
                               </span>
+                              {reaction.count > 1 && (
+                                <span className="pl-1 text-xs text-secondary-foreground">
+                                  {reaction.count}
+                                </span>
+                              )}
                             </div>
                           ))}
                       </div>
@@ -558,6 +614,8 @@ export const Message = ({
                 "my-2 max-w-[80%] border-2 border-secondary bg-primary":
                   message.type === "pendingRequest" ||
                   message.type === "rejectedRequest",
+                "mb-3":
+                  message.type === "message" && message.reactions.length > 0,
               },
             )}
           >
@@ -611,7 +669,43 @@ export const Message = ({
                 </div>
               </div>
             ) : (
-              message.content
+              <div className="relative">
+                <div>{message.content}</div>
+                {message.reactions && message.reactions.length > 0 && (
+                  <div className="absolute left-0 flex -translate-x-[0%] items-center justify-center gap-1 rounded-full bg-secondary px-1">
+                    {message.reactions
+                      .reduce(
+                        (acc, reaction) => {
+                          const existingReaction = acc.find(
+                            (r) => r.emoji === reaction.emoji,
+                          );
+                          if (existingReaction) {
+                            existingReaction.count++;
+                          } else {
+                            acc.push({ emoji: reaction.emoji, count: 1 });
+                          }
+                          return acc;
+                        },
+                        [] as { emoji: string; count: number }[],
+                      )
+                      .map((reaction, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center justify-center rounded-full bg-primary/20 text-sm"
+                        >
+                          <span className="flex aspect-square h-6 items-center justify-center pt-0.5">
+                            {reaction.emoji}
+                          </span>
+                          {reaction.count > 1 && (
+                            <span className="pl-1 text-xs text-secondary-foreground">
+                              {reaction.count}
+                            </span>
+                          )}
+                        </div>
+                      ))}
+                  </div>
+                )}
+              </div>
             )}
           </div>
           {chatContainerElement &&

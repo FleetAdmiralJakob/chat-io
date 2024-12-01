@@ -346,7 +346,11 @@ export const reactToMessage = mutation({
       .filter((q) => q.eq(q.field("userId"), convexUser._id))
       .first();
 
-    if (existingReaction) {
+    if (existingReaction && existingReaction.emoji === trimmedReaction) {
+      // Remove existing reaction
+      await existingReaction.delete();
+      return null;
+    } else if (existingReaction) {
       // Update existing reaction
       await existingReaction.patch({
         emoji: args.reaction,

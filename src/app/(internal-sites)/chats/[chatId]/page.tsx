@@ -499,14 +499,30 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
             ? {
                 ...message,
                 reactions: message.reactions?.find(
-                  (reaction) => reaction.userId === userInfo.data?._id,
+                  // Check if user already reacted with same emoji
+                  (reaction) =>
+                    reaction.userId === userInfo.data?._id &&
+                    reaction.emoji === emoji,
                 )
-                  ? message.reactions.map((reaction) =>
-                      reaction.userId === userInfo.data?._id
-                        ? { ...reaction, emoji }
-                        : reaction,
+                  ? // If same reaction exists, remove it (toggling off)
+                    message.reactions.filter(
+                      (reaction) =>
+                        !(
+                          reaction.userId === userInfo.data?._id &&
+                          reaction.emoji === emoji
+                        ),
                     )
-                  : [...(message.reactions || []), reaction],
+                  : // If user has different reaction, update it
+                    message.reactions?.find(
+                        (reaction) => reaction.userId === userInfo.data?._id,
+                      )
+                    ? message.reactions.map((reaction) =>
+                        reaction.userId === userInfo.data?._id
+                          ? { ...reaction, emoji }
+                          : reaction,
+                      )
+                    : // If no existing reaction, add new one
+                      [...(message.reactions || []), reaction],
               }
             : message,
         ),
