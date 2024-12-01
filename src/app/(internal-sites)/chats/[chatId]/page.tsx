@@ -698,7 +698,7 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
                       setEditingMessageId={setEditingMessageId}
                       setReplyToMessageId={setReplyToMessageId}
                       message={message}
-                      userInfo={userInfo.data}
+                      userInfos={[userInfo.data, chatInfo.data?.otherUser]}
                       refsFullEmojiPicker={refsFullEmojiPicker}
                       setShowFullEmojiPicker={setShowFullEmojiPicker}
                       isInBottomHalf={isInBottomHalf}

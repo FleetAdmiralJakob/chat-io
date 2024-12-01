@@ -1,6 +1,11 @@
 import { useUser } from "@clerk/nextjs";
 import { useFloating, type ReferenceType } from "@floating-ui/react";
 import { useQueryWithStatus } from "~/app/convex-client-provider";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "~/components/ui/popover";
 import { cn } from "~/lib/utils";
 import { useMutation } from "convex/react";
 import { type FunctionReturnType } from "convex/server";
@@ -24,7 +29,7 @@ import { createPortal } from "react-dom";
 import { useInView } from "react-intersection-observer";
 import { toast } from "sonner";
 import { api } from "../../convex/_generated/api";
-import { type Id } from "../../convex/_generated/dataModel";
+import type { Doc, Id } from "../../convex/_generated/dataModel";
 
 dayjs.extend(relativeTime);
 
@@ -57,13 +62,67 @@ const ReplyToMessage = ({ message }: { message: Message }) => {
   }
 };
 
+const ReactionDetails = ({
+  reactions,
+  userInfos,
+}: {
+  reactions: Doc<"reactions">[];
+  userInfos: [
+    FunctionReturnType<typeof api.users.getUserData> | undefined,
+    (
+      | undefined
+      | NonNullable<
+          FunctionReturnType<typeof api.chats.getChatInfoFromId>
+        >["otherUser"]
+    ),
+  ];
+}) => {
+  // Group reactions by emoji
+  const reactionsByEmoji = reactions.reduce(
+    (acc, reaction) => {
+      acc[reaction.emoji] = acc[reaction.emoji] ?? [];
+      if (acc[reaction.emoji] === undefined) {
+        acc[reaction.emoji] = [];
+      }
+      acc[reaction.emoji]!.push(reaction);
+      return acc;
+    },
+    {} as Record<string, typeof reactions>,
+  );
+
+  return (
+    <div className="flex flex-col gap-2 p-2">
+      {Object.entries(reactionsByEmoji).map(([emoji, reactions]) => (
+        <div key={emoji}>
+          <div className="flex items-center gap-2">
+            <span className="text-xl">{emoji}</span>
+            <div className="text-sm">
+              {reactions
+                .map((reaction) => {
+                  const user =
+                    userInfos[0]?._id === reaction.userId
+                      ? userInfos[0]
+                      : Array.isArray(userInfos[1])
+                        ? userInfos[1].find((u) => u._id === reaction.userId)
+                        : userInfos[1];
+                  return user?.username;
+                })
+                .join(", ")}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 export const Message = ({
   message,
   selectedMessageId,
   setSelectedMessageId,
   setEditingMessageId,
   setReplyToMessageId,
-  userInfo,
+  userInfos,
   setShowFullEmojiPicker,
   refsFullEmojiPicker,
   isInBottomHalf,
@@ -81,7 +140,15 @@ export const Message = ({
   setReplyToMessageId: React.Dispatch<
     React.SetStateAction<Id<"messages"> | undefined>
   >;
-  userInfo: FunctionReturnType<typeof api.users.getUserData> | undefined;
+  userInfos: [
+    FunctionReturnType<typeof api.users.getUserData> | undefined,
+    (
+      | undefined
+      | NonNullable<
+          FunctionReturnType<typeof api.chats.getChatInfoFromId>
+        >["otherUser"]
+    ),
+  ];
   setShowFullEmojiPicker: React.Dispatch<React.SetStateAction<boolean>>;
   isInBottomHalf: boolean | null;
   refsFullEmojiPicker: {
@@ -153,7 +220,7 @@ export const Message = ({
   const { refs: refsContextModal, floatingStyles: floatingStylesContextModal } =
     useFloating({
       placement:
-        message.from._id === userInfo?._id
+        message.from._id === userInfos[0]?._id
           ? isInBottomHalf
             ? "top-end"
             : "bottom-end"
@@ -167,7 +234,7 @@ export const Message = ({
     floatingStyles: floatingStylesEmojiPickerQuickReaction,
   } = useFloating({
     placement:
-      message.from._id === userInfo?._id
+      message.from._id === userInfos[0]?._id
         ? isInBottomHalf
           ? "bottom-end"
           : "top-end"
@@ -270,7 +337,7 @@ export const Message = ({
                         message.reactions.find(
                           (reaction) =>
                             reaction.emoji === "😂" &&
-                            reaction.userId === userInfo?._id,
+                            reaction.userId === userInfos[0]?._id,
                         ),
                     },
                   )}
@@ -288,7 +355,7 @@ export const Message = ({
                         message.reactions.find(
                           (reaction) =>
                             reaction.emoji === "❤️" &&
-                            reaction.userId === userInfo?._id,
+                            reaction.userId === userInfos[0]?._id,
                         ),
                     },
                   )}
@@ -306,7 +373,7 @@ export const Message = ({
                         message.reactions.find(
                           (reaction) =>
                             reaction.emoji === "👍" &&
-                            reaction.userId === userInfo?._id,
+                            reaction.userId === userInfos[0]?._id,
                         ),
                     },
                   )}
@@ -324,7 +391,7 @@ export const Message = ({
                         message.reactions.find(
                           (reaction) =>
                             reaction.emoji === "👎" &&
-                            reaction.userId === userInfo?._id,
+                            reaction.userId === userInfos[0]?._id,
                         ),
                     },
                   )}
@@ -342,7 +409,7 @@ export const Message = ({
                         message.reactions.find(
                           (reaction) =>
                             reaction.emoji === "😮" &&
-                            reaction.userId === userInfo?._id,
+                            reaction.userId === userInfos[0]?._id,
                         ),
                     },
                   )}
@@ -439,38 +506,49 @@ export const Message = ({
                   <div className="relative">
                     <div>{message.content}</div>
                     {message.reactions && message.reactions.length > 0 && (
-                      <div className="absolute right-0 flex -translate-x-[0%] items-center justify-center gap-1 rounded-full bg-secondary px-1">
-                        {message.reactions
-                          .reduce(
-                            (acc, reaction) => {
-                              const existingReaction = acc.find(
-                                (r) => r.emoji === reaction.emoji,
-                              );
-                              if (existingReaction) {
-                                existingReaction.count++;
-                              } else {
-                                acc.push({ emoji: reaction.emoji, count: 1 });
-                              }
-                              return acc;
-                            },
-                            [] as { emoji: string; count: number }[],
-                          )
-                          .map((reaction, index) => (
-                            <div
-                              key={index}
-                              className="flex items-center justify-center rounded-full bg-primary/20 text-sm"
-                            >
-                              <span className="flex aspect-square h-6 items-center justify-center pt-0.5">
-                                {reaction.emoji}
-                              </span>
-                              {reaction.count > 1 && (
-                                <span className="pl-1 text-xs text-secondary-foreground">
-                                  {reaction.count}
+                      <Popover>
+                        <PopoverTrigger className="absolute right-0 flex -translate-x-[0%] items-center justify-center gap-1 rounded-full bg-secondary px-1">
+                          {message.reactions
+                            .reduce(
+                              (acc, reaction) => {
+                                const existingReaction = acc.find(
+                                  (r) => r.emoji === reaction.emoji,
+                                );
+                                if (existingReaction) {
+                                  existingReaction.count++;
+                                } else {
+                                  acc.push({
+                                    emoji: reaction.emoji,
+                                    count: 1,
+                                  });
+                                }
+                                return acc;
+                              },
+                              [] as { emoji: string; count: number }[],
+                            )
+                            .map((reaction, index) => (
+                              <div
+                                key={index}
+                                className="flex items-center justify-center rounded-full bg-primary/20 text-sm"
+                              >
+                                <span className="flex aspect-square h-6 items-center justify-center pt-0.5">
+                                  {reaction.emoji}
                                 </span>
-                              )}
-                            </div>
-                          ))}
-                      </div>
+                                {reaction.count > 1 && (
+                                  <span className="pl-1 text-xs text-secondary-foreground">
+                                    {reaction.count}
+                                  </span>
+                                )}
+                              </div>
+                            ))}
+                        </PopoverTrigger>
+                        <PopoverContent>
+                          <ReactionDetails
+                            reactions={message.reactions}
+                            userInfos={userInfos}
+                          />
+                        </PopoverContent>
+                      </Popover>
                     )}
                   </div>
                 )}
@@ -672,38 +750,46 @@ export const Message = ({
               <div className="relative">
                 <div>{message.content}</div>
                 {message.reactions && message.reactions.length > 0 && (
-                  <div className="absolute left-0 flex -translate-x-[0%] items-center justify-center gap-1 rounded-full bg-secondary px-1">
-                    {message.reactions
-                      .reduce(
-                        (acc, reaction) => {
-                          const existingReaction = acc.find(
-                            (r) => r.emoji === reaction.emoji,
-                          );
-                          if (existingReaction) {
-                            existingReaction.count++;
-                          } else {
-                            acc.push({ emoji: reaction.emoji, count: 1 });
-                          }
-                          return acc;
-                        },
-                        [] as { emoji: string; count: number }[],
-                      )
-                      .map((reaction, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center justify-center rounded-full bg-primary/20 text-sm"
-                        >
-                          <span className="flex aspect-square h-6 items-center justify-center pt-0.5">
-                            {reaction.emoji}
-                          </span>
-                          {reaction.count > 1 && (
-                            <span className="pl-1 text-xs text-secondary-foreground">
-                              {reaction.count}
+                  <Popover>
+                    <PopoverTrigger className="absolute left-0 flex -translate-x-[0%] items-center justify-center gap-1 rounded-full bg-secondary px-1">
+                      {message.reactions
+                        .reduce(
+                          (acc, reaction) => {
+                            const existingReaction = acc.find(
+                              (r) => r.emoji === reaction.emoji,
+                            );
+                            if (existingReaction) {
+                              existingReaction.count++;
+                            } else {
+                              acc.push({ emoji: reaction.emoji, count: 1 });
+                            }
+                            return acc;
+                          },
+                          [] as { emoji: string; count: number }[],
+                        )
+                        .map((reaction, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center justify-center rounded-full bg-primary/20 text-sm"
+                          >
+                            <span className="flex aspect-square h-6 items-center justify-center pt-0.5">
+                              {reaction.emoji}
                             </span>
-                          )}
-                        </div>
-                      ))}
-                  </div>
+                            {reaction.count > 1 && (
+                              <span className="pl-1 text-xs text-secondary-foreground">
+                                {reaction.count}
+                              </span>
+                            )}
+                          </div>
+                        ))}
+                    </PopoverTrigger>
+                    <PopoverContent>
+                      <ReactionDetails
+                        reactions={message.reactions}
+                        userInfos={userInfos}
+                      />
+                    </PopoverContent>
+                  </Popover>
                 )}
               </div>
             )}
