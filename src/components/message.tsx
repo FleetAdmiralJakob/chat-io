@@ -261,17 +261,17 @@ export const Message = ({
               className="z-50 py-3 opacity-100"
             >
               <div className="flex gap-4 rounded-lg border-2 border-secondary-foreground bg-secondary p-2 text-2xl">
-                <span className="flex aspect-square h-10 items-center justify-center rounded-full bg-primary p-1 hover:cursor-pointer">
-                  <span
-                    onMouseDown={() => reactToMessageHandler(message._id, "😂")}
-                    className="transition-transform hover:scale-125"
-                  >
+                <span
+                  onMouseDown={() => reactToMessageHandler(message._id, "😂")}
+                  className="flex aspect-square h-10 items-center justify-center rounded-full bg-card p-1 hover:cursor-pointer dark:bg-primary"
+                >
+                  <span className="transition-transform hover:scale-125">
                     😂
                   </span>
                 </span>
                 <span
                   onMouseDown={() => reactToMessageHandler(message._id, "❤️")}
-                  className="flex aspect-square h-10 items-center justify-center rounded-full bg-primary p-1 hover:cursor-pointer"
+                  className="flex aspect-square h-10 items-center justify-center rounded-full bg-card p-1 hover:cursor-pointer dark:bg-primary"
                 >
                   <span className="transition-transform hover:scale-125">
                     ❤️
@@ -279,7 +279,7 @@ export const Message = ({
                 </span>
                 <span
                   onMouseDown={() => reactToMessageHandler(message._id, "👍")}
-                  className="flex aspect-square h-10 items-center justify-center rounded-full bg-primary p-1 hover:cursor-pointer"
+                  className="flex aspect-square h-10 items-center justify-center rounded-full bg-card p-1 hover:cursor-pointer dark:bg-primary"
                 >
                   <span className="transition-transform hover:scale-125">
                     👍
@@ -287,7 +287,7 @@ export const Message = ({
                 </span>
                 <span
                   onMouseDown={() => reactToMessageHandler(message._id, "👎")}
-                  className="flex aspect-square h-10 items-center justify-center rounded-full bg-primary p-1 hover:cursor-pointer"
+                  className="flex aspect-square h-10 items-center justify-center rounded-full bg-card p-1 hover:cursor-pointer dark:bg-primary"
                 >
                   <span className="transition-transform hover:scale-125">
                     👎
@@ -295,15 +295,17 @@ export const Message = ({
                 </span>
                 <span
                   onMouseDown={() => reactToMessageHandler(message._id, "😮")}
-                  className="flex aspect-square h-10 items-center justify-center rounded-full bg-primary p-1 hover:cursor-pointer"
+                  className="flex aspect-square h-10 items-center justify-center rounded-full bg-card p-1 hover:cursor-pointer dark:bg-primary"
                 >
                   <span className="transition-transform hover:scale-125">
                     😮
                   </span>
                 </span>
                 <span
-                  onMouseDown={() => setShowFullEmojiPicker(true)}
-                  className="flex aspect-square h-10 items-center justify-center rounded-full bg-primary p-1 hover:cursor-pointer"
+                  onMouseDown={() =>
+                    setShowFullEmojiPicker((prevValue) => !prevValue)
+                  }
+                  className="flex aspect-square h-10 items-center justify-center rounded-full bg-card p-1 hover:cursor-pointer dark:bg-primary"
                 >
                   <Plus className="transition-transform hover:scale-125" />
                 </span>
