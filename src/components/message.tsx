@@ -33,7 +33,7 @@ import type { Doc, Id } from "../../convex/_generated/dataModel";
 
 dayjs.extend(relativeTime);
 
-type Message = NonNullable<
+export type Message = NonNullable<
   FunctionReturnType<typeof api.messages.getMessages>
 >[number];
 

@@ -490,41 +490,53 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
     });
 
     if (existingMessages) {
+      const updateMessageReactions = (message: Message) => {
+        // Skip messages that don't match target message ID or aren't message type
+        if (message._id !== messageId || message.type !== "message") {
+          return message;
+        }
+
+        // Check if user already has the exact same emoji reaction
+        const existingReaction = message.reactions?.find(
+          (r) => r.userId === userInfo.data?._id && r.emoji === emoji,
+        );
+
+        // If user already reacted with this emoji, remove it (toggle off)
+        if (existingReaction) {
+          return {
+            ...message,
+            reactions: message.reactions.filter(
+              (r) => !(r.userId === userInfo.data?._id && r.emoji === emoji),
+            ),
+          };
+        }
+
+        // Check if user has reacted with a different emoji
+        const hasOtherReaction = message.reactions?.find(
+          (r) => r.userId === userInfo.data?._id,
+        );
+
+        // If user has different reaction, update existing one to new emoji
+        if (hasOtherReaction) {
+          return {
+            ...message,
+            reactions: message.reactions.map((r) =>
+              r.userId === userInfo.data?._id ? { ...r, emoji } : r,
+            ),
+          };
+        }
+
+        // No existing reactions from user - add new reaction
+        return {
+          ...message,
+          reactions: [...(message.reactions || []), reaction],
+        };
+      };
+
       localStore.setQuery(
         api.messages.getMessages,
         { chatId: params.chatId },
-        existingMessages.map((message) =>
-          message._id === messageId && message.type === "message"
-            ? {
-                ...message,
-                reactions: message.reactions?.find(
-                  // Check if user already reacted with same emoji
-                  (reaction) =>
-                    reaction.userId === userInfo.data?._id &&
-                    reaction.emoji === emoji,
-                )
-                  ? // If same reaction exists, remove it (toggling off)
-                    message.reactions.filter(
-                      (reaction) =>
-                        !(
-                          reaction.userId === userInfo.data?._id &&
-                          reaction.emoji === emoji
-                        ),
-                    )
-                  : // If user has different reaction, update it
-                    message.reactions?.find(
-                        (reaction) => reaction.userId === userInfo.data?._id,
-                      )
-                    ? message.reactions.map((reaction) =>
-                        reaction.userId === userInfo.data?._id
-                          ? { ...reaction, emoji }
-                          : reaction,
-                      )
-                    : // If no existing reaction, add new one
-                      [...(message.reactions || []), reaction],
-              }
-            : message,
-        ),
+        existingMessages.map(updateMessageReactions),
       );
     }
   });
