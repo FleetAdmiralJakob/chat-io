@@ -1,5 +1,6 @@
 import { useUser } from "@clerk/nextjs";
 import { useFloating, type ReferenceType } from "@floating-ui/react";
+import { useLongPress } from "@reactuses/core";
 import { useQueryWithStatus } from "~/app/convex-client-provider";
 import {
   Popover,
@@ -304,6 +305,23 @@ export const Message = ({
 
   const chatContainerElement = document.getElementById("resizable-panel-chat");
 
+  const onLongPress = () => {
+    if (!isMobile) return;
+    if (
+      (message.type === "message" && message.deleted) ||
+      message.type !== "message"
+    )
+      return;
+    checkClickPosition(e);
+    setSelectedMessageId(message._id);
+  };
+
+  const defaultOptions = {
+    isPreventDefault: true,
+    delay: 300,
+  };
+  const longPressEvent = useLongPress(onLongPress, defaultOptions);
+
   return (
     <div className="flex" ref={ref}>
       {chatContainerElement &&
@@ -425,7 +443,7 @@ export const Message = ({
         : null}
       {message.from.username == clerkUser.user?.username ? (
         <div
-          className={cn("my-1 flex w-full flex-col items-end", {
+          className={cn("relative my-1 flex w-full flex-col items-end", {
             "mr-0 items-center":
               message.type == "pendingRequest" ||
               message.type == "rejectedRequest",
@@ -434,22 +452,13 @@ export const Message = ({
           <EditedLabel message={message} />
           <ReplyToMessage message={message} />
           <div
+            {...longPressEvent}
             ref={(ref) => {
               refsContextModal.setReference(ref);
               refsEmojiPickerQuickReaction.setReference(ref);
             }}
             onContextMenu={(e) => {
               e.preventDefault();
-              if (
-                (message.type === "message" && message.deleted) ||
-                message.type !== "message"
-              )
-                return;
-              checkClickPosition(e);
-              setSelectedMessageId(message._id);
-            }}
-            onClick={(e) => {
-              if (!isMobile) return;
               if (
                 (message.type === "message" && message.deleted) ||
                 message.type !== "message"
@@ -495,58 +504,67 @@ export const Message = ({
                     )}
                   </div>
                 ) : (
-                  <div className="relative">
+                  <div className="select-none lg:select-auto">
                     <div>{message.content}</div>
-                    {message.reactions && message.reactions.length > 0 && (
-                      <Popover>
-                        <PopoverTrigger className="absolute right-0 flex -translate-x-[0%] items-center justify-center gap-1 rounded-full bg-secondary px-1">
-                          {message.reactions
-                            .reduce(
-                              (acc, reaction) => {
-                                const existingReaction = acc.find(
-                                  (r) => r.emoji === reaction.emoji,
-                                );
-                                if (existingReaction) {
-                                  existingReaction.count++;
-                                } else {
-                                  acc.push({
-                                    emoji: reaction.emoji,
-                                    count: 1,
-                                  });
-                                }
-                                return acc;
-                              },
-                              [] as { emoji: string; count: number }[],
-                            )
-                            .map((reaction, index) => (
-                              <div
-                                key={index}
-                                className="flex items-center justify-center rounded-full bg-primary/20 text-sm"
-                              >
-                                <span className="flex aspect-square h-6 items-center justify-center pt-0.5">
-                                  {reaction.emoji}
-                                </span>
-                                {reaction.count > 1 && (
-                                  <span className="pl-1 text-xs text-secondary-foreground">
-                                    {reaction.count}
-                                  </span>
-                                )}
-                              </div>
-                            ))}
-                        </PopoverTrigger>
-                        <PopoverContent>
-                          <ReactionDetails
-                            reactions={message.reactions}
-                            userInfos={userInfos}
-                          />
-                        </PopoverContent>
-                      </Popover>
-                    )}
                   </div>
                 )}
               </div>
             )}
           </div>
+
+          {message.type === "message" &&
+            message.reactions &&
+            message.reactions.length > 0 && (
+              <Popover>
+                <PopoverTrigger
+                  className={cn(
+                    "absolute bottom-4 right-0 flex -translate-x-[0%] items-center justify-center gap-1 rounded-full bg-secondary px-1",
+                    { "z-50": message._id === selectedMessageId },
+                  )}
+                >
+                  {message.reactions
+                    .reduce(
+                      (acc, reaction) => {
+                        const existingReaction = acc.find(
+                          (r) => r.emoji === reaction.emoji,
+                        );
+                        if (existingReaction) {
+                          existingReaction.count++;
+                        } else {
+                          acc.push({
+                            emoji: reaction.emoji,
+                            count: 1,
+                          });
+                        }
+                        return acc;
+                      },
+                      [] as { emoji: string; count: number }[],
+                    )
+                    .map((reaction, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-center rounded-full bg-primary/20 text-sm"
+                      >
+                        <span className="flex aspect-square h-6 items-center justify-center pt-0.5">
+                          {reaction.emoji}
+                        </span>
+                        {reaction.count > 1 && (
+                          <span className="pl-1 text-xs text-secondary-foreground">
+                            {reaction.count}
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                </PopoverTrigger>
+                <PopoverContent>
+                  <ReactionDetails
+                    reactions={message.reactions}
+                    userInfos={userInfos}
+                  />
+                </PopoverContent>
+              </Popover>
+            )}
+
           <div className="mr-2 text-[75%] font-bold text-secondary-foreground">
             {message.type == "message" && !message.deleted
               ? message.readBy
@@ -643,7 +661,7 @@ export const Message = ({
             refsContextModal.setReference(ref);
             refsEmojiPickerQuickReaction.setReference(ref);
           }}
-          className={cn("my-1 flex w-full flex-col items-start", {
+          className={cn("relative my-1 flex w-full flex-col items-start", {
             "ml-0 items-center":
               message.type == "pendingRequest" ||
               message.type == "rejectedRequest",
@@ -653,22 +671,13 @@ export const Message = ({
           <EditedLabel message={message} />
           <ReplyToMessage message={message} />
           <div
+            {...longPressEvent}
             ref={(ref) => {
               refsContextModal.setReference(ref);
               refsEmojiPickerQuickReaction.setReference(ref);
             }}
             onContextMenu={(e) => {
               e.preventDefault();
-              if (
-                (message.type === "message" && message.deleted) ||
-                message.type !== "message"
-              )
-                return;
-              checkClickPosition(e);
-              setSelectedMessageId(message._id);
-            }}
-            onClick={(e) => {
-              if (!isMobile) return;
               if (
                 (message.type === "message" && message.deleted) ||
                 message.type !== "message"
@@ -739,53 +748,62 @@ export const Message = ({
                 </div>
               </div>
             ) : (
-              <div className="relative">
+              <div className="select-none lg:select-auto">
                 <div>{message.content}</div>
-                {message.reactions && message.reactions.length > 0 && (
-                  <Popover>
-                    <PopoverTrigger className="absolute left-0 flex -translate-x-[0%] items-center justify-center gap-1 rounded-full bg-secondary px-1">
-                      {message.reactions
-                        .reduce(
-                          (acc, reaction) => {
-                            const existingReaction = acc.find(
-                              (r) => r.emoji === reaction.emoji,
-                            );
-                            if (existingReaction) {
-                              existingReaction.count++;
-                            } else {
-                              acc.push({ emoji: reaction.emoji, count: 1 });
-                            }
-                            return acc;
-                          },
-                          [] as { emoji: string; count: number }[],
-                        )
-                        .map((reaction, index) => (
-                          <div
-                            key={index}
-                            className="flex items-center justify-center rounded-full bg-primary/20 text-sm"
-                          >
-                            <span className="flex aspect-square h-6 items-center justify-center pt-0.5">
-                              {reaction.emoji}
-                            </span>
-                            {reaction.count > 1 && (
-                              <span className="pl-1 text-xs text-secondary-foreground">
-                                {reaction.count}
-                              </span>
-                            )}
-                          </div>
-                        ))}
-                    </PopoverTrigger>
-                    <PopoverContent>
-                      <ReactionDetails
-                        reactions={message.reactions}
-                        userInfos={userInfos}
-                      />
-                    </PopoverContent>
-                  </Popover>
-                )}
               </div>
             )}
           </div>
+
+          {message.type === "message" &&
+            message.reactions &&
+            message.reactions.length > 0 && (
+              <Popover>
+                <PopoverTrigger
+                  className={cn(
+                    "absolute bottom-0 left-0 flex items-center justify-center gap-1 rounded-full bg-secondary px-1",
+                    { "z-50": message._id === selectedMessageId },
+                  )}
+                >
+                  {message.reactions
+                    .reduce(
+                      (acc, reaction) => {
+                        const existingReaction = acc.find(
+                          (r) => r.emoji === reaction.emoji,
+                        );
+                        if (existingReaction) {
+                          existingReaction.count++;
+                        } else {
+                          acc.push({ emoji: reaction.emoji, count: 1 });
+                        }
+                        return acc;
+                      },
+                      [] as { emoji: string; count: number }[],
+                    )
+                    .map((reaction, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-center rounded-full bg-primary/20 text-sm"
+                      >
+                        <span className="flex aspect-square h-6 items-center justify-center pt-0.5">
+                          {reaction.emoji}
+                        </span>
+                        {reaction.count > 1 && (
+                          <span className="pl-1 text-xs text-secondary-foreground">
+                            {reaction.count}
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                </PopoverTrigger>
+                <PopoverContent>
+                  <ReactionDetails
+                    reactions={message.reactions}
+                    userInfos={userInfos}
+                  />
+                </PopoverContent>
+              </Popover>
+            )}
+
           {chatContainerElement &&
           message._id == selectedMessageId &&
           message.type == "message"
