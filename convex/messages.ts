@@ -1,4 +1,5 @@
 import { ConvexError, v } from "convex/values";
+import emojiRegex from "emoji-regex";
 import { mutation, query } from "./lib/functions";
 
 export const getMessages = query({
@@ -31,7 +32,7 @@ export const getMessages = query({
 
     const [messages, requests] = await Promise.all([
       chat.edge("messages").map(async (message) => {
-        const [from, readBy, replyTo] = await Promise.all([
+        const [from, readBy, replyTo, reactions] = await Promise.all([
           ctx.table("users").getX(message.userId),
           message.edge("readBy"),
           message.replyTo
@@ -53,6 +54,7 @@ export const getMessages = query({
                   return null;
                 })
             : null,
+          message.edge("reactions").docs(),
         ]);
 
         return {
@@ -62,6 +64,7 @@ export const getMessages = query({
           from,
           readBy,
           replyTo,
+          reactions,
           sent: true,
         };
       }),
@@ -297,5 +300,71 @@ export const editMessage = mutation({
       modified: true,
       modifiedAt: Date.now().toString(),
     });
+  },
+});
+
+export const reactToMessage = mutation({
+  args: { messageId: v.id("messages"), reaction: v.string() },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (identity === null) {
+      console.error("Unauthenticated call to mutation");
+      return null;
+    }
+
+    const convexUser = await ctx
+      .table("users")
+      .get("clerkId", identity.tokenIdentifier);
+
+    if (!convexUser?._id) {
+      throw new ConvexError(
+        "Mismatch between Clerk and Convex. This is an error by us.",
+      );
+    }
+
+    // Check if emoji
+    if (
+      !emojiRegex().test(args.reaction) ||
+      args.reaction.match(emojiRegex())!.length > 1
+    ) {
+      throw new ConvexError("Reaction must be a single emoji");
+    }
+
+    const trimmedReaction = args.reaction.trim();
+
+    // Check if message exists
+    const messageId = ctx.table("messages").normalizeId(args.messageId);
+
+    if (!messageId) {
+      throw new ConvexError("messageId was invalid");
+    }
+
+    // Check if user already reacted to this message
+    const existingReaction = await ctx
+      .table("reactions", "messageId", (q) => q.eq("messageId", messageId))
+      .filter((q) => q.eq(q.field("userId"), convexUser._id))
+      .first();
+
+    if (existingReaction && existingReaction.emoji === trimmedReaction) {
+      // Remove existing reaction
+      await existingReaction.delete();
+      return null;
+    } else if (existingReaction) {
+      // Update existing reaction
+      await existingReaction.patch({
+        emoji: args.reaction,
+      });
+      return existingReaction;
+    }
+
+    // Create new reaction if none exists
+    const reaction = await ctx.table("reactions").insert({
+      emoji: trimmedReaction,
+      userId: convexUser._id,
+      messageId,
+    });
+
+    return reaction;
   },
 });

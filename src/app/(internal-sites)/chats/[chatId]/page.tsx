@@ -1,5 +1,8 @@
 "use client";
 
+import data from "@emoji-mart/data";
+import Picker from "@emoji-mart/react";
+import { autoPlacement, useFloating } from "@floating-ui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryWithStatus } from "~/app/convex-client-provider";
 import ChatsWithSearch from "~/components/chats-with-search";
@@ -52,6 +55,39 @@ dayjs.extend(relativeTime);
 const textMessageSchema = z.object({
   message: z.string().min(1).max(4000),
 });
+
+const EmojiPicker = ({
+  showFullEmojiPicker,
+  refsFullEmojiPicker,
+  floatingStylesFullEmojiPicker,
+  reactToMessageHandler,
+  selectedMessageId,
+}: {
+  showFullEmojiPicker: boolean;
+  refsFullEmojiPicker: {
+    setFloating: (ref: HTMLElement | null) => void;
+  };
+  selectedMessageId: Id<"messages"> | null;
+  floatingStylesFullEmojiPicker: React.CSSProperties;
+  reactToMessageHandler: (messageId: Id<"messages">, emoji: string) => void;
+}) => {
+  if (!showFullEmojiPicker || !selectedMessageId) return null;
+
+  return (
+    <div
+      ref={refsFullEmojiPicker.setFloating}
+      style={floatingStylesFullEmojiPicker}
+      className="z-[1000] opacity-100"
+    >
+      <Picker
+        data={data}
+        onEmojiSelect={(emoji: { native: string }) => {
+          reactToMessageHandler(selectedMessageId, emoji.native);
+        }}
+      />
+    </div>
+  );
+};
 
 const SkeletonMessage = () => {
   return (
@@ -141,9 +177,8 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
     Id<"messages"> | undefined
   >(undefined);
 
-  const [selectedMessageId, setSelectedMessageId] = useState<string | null>(
-    null,
-  );
+  const [selectedMessageId, setSelectedMessageId] =
+    useState<Id<"messages"> | null>(null);
 
   const router = useRouter();
 
@@ -189,6 +224,7 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
           existingMessages && args.replyToId && replyTo?.type === "message"
             ? { ...replyTo, replyTo: undefined }
             : null,
+        reactions: [],
       };
       localStore.setQuery(api.messages.getMessages, { chatId }, [
         ...(Array.isArray(existingMessages) ? existingMessages : []),
@@ -421,8 +457,107 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
     setMenuActive(!menuActive);
   };
 
+  const [showFullEmojiPicker, setShowFullEmojiPicker] = useState(false);
+
+  const [isInBottomHalf, setIsInBottomHalf] = useState<boolean | null>(null);
+
+  const {
+    refs: refsFullEmojiPicker,
+    floatingStyles: floatingStylesFullEmojiPicker,
+  } = useFloating({
+    middleware: [autoPlacement({ padding: 4 })],
+  });
+
+  const reactToMessage = useMutation(
+    api.messages.reactToMessage,
+  ).withOptimisticUpdate((localStore, args) => {
+    const messageId = args.messageId;
+    const emoji = args.reaction;
+
+    if (!userInfo.data) return;
+
+    const reaction = {
+      _id: crypto.randomUUID() as Id<"reactions">,
+      _creationTime: Date.now(),
+      messageId,
+      userId: userInfo.data._id,
+      emoji,
+      userInfo,
+    };
+
+    const existingMessages = localStore.getQuery(api.messages.getMessages, {
+      chatId: params.chatId,
+    });
+
+    if (existingMessages) {
+      const updateMessageReactions = (message: Message) => {
+        // Skip messages that don't match target message ID or aren't message type
+        if (message._id !== messageId || message.type !== "message") {
+          return message;
+        }
+
+        // Check if user already has the exact same emoji reaction
+        const existingReaction = message.reactions?.find(
+          (r) => r.userId === userInfo.data?._id && r.emoji === emoji,
+        );
+
+        // If user already reacted with this emoji, remove it (toggle off)
+        if (existingReaction) {
+          return {
+            ...message,
+            reactions: message.reactions.filter(
+              (r) => !(r.userId === userInfo.data?._id && r.emoji === emoji),
+            ),
+          };
+        }
+
+        // Check if user has reacted with a different emoji
+        const hasOtherReaction = message.reactions?.find(
+          (r) => r.userId === userInfo.data?._id,
+        );
+
+        // If user has different reaction, update existing one to new emoji
+        if (hasOtherReaction) {
+          return {
+            ...message,
+            reactions: message.reactions.map((r) =>
+              r.userId === userInfo.data?._id ? { ...r, emoji } : r,
+            ),
+          };
+        }
+
+        // No existing reactions from user - add new reaction
+        return {
+          ...message,
+          reactions: [...(message.reactions || []), reaction],
+        };
+      };
+
+      localStore.setQuery(
+        api.messages.getMessages,
+        { chatId: params.chatId },
+        existingMessages.map(updateMessageReactions),
+      );
+    }
+  });
+
+  const reactToMessageHandler = (messageId: Id<"messages">, emoji: string) => {
+    void reactToMessage({ messageId, reaction: emoji });
+    setSelectedMessageId(null);
+    setShowFullEmojiPicker(false);
+  };
+
   return (
     <main className="flex h-screen flex-col">
+      {selectedMessageId ? (
+        <div
+          onClick={() => {
+            setSelectedMessageId(null);
+            setShowFullEmojiPicker(false);
+          }}
+          className="fixed inset-0 z-50 bg-black opacity-75"
+        ></div>
+      ) : null}
       <ResizablePanelGroup className="w-full flex-grow" direction="horizontal">
         <ResizablePanel
           className="hidden w-full lg:block"
@@ -446,6 +581,15 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
           className="relative flex flex-col"
           id="resizable-panel-chat"
         >
+          <EmojiPicker
+            {...{
+              showFullEmojiPicker,
+              refsFullEmojiPicker,
+              floatingStylesFullEmojiPicker,
+              reactToMessageHandler,
+              selectedMessageId,
+            }}
+          />
           <DevMode className="top-20 z-10">
             <button onClick={createClearRequestHandler(params.chatId)}>
               Clear Chat Request
@@ -539,14 +683,14 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
             {messages.data ? (
               <div className="relative w-full p-3">
                 <div className="mb-8 flex w-full flex-col items-center justify-center gap-4 space-y-4 rounded-lg bg-secondary p-6 text-center shadow-lg">
-                  <div className="flex items-center justify-center gap-4 space-x-2 text-accent-foreground">
+                  <div className="flex items-center justify-center gap-4 space-x-2 text-destructive-foreground dark:text-accent-foreground">
                     <NotebookText className="h-6 w-6" />
                     <span className="text-xl font-semibold">
                       Let the Conversation Begin!
                     </span>
                     <NotebookText className="h-6 w-6" />
                   </div>
-                  <p className="text-md text-accent-foreground">
+                  <p className="text-md text-destructive-foreground dark:text-accent-foreground">
                     This is the beginning of an amazing chat. Share ideas,
                     express yourself, and connect!
                   </p>
@@ -561,14 +705,20 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
                     <Message
                       selectedMessageId={selectedMessageId}
                       setSelectedMessageId={setSelectedMessageId}
+                      reactToMessageHandler={reactToMessageHandler}
                       setEditingMessageId={setEditingMessageId}
                       setReplyToMessageId={setReplyToMessageId}
                       message={message}
+                      userInfos={[userInfo.data, chatInfo.data?.otherUser]}
+                      refsFullEmojiPicker={refsFullEmojiPicker}
+                      setShowFullEmojiPicker={setShowFullEmojiPicker}
+                      isInBottomHalf={isInBottomHalf}
+                      setIsInBottomHalf={setIsInBottomHalf}
                     />
                   </React.Fragment>
                 ))}
                 {!isNearBottom && messages.data.length > 0 && (
-                  <div className="sticky bottom-4 z-50 w-full px-4">
+                  <div className="sticky bottom-4 z-40 w-full px-4">
                     <div className="flex justify-end">
                       <button
                         onClick={() => scrollToBottom()}

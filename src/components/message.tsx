@@ -1,6 +1,12 @@
 import { useUser } from "@clerk/nextjs";
-import { useFloating } from "@floating-ui/react";
+import { useFloating, type ReferenceType } from "@floating-ui/react";
+import { useLongPress } from "@reactuses/core";
 import { useQueryWithStatus } from "~/app/convex-client-provider";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "~/components/ui/popover";
 import { cn } from "~/lib/utils";
 import { useMutation } from "convex/react";
 import { type FunctionReturnType } from "convex/server";
@@ -15,19 +21,20 @@ import {
   Forward,
   Info,
   Pen,
+  Plus,
   Reply,
   Trash2,
 } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useInView } from "react-intersection-observer";
 import { toast } from "sonner";
 import { api } from "../../convex/_generated/api";
-import { type Id } from "../../convex/_generated/dataModel";
+import type { Doc, Id } from "../../convex/_generated/dataModel";
 
 dayjs.extend(relativeTime);
 
-type Message = NonNullable<
+export type Message = NonNullable<
   FunctionReturnType<typeof api.messages.getMessages>
 >[number];
 
@@ -56,22 +63,96 @@ const ReplyToMessage = ({ message }: { message: Message }) => {
   }
 };
 
+const ReactionDetails = ({
+  reactions,
+  userInfos,
+}: {
+  reactions: Doc<"reactions">[];
+  userInfos: [
+    FunctionReturnType<typeof api.users.getUserData> | undefined,
+    (
+      | undefined
+      | NonNullable<
+          FunctionReturnType<typeof api.chats.getChatInfoFromId>
+        >["otherUser"]
+    ),
+  ];
+}) => {
+  // Group reactions by emoji
+  const reactionsByEmoji = reactions.reduce(
+    (acc, reaction) => {
+      (acc[reaction.emoji] = acc[reaction.emoji] ?? []).push(reaction);
+      return acc;
+    },
+    {} as Record<string, typeof reactions>,
+  );
+
+  return (
+    <div className="flex flex-col gap-2 p-2">
+      {Object.entries(reactionsByEmoji).map(([emoji, reactions]) => (
+        <div key={emoji}>
+          <div className="flex items-center gap-2">
+            <span className="text-xl">{emoji}</span>
+            <div className="text-sm">
+              {reactions
+                .map((reaction) => {
+                  const user =
+                    userInfos[0]?._id === reaction.userId
+                      ? userInfos[0]
+                      : Array.isArray(userInfos[1])
+                        ? userInfos[1].find((u) => u._id === reaction.userId)
+                        : userInfos[1];
+                  return user?.username;
+                })
+                .join(", ")}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 export const Message = ({
   message,
   selectedMessageId,
   setSelectedMessageId,
   setEditingMessageId,
   setReplyToMessageId,
+  userInfos,
+  setShowFullEmojiPicker,
+  refsFullEmojiPicker,
+  isInBottomHalf,
+  setIsInBottomHalf,
+  reactToMessageHandler,
 }: {
   message: Message;
-  selectedMessageId: string | null;
-  setSelectedMessageId: React.Dispatch<React.SetStateAction<string | null>>;
+  selectedMessageId: Id<"messages"> | null;
+  setSelectedMessageId: React.Dispatch<
+    React.SetStateAction<Id<"messages"> | null>
+  >;
   setEditingMessageId: React.Dispatch<
     React.SetStateAction<Id<"messages"> | null>
   >;
   setReplyToMessageId: React.Dispatch<
     React.SetStateAction<Id<"messages"> | undefined>
   >;
+  userInfos: [
+    FunctionReturnType<typeof api.users.getUserData> | undefined,
+    (
+      | undefined
+      | NonNullable<
+          FunctionReturnType<typeof api.chats.getChatInfoFromId>
+        >["otherUser"]
+    ),
+  ];
+  setShowFullEmojiPicker: React.Dispatch<React.SetStateAction<boolean>>;
+  isInBottomHalf: boolean | null;
+  refsFullEmojiPicker: {
+    setReference: (node: ReferenceType | null) => void;
+  };
+  setIsInBottomHalf: React.Dispatch<React.SetStateAction<boolean | null>>;
+  reactToMessageHandler: (messageId: Id<"messages">, emoji: string) => void;
 }) => {
   const clerkUser = useUser();
 
@@ -116,10 +197,13 @@ export const Message = ({
     }
   });
 
-  const [isInBottomHalf, setIsInBottomHalf] = useState<boolean | null>(null);
-
-  const checkClickPosition = (e: React.MouseEvent) => {
-    const clickPosition = e.clientY;
+  const checkClickPosition = (
+    e: React.MouseEvent | TouchEvent | MouseEvent,
+  ) => {
+    const clickPosition =
+      "touches" in e && e.touches[0]
+        ? e.touches[0].clientY // TouchEvent
+        : (e as React.MouseEvent | MouseEvent).clientY; // MouseEvent
     const windowHeight = window.innerHeight;
     setIsInBottomHalf(clickPosition >= windowHeight / 2);
   };
@@ -128,35 +212,35 @@ export const Message = ({
     threshold: 0.9,
   });
 
-  const [isMobile, setIsMobile] = useState(false);
+  const userAgent = navigator.userAgent;
+  const isMobile = /android|iPad|iPhone|iPod/i.test(userAgent);
 
-  useEffect(() => {
-    const checkIfMobile = () => {
-      const userAgent = navigator.userAgent;
-      if (/android/i.test(userAgent)) {
-        setIsMobile(true);
-      } else if (/iPad|iPhone|iPod/.test(userAgent)) {
-        setIsMobile(true);
-      } else {
-        setIsMobile(false);
-      }
-    };
+  const { refs: refsContextModal, floatingStyles: floatingStylesContextModal } =
+    useFloating({
+      placement:
+        message.from._id === userInfos[0]?._id
+          ? isInBottomHalf
+            ? "top-end"
+            : "bottom-end"
+          : isInBottomHalf
+            ? "top-start"
+            : "bottom-start",
+    });
 
-    checkIfMobile();
-  }, []);
-
-  const [messageOwner, setMessageOwner] = useState<boolean | null>(null);
-  const { refs, floatingStyles } = useFloating({
-    placement: messageOwner
-      ? isInBottomHalf
-        ? "top-end"
-        : "bottom-end"
-      : isInBottomHalf
-        ? "top-start"
-        : "bottom-start",
+  const {
+    refs: refsEmojiPickerQuickReaction,
+    floatingStyles: floatingStylesEmojiPickerQuickReaction,
+  } = useFloating({
+    placement:
+      message.from._id === userInfos[0]?._id
+        ? isInBottomHalf
+          ? "bottom-end"
+          : "top-end"
+        : isInBottomHalf
+          ? "bottom-start"
+          : "top-start",
   });
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const markRead = useMutation(api.messages.markMessageRead);
 
   const acceptClearRequest = useMutation(api.clearRequests.acceptClearRequest);
@@ -220,319 +304,604 @@ export const Message = ({
 
   const replyToMessageHandler = (messageId: Id<"messages">) => {
     setReplyToMessageId(messageId);
-    setIsModalOpen(!isModalOpen);
+    setSelectedMessageId(null);
+    setShowFullEmojiPicker(false);
   };
 
   const chatContainerElement = document.getElementById("resizable-panel-chat");
 
+  const onLongPress = (e: MouseEvent | TouchEvent) => {
+    if (!isMobile) return;
+    if (
+      (message.type === "message" && message.deleted) ||
+      message.type !== "message"
+    )
+      return;
+    checkClickPosition(e);
+    setSelectedMessageId(message._id);
+  };
+
+  const defaultOptions = {
+    isPreventDefault: true,
+    delay: 300,
+  };
+  const longPressEvent = useLongPress(onLongPress, defaultOptions);
+
   return (
-    <>
-      {isModalOpen && message.type == "message" ? (
-        <div
-          onClick={() => setIsModalOpen(!isModalOpen)}
-          className="fixed inset-0 z-10 bg-black opacity-75"
-        ></div>
-      ) : null}
-      <div className="flex" ref={ref}>
-        {message.from.username == clerkUser.user?.username ? (
-          <div
-            ref={refs.setReference}
-            className={cn("my-1 flex w-full flex-col items-end", {
-              "mr-0 items-center":
-                message.type == "pendingRequest" ||
-                message.type == "rejectedRequest",
-            })}
-          >
-            <EditedLabel message={message} />
-            <ReplyToMessage message={message} />
+    <div className="flex" ref={ref}>
+      {chatContainerElement &&
+      message._id == selectedMessageId &&
+      message.type == "message"
+        ? // The reason for the creation of the portal is that we need the portal at a point where it is over EVERYTHING even the input etc.
+          createPortal(
             <div
-              onContextMenu={(e) => {
-                e.preventDefault();
-                if (message.type === "message" && message.deleted) return;
-                checkClickPosition(e);
-                setIsModalOpen(!isModalOpen);
-                setSelectedMessageId(message._id);
-                setMessageOwner(true);
+              ref={(ref) => {
+                refsEmojiPickerQuickReaction.setFloating(ref);
+                refsFullEmojiPicker.setReference(ref);
               }}
-              onClick={(e) => {
-                if (!isMobile) return;
-                if (message.type === "message" && message.deleted) return;
-                checkClickPosition(e);
-                setIsModalOpen(!isModalOpen);
-                setSelectedMessageId(message._id);
-                setMessageOwner(true);
-              }}
-              className={cn(
-                "max-w-[66.6667%] cursor-default break-words rounded-sm bg-accent p-3",
-                {
-                  "sticky z-10 opacity-100": message._id === selectedMessageId,
-                  "my-2 max-w-[80%] border-2 border-secondary bg-primary":
-                    message.type == "pendingRequest" ||
-                    message.type == "rejectedRequest",
-                },
-              )}
+              style={floatingStylesEmojiPickerQuickReaction}
+              className="z-50 py-3 opacity-100"
             >
-              {message.type === "message" && message.deleted ? (
-                <div className="flex font-medium">
-                  <Ban />
-                  <p className="ml-2.5">This message was deleted</p>
-                </div>
-              ) : (
-                <div>
-                  {message.type != "message" ? (
-                    <div className="font-semibold text-destructive-foreground">
-                      {message.type === "pendingRequest" ? (
-                        <>
-                          <p>You&apos;ve sent a request to clear the chat</p>
-                          <div className="mt-2 flex items-center text-xs">
-                            <Clock className="mr-1 h-4 w-4" />
-                            <span>Expires {getTimeRemaining()}</span>
-                          </div>
-                        </>
-                      ) : message.type === "expiredRequest" ? (
-                        "Your request to clear the chat has expired"
-                      ) : (
-                        chatInfo.data?.otherUser[0]?.username +
-                        " has rejected the request to clear the chat"
-                      )}
-                    </div>
-                  ) : (
-                    <div>{message.content}</div>
+              <div className="flex gap-4 rounded-lg border-2 border-secondary-foreground bg-secondary p-2 text-2xl">
+                <span
+                  onMouseDown={() => reactToMessageHandler(message._id, "😂")}
+                  role="button"
+                  aria-label="React with laughing emoji"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      reactToMessageHandler(message._id, "😂");
+                    }
+                  }}
+                  className={cn(
+                    "flex aspect-square h-10 items-center justify-center rounded-full bg-card p-1 pt-1.5 hover:cursor-pointer dark:bg-primary",
+                    {
+                      "bg-muted-foreground dark:bg-card":
+                        message.reactions.find(
+                          (reaction) =>
+                            reaction.emoji === "😂" &&
+                            reaction.userId === userInfos[0]?._id,
+                        ),
+                    },
                   )}
-                </div>
-              )}
-            </div>
-            <div className="mr-2 text-[75%] font-bold text-secondary-foreground">
-              {message.type == "message" && !message.deleted
-                ? message.readBy
-                  ? message.readBy.map((user) => {
-                      if (user.username != clerkUser.user?.username) {
-                        return "Read";
-                      } else {
-                        if (message.readBy.length === 1 && message.sent) {
-                          return "Sent";
-                        } else if (message.readBy.length === 1) {
-                          return "Sending";
-                        } else {
-                          return null;
-                        }
-                      }
-                    })
-                  : null
-                : null}
-            </div>
-            {chatContainerElement &&
-            message._id == selectedMessageId &&
-            isModalOpen &&
-            message.type == "message"
-              ? // The reason for the creation of the portal is that we need the portal at a point where it is over EVERYTHING even the input etc.
-                createPortal(
-                  <div
-                    ref={refs.setFloating}
-                    style={floatingStyles}
-                    className="z-50 overflow-x-visible pb-3 opacity-100"
-                  >
-                    <div className="rounded-sm border-2 border-secondary-foreground">
-                      <div className="rounded-sm bg-secondary">
-                        <div
-                          className="flex w-full cursor-pointer p-2"
-                          onClick={() => {
-                            void navigator.clipboard.writeText(message.content);
-                            setIsModalOpen(!isModalOpen);
-                            toast.success("Copied to clipboard");
-                          }}
-                        >
-                          <CopyCheck />
-                          <p className="ml-1">Copy</p>
-                        </div>
-                        <button
-                          onClick={() => replyToMessageHandler(message._id)}
-                          className="flex w-full cursor-pointer border-t-2 border-secondary-foreground p-2 pr-8"
-                        >
-                          <Reply />
-                          <p className="ml-1">Reply</p>
-                        </button>
-                        <div className="flex w-full cursor-pointer border-t-2 border-secondary-foreground p-2 pr-8">
-                          <Forward />
-                          <p className="ml-1">Forward</p>
-                        </div>
-                        <button
-                          className="flex w-full cursor-pointer border-y-2 border-secondary-foreground p-2 pr-8"
-                          onClick={() => {
-                            setEditingMessageId(message._id);
-                            setIsModalOpen(!isModalOpen);
-                          }}
-                        >
-                          <Pen />
-                          <p className="ml-1">Edit</p>
-                        </button>
-                        <button
-                          className="flex w-full p-2 text-accent"
-                          onMouseDown={() => {
-                            void deleteMessage({
-                              messageId: message._id,
-                              chatId: message.privateChatId,
-                            });
-                            setIsModalOpen(!isModalOpen);
-                          }}
-                        >
-                          <Trash2 />
-                          <div className="ml-1">Delete</div>
-                        </button>{" "}
-                        <div className="flex border-t-2 border-secondary-foreground p-2 pr-8 text-secondary-foreground">
-                          <Info />
-                          <p className="ml-1">{sentInfo()}</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>,
-                  chatContainerElement,
-                )
-              : null}
-          </div>
-        ) : (
+                >
+                  <span className="transition-transform hover:scale-125">
+                    😂
+                  </span>
+                </span>
+                <span
+                  onMouseDown={() => reactToMessageHandler(message._id, "❤️")}
+                  role="button"
+                  aria-label="React with heart emoji"
+                  tabIndex={1}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      reactToMessageHandler(message._id, "❤️");
+                    }
+                  }}
+                  className={cn(
+                    "flex aspect-square h-10 items-center justify-center rounded-full bg-card p-1 pt-1.5 hover:cursor-pointer dark:bg-primary",
+                    {
+                      "bg-muted-foreground dark:bg-card":
+                        message.reactions.find(
+                          (reaction) =>
+                            reaction.emoji === "❤️" &&
+                            reaction.userId === userInfos[0]?._id,
+                        ),
+                    },
+                  )}
+                >
+                  <span className="transition-transform hover:scale-125">
+                    ❤️
+                  </span>
+                </span>
+                <span
+                  onMouseDown={() => reactToMessageHandler(message._id, "👍")}
+                  role="button"
+                  aria-label="React with thumb up emoji"
+                  tabIndex={2}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      reactToMessageHandler(message._id, "👍");
+                    }
+                  }}
+                  className={cn(
+                    "flex aspect-square h-10 items-center justify-center rounded-full bg-card p-1 pt-1.5 hover:cursor-pointer dark:bg-primary",
+                    {
+                      "bg-muted-foreground dark:bg-card":
+                        message.reactions.find(
+                          (reaction) =>
+                            reaction.emoji === "👍" &&
+                            reaction.userId === userInfos[0]?._id,
+                        ),
+                    },
+                  )}
+                >
+                  <span className="transition-transform hover:scale-125">
+                    👍
+                  </span>
+                </span>
+                <span
+                  onMouseDown={() => reactToMessageHandler(message._id, "👎")}
+                  role="button"
+                  aria-label="React with thumb down emoji"
+                  tabIndex={3}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      reactToMessageHandler(message._id, "👎");
+                    }
+                  }}
+                  className={cn(
+                    "flex aspect-square h-10 items-center justify-center rounded-full bg-card p-1 pt-1.5 hover:cursor-pointer dark:bg-primary",
+                    {
+                      "bg-muted-foreground dark:bg-card":
+                        message.reactions.find(
+                          (reaction) =>
+                            reaction.emoji === "👎" &&
+                            reaction.userId === userInfos[0]?._id,
+                        ),
+                    },
+                  )}
+                >
+                  <span className="transition-transform hover:scale-125">
+                    👎
+                  </span>
+                </span>
+                <span
+                  onMouseDown={() => reactToMessageHandler(message._id, "😮")}
+                  role="button"
+                  aria-label="React with face with mouth open emoji"
+                  tabIndex={4}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      reactToMessageHandler(message._id, "😮");
+                    }
+                  }}
+                  className={cn(
+                    "flex aspect-square h-10 items-center justify-center rounded-full bg-card p-1 pt-1.5 hover:cursor-pointer dark:bg-primary",
+                    {
+                      "bg-muted-foreground dark:bg-card":
+                        message.reactions.find(
+                          (reaction) =>
+                            reaction.emoji === "😮" &&
+                            reaction.userId === userInfos[0]?._id,
+                        ),
+                    },
+                  )}
+                >
+                  <span className="transition-transform hover:scale-125">
+                    😮
+                  </span>
+                </span>
+                <span
+                  onMouseDown={() =>
+                    setShowFullEmojiPicker((prevValue) => !prevValue)
+                  }
+                  role="button"
+                  aria-label="Open full emoji picker"
+                  tabIndex={5}
+                  onKeyDown={() => {
+                    setShowFullEmojiPicker((prevValue) => !prevValue);
+                  }}
+                  className="flex aspect-square h-10 items-center justify-center rounded-full bg-card p-1 hover:cursor-pointer dark:bg-primary"
+                >
+                  <Plus className="transition-transform hover:scale-125" />
+                </span>
+              </div>
+            </div>,
+            chatContainerElement,
+          )
+        : null}
+      {message.from.username == clerkUser.user?.username ? (
+        <div
+          className={cn("relative my-1 flex w-full flex-col items-end", {
+            "mr-0 items-center":
+              message.type == "pendingRequest" ||
+              message.type == "rejectedRequest",
+          })}
+        >
+          <EditedLabel message={message} />
+          <ReplyToMessage message={message} />
           <div
-            ref={refs.setReference}
-            className={cn("my-1 flex w-full flex-col items-start", {
-              "ml-0 items-center":
-                message.type == "pendingRequest" ||
-                message.type == "rejectedRequest",
-              "my-3": message.type === "message" && message.replyTo,
-            })}
+            {...longPressEvent}
+            ref={(ref) => {
+              refsContextModal.setReference(ref);
+              refsEmojiPickerQuickReaction.setReference(ref);
+            }}
+            onContextMenu={(e) => {
+              e.preventDefault();
+              if (
+                (message.type === "message" && message.deleted) ||
+                message.type !== "message"
+              )
+                return;
+              checkClickPosition(e);
+              setSelectedMessageId(message._id);
+            }}
+            className={cn(
+              "max-w-[66.6667%] cursor-default break-words rounded-sm bg-accent p-3",
+              {
+                "sticky z-50 opacity-100": message._id === selectedMessageId,
+                "my-2 max-w-[80%] border-2 border-secondary bg-primary":
+                  message.type == "pendingRequest" ||
+                  message.type == "rejectedRequest",
+                "mb-3":
+                  message.type === "message" && message.reactions.length > 0,
+              },
+            )}
           >
-            <EditedLabel message={message} />
-            <ReplyToMessage message={message} />
-            <div
-              ref={refs.setReference}
-              onContextMenu={(e) => {
-                e.preventDefault();
-                if (message.type === "message" && message.deleted) return;
-                checkClickPosition(e);
-                setIsModalOpen(!isModalOpen);
-                setSelectedMessageId(message._id);
-                setMessageOwner(false);
-              }}
-              onClick={(e) => {
-                if (!isMobile) return;
-                if (message.type === "message" && message.deleted) return;
-                checkClickPosition(e);
-                setIsModalOpen(!isModalOpen);
-                setSelectedMessageId(message._id);
-                setMessageOwner(false);
-              }}
-              className={cn(
-                "max-w-[66.6667%] cursor-default break-words rounded-sm bg-secondary p-3",
-                {
-                  "sticky z-10 opacity-100": message._id == selectedMessageId,
-                  "my-2 max-w-[80%] border-2 border-secondary bg-primary":
-                    message.type === "pendingRequest" ||
-                    message.type === "rejectedRequest",
-                },
-              )}
-            >
-              {message.type === "message" && message.deleted ? (
-                <div className="flex font-medium">
-                  <Ban />
-                  <p className="ml-2.5">This message was deleted</p>
-                </div>
-              ) : message.type != "message" ? (
-                <div className="font-semibold text-destructive-foreground">
-                  <div>
+            {message.type === "message" && message.deleted ? (
+              <div className="flex font-medium">
+                <Ban />
+                <p className="ml-2.5">This message was deleted</p>
+              </div>
+            ) : (
+              <div>
+                {message.type != "message" ? (
+                  <div className="font-semibold text-destructive-foreground">
                     {message.type === "pendingRequest" ? (
                       <>
-                        <span>
-                          {chatInfo.data?.otherUser[0]?.username} has sent a
-                          request to clear the chat
-                        </span>
+                        <p>You&apos;ve sent a request to clear the chat</p>
                         <div className="mt-2 flex items-center text-xs">
                           <Clock className="mr-1 h-4 w-4" />
                           <span>Expires {getTimeRemaining()}</span>
                         </div>
                       </>
                     ) : message.type === "expiredRequest" ? (
-                      `The request of ${chatInfo.data?.otherUser[0]?.username + " to clear the chat"} has expired`
+                      "Your request to clear the chat has expired"
                     ) : (
-                      "You have rejected the request to clear the chat"
+                      chatInfo.data?.otherUser[0]?.username +
+                      " has rejected the request to clear the chat"
                     )}
                   </div>
-                  <div className="flex justify-between">
-                    {message.type === "pendingRequest" ? (
-                      <>
-                        <button
-                          onClick={acceptClearRequestHandler(message._id)}
-                          className="mt-4 flex rounded-sm bg-accept p-2 px-4"
-                        >
-                          <CircleCheck className="mr-1 p-0.5" />
-                          <p>Accept</p>
-                        </button>
-                        <button
-                          onClick={rejectClearRequestHandler(
-                            message.privateChatId,
-                            message._id,
-                          )}
-                          className="ml-4 mt-4 flex rounded-sm bg-accent p-2 px-4 lg:ml-0"
-                        >
-                          <CircleX className="mr-1 p-0.5" />
-                          <p>Reject</p>{" "}
-                        </button>{" "}
-                      </>
-                    ) : null}
+                ) : (
+                  <div className="select-none lg:select-auto">
+                    <div>{message.content}</div>
                   </div>
-                </div>
-              ) : (
-                message.content
-              )}
-            </div>
-            {chatContainerElement &&
-            message._id == selectedMessageId &&
-            isModalOpen &&
-            message.type == "message"
-              ? createPortal(
-                  <div
-                    ref={refs.setFloating}
-                    style={floatingStyles}
-                    className={cn(
-                      "z-50 mt-4 pb-3 opacity-100",
-                      isInBottomHalf ? "mt-0" : null,
-                    )}
-                  >
-                    <div className="rounded-sm border-2 border-secondary-foreground">
-                      <div className="rounded-sm bg-secondary">
-                        <div
-                          onClick={() => {
-                            void navigator.clipboard.writeText(message.content);
-                            setIsModalOpen(!isModalOpen);
-                            toast.success("Copied to clipboard");
-                          }}
-                          className="flex cursor-pointer p-2"
-                        >
-                          <CopyCheck />
-                          <p className="ml-1">Copy</p>
-                        </div>
-                        <button
-                          onClick={() => replyToMessageHandler(message._id)}
-                          className="flex w-full cursor-pointer border-y-2 border-secondary-foreground p-2 pr-8"
-                        >
-                          <Reply />
-                          <p className="ml-1">Reply</p>
-                        </button>
-                        <div className="flex w-full cursor-pointer border-b-2 border-secondary-foreground p-2 pr-8">
-                          <Forward />
-                          <p className="ml-1">Forward</p>
-                        </div>
-                        <div className="flex p-2 pr-8 text-secondary-foreground">
-                          <Info />
-                          <p className="ml-1">{sentInfo()}</p>
-                        </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {message.type === "message" &&
+            message.reactions &&
+            message.reactions.length > 0 && (
+              <Popover>
+                <PopoverTrigger
+                  className={cn(
+                    "absolute bottom-4 right-0 flex -translate-x-[0%] select-none items-center justify-center gap-1 rounded-full bg-secondary px-1 lg:select-auto",
+                    { "z-50": message._id === selectedMessageId },
+                  )}
+                >
+                  {message.reactions
+                    .reduce(
+                      (acc, reaction) => {
+                        const existingReaction = acc.find(
+                          (r) => r.emoji === reaction.emoji,
+                        );
+                        if (existingReaction) {
+                          existingReaction.count++;
+                        } else {
+                          acc.push({
+                            emoji: reaction.emoji,
+                            count: 1,
+                          });
+                        }
+                        return acc;
+                      },
+                      [] as { emoji: string; count: number }[],
+                    )
+                    .map((reaction, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-center rounded-full bg-primary/20 text-sm"
+                      >
+                        <span className="flex aspect-square h-6 items-center justify-center pt-0.5">
+                          {reaction.emoji}
+                        </span>
+                        {reaction.count > 1 && (
+                          <span className="pl-1 text-xs text-secondary-foreground">
+                            {reaction.count}
+                          </span>
+                        )}
                       </div>
-                    </div>
-                  </div>,
-                  chatContainerElement,
-                )
+                    ))}
+                </PopoverTrigger>
+                <PopoverContent>
+                  <ReactionDetails
+                    reactions={message.reactions}
+                    userInfos={userInfos}
+                  />
+                </PopoverContent>
+              </Popover>
+            )}
+
+          <div className="mr-2 text-[75%] font-bold text-secondary-foreground">
+            {message.type == "message" && !message.deleted
+              ? message.readBy
+                ? message.readBy.map((user) => {
+                    if (user.username != clerkUser.user?.username) {
+                      return "Read";
+                    } else {
+                      if (message.readBy.length === 1 && message.sent) {
+                        return "Sent";
+                      } else if (message.readBy.length === 1) {
+                        return "Sending";
+                      } else {
+                        return null;
+                      }
+                    }
+                  })
+                : null
               : null}
           </div>
-        )}
-      </div>
-    </>
+          {chatContainerElement &&
+          message._id == selectedMessageId &&
+          message.type == "message"
+            ? // The reason for the creation of the portal is that we need the portal at a point where it is over EVERYTHING even the input etc.
+              createPortal(
+                <div
+                  ref={refsContextModal.setFloating}
+                  style={floatingStylesContextModal}
+                  className="z-50 overflow-x-visible py-3 opacity-100"
+                >
+                  <div className="rounded-sm border-2 border-secondary-foreground">
+                    <div className="rounded-sm bg-secondary">
+                      <div
+                        className="flex w-full cursor-pointer p-2"
+                        onClick={() => {
+                          void navigator.clipboard.writeText(message.content);
+                          setSelectedMessageId(null);
+                          setShowFullEmojiPicker(false);
+                          toast.success("Copied to clipboard");
+                        }}
+                      >
+                        <CopyCheck />
+                        <p className="ml-1">Copy</p>
+                      </div>
+                      <button
+                        onClick={() => replyToMessageHandler(message._id)}
+                        className="flex w-full cursor-pointer border-t-2 border-secondary-foreground p-2 pr-8"
+                      >
+                        <Reply />
+                        <p className="ml-1">Reply</p>
+                      </button>
+                      <div className="flex w-full cursor-pointer border-t-2 border-secondary-foreground p-2 pr-8">
+                        <Forward />
+                        <p className="ml-1">Forward</p>
+                      </div>
+                      <button
+                        className="flex w-full cursor-pointer border-y-2 border-secondary-foreground p-2 pr-8"
+                        onClick={() => {
+                          setEditingMessageId(message._id);
+                          setSelectedMessageId(null);
+                          setShowFullEmojiPicker(false);
+                        }}
+                      >
+                        <Pen />
+                        <p className="ml-1">Edit</p>
+                      </button>
+                      <button
+                        className="flex w-full p-2 text-accent"
+                        onMouseDown={() => {
+                          void deleteMessage({
+                            messageId: message._id,
+                            chatId: message.privateChatId,
+                          });
+                          setSelectedMessageId(null);
+                          setShowFullEmojiPicker(false);
+                        }}
+                      >
+                        <Trash2 />
+                        <div className="ml-1">Delete</div>
+                      </button>{" "}
+                      <div className="flex border-t-2 border-secondary-foreground p-2 pr-8 text-secondary-foreground">
+                        <Info />
+                        <p className="ml-1">{sentInfo()}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>,
+                chatContainerElement,
+              )
+            : null}
+        </div>
+      ) : (
+        <div
+          ref={(ref) => {
+            refsContextModal.setReference(ref);
+            refsEmojiPickerQuickReaction.setReference(ref);
+          }}
+          className={cn("relative my-1 flex w-full flex-col items-start", {
+            "ml-0 items-center":
+              message.type == "pendingRequest" ||
+              message.type == "rejectedRequest",
+            "my-3": message.type === "message" && message.replyTo,
+          })}
+        >
+          <EditedLabel message={message} />
+          <ReplyToMessage message={message} />
+          <div
+            {...longPressEvent}
+            ref={(ref) => {
+              refsContextModal.setReference(ref);
+              refsEmojiPickerQuickReaction.setReference(ref);
+            }}
+            onContextMenu={(e) => {
+              e.preventDefault();
+              if (
+                (message.type === "message" && message.deleted) ||
+                message.type !== "message"
+              )
+                return;
+              checkClickPosition(e);
+              setSelectedMessageId(message._id);
+            }}
+            className={cn(
+              "max-w-[66.6667%] cursor-default break-words rounded-sm bg-secondary p-3",
+              {
+                "sticky z-50 opacity-100": message._id == selectedMessageId,
+                "my-2 max-w-[80%] border-2 border-secondary bg-primary":
+                  message.type === "pendingRequest" ||
+                  message.type === "rejectedRequest",
+                "mb-3":
+                  message.type === "message" && message.reactions.length > 0,
+              },
+            )}
+          >
+            {message.type === "message" && message.deleted ? (
+              <div className="flex font-medium">
+                <Ban />
+                <p className="ml-2.5">This message was deleted</p>
+              </div>
+            ) : message.type != "message" ? (
+              <div className="font-semibold text-destructive-foreground">
+                <div>
+                  {message.type === "pendingRequest" ? (
+                    <>
+                      <span>
+                        {chatInfo.data?.otherUser[0]?.username} has sent a
+                        request to clear the chat
+                      </span>
+                      <div className="mt-2 flex items-center text-xs">
+                        <Clock className="mr-1 h-4 w-4" />
+                        <span>Expires {getTimeRemaining()}</span>
+                      </div>
+                    </>
+                  ) : message.type === "expiredRequest" ? (
+                    `The request of ${chatInfo.data?.otherUser[0]?.username + " to clear the chat"} has expired`
+                  ) : (
+                    "You have rejected the request to clear the chat"
+                  )}
+                </div>
+                <div className="flex justify-between">
+                  {message.type === "pendingRequest" ? (
+                    <>
+                      <button
+                        onClick={acceptClearRequestHandler(message._id)}
+                        className="mt-4 flex rounded-sm bg-accept p-2 px-4"
+                      >
+                        <CircleCheck className="mr-1 p-0.5" />
+                        <p>Accept</p>
+                      </button>
+                      <button
+                        onClick={rejectClearRequestHandler(
+                          message.privateChatId,
+                          message._id,
+                        )}
+                        className="ml-4 mt-4 flex rounded-sm bg-accent p-2 px-4 lg:ml-0"
+                      >
+                        <CircleX className="mr-1 p-0.5" />
+                        <p>Reject</p>{" "}
+                      </button>{" "}
+                    </>
+                  ) : null}
+                </div>
+              </div>
+            ) : (
+              <div className="select-none lg:select-auto">
+                <div>{message.content}</div>
+              </div>
+            )}
+          </div>
+
+          {message.type === "message" &&
+            message.reactions &&
+            message.reactions.length > 0 && (
+              <Popover>
+                <PopoverTrigger
+                  className={cn(
+                    "absolute bottom-0 left-0 flex select-none items-center justify-center gap-1 rounded-full bg-secondary px-1 lg:select-auto",
+                    { "z-50": message._id === selectedMessageId },
+                  )}
+                >
+                  {message.reactions
+                    .reduce(
+                      (acc, reaction) => {
+                        const existingReaction = acc.find(
+                          (r) => r.emoji === reaction.emoji,
+                        );
+                        if (existingReaction) {
+                          existingReaction.count++;
+                        } else {
+                          acc.push({ emoji: reaction.emoji, count: 1 });
+                        }
+                        return acc;
+                      },
+                      [] as { emoji: string; count: number }[],
+                    )
+                    .map((reaction, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-center rounded-full bg-primary/20 text-sm"
+                      >
+                        <span className="flex aspect-square h-6 items-center justify-center pt-0.5">
+                          {reaction.emoji}
+                        </span>
+                        {reaction.count > 1 && (
+                          <span className="pl-1 text-xs text-secondary-foreground">
+                            {reaction.count}
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                </PopoverTrigger>
+                <PopoverContent>
+                  <ReactionDetails
+                    reactions={message.reactions}
+                    userInfos={userInfos}
+                  />
+                </PopoverContent>
+              </Popover>
+            )}
+
+          {chatContainerElement &&
+          message._id == selectedMessageId &&
+          message.type == "message"
+            ? // The reason for the creation of the portal is that we need the portal at a point where it is over EVERYTHING even the input etc.
+              createPortal(
+                <div
+                  ref={refsContextModal.setFloating}
+                  style={floatingStylesContextModal}
+                  className="z-50 py-3 opacity-100"
+                >
+                  <div className="rounded-sm border-2 border-secondary-foreground">
+                    <div className="rounded-sm bg-secondary">
+                      <div
+                        onClick={() => {
+                          void navigator.clipboard.writeText(message.content);
+                          setSelectedMessageId(null);
+                          setShowFullEmojiPicker(false);
+                          toast.success("Copied to clipboard");
+                        }}
+                        className="flex cursor-pointer p-2"
+                      >
+                        <CopyCheck />
+                        <p className="ml-1">Copy</p>
+                      </div>
+                      <button
+                        onClick={() => replyToMessageHandler(message._id)}
+                        className="flex w-full cursor-pointer border-y-2 border-secondary-foreground p-2 pr-8"
+                      >
+                        <Reply />
+                        <p className="ml-1">Reply</p>
+                      </button>
+                      <div className="flex w-full cursor-pointer border-b-2 border-secondary-foreground p-2 pr-8">
+                        <Forward />
+                        <p className="ml-1">Forward</p>
+                      </div>
+                      <div className="flex p-2 pr-8 text-secondary-foreground">
+                        <Info />
+                        <p className="ml-1">{sentInfo()}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>,
+                chatContainerElement,
+              )
+            : null}
+        </div>
+      )}
+    </div>
   );
 };

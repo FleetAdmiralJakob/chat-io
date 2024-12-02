@@ -14,6 +14,7 @@ const schema = defineEntSchema({
     .field("firstName", v.optional(v.string()))
     .field("email", v.optional(v.string()))
     .field("lastName", v.optional(v.string()))
+    .edges("reactions", { ref: true })
     .edges("privateChats")
     .edges("messages", { ref: true })
     .edges("clearRequests", { ref: true })
@@ -54,11 +55,17 @@ const schema = defineEntSchema({
     .field("replyTo", v.optional(v.id("messages")))
     .edge("privateChat")
     .edge("user")
+    .edges("reactions", { ref: true })
     .edges("readBy", {
       to: "users",
       inverseField: "readMessages",
       table: "readMessages",
     }),
+
+  reactions: defineEnt({})
+    .field("emoji", v.string())
+    .edge("user")
+    .edge("message"),
 });
 
 export default schema;
