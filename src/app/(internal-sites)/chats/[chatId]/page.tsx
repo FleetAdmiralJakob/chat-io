@@ -82,7 +82,6 @@ const EmojiPicker = ({
       <Picker
         data={data}
         onEmojiSelect={(emoji: { native: string }) => {
-          console.log(emoji);
           reactToMessageHandler(selectedMessageId, emoji.native);
         }}
       />

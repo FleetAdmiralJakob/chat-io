@@ -80,11 +80,7 @@ const ReactionDetails = ({
   // Group reactions by emoji
   const reactionsByEmoji = reactions.reduce(
     (acc, reaction) => {
-      acc[reaction.emoji] = acc[reaction.emoji] ?? [];
-      if (acc[reaction.emoji] === undefined) {
-        acc[reaction.emoji] = [];
-      }
-      acc[reaction.emoji]!.push(reaction);
+      (acc[reaction.emoji] = acc[reaction.emoji] ?? []).push(reaction);
       return acc;
     },
     {} as Record<string, typeof reactions>,
@@ -211,11 +207,7 @@ export const Message = ({
   });
 
   const userAgent = navigator.userAgent;
-  const isMobile = /android/i.test(userAgent)
-    ? true
-    : /iPad|iPhone|iPod/.test(userAgent)
-      ? true
-      : false;
+  const isMobile = /android|iPad|iPhone|iPod/i.test(userAgent);
 
   const { refs: refsContextModal, floatingStyles: floatingStylesContextModal } =
     useFloating({
