@@ -345,6 +345,14 @@ export const Message = ({
               <div className="flex gap-4 rounded-lg border-2 border-secondary-foreground bg-secondary p-2 text-2xl">
                 <span
                   onMouseDown={() => reactToMessageHandler(message._id, "😂")}
+                  role="button"
+                  aria-label="React with laughing emoji"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      reactToMessageHandler(message._id, "😂");
+                    }
+                  }}
                   className={cn(
                     "flex aspect-square h-10 items-center justify-center rounded-full bg-card p-1 pt-1.5 hover:cursor-pointer dark:bg-primary",
                     {
@@ -363,6 +371,14 @@ export const Message = ({
                 </span>
                 <span
                   onMouseDown={() => reactToMessageHandler(message._id, "❤️")}
+                  role="button"
+                  aria-label="React with heart emoji"
+                  tabIndex={1}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      reactToMessageHandler(message._id, "❤️");
+                    }
+                  }}
                   className={cn(
                     "flex aspect-square h-10 items-center justify-center rounded-full bg-card p-1 pt-1.5 hover:cursor-pointer dark:bg-primary",
                     {
@@ -381,6 +397,14 @@ export const Message = ({
                 </span>
                 <span
                   onMouseDown={() => reactToMessageHandler(message._id, "👍")}
+                  role="button"
+                  aria-label="React with thumb up emoji"
+                  tabIndex={2}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      reactToMessageHandler(message._id, "👍");
+                    }
+                  }}
                   className={cn(
                     "flex aspect-square h-10 items-center justify-center rounded-full bg-card p-1 pt-1.5 hover:cursor-pointer dark:bg-primary",
                     {
@@ -399,6 +423,14 @@ export const Message = ({
                 </span>
                 <span
                   onMouseDown={() => reactToMessageHandler(message._id, "👎")}
+                  role="button"
+                  aria-label="React with thumb down emoji"
+                  tabIndex={3}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      reactToMessageHandler(message._id, "👎");
+                    }
+                  }}
                   className={cn(
                     "flex aspect-square h-10 items-center justify-center rounded-full bg-card p-1 pt-1.5 hover:cursor-pointer dark:bg-primary",
                     {
@@ -417,6 +449,14 @@ export const Message = ({
                 </span>
                 <span
                   onMouseDown={() => reactToMessageHandler(message._id, "😮")}
+                  role="button"
+                  aria-label="React with face with mouth open emoji"
+                  tabIndex={4}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      reactToMessageHandler(message._id, "😮");
+                    }
+                  }}
                   className={cn(
                     "flex aspect-square h-10 items-center justify-center rounded-full bg-card p-1 pt-1.5 hover:cursor-pointer dark:bg-primary",
                     {
@@ -437,6 +477,12 @@ export const Message = ({
                   onMouseDown={() =>
                     setShowFullEmojiPicker((prevValue) => !prevValue)
                   }
+                  role="button"
+                  aria-label="Open full emoji picker"
+                  tabIndex={5}
+                  onKeyDown={() => {
+                    setShowFullEmojiPicker((prevValue) => !prevValue);
+                  }}
                   className="flex aspect-square h-10 items-center justify-center rounded-full bg-card p-1 hover:cursor-pointer dark:bg-primary"
                 >
                   <Plus className="transition-transform hover:scale-125" />
