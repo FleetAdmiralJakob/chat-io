@@ -197,8 +197,13 @@ export const Message = ({
     }
   });
 
-  const checkClickPosition = (e: React.MouseEvent) => {
-    const clickPosition = e.clientY;
+  const checkClickPosition = (
+    e: React.MouseEvent | TouchEvent | MouseEvent,
+  ) => {
+    const clickPosition =
+      "touches" in e && e.touches[0]
+        ? e.touches[0].clientY // TouchEvent
+        : (e as React.MouseEvent | MouseEvent).clientY; // MouseEvent
     const windowHeight = window.innerHeight;
     setIsInBottomHalf(clickPosition >= windowHeight / 2);
   };
@@ -305,7 +310,7 @@ export const Message = ({
 
   const chatContainerElement = document.getElementById("resizable-panel-chat");
 
-  const onLongPress = () => {
+  const onLongPress = (e: MouseEvent | TouchEvent) => {
     if (!isMobile) return;
     if (
       (message.type === "message" && message.deleted) ||
