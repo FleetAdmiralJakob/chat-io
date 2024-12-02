@@ -518,7 +518,7 @@ export const Message = ({
               <Popover>
                 <PopoverTrigger
                   className={cn(
-                    "absolute bottom-4 right-0 flex -translate-x-[0%] items-center justify-center gap-1 rounded-full bg-secondary px-1",
+                    "absolute bottom-4 right-0 flex -translate-x-[0%] select-none items-center justify-center gap-1 rounded-full bg-secondary px-1 lg:select-auto",
                     { "z-50": message._id === selectedMessageId },
                   )}
                 >
@@ -760,7 +760,7 @@ export const Message = ({
               <Popover>
                 <PopoverTrigger
                   className={cn(
-                    "absolute bottom-0 left-0 flex items-center justify-center gap-1 rounded-full bg-secondary px-1",
+                    "absolute bottom-0 left-0 flex select-none items-center justify-center gap-1 rounded-full bg-secondary px-1 lg:select-auto",
                     { "z-50": message._id === selectedMessageId },
                   )}
                 >
