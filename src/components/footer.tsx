@@ -1,7 +1,7 @@
+import { SiGithub, SiYoutube } from "@icons-pack/react-simple-icons";
 import { Book, Globe, UsersRound } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { SiGithub, SiYoutube } from "react-icons/si";
 import germany from "src/assets/germany.png";
 import england from "src/assets/united-kingdom.png";
 import {
@@ -17,38 +17,30 @@ import {
 const Footer = () => {
   return (
     <>
-      <div
-        className={
-          "block h-48 justify-between bg-card-foreground text-xl text-foreground lg:flex lg:h-24"
-        }
-      >
-        <div
-          className={
-            "flex w-full justify-around pt-7 text-3xl lg:ml-20 lg:mt-8 lg:w-1/6 lg:pt-0"
-          }
-        >
+      <div className="block h-48 justify-between bg-card-foreground text-xl text-foreground lg:flex lg:h-24">
+        <div className="flex w-full justify-around pt-7 lg:ml-20 lg:mt-8 lg:w-1/6 lg:pt-0">
           <Link
-            href={"https://github.com/FleetAdmiralJakob/chat-io"}
+            href="https://github.com/FleetAdmiralJakob/chat-io"
             aria-label="See our project's code on GitHub"
           >
             <SiGithub />
           </Link>
           <Link
-            href={"https://www.youtube.com/@JakobTheCoder"}
+            href="https://www.youtube.com/@JakobTheCoder"
             aria-label="The YouTube channel of one of the creators of Chat.io"
           >
             <SiYoutube />
           </Link>
           <Link
-            href={"/contributors"}
+            href="/contributors"
             aria-label="See who worked on making this project happen"
           >
-            <UsersRound className="h-7 w-7" />
+            <UsersRound className="h-6 w-6" />
           </Link>
         </div>
         <div className="flex w-full flex-col gap-3 pl-14 pt-8 lg:w-2/5 lg:flex-row lg:justify-around lg:pt-0">
-          <div className={"flex items-center gap-1"}>
-            <Globe />{" "}
+          <div className="flex items-center gap-1">
+            <Globe />
             <Select>
               <SelectTrigger
                 className="flex w-[180px] items-center py-0"
@@ -60,11 +52,11 @@ const Footer = () => {
                 <SelectGroup>
                   <SelectLabel>Languages</SelectLabel>
                   <SelectItem value="English">
-                    <div className={"flex"}>
+                    <div className="flex">
                       <p>English</p>
                       <Image
                         src={england}
-                        alt={"English"}
+                        alt="British flag"
                         width={20}
                         height={20}
                         className={"ml-2.5"}
@@ -72,14 +64,14 @@ const Footer = () => {
                     </div>
                   </SelectItem>
                   <SelectItem value="German">
-                    <div className={"flex"}>
+                    <div className="flex">
                       <p>German</p>
                       <Image
                         src={germany}
-                        alt={"German"}
+                        alt="German flag"
                         width={20}
                         height={20}
-                        className={"ml-2.5"}
+                        className="ml-2.5"
                       />
                     </div>
                   </SelectItem>
@@ -87,7 +79,7 @@ const Footer = () => {
               </SelectContent>
             </Select>
           </div>
-          <Link href={"/legal"} className={"flex items-center gap-1"}>
+          <Link href="/legal" className="flex items-center gap-1">
             <Book /> Legal
           </Link>
         </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import { SiGithub, SiLinkedin } from "@icons-pack/react-simple-icons";
 import Footer from "~/components/footer";
 import { cn } from "~/lib/utils";
 import {
@@ -12,8 +13,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
-import { FaLinkedin } from "react-icons/fa";
-import { SiGithub } from "react-icons/si";
 
 export const dynamic = "force-static";
 
@@ -45,89 +44,80 @@ const contributorList: ContributorsProps[] = [
   },
 ];
 
-const ContributorCard = (props: {
-  contributor: ContributorsProps;
-  key?: number;
-}) => {
+const ContributorCard = (props: { contributor: ContributorsProps }) => {
   const [cardOpen, setCardOpen] = useState(false);
   return (
-    <React.Fragment key={props.key}>
-      <div
-        className={
-          "flex w-11/12 justify-between rounded-2xl border-2 border-secondary-foreground bg-card-foreground p-5 sm:w-7/12 lg:block lg:w-6/12 2xl:w-4/12"
-        }
-      >
-        <div className="flex items-center lg:justify-between">
-          <div className="flex flex-wrap items-center justify-start">
-            <Image
-              src={props.contributor.image}
-              alt={props.contributor.name}
-              width={50}
-              height={50}
-              className="order-0 rounded-full lg:flex"
-            />
-
-            <div className="order-1 ml-4 mt-0.5 lg:flex lg:justify-between">
-              <p className="text-xl font-bold lg:mt-3">
-                {props.contributor.name}
-              </p>
-              <p className="mt-2.5 h-9 rounded-sm border-2 border-secondary-foreground bg-primary px-3 pt-1 font-medium text-secondary-foreground lg:ml-4">
-                {props.contributor.job}
-              </p>
-            </div>
-          </div>
-          <CircleChevronUp
-            onClick={() => setCardOpen(!cardOpen)}
-            className={cn(
-              "ml-5 mt-2.5 hidden h-7 w-7 transition-transform duration-300 ease-in-out lg:flex",
-              {
-                "rotate-180 transform": cardOpen,
-              },
-            )}
+    <div className="flex w-11/12 justify-between rounded-2xl border-2 border-secondary-foreground bg-card-foreground p-5 sm:w-7/12 lg:block lg:w-6/12 2xl:w-4/12">
+      <div className="flex items-center lg:justify-between">
+        <div className="flex flex-wrap items-center justify-start">
+          <Image
+            src={props.contributor.image}
+            alt={props.contributor.name}
+            width={50}
+            height={50}
+            className="order-0 rounded-full lg:flex"
           />
+
+          <div className="order-1 ml-4 mt-0.5 lg:flex lg:justify-between">
+            <p className="text-xl font-bold lg:mt-3">
+              {props.contributor.name}
+            </p>
+            <p className="mt-2.5 h-9 rounded-sm border-2 border-secondary-foreground bg-primary px-3 pt-1 font-medium text-secondary-foreground lg:ml-4">
+              {props.contributor.job}
+            </p>
+          </div>
         </div>
-        <div
+        <CircleChevronUp
+          onClick={() => setCardOpen(!cardOpen)}
           className={cn(
-            "justify-around text-xl text-secondary-foreground underline lg:mt-3 lg:flex",
+            "ml-5 mt-2.5 hidden h-7 w-7 cursor-pointer transition-transform duration-300 ease-in-out lg:flex",
             {
-              "transition-max-height duration-300 ease-in-out lg:max-h-0 lg:overflow-hidden":
-                !cardOpen,
-              "transition-max-height max-h-screen duration-300 ease-in-out":
-                cardOpen,
+              "rotate-180 transform": cardOpen,
             },
           )}
-        >
-          {props.contributor.website ? (
-            <Link
-              className={cn("hidden", {
-                flex: props.contributor.website,
-              })}
-              href={props.contributor.website}
-            >
-              <p className={"hidden cursor-pointer lg:flex"}>Website</p>
-              <LinkChain className="ml-1 mt-1 h-5 w-5" />
-            </Link>
-          ) : null}
-
-          {props.contributor.linkedin ? (
-            <Link className="flex" href={props.contributor.linkedin}>
-              <p className={"hidden cursor-pointer lg:flex"}>LinkedIn</p>
-              <FaLinkedin className="ml-1 mt-2.5 h-5 w-5 lg:mt-1" />
-            </Link>
-          ) : null}
-
-          {props.contributor.github ? (
-            <Link
-              className={cn("hidden", { flex: props.contributor.github })}
-              href={props.contributor.github}
-            >
-              <p className={"hidden cursor-pointer lg:flex"}>GitHub</p>
-              <SiGithub className="ml-1 mt-2.5 h-5 w-5 lg:mt-1" />
-            </Link>
-          ) : null}
-        </div>
+        />
       </div>
-    </React.Fragment>
+      <div
+        className={cn(
+          "justify-around text-xl text-secondary-foreground underline lg:mt-3 lg:flex",
+          {
+            "transition-max-height duration-300 ease-in-out lg:max-h-0 lg:overflow-hidden":
+              !cardOpen,
+            "transition-max-height max-h-screen duration-300 ease-in-out":
+              cardOpen,
+          },
+        )}
+      >
+        {props.contributor.website ? (
+          <Link
+            className={cn("hidden", {
+              flex: props.contributor.website,
+            })}
+            href={props.contributor.website}
+          >
+            <p className="hidden cursor-pointer lg:flex">Website</p>
+            <LinkChain className="ml-1 mt-1 h-5 w-5" />
+          </Link>
+        ) : null}
+
+        {props.contributor.linkedin ? (
+          <Link className="flex" href={props.contributor.linkedin}>
+            <p className="hidden cursor-pointer lg:flex">LinkedIn</p>
+            <SiLinkedin className="ml-1 mt-2.5 h-5 w-5 lg:mt-1" />
+          </Link>
+        ) : null}
+
+        {props.contributor.github ? (
+          <Link
+            className={cn("hidden", { flex: props.contributor.github })}
+            href={props.contributor.github}
+          >
+            <p className="hidden cursor-pointer lg:flex">GitHub</p>
+            <SiGithub className="ml-1 mt-2.5 h-5 w-5 lg:mt-1" />
+          </Link>
+        ) : null}
+      </div>
+    </div>
   );
 };
 

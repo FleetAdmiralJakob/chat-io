@@ -1,5 +1,6 @@
 "use client";
 
+import { SiGithub } from "@icons-pack/react-simple-icons";
 import icon from "~/assets/chatio.png";
 import { DevMode } from "~/components/dev-mode-info";
 import Footer from "~/components/footer";
@@ -7,12 +8,10 @@ import { AuroraBackground } from "~/components/ui/aurora-background";
 import { Button } from "~/components/ui/button";
 import { devMode$ } from "~/states";
 import { motion } from "framer-motion";
-import { CloudDownload, ShieldCheck } from "lucide-react";
+import { ArrowDown, CloudDownload, ShieldCheck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useRef, useState } from "react";
-import { FaCircleArrowDown } from "react-icons/fa6";
-import { SiGithub } from "react-icons/si";
 
 export default function PublicHomepage() {
   const aboutRef = useRef<HTMLParagraphElement | null>(null);
@@ -65,7 +64,7 @@ export default function PublicHomepage() {
               </p>
               <div className="flex flex-col items-center gap-1 py-11">
                 <Link href="/sign-up">
-                  <Button className="b bg-foreground p-6 text-2xl transition delay-150 duration-200 ease-in-out hover:bg-secondary-foreground hover:text-amber-50">
+                  <Button className="bg-foreground p-6 text-2xl transition delay-150 duration-200 ease-in-out hover:bg-secondary-foreground hover:text-amber-50">
                     Sign Up
                   </Button>
                 </Link>
@@ -77,48 +76,43 @@ export default function PublicHomepage() {
                   scrollCallback();
                 }}
                 aria-label="Automatically scroll down to all the features of Chat.io"
+                className="flex aspect-square h-7 animate-bounce items-center justify-center rounded-full bg-foreground text-primary-foreground"
               >
-                <FaCircleArrowDown className="h-7 animate-bounce text-2xl" />
+                <ArrowDown className="h-6" />
               </button>
             </div>
           </motion.div>
 
           <p
             ref={aboutRef}
-            className={
-              "mb-20 mt-16 w-3/4 text-center text-2xl md:w-1/2 lg:w-1/4"
-            }
+            className="mb-20 mt-16 w-3/4 text-center text-2xl md:w-1/2 lg:w-1/4"
           >
             Discover the multitude of features packed into Chat.io
           </p>
 
-          <div className={"block"}>
+          <div className="block">
             <CloudDownload className="mb-2 ml-7 h-10 w-10" />
             <p className="mb-5 text-xl">Installable</p>
           </div>
-          <p className={"w-3/4 text-secondary-foreground md:w-1/2 lg:w-1/4"}>
+          <p className="w-3/4 text-secondary-foreground md:w-1/2 lg:w-1/4">
             Whether you have on iOS, Android, Windows, or Mac, Chat.io installs
             smoothly across all major platforms, ensuring a consistent and
             reliable weather experience across all your devices.
           </p>
           <div>
-            <SiGithub className={"mb-2 ml-10 mt-16 text-4xl"} />
-            <p className={"mb-5 text-xl"}>Open Source</p>
+            <SiGithub className="mb-2 ml-10 mt-16 text-4xl" />
+            <p className="mb-5 text-xl">Open Source</p>
           </div>
-          <p className={"w-3/4 text-secondary-foreground md:w-1/2 lg:w-1/4"}>
+          <p className="w-3/4 text-secondary-foreground md:w-1/2 lg:w-1/4">
             By embracing open-source principles, Chat.io invites collaboration
             and innovation from a global community of developers, ensuring a
             robust and customizable chat solution tailored to your needs.
           </p>
           <div>
             <ShieldCheck className="mb-2 ml-4 mt-16 h-10 w-10" />
-            <p className={"mb-5 text-xl"}>Privacy</p>
+            <p className="mb-5 text-xl">Privacy</p>
           </div>
-          <p
-            className={
-              "mb-20 w-3/4 text-secondary-foreground md:w-1/2 lg:w-1/4"
-            }
-          >
+          <p className="mb-20 w-3/4 text-secondary-foreground md:w-1/2 lg:w-1/4">
             Chat.io boasts strong security measures, including robust encryption
             and strict access controls, ensuring user data is always
             safeguarded.
