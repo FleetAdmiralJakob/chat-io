@@ -25,7 +25,7 @@ import {
   Reply,
   Trash2,
 } from "lucide-react";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useInView } from "react-intersection-observer";
 import { toast } from "sonner";
@@ -61,6 +61,86 @@ const ReplyToMessage = ({ message }: { message: Message }) => {
   } else {
     return null;
   }
+};
+
+const ReactionQuickView = ({
+  reactions,
+}: {
+  reactions: Doc<"reactions">[];
+}) => {
+  const [animatingEmojis, setAnimatingEmojis] = useState<Set<string>>(
+    new Set(),
+  );
+  const previousReactions = useRef<string[]>([]);
+  const isFirstRender = useRef(true);
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      previousReactions.current = reactions.map((r) => r.emoji);
+      return; // Skip animation logic on first render
+    }
+
+    const currentReactions = reactions.map((r) => r.emoji);
+    const newReactions = currentReactions.filter(
+      (emoji) => !previousReactions.current.includes(emoji),
+    );
+
+    if (newReactions.length > 0) {
+      setAnimatingEmojis(new Set(newReactions));
+      const timeoutId = setTimeout(() => {
+        setAnimatingEmojis(new Set());
+      }, 500); // Match this with your animation duration
+      // The setTimeout should be cleaned up when the component unmounts or when new reactions are added before the animation completes.
+      return () => clearTimeout(timeoutId);
+    }
+
+    previousReactions.current = currentReactions;
+  }, [reactions]);
+
+  return (
+    reactions
+      // Reduce the reactions array to count occurrences of each emoji
+      // acc: accumulator array of {emoji, count} objects
+      // reaction: current reaction being processed
+      // Returns: array of unique emojis with their counts
+      .reduce(
+        (acc, reaction) => {
+          const existingReaction = acc.find((r) => r.emoji === reaction.emoji);
+          if (existingReaction) {
+            existingReaction.count++;
+          } else {
+            acc.push({
+              emoji: reaction.emoji,
+              count: 1,
+            });
+          }
+          return acc;
+        },
+        [] as { emoji: string; count: number }[],
+      )
+      .map((reaction, index) => (
+        <div
+          key={index}
+          className={cn(
+            "flex items-center justify-center rounded-full bg-primary/20 text-sm",
+            !isFirstRender.current &&
+              animatingEmojis.has(reaction.emoji) &&
+              // Match the duration with the timeout above
+              "animate-jump duration-500",
+          )}
+        >
+          <span className="flex aspect-square h-6 items-center justify-center pt-0.5">
+            {reaction.emoji}
+          </span>
+          {reaction.count > 1 && (
+            <span className="pl-1 text-xs text-secondary-foreground">
+              {reaction.count}
+            </span>
+          )}
+        </div>
+      ))
+  );
 };
 
 const ReactionDetails = ({
@@ -573,39 +653,7 @@ export const Message = ({
                     { "z-50": message._id === selectedMessageId },
                   )}
                 >
-                  {message.reactions
-                    .reduce(
-                      (acc, reaction) => {
-                        const existingReaction = acc.find(
-                          (r) => r.emoji === reaction.emoji,
-                        );
-                        if (existingReaction) {
-                          existingReaction.count++;
-                        } else {
-                          acc.push({
-                            emoji: reaction.emoji,
-                            count: 1,
-                          });
-                        }
-                        return acc;
-                      },
-                      [] as { emoji: string; count: number }[],
-                    )
-                    .map((reaction, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center justify-center rounded-full bg-primary/20 text-sm"
-                      >
-                        <span className="flex aspect-square h-6 items-center justify-center pt-0.5">
-                          {reaction.emoji}
-                        </span>
-                        {reaction.count > 1 && (
-                          <span className="pl-1 text-xs text-secondary-foreground">
-                            {reaction.count}
-                          </span>
-                        )}
-                      </div>
-                    ))}
+                  <ReactionQuickView reactions={message.reactions} />
                 </PopoverTrigger>
                 <PopoverContent>
                   <ReactionDetails
@@ -815,36 +863,7 @@ export const Message = ({
                     { "z-50": message._id === selectedMessageId },
                   )}
                 >
-                  {message.reactions
-                    .reduce(
-                      (acc, reaction) => {
-                        const existingReaction = acc.find(
-                          (r) => r.emoji === reaction.emoji,
-                        );
-                        if (existingReaction) {
-                          existingReaction.count++;
-                        } else {
-                          acc.push({ emoji: reaction.emoji, count: 1 });
-                        }
-                        return acc;
-                      },
-                      [] as { emoji: string; count: number }[],
-                    )
-                    .map((reaction, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center justify-center rounded-full bg-primary/20 text-sm"
-                      >
-                        <span className="flex aspect-square h-6 items-center justify-center pt-0.5">
-                          {reaction.emoji}
-                        </span>
-                        {reaction.count > 1 && (
-                          <span className="pl-1 text-xs text-secondary-foreground">
-                            {reaction.count}
-                          </span>
-                        )}
-                      </div>
-                    ))}
+                  <ReactionQuickView reactions={message.reactions} />
                 </PopoverTrigger>
                 <PopoverContent>
                   <ReactionDetails
