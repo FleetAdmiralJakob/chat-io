@@ -88,9 +88,11 @@ const ReactionQuickView = ({
 
     if (newReactions.length > 0) {
       setAnimatingEmojis(new Set(newReactions));
-      setTimeout(() => {
+      const timeoutId = setTimeout(() => {
         setAnimatingEmojis(new Set());
       }, 500); // Match this with your animation duration
+      // The setTimeout should be cleaned up when the component unmounts or when new reactions are added before the animation completes.
+      return () => clearTimeout(timeoutId);
     }
 
     previousReactions.current = currentReactions;
