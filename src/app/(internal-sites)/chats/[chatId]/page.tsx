@@ -119,6 +119,7 @@ const useScrollBehavior = (
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [isNearBottom, setIsNearBottom] = useState(true);
   const isFirstLoad = useRef(true);
+  const lastMessageCount = useRef(messages?.length ?? 0);
 
   const handleScroll = useCallback(() => {
     if (messagesEndRef.current) {
@@ -146,10 +147,15 @@ const useScrollBehavior = (
       if (isFirstLoad.current) {
         scrollToBottom(false); // Instant scroll on the first load (it should be at the bottom of the messages without scrolling on the first load)
         isFirstLoad.current = false;
-      } else {
-        scrollToBottom(true); // Smooth scroll for new messages
+      } else if (messages.length > lastMessageCount.current || isNearBottom) {
+        // Only scroll if a new message is added, not for reactions
+        // Also scroll if a reaction is added and the user is near the bottom of the chat (to keep the reaction visible)
+        scrollToBottom(true);
       }
+      lastMessageCount.current = messages.length;
     }
+    // We do not include isNearBottom in the dependencies because we don't want to scroll to the bottom when this value changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages, scrollToBottom]);
 
   return {
