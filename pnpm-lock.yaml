@@ -17,7 +17,7 @@ importers:
         version: 6.7.1(next@15.0.4(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@19.0.0-beta-df7b47d-20241124)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@clerk/shared':
         specifier: ^2.17.0
-        version: 2.19.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        version: 2.19.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@emoji-mart/data':
         specifier: ^1.2.1
         version: 1.2.1
@@ -331,8 +331,24 @@ packages:
       react-dom:
         optional: true
 
+  '@clerk/shared@2.19.1':
+    resolution: {integrity: sha512-ewTEIK91TEsQIQLsSFofAaCD8ZPYMy+1UgBB/k4Q8mese9A7mtE696FENaMXwu0YDyOg6yqgoHMOxOIYs8batQ==}
+    engines: {node: '>=18.17.0'}
+    peerDependencies:
+      react: ^18 || ^19.0.0-0
+      react-dom: ^18 || ^19.0.0-0
+    peerDependenciesMeta:
+      react:
+        optional: true
+      react-dom:
+        optional: true
+
   '@clerk/types@4.38.0':
     resolution: {integrity: sha512-806lLBal6MVChTVWnzCWZAQdZ2miLJHkVJ+JUX2XX8D1DDPonw2y5tVk9BGWZfKq/rtUP2Jg6HdZOnA5ZbU0Ow==}
+    engines: {node: '>=18.17.0'}
+
+  '@clerk/types@4.39.0':
+    resolution: {integrity: sha512-WWEoXmcob6X80cZZZGobN8aKjHAjAoL0cgVyLX8UeQ+JW4kl1IfUmZQgDBFOafGEm2yUoKlKAP22bWPDqmbTJw==}
     engines: {node: '>=18.17.0'}
 
   '@emnapi/runtime@1.3.1':
@@ -3991,7 +4007,23 @@ snapshots:
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
 
+  '@clerk/shared@2.19.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
+    dependencies:
+      '@clerk/types': 4.39.0
+      dequal: 2.0.3
+      glob-to-regexp: 0.4.1
+      js-cookie: 3.0.5
+      std-env: 3.8.0
+      swr: 2.2.5(react@19.0.0)
+    optionalDependencies:
+      react: 19.0.0
+      react-dom: 19.0.0(react@19.0.0)
+
   '@clerk/types@4.38.0':
+    dependencies:
+      csstype: 3.1.1
+
+  '@clerk/types@4.39.0':
     dependencies:
       csstype: 3.1.1
 
