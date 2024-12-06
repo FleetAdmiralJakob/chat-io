@@ -2,8 +2,9 @@ import type { PluginCreator } from "postcss";
 import type { Config } from "tailwindcss";
 // @ts-expect-error - Tailwind CSS does not have types for this package unfortunately
 import { default as flattenColorPalette } from "tailwindcss/lib/util/flattenColorPalette";
+import { withUt } from "uploadthing/tw";
 
-const config = {
+const config = withUt({
   darkMode: ["class"],
   content: [
     "./pages/**/*.{ts,tsx}",
@@ -98,7 +99,7 @@ const config = {
   },
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   plugins: [require("tailwindcss-animate"), addVariablesForColors],
-} satisfies Config;
+} satisfies Config);
 
 // This plugin adds each Tailwind color as a global CSS variable, e.g. var(--gray-200).
 function addVariablesForColors({

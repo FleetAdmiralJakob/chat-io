@@ -37,6 +37,7 @@
     "@sentry/nextjs": "^8",
     "@serwist/next": "9.0.10",
     "@t3-oss/env-nextjs": "^0.11.1",
+    "@uploadthing/react": "^7.1.2",
     "babel-plugin-react-compiler": "19.0.0-beta-df7b47d-20241124",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
@@ -64,6 +65,7 @@
     "sonner": "^1.7.0",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
+    "uploadthing": "^7.4.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
