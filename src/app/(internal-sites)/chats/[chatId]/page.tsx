@@ -19,6 +19,7 @@ import {
   ResizablePanelGroup,
 } from "~/components/ui/resize";
 import { Skeleton } from "~/components/ui/skeleton";
+import { usePrevious } from "~/lib/hooks";
 import { cn } from "~/lib/utils";
 import { devMode$ } from "~/states";
 import { useMutation } from "convex/react";
@@ -117,9 +118,14 @@ const useScrollBehavior = (
   messages: FunctionReturnType<typeof api.messages.getMessages> | undefined,
 ) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  // I have a isNearBottomRef because I want to to check if something is near the
+  // bottom without having to trigger a useEffect every time the state changes.
+  // But I have a isNearBottom state too because I want to trigger changes in
+  // the UI like the scroll to bottom button.
+  const isNearBottomRef = useRef(true);
   const [isNearBottom, setIsNearBottom] = useState(true);
   const isFirstLoad = useRef(true);
-  const lastMessageCount = useRef(messages?.length ?? 0);
+  const lastMessageCount = usePrevious(messages?.length);
 
   const handleScroll = useCallback(() => {
     if (messagesEndRef.current) {
@@ -128,6 +134,7 @@ const useScrollBehavior = (
 
       // Consider "near bottom" if within 100 px of the bottom
       const nearBottom = distanceFromBottom < 100;
+      isNearBottomRef.current = nearBottom;
       setIsNearBottom(nearBottom);
     }
   }, []);
@@ -147,16 +154,16 @@ const useScrollBehavior = (
       if (isFirstLoad.current) {
         scrollToBottom(false); // Instant scroll on the first load (it should be at the bottom of the messages without scrolling on the first load)
         isFirstLoad.current = false;
-      } else if (messages.length > lastMessageCount.current || isNearBottom) {
+      } else if (
+        (lastMessageCount && messages.length > lastMessageCount) ||
+        isNearBottomRef.current
+      ) {
         // Only scroll if a new message is added, not for reactions
         // Also scroll if a reaction is added and the user is near the bottom of the chat (to keep the reaction visible)
         scrollToBottom(true);
       }
-      lastMessageCount.current = messages.length;
     }
-    // We do not include isNearBottom in the dependencies because we don't want to scroll to the bottom when this value changes
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [messages, scrollToBottom]);
+  }, [messages, scrollToBottom, lastMessageCount]);
 
   return {
     messagesEndRef,
