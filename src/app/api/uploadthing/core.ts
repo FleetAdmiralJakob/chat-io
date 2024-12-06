@@ -39,12 +39,16 @@ export const ourFileRouter = {
           code: "FORBIDDEN",
         });
 
+      // TODO: This deserves a rate limiter + a check for not creating a bunch of trash files to spam us. Example: https://github.com/t3dotgg/t3gallery/blob/main/src/server/ratelimit.ts
+
       // Whatever is returned here is accessible in onUploadComplete as `metadata`
       return { userId: user.userId };
     })
     .onUploadComplete(async ({ metadata }) => {
       // This code RUNS ON YOUR SERVER after upload
       log.info("Upload complete");
+
+      // TODO: Call Convex to store the file in the db
 
       // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
       return { uploadedBy: metadata.userId };
