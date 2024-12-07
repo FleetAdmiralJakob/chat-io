@@ -35,7 +35,7 @@
     "@radix-ui/react-tooltip": "^1.1.4",
     "@reactuses/core": "^5.0.23",
     "@sentry/nextjs": "^8",
-    "@serwist/next": "9.0.10",
+    "@serwist/next": "9.0.11",
     "@t3-oss/env-nextjs": "^0.11.1",
     "@uploadthing/react": "^7.1.2",
     "babel-plugin-react-compiler": "19.0.0-beta-df7b47d-20241124",
@@ -94,10 +94,10 @@
   "ct3aMetadata": {
     "initVersion": "7.30.0"
   },
-  "packageManager": "pnpm@9.14.4",
+  "packageManager": "pnpm@9.15.0",
   "engineStrict": true,
   "engines": {
-    "pnpm": "9.14.4"
+    "pnpm": "9.15.0"
   },
   "pnpm": {
     "overrides": {
