@@ -2,6 +2,7 @@
 
 import { useUser } from "@clerk/nextjs";
 import { isClerkAPIResponseError } from "@clerk/shared";
+import { useQueryWithStatus } from "~/app/convex-client-provider";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -14,10 +15,7 @@ import {
 } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-import {
-  type FormSchemaUserUpdate,
-  type formSchemaUserUpdate,
-} from "~/lib/validators";
+import { type FormSchemaUserUpdate } from "~/lib/validators";
 import { useMutation } from "convex/react";
 import {
   ChevronLeft,
@@ -61,102 +59,37 @@ const SettingValidator = z.object({
     }),
 });
 
-const signUpResponseSchema = z.object({
-  message: z.string(),
-  statusText: z.string().optional(),
-});
-
-// Define the error schema using Zod
-const errorSchema = z.object({
-  path: z.array(z.string()),
-  message: z.string(),
-});
-
-// Define the parsed JSON schema using Zod
-const parsedJsonSchema = z.array(errorSchema);
-
 const SettingsPage = () => {
+  const userData = useQueryWithStatus(api.users.getUserData, {});
+  const updateConvexUserData = useMutation(api.users.updateUserData);
+
   const clerkUser = useUser();
-  const [lastName, setLastName] = useState(clerkUser.user?.lastName ?? "");
-  const [firstName, setFirstName] = useState(clerkUser.user?.firstName ?? "");
+  const [lastName, setLastName] = useState(userData.data?.lastName ?? "");
+  const [firstName, setFirstName] = useState(userData.data?.firstName ?? "");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [currentPasswordErrorMessage, setCurrentPasswordErrorMessage] =
     useState("");
   const [newPasswordErrorMessage, setNewPasswordErrorMessage] = useState("");
-  const [emailValue, setEmailValue] = useState(
-    clerkUser.user?.primaryEmailAddress?.emailAddress ?? "",
-  );
+  const [emailValue, setEmailValue] = useState(userData.data?.email ?? "");
   const [emailError, setEmailError] = useState(false);
   const [firstNameError, setFirstNameError] = useState("");
   const [lastNameError, setLastNameError] = useState("");
 
-  const updateConvexUserData = useMutation(api.users.updateUserData);
-
-  const test = useCallback(async () => {
-    const valuesObject: z.infer<typeof formSchemaUserUpdate> = {
-      email: emailValue,
-      firstName: firstName,
-      lastName: lastName,
-    };
-
-    const response = await fetch("/api/sign-up", {
-      method: "OPTIONS",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(valuesObject),
-    });
-
-    const responseBody = await response.text(); // Get the response body as text
-    if (!responseBody) {
-      return;
-    }
-
-    const parsedResponseBody = signUpResponseSchema.safeParse(
-      JSON.parse(responseBody),
-    );
-
-    if (parsedResponseBody.data?.message) {
-      const parsedJson = parsedJsonSchema.safeParse(
-        JSON.parse(parsedResponseBody.data.message),
-      );
-
-      if (parsedJson.success) {
-        parsedJson.data.forEach((error) => {
-          if (error.path[0] == "email") {
-            setEmailError(true);
-          }
-          if (error.path[0] == "firstName") {
-            setFirstNameError(error.message);
-          }
-          if (error.path[0] == "lastName") {
-            setLastNameError(error.message);
-          }
-        });
-      }
-    }
-  }, [emailValue, firstName, lastName]);
-
   useEffect(() => {
-    if (clerkUser.user?.firstName) {
-      setFirstName(clerkUser.user.firstName);
+    if (userData.data?.lastName) {
+      setFirstName(userData.data.firstName ?? "");
     }
 
-    if (clerkUser.user?.lastName) {
-      setLastName(clerkUser.user.lastName);
+    if (userData.data?.firstName) {
+      setLastName(userData.data.lastName ?? "");
     }
 
-    if (clerkUser.user?.emailAddresses.map((email) => email.emailAddress)) {
-      setEmailValue(clerkUser.user?.primaryEmailAddress?.emailAddress ?? "");
+    if (userData.data?.email) {
+      setEmailValue(userData.data.email ?? "");
     }
-  }, [
-    clerkUser.user?.firstName,
-    clerkUser.user?.lastName,
-    clerkUser.user?.emailAddresses,
-    clerkUser.user?.primaryEmailAddress?.emailAddress,
-  ]);
+  }, [userData.data?.firstName, userData.data?.lastName, userData.data?.email]);
 
   const router = useRouter();
 
@@ -254,24 +187,9 @@ const SettingsPage = () => {
     }
   };
 
-  useEffect(() => {
-    if (emailValue != "" || firstName != "" || lastName != "") {
-      void test();
-    }
-  }, [
-    handleLastNameChange,
-    handleFirstNameChange,
-    handleEmailChange,
-    emailValue,
-    firstName,
-    lastName,
-    test,
-  ]);
+  const updateClerkPassword = useMutation(api.users.updatePassword);
 
-  async function checkPasswordAgainstClerkRules(
-    currentPassword: string,
-    newPassword: string,
-  ) {
+  async function checkPasswordAgainstClerkRules(newPassword: string) {
     try {
       try {
         SettingValidator.parse({ password: newPassword });
@@ -288,10 +206,10 @@ const SettingsPage = () => {
         }
       }
 
-      await clerkUser.user?.updatePassword({
-        currentPassword: currentPassword,
-        newPassword: newPassword,
+      await updateClerkPassword({
+        password: newPassword,
       });
+
       setDialogOpen(false);
       toast.success("Password changed successfully");
 
@@ -315,45 +233,54 @@ const SettingsPage = () => {
   }
 
   const firstNameSuccess =
-    firstName != clerkUser.user?.firstName &&
+    firstName != userData.data?.firstName &&
     firstName.length != 0 &&
     firstNameError == "";
   const lastNameSuccess =
-    lastName != clerkUser.user?.lastName &&
+    lastName != userData.data?.lastName &&
     lastName.length != 0 &&
     lastNameError == "";
   const emailSuccess =
-    emailValue != clerkUser.user?.primaryEmailAddress?.emailAddress &&
-    emailValue.length != 0 &&
-    !emailError;
+    emailValue != userData.data?.email && emailValue.length != 0 && !emailError;
 
   const userDataHandler = async (data: FormSchemaUserUpdate) => {
-    await updateConvexUserData({
-      data: data,
-    });
+    try {
+      await updateConvexUserData({
+        data: data,
+      });
+      return true;
+    } catch (e) {
+      if (e instanceof Error && e.message.includes("Email already in use")) {
+        setEmailError(true);
+        return false;
+      }
+    }
   };
 
   const submitHandler = async () => {
     const successList = [];
     const userDataToUpdate: FormSchemaUserUpdate = {};
+
     if (firstNameSuccess) {
-      void clerkUser.user?.update({ firstName: firstName });
       successList.push("First Name");
       userDataToUpdate.firstName = firstName;
     }
     if (lastNameSuccess) {
-      void clerkUser.user?.update({ lastName: lastName });
       successList.push("Last Name");
       userDataToUpdate.lastName = lastName;
     }
 
     if (emailSuccess) {
+      successList.push("Email");
       userDataToUpdate.email = emailValue;
-      setEmailValue(clerkUser.user?.primaryEmailAddress?.emailAddress ?? "");
     }
 
-    await userDataHandler(userDataToUpdate);
-    toast.success(successList.join(", ") + " updated successfully");
+    const updatedSuccessful = await userDataHandler(userDataToUpdate);
+    if (updatedSuccessful) {
+      toast.success(successList.join(", ") + " updated successfully");
+    } else {
+      toast.error("Sorry! A user with this email is already exist!");
+    }
   };
 
   return (
@@ -470,23 +397,7 @@ const SettingsPage = () => {
                 </DialogDescription>
               </DialogHeader>
               <div className="gap-4 py-4">
-                <div className="flex-col items-center gap-4">
-                  <Label htmlFor="name" className="text-right">
-                    Current password
-                  </Label>
-                  <Input
-                    value={currentPassword}
-                    type="password"
-                    onChange={handleCurrentPassword}
-                    className="col-span-3 mt-1"
-                  />
-                  <Label
-                    htmlFor="username"
-                    className="text-right text-[80%] text-accent"
-                  >
-                    {currentPasswordErrorMessage}
-                  </Label>
-                </div>
+                <div className="flex-col items-center gap-4"></div>
                 <div className="mt-4 flex-col items-center gap-4">
                   <Label htmlFor="username" className="text-right">
                     New password
@@ -509,10 +420,7 @@ const SettingsPage = () => {
                 <Button
                   type="submit"
                   onClick={() => {
-                    void checkPasswordAgainstClerkRules(
-                      currentPassword,
-                      newPassword,
-                    );
+                    void checkPasswordAgainstClerkRules(newPassword);
                   }}
                 >
                   Change
@@ -524,14 +432,13 @@ const SettingsPage = () => {
           firstNameSuccess ||
           (emailValue.length != 0 &&
             !emailError &&
-            emailValue.toString() !=
-              clerkUser.user?.emailAddresses
-                .map((email) => email.emailAddress)
-                .toString()) ||
-          "" ? (
-            <div className="mt-4 flex cursor-pointer rounded-sm border-2 border-secondary bg-primary p-2 px-3 text-[100%] text-destructive-foreground">
+            emailValue.toString() != userData.data?.email) ? (
+            <div
+              onClick={submitHandler}
+              className="mt-4 flex cursor-pointer rounded-sm border-2 border-secondary bg-primary p-2 px-3 text-[100%] text-destructive-foreground"
+            >
               <CircleCheck className="mr-2 h-5 w-5" />
-              <p onClick={submitHandler}>Save Changes</p>
+              <p>Save Changes</p>
             </div>
           ) : null}
         </div>

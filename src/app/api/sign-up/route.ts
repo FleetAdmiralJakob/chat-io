@@ -25,7 +25,6 @@ export async function OPTIONS(request: Request) {
     );
   }
 }
-
 // TODO: This probably deserves a rate limiter + a check for not creating a bunch of trash users to spam us.
 export async function POST(request: Request) {
   const unparsedSignUpHeaders = (await request.json()) as FormSchemaSignUp;
@@ -92,17 +91,13 @@ export async function POST(request: Request) {
         );
       }
     }
-    log.error("Failed to create an accoutn", {
-      parsedSignUpHeaders,
-      error: e,
-    });
+    console.error(parsedSignUpHeaders, e);
     return Response.json(
       { message: "Failed to create an account" },
       { status: 400 },
     );
   }
 
-  log.info("User created successfully");
   return Response.json(
     { message: "User created successfully" },
     { status: 200 },

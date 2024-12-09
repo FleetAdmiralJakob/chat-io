@@ -12,7 +12,7 @@ const schema = defineEntSchema({
     .field("clerkId", v.string(), { unique: true })
     .field("username", v.string(), { unique: true })
     .field("firstName", v.optional(v.string()))
-    .field("email", v.optional(v.string()))
+    .field("email", v.optional(v.string()), { unique: true })
     .field("lastName", v.optional(v.string()))
     .edges("reactions", { ref: true })
     .edges("privateChats")
