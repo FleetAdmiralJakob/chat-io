@@ -131,7 +131,7 @@ importers:
         version: 7.0.1
       posthog-js:
         specifier: ^1.189.0
-        version: 1.194.5
+        version: 1.194.6
       react:
         specifier: 19.0.0
         version: 19.0.0
@@ -3129,8 +3129,8 @@ packages:
     resolution: {integrity: sha512-9ZhXKM/rw350N1ovuWHbGxnGh/SNJ4cnxHiM0rxE4VN41wsg8P8zWn9hv/buK00RP4WvlOyr/RBDiptyxVbkZQ==}
     engines: {node: '>=0.10.0'}
 
-  posthog-js@1.194.5:
-    resolution: {integrity: sha512-bYa20TkwzkDsr2y3iCiJNto/bthkYkmHZopIOXzFEw7KeB581Y1WueaOry5MFHEwnpZuomqEmcMQGBAoWvv8VA==}
+  posthog-js@1.194.6:
+    resolution: {integrity: sha512-5g5n7FjWLha/QWVTeWeMErGff21v4/V3wYCZ2z8vAbHaCyHkaDBEbuM756jMFBQMsq3HJcDX9mlxi2HhAHxq2A==}
 
   preact@10.25.1:
     resolution: {integrity: sha512-frxeZV2vhQSohQwJ7FvlqC40ze89+8friponWUFeVEkaCfhC6Eu4V0iND5C9CXz8JLndV07QRDeXzH1+Anz5Og==}
@@ -6905,7 +6905,7 @@ snapshots:
     dependencies:
       xtend: 4.0.2
 
-  posthog-js@1.194.5:
+  posthog-js@1.194.6:
     dependencies:
       core-js: 3.39.0
       fflate: 0.4.8
