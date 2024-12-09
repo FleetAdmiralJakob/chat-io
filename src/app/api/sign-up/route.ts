@@ -26,7 +26,7 @@ export async function OPTIONS(request: Request) {
   }
 }
 
-// TODO: This probably deserves a rate limiter + a check for not creating a bunch of trash users to spam us.
+// TODO: This deserves a rate limiter + a check for not creating a bunch of trash users to spam us. Example: https://github.com/t3dotgg/t3gallery/blob/main/src/server/ratelimit.ts
 export async function POST(request: Request) {
   const unparsedSignUpHeaders = (await request.json()) as FormSchemaSignUp;
   const parsedSignUpHeaders = formSchemaSignUp.safeParse(unparsedSignUpHeaders);
