@@ -7,7 +7,8 @@ import { cn } from "~/lib/utils";
 import { ConvexQueryCacheProvider } from "convex-helpers/react/cache/provider";
 import { GeistSans } from "geist/font/sans";
 import type { Metadata, Viewport } from "next";
-import React from "react";
+import React, { Suspense } from "react";
+import { Monitoring } from "react-scan/dist/core/monitor/params/next";
 import { CSPostHogProvider } from "./_analytics/provider";
 
 const APP_NAME = "Chat.io";
@@ -87,6 +88,12 @@ export default function RootLayout({
             </CSPostHogProvider>
           </ClerkProvider>
         </ThemeProvider>
+        <Suspense>
+          <Monitoring
+            apiKey="w-1y_WGLno534NOfDIi-JKYqMI4xpUf_"
+            url="https://monitoring.react-scan.com/api/v1/ingest"
+          />
+        </Suspense>
       </body>
     </html>
   );
