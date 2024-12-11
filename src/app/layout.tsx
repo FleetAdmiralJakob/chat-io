@@ -100,12 +100,10 @@ export default function RootLayout({
             </CSPostHogProvider>
           </ClerkProvider>
         </ThemeProvider>
-        <Suspense>
-          <Monitoring
-            apiKey="w-1y_WGLno534NOfDIi-JKYqMI4xpUf_"
-            url="https://monitoring.react-scan.com/api/v1/ingest"
-          />
-        </Suspense>
+        <Monitoring
+          apiKey="w-1y_WGLno534NOfDIi-JKYqMI4xpUf_"
+          url="https://monitoring.react-scan.com/api/v1/ingest"
+        />
       </body>
     </html>
   );
