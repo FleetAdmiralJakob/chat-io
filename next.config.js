@@ -4,6 +4,8 @@ import withSerwistInit from "@serwist/next";
 import createJiti from "jiti";
 import { withAxiom } from "next-axiom";
 
+// @ts-check
+
 const withSerwist = withSerwistInit({
   swSrc: "src/sw.ts",
   swDest: "public/sw.js",
@@ -92,6 +94,11 @@ const config = withSentryConfig(baseConfig, {
   // https://docs.sentry.io/product/crons/
   // https://vercel.com/docs/cron-jobs
   automaticVercelMonitors: true,
+
+  sourcemaps: {
+    disable: false,
+    deleteSourcemapsAfterUpload: true,
+  },
 });
 
 export default config;
