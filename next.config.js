@@ -1,7 +1,7 @@
 import { fileURLToPath } from "node:url";
 import { withSentryConfig } from "@sentry/nextjs";
 import withSerwistInit from "@serwist/next";
-import createJiti from "jiti";
+import { createJiti } from "jiti";
 import { withAxiom } from "next-axiom";
 
 // @ts-check
@@ -17,7 +17,7 @@ const jiti = createJiti(fileURLToPath(import.meta.url));
  * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially useful
  * for Docker builds.
  */
-jiti("./src/env.ts");
+await jiti.import("./src/env.ts");
 
 /** @type {import("next").NextConfig} */
 const baseConfig = withAxiom(
