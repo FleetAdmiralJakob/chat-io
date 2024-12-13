@@ -28,7 +28,6 @@ export default function Profile() {
     { title: "Notification", icon: <Bell /> },
     { title: "Privacy", icon: <Lock /> },
     { title: "Chats", icon: <SendHorizontal /> },
-    { title: "Contributors", icon: <UsersRound /> },
   ];
 
   return (
@@ -58,7 +57,7 @@ export default function Profile() {
         </div>
         <div className="flex w-11/12 flex-col items-center justify-center rounded-xl border-2 border-secondary lg:w-2/3 xl:w-1/3">
           {settings.map((item) => {
-            if (item.title == username || item.title == "Contributors") {
+            if (item.title == username) {
               return;
             }
             return (
@@ -90,29 +89,23 @@ export default function Profile() {
         </div>
         <div className="mb-4 mt-8 flex w-full flex-col items-center justify-center rounded-xl pb-[30%] lg:pb-0">
           <div className="w-11/12 rounded-xl border-2 border-secondary lg:w-2/3 xl:w-1/3">
-            {settings.map((item) => {
-              if (item.title == "Contributors") {
-                return (
-                  <Link
-                    href={`/profile/${item.title.toLowerCase()}`}
-                    key={item.title}
-                    className="flex w-full cursor-pointer justify-between rounded-lg bg-primary p-6 text-xl sm:text-2xl lg:border-0 xl:text-lg"
-                  >
-                    <div className="flex">
-                      <div className="mr-5 flex h-10 w-10 items-center justify-center rounded-3xl bg-secondary text-sm font-medium text-destructive-foreground">
-                        {item.icon}
-                      </div>
-                      <p className="flex items-center font-semibold text-destructive-foreground">
-                        {item.title}
-                      </p>
-                    </div>
-                    <div className="flex items-center">
-                      <ArrowRight className="ml-3 flex text-secondary-foreground" />
-                    </div>
-                  </Link>
-                );
-              }
-            })}
+            <Link
+              href="/contributors"
+              className="flex w-full cursor-pointer justify-between rounded-lg bg-primary p-6 text-xl sm:text-2xl lg:border-0 xl:text-lg"
+            >
+              <div className="flex">
+                <div className="mr-5 flex h-10 w-10 items-center justify-center rounded-3xl bg-secondary text-sm font-medium text-destructive-foreground">
+                  <UsersRound />
+                </div>
+                <p className="flex items-center font-semibold text-destructive-foreground">
+                  Contributors
+                </p>
+              </div>
+              <div className="flex items-center">
+                <ArrowRight className="ml-3 flex text-secondary-foreground" />
+              </div>
+            </Link>
+            );
           </div>
         </div>
       </div>
