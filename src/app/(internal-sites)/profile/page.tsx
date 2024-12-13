@@ -105,7 +105,6 @@ export default function Profile() {
                 <ArrowRight className="ml-3 flex text-secondary-foreground" />
               </div>
             </Link>
-            );
           </div>
         </div>
       </div>
