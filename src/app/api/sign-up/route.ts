@@ -1,5 +1,5 @@
+import { isClerkAPIResponseError } from "@clerk/nextjs/errors";
 import { clerkClient } from "@clerk/nextjs/server";
-import { isClerkAPIResponseError } from "@clerk/shared";
 import {
   formSchemaSignUp,
   formSchemaUserUpdate,
