@@ -88,7 +88,7 @@ importers:
         version: 0.13.0(convex@1.17.3(@clerk/clerk-react@5.20.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0))
       convex-helpers:
         specifier: ^0.1.65
-        version: 0.1.66(convex@1.17.3(@clerk/clerk-react@5.20.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)(zod@3.24.1)
+        version: 0.1.67(convex@1.17.3(@clerk/clerk-react@5.20.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)(zod@3.24.1)
       dayjs:
         specifier: ^1.11.13
         version: 1.11.13
@@ -338,18 +338,6 @@ packages:
       react: ^18.0.0 || ^19.0.0 || ^19.0.0-0
       react-dom: ^18.0.0 || ^19.0.0 || ^19.0.0-0
 
-  '@clerk/shared@2.20.1':
-    resolution: {integrity: sha512-z5gapgKKxyQeJyjLURb01+7mC0E7HTFJAUgjYsuoXoFeCA32lHIPewAlXhWPFgAj5KgSsjE68eefatbeaNbAWw==}
-    engines: {node: '>=18.17.0'}
-    peerDependencies:
-      react: ^18.0.0 || ^19.0.0 || ^19.0.0-0
-      react-dom: ^18.0.0 || ^19.0.0 || ^19.0.0-0
-    peerDependenciesMeta:
-      react:
-        optional: true
-      react-dom:
-        optional: true
-
   '@clerk/shared@2.20.2':
     resolution: {integrity: sha512-d7TujIZCxgqRpspIUPqP8HsyyJ9jSCRKk9iDpZpDHNwmy6GQhmbY5bjV++J0sFMgsCiurwu0Qn0AYWKYDAz4Ww==}
     engines: {node: '>=18.17.0'}
@@ -361,10 +349,6 @@ packages:
         optional: true
       react-dom:
         optional: true
-
-  '@clerk/types@4.39.3':
-    resolution: {integrity: sha512-XliIv2Mq0lS4tnVQlzjc+Aa7EfBD06CE3Y8Oaw95Iv1+RY1qYL9uyz5FJsgCqMIWBCk7BnVhvp4zE4RaXHf8tA==}
-    engines: {node: '>=18.17.0'}
 
   '@clerk/types@4.39.4':
     resolution: {integrity: sha512-qBtCyTM6oHiFbAGo5hUUvl6INZJeX5ZKRWkIz3v3dNWYFp096nYWPjqv2RmoQCLkYJM7m5dnGWgBUa33xOVD3A==}
@@ -2187,13 +2171,13 @@ packages:
     peerDependencies:
       convex: ^1.13.0
 
-  convex-helpers@0.1.66:
-    resolution: {integrity: sha512-lFm4zgSdwrh2Mv2Dm/4EdelfL/JILA2D3uzUqU6ed6rGqsUcXaaaK6i8VMBddf1HCQRJDG9MDDVZbT+Bt7rPzg==}
+  convex-helpers@0.1.67:
+    resolution: {integrity: sha512-nnb0W2FYKbqJt00UH6raZ/J0A1+CbcFdqmFJTDvvSR1P4RhwBj1TBzS3/B1G1nMYebX3gguSwOWfO0s2rcB/wg==}
     hasBin: true
     peerDependencies:
       convex: ^1.13.0
       hono: ^4.0.5
-      react: ^17.0.2 || ^18.0.0
+      react: ^17.0.2 || ^18.0.0 || ^19.0.0
       zod: ^3.22.4
     peerDependenciesMeta:
       hono:
@@ -4305,18 +4289,6 @@ snapshots:
       server-only: 0.0.1
       tslib: 2.4.1
 
-  '@clerk/shared@2.20.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
-    dependencies:
-      '@clerk/types': 4.39.3
-      dequal: 2.0.3
-      glob-to-regexp: 0.4.1
-      js-cookie: 3.0.5
-      std-env: 3.8.0
-      swr: 2.2.5(react@19.0.0)
-    optionalDependencies:
-      react: 19.0.0
-      react-dom: 19.0.0(react@19.0.0)
-
   '@clerk/shared@2.20.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
     dependencies:
       '@clerk/types': 4.39.4
@@ -4328,10 +4300,6 @@ snapshots:
     optionalDependencies:
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
-
-  '@clerk/types@4.39.3':
-    dependencies:
-      csstype: 3.1.1
 
   '@clerk/types@4.39.4':
     dependencies:
@@ -6162,7 +6130,7 @@ snapshots:
     dependencies:
       convex: 1.17.3(@clerk/clerk-react@5.20.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
 
-  convex-helpers@0.1.66(convex@1.17.3(@clerk/clerk-react@5.20.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)(zod@3.24.1):
+  convex-helpers@0.1.67(convex@1.17.3(@clerk/clerk-react@5.20.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)(zod@3.24.1):
     dependencies:
       convex: 1.17.3(@clerk/clerk-react@5.20.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
     optionalDependencies:
