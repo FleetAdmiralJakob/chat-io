@@ -121,7 +121,7 @@ importers:
         version: 0.4.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       npm-run-all2:
         specifier: ^7.0.1
-        version: 7.0.1
+        version: 7.0.2
       posthog-js:
         specifier: ^1.195.0
         version: 1.201.0
@@ -2208,10 +2208,6 @@ packages:
   core-js@3.39.0:
     resolution: {integrity: sha512-raM0ew0/jJUqkJ0E6e8UDtl+y/7ktFivgWvqw8dNSQeNWoSDLvQ1H/RN3aPXB9tBd4/FhyR4RDPGhsNIMsAn7g==}
 
-  cross-spawn@7.0.5:
-    resolution: {integrity: sha512-ZVJrKKYunU38/76t0RMOulHOnUcbU9GbpWKAOZ0mhjr7CX6FVrH+4FrAapSOekrgFQ3f/8gwMEuIft0aKq6Hug==}
-    engines: {node: '>= 8'}
-
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
     engines: {node: '>= 8'}
@@ -3165,8 +3161,8 @@ packages:
     resolution: {integrity: sha512-TZKxPvItzai9kN9H/TkmCtx/ZN/hvr3vUycjlfmH0ootY9yFBzNOpiXAdIn1Iteqsvk4lQn6B5PTrt+n6h8k/w==}
     engines: {node: ^18.17.0 || >=20.5.0}
 
-  npm-run-all2@7.0.1:
-    resolution: {integrity: sha512-Adbv+bJQ8UTAM03rRODqrO5cx0YU5KCG2CvHtSURiadvdTjjgGJXdbc1oQ9CXBh9dnGfHSoSB1Web/0Dzp6kOQ==}
+  npm-run-all2@7.0.2:
+    resolution: {integrity: sha512-7tXR+r9hzRNOPNTvXegM+QzCuMjzUIIq66VDunL6j60O4RrExx32XUhlrS7UK4VcdGw5/Wxzb3kfNcFix9JKDA==}
     engines: {node: ^18.17.0 || >=20.5.0, npm: '>= 9'}
     hasBin: true
 
@@ -3667,8 +3663,9 @@ packages:
     resolution: {integrity: sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==}
     engines: {node: '>=8'}
 
-  shell-quote@1.8.1:
-    resolution: {integrity: sha512-6j1W9l1iAs/4xYBI1SYOVZyFcCis9b4KCLQ8fgAGG07QvzaRLVVRQvAy85yNmmZSjYjg4MWh4gNvlPujU/5LpA==}
+  shell-quote@1.8.2:
+    resolution: {integrity: sha512-AzqKpGKjrj7EM6rKVQEPpB288oCfnrEIuyoT9cyF4nmGa7V8Zk6f7RRqYisX8X9m+Q7bd632aZW4ky7EhbQztA==}
+    engines: {node: '>= 0.4'}
 
   shimmer@1.2.1:
     resolution: {integrity: sha512-sQTKC1Re/rM6XyFM6fIAGHRPVGvyXfgzIDvzoq608vM+jeyVD0Tu1E6Np0Kc2zAIFWIj963V2800iF/9LPieQw==}
@@ -6133,12 +6130,6 @@ snapshots:
 
   core-js@3.39.0: {}
 
-  cross-spawn@7.0.5:
-    dependencies:
-      path-key: 3.1.1
-      shebang-command: 2.0.0
-      which: 2.0.2
-
   cross-spawn@7.0.6:
     dependencies:
       path-key: 3.1.1
@@ -6675,7 +6666,7 @@ snapshots:
 
   foreground-child@3.2.1:
     dependencies:
-      cross-spawn: 7.0.5
+      cross-spawn: 7.0.6
       signal-exit: 4.1.0
 
   forwarded-parse@2.1.2: {}
@@ -7193,15 +7184,15 @@ snapshots:
 
   npm-normalize-package-bin@4.0.0: {}
 
-  npm-run-all2@7.0.1:
+  npm-run-all2@7.0.2:
     dependencies:
       ansi-styles: 6.2.1
-      cross-spawn: 7.0.5
+      cross-spawn: 7.0.6
       memorystream: 0.3.1
       minimatch: 9.0.5
       pidtree: 0.6.0
       read-package-json-fast: 4.0.0
-      shell-quote: 1.8.1
+      shell-quote: 1.8.2
       which: 5.0.0
 
   object-assign@4.1.1: {}
@@ -7660,7 +7651,7 @@ snapshots:
 
   shebang-regex@3.0.0: {}
 
-  shell-quote@1.8.1: {}
+  shell-quote@1.8.2: {}
 
   shimmer@1.2.1: {}
 
