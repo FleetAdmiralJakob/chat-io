@@ -144,8 +144,8 @@ importers:
         specifier: ^10.0.0
         version: 10.0.0(react@19.0.0)
       react-scan:
-        specifier: ^0.0.49
-        version: 0.0.49(next@15.1.1(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@19.0.0-beta-37ed2a7-20241206)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rollup@3.29.5)
+        specifier: ^0.0.50
+        version: 0.0.50(next@15.1.1(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@19.0.0-beta-37ed2a7-20241206)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rollup@3.29.5)
       sonner:
         specifier: ^1.7.0
         version: 1.7.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -1693,15 +1693,6 @@ packages:
       rollup:
         optional: true
 
-  '@rollup/pluginutils@5.1.3':
-    resolution: {integrity: sha512-Pnsb6f32CD2W3uCaLZIzDmeFyQ2b8UWMFI7xtwUezpcGBDVDW6y9XgAWIlARiGAo6eNF5FK5aQTr0LFyNyqq5A==}
-    engines: {node: '>=14.0.0'}
-    peerDependencies:
-      rollup: ^1.20.0||^2.0.0||^3.0.0||^4.0.0
-    peerDependenciesMeta:
-      rollup:
-        optional: true
-
   '@rollup/pluginutils@5.1.4':
     resolution: {integrity: sha512-USm05zrsFxYLPdWWq+K3STlWiT/3ELn3RcV5hJMghpeAIhxfsUIg6mt12CBJBInWMV4VneoV7SfGv8xIwo2qNQ==}
     engines: {node: '>=14.0.0'}
@@ -2192,8 +2183,8 @@ packages:
     resolution: {integrity: sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==}
     engines: {node: '>=8'}
 
-  bippy@0.0.19:
-    resolution: {integrity: sha512-xZ9JKYOkgtLjOVPo/wi7oU8JlDi9zIHwatG2zfuTMSCES3m+tf8XiCSBYUdQk2oIdn0AA2xsVtiIfI6z32TZ5g==}
+  bippy@0.0.20:
+    resolution: {integrity: sha512-lItQFj5dBgZvE73LlH1RJI1+B5Fc8pImIfcQIJ742Wc9cpkoz+cH8xdS8lGkiqUSyFp9jpuPpwBxAxaO7BEtew==}
 
   brace-expansion@1.1.11:
     resolution: {integrity: sha512-iCuPHDFgrHX7H2vEI/5xpz07zSHB00TpugqhmYtVmMO6518mCuRMoOYFldEBl0g187ufozdaHgWKcYFb61qGiA==}
@@ -3667,8 +3658,8 @@ packages:
     peerDependencies:
       react: '>=16.8.0'
 
-  react-scan@0.0.49:
-    resolution: {integrity: sha512-9QM0NM6/ouEaY4to/EkzOLab9rJLJXCpu4TjZWgPgMsShazbAeb5XFtXCHyB2GWZEx1rbu9YKP+vK+/2mx6NUQ==}
+  react-scan@0.0.50:
+    resolution: {integrity: sha512-xrier9UZV6VmP88fBTkTPpeFzrdRC4xR4h7KfoQCFIHCBiJEWeeA6RwSWVXqVZtPVW4RnquBGsJUVbe8X43+0w==}
     hasBin: true
     peerDependencies:
       '@remix-run/react': '>=1.0.0'
@@ -5599,14 +5590,6 @@ snapshots:
     optionalDependencies:
       rollup: 3.29.5
 
-  '@rollup/pluginutils@5.1.3(rollup@3.29.5)':
-    dependencies:
-      '@types/estree': 1.0.6
-      estree-walker: 2.0.2
-      picomatch: 4.0.2
-    optionalDependencies:
-      rollup: 3.29.5
-
   '@rollup/pluginutils@5.1.4(rollup@3.29.5)':
     dependencies:
       '@types/estree': 1.0.6
@@ -6243,7 +6226,7 @@ snapshots:
 
   binary-extensions@2.3.0: {}
 
-  bippy@0.0.19: {}
+  bippy@0.0.20: {}
 
   brace-expansion@1.1.11:
     dependencies:
@@ -7751,7 +7734,7 @@ snapshots:
       react: 19.0.0
       shallow-equal: 3.1.0
 
-  react-scan@0.0.49(next@15.1.1(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@19.0.0-beta-37ed2a7-20241206)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rollup@3.29.5):
+  react-scan@0.0.50(next@15.1.1(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@19.0.0-beta-37ed2a7-20241206)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rollup@3.29.5):
     dependencies:
       '@babel/core': 7.26.0
       '@babel/generator': 7.26.3
@@ -7759,9 +7742,9 @@ snapshots:
       '@clack/core': 0.3.5
       '@clack/prompts': 0.8.2
       '@preact/signals': 1.3.1(preact@10.25.2)
-      '@rollup/pluginutils': 5.1.3(rollup@3.29.5)
+      '@rollup/pluginutils': 5.1.4(rollup@3.29.5)
       '@types/node': 20.17.10
-      bippy: 0.0.19
+      bippy: 0.0.20
       esbuild: 0.24.0
       estree-walker: 3.0.3
       kleur: 4.1.5
