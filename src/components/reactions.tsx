@@ -128,7 +128,9 @@ const ReactionDetails = ({
   // Creates object like: { "👍": [reaction1, reaction2], "❤️": [reaction3] }
   const reactionsByEmoji = reactions.reduce(
     (acc, reaction) => {
-      (acc[reaction.emoji] = acc[reaction.emoji] ?? []).push(reaction);
+      const emojiArray = acc[reaction.emoji] ?? [];
+      emojiArray.push(reaction);
+      acc[reaction.emoji] = emojiArray;
       return acc;
     },
     {} as Record<string, typeof reactions>,
