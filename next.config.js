@@ -3,6 +3,7 @@ import { withSentryConfig } from "@sentry/nextjs";
 import withSerwistInit from "@serwist/next";
 import { createJiti } from "jiti";
 import { withAxiom } from "next-axiom";
+import ReactComponentName from "react-scan/react-component-name/webpack";
 
 // @ts-check
 
@@ -53,6 +54,14 @@ const baseConfig = withAxiom(
     },
     // This is required to support PostHog trailing slash API requests
     skipTrailingSlashRedirect: true,
+
+    // Next.js being Next.js and not providing any type definitions for their own config
+    webpack: (config) => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      config.plugins.push(ReactComponentName({}));
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      return config;
+    },
   }),
 );
 
