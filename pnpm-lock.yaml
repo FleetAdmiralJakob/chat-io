@@ -60,8 +60,8 @@ importers:
         specifier: ^1.1.4
         version: 1.1.6(@types/react-dom@19.0.2(@types/react@19.0.1))(@types/react@19.0.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@reactuses/core':
-        specifier: ^5.0.23
-        version: 5.0.23(react@19.0.0)
+        specifier: ^6.0.0
+        version: 6.0.0(react@19.0.0)
       '@sentry/nextjs':
         specifier: ^8
         version: 8.47.0(@opentelemetry/core@1.30.0(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.56.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.30.0(@opentelemetry/api@1.9.0))(next@15.1.2(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@19.0.0-beta-37ed2a7-20241206)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)(webpack@5.96.1)
@@ -1681,11 +1681,11 @@ packages:
   '@radix-ui/rect@1.1.0':
     resolution: {integrity: sha512-A9+lCBZoaMJlVKcRBz2YByCG+Cp2t6nAnMnNba+XiWxnj6r4JUFqfsgwocMBZU9LPtdxC6wB56ySYpc7LQIoJg==}
 
-  '@reactuses/core@5.0.23':
-    resolution: {integrity: sha512-FsaCxZLjU5LbzNdNJc/l7U45kWwimWwkCGqq2ZKx5m3Yw8S6jdzfhvtcdQPhp6RjNao4o5UrtuF0DxhWTOKGyA==}
+  '@reactuses/core@6.0.0':
+    resolution: {integrity: sha512-Fh//VxKiPuXPXW0DiAXpnHMgT8iMIu89c/0ZLgIhhv5XzTaeN5t0W0WueAeROZAyG69E3KatZaJ2OyYroqIdNA==}
     peerDependencies:
       qrcode: ^1.5
-      react: ^16.8.0  || ^17.0.0 || ^18.0.0
+      react: ^16.8.0  || ^17.0.0 || ^18.0.0 || ^19.0.0
     peerDependenciesMeta:
       qrcode:
         optional: true
@@ -5602,14 +5602,14 @@ snapshots:
 
   '@radix-ui/rect@1.1.0': {}
 
-  '@reactuses/core@5.0.23(react@19.0.0)':
+  '@reactuses/core@6.0.0(react@19.0.0)':
     dependencies:
       '@microsoft/fetch-event-source': 2.0.1
       js-cookie: 3.0.5
       lodash-es: 4.17.21
       react: 19.0.0
       screenfull: 5.2.0
-      use-sync-external-store: 1.2.2(react@19.0.0)
+      use-sync-external-store: 1.4.0(react@19.0.0)
 
   '@rollup/plugin-commonjs@28.0.1(rollup@3.29.5)':
     dependencies:

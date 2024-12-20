@@ -32,7 +32,7 @@
     "@radix-ui/react-select": "^2.1.2",
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-tooltip": "^1.1.4",
-    "@reactuses/core": "^5.0.23",
+    "@reactuses/core": "^6.0.0",
     "@sentry/nextjs": "^8",
     "@serwist/next": "9.0.11",
     "@t3-oss/env-nextjs": "^0.11.1",
