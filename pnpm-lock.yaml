@@ -144,8 +144,8 @@ importers:
         specifier: ^10.0.0
         version: 10.0.0(react@19.0.0)
       react-scan:
-        specifier: ^0.0.53
-        version: 0.0.53(next@15.1.2(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@19.0.0-beta-b2e8e9c-20241220)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rollup@3.29.5)
+        specifier: ^0.0.54
+        version: 0.0.54(next@15.1.2(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@19.0.0-beta-b2e8e9c-20241220)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rollup@3.29.5)
       sonner:
         specifier: ^1.7.0
         version: 1.7.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -3701,8 +3701,8 @@ packages:
     peerDependencies:
       react: '>=16.8.0'
 
-  react-scan@0.0.53:
-    resolution: {integrity: sha512-uhGxOks9ZzZN3yWq7p/fNN3uqMd3qHx4hblVfGhdXq70fYclzvwyWesjJMA9KtqzFE2hsJDudo4ihoVddLZHjw==}
+  react-scan@0.0.54:
+    resolution: {integrity: sha512-3ydazntrl7M4JUoCq75hoKYiZv1vBIuA8cnsRVj8DVv4GXYFSbO0R759T1pwIhcf5DBj9Ik8GPnQ2NHcWJ7TUA==}
     hasBin: true
     peerDependencies:
       '@remix-run/react': '>=1.0.0'
@@ -7829,7 +7829,7 @@ snapshots:
       react: 19.0.0
       shallow-equal: 3.1.0
 
-  react-scan@0.0.53(next@15.1.2(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@19.0.0-beta-b2e8e9c-20241220)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rollup@3.29.5):
+  react-scan@0.0.54(next@15.1.2(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@19.0.0-beta-b2e8e9c-20241220)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rollup@3.29.5):
     dependencies:
       '@babel/core': 7.26.0
       '@babel/generator': 7.26.3
