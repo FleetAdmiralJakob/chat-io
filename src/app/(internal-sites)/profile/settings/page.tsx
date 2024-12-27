@@ -1,6 +1,6 @@
 "use client";
 
-import { useUser } from "@clerk/nextjs";
+import * as test from "node:test";
 import { isClerkAPIResponseError } from "@clerk/shared";
 import { useQueryWithStatus } from "~/app/convex-client-provider";
 import { Button } from "~/components/ui/button";
@@ -15,13 +15,15 @@ import {
 } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
+import { cn } from "~/lib/utils";
 import { type FormSchemaUserUpdate } from "~/lib/validators";
-import { useMutation } from "convex/react";
+import { useAction, useMutation } from "convex/react";
 import {
   ChevronLeft,
   CircleCheck,
   CircleX,
   HardDriveUpload,
+  LoaderCircle,
   MailCheck,
   MailX,
 } from "lucide-react";
@@ -61,16 +63,13 @@ const SettingValidator = z.object({
 
 const SettingsPage = () => {
   const userData = useQueryWithStatus(api.users.getUserData, {});
-  const updateConvexUserData = useMutation(api.users.updateUserData);
+  const updateConvexUserData = useAction(api.users.updateUserData);
 
-  const clerkUser = useUser();
+  const [isLoading, setIsLoading] = useState(false);
   const [lastName, setLastName] = useState(userData.data?.lastName ?? "");
   const [firstName, setFirstName] = useState(userData.data?.firstName ?? "");
-  const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [currentPasswordErrorMessage, setCurrentPasswordErrorMessage] =
-    useState("");
   const [newPasswordErrorMessage, setNewPasswordErrorMessage] = useState("");
   const [emailValue, setEmailValue] = useState(userData.data?.email ?? "");
   const [emailError, setEmailError] = useState(false);
@@ -163,11 +162,6 @@ const SettingsPage = () => {
     [],
   );
 
-  const handleCurrentPassword = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCurrentPassword(e.target.value);
-    setCurrentPasswordErrorMessage("");
-  };
-
   const handleNewPassword = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewPassword(e.target.value);
     setNewPasswordErrorMessage("");
@@ -221,13 +215,6 @@ const SettingsPage = () => {
             "Password has been found in an online data breach.",
           );
         }
-        if (
-          e.errors.some(
-            (error) => error.code === "form_password_validation_failed",
-          )
-        ) {
-          setCurrentPasswordErrorMessage("Invalid Current Password");
-        }
       }
     }
   }
@@ -244,20 +231,27 @@ const SettingsPage = () => {
     emailValue != userData.data?.email && emailValue.length != 0 && !emailError;
 
   const userDataHandler = async (data: FormSchemaUserUpdate) => {
-    try {
-      await updateConvexUserData({
-        data: data,
-      });
-      return true;
-    } catch (e) {
-      if (e instanceof Error && e.message.includes("Email already in use")) {
-        setEmailError(true);
-        return false;
-      }
+    const dataUser = await updateConvexUserData({
+      data: data,
+    });
+
+    console.log(dataUser + " test");
+
+    if (dataUser == "form_identifier_exists") {
+      console.log("This Email is already taken.");
+      setEmailError(true);
+      return "form_identifier_exists";
+    }
+
+    if (dataUser == "form_param_format_invalid") {
+      console.log("This is a invalid Email format.");
+      setEmailError(true);
+      return "form_param_format_invalid";
     }
   };
 
   const submitHandler = async () => {
+    setIsLoading(true);
     const successList = [];
     const userDataToUpdate: FormSchemaUserUpdate = {};
 
@@ -276,10 +270,16 @@ const SettingsPage = () => {
     }
 
     const updatedSuccessful = await userDataHandler(userDataToUpdate);
-    if (updatedSuccessful) {
+    setIsLoading(false);
+    if (updatedSuccessful == null) {
       toast.success(successList.join(", ") + " updated successfully");
     } else {
-      toast.error("Sorry! A user with this email is already exist!");
+      if (updatedSuccessful == "form_identifier_exists") {
+        toast.error("This Email is already taken.");
+      }
+      if (updatedSuccessful == "form_param_format_invalid") {
+        toast.error("This is a invalid Email format.");
+      }
     }
   };
 
@@ -428,17 +428,31 @@ const SettingsPage = () => {
               </DialogFooter>
             </DialogContent>
           </Dialog>
-          {lastNameSuccess ||
+          {isLoading ||
+          lastNameSuccess ||
           firstNameSuccess ||
           (emailValue.length != 0 &&
             !emailError &&
             emailValue.toString() != userData.data?.email) ? (
             <div
               onClick={submitHandler}
-              className="mt-4 flex cursor-pointer rounded-sm border-2 border-secondary bg-primary p-2 px-3 text-[100%] text-destructive-foreground"
+              className={
+                "mt-4 flex cursor-pointer rounded-sm border-2 border-secondary bg-primary p-2 px-3 text-[100%] text-destructive-foreground"
+              }
             >
-              <CircleCheck className="mr-2 h-5 w-5" />
-              <p>Save Changes</p>
+              <div className="flex">
+                {isLoading ? (
+                  <>
+                    <LoaderCircle className="mr-1.5 animate-spin p-0.5" />{" "}
+                    <p>Processing ...</p>
+                  </>
+                ) : (
+                  <>
+                    <CircleCheck className="mr-2 h-5 w-5" />
+                    <p>Save Changes</p>
+                  </>
+                )}
+              </div>
             </div>
           ) : null}
         </div>
