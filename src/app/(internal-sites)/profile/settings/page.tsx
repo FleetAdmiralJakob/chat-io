@@ -248,6 +248,10 @@ const SettingsPage = () => {
       setEmailError(true);
       return "form_param_format_invalid";
     }
+
+    console.log(userData);
+
+    return "";
   };
 
   const submitHandler = async () => {
