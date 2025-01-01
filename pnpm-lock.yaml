@@ -31,7 +31,7 @@ importers:
         version: 10.2.0(react@19.0.0)
       '@legendapp/state':
         specifier: ^3.0.0-beta.16
-        version: 3.0.0-beta.19(react@19.0.0)
+        version: 3.0.0-beta.20(react@19.0.0)
       '@radix-ui/react-avatar':
         specifier: ^1.1.1
         version: 1.1.2(@types/react-dom@19.0.2(@types/react@19.0.2))(@types/react@19.0.2)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -1039,8 +1039,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
 
-  '@legendapp/state@3.0.0-beta.19':
-    resolution: {integrity: sha512-jA6GAV2UqTLdR7JNVG6q+ykycDEcV6Q9y0LNDLygEvajFNXYDKIkKl4tKnTdy5D9JFjTDkRxqt97pUhENgijyA==}
+  '@legendapp/state@3.0.0-beta.20':
+    resolution: {integrity: sha512-/MBU4MT7hK5yKpU8f2Af9LweB5KaxcpkbTIO0RAhErMxpecN55kEcVhBnCDocxrztsug7yFfNumxUSg18AkeaA==}
 
   '@microsoft/fetch-event-source@2.0.1':
     resolution: {integrity: sha512-W6CLUJ2eBMw3Rec70qrsEW0jOm/3twwJv21mrmj2yORiaVmVYGS4sSS5yUwvQc1ZlDLYGPnClVWmUUMagKNsfA==}
@@ -4197,11 +4197,6 @@ packages:
       '@types/react':
         optional: true
 
-  use-sync-external-store@1.2.2:
-    resolution: {integrity: sha512-PElTlVMwpblvbNqQ82d2n6RjStvdSoNe9FG28kNfz3WiXilJm4DdNkEzRhCZuIDwY8U08WVihhGR5iRqAwfDiw==}
-    peerDependencies:
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0
-
   use-sync-external-store@1.4.0:
     resolution: {integrity: sha512-9WXSPC5fMv61vaupRkCKCxsPxBocVnwakBEkMIHHpkTTg6icbJtg6jzgtLDm4bl3cSHAca52rYWih0k4K3PfHw==}
     peerDependencies:
@@ -4955,9 +4950,9 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
 
-  '@legendapp/state@3.0.0-beta.19(react@19.0.0)':
+  '@legendapp/state@3.0.0-beta.20(react@19.0.0)':
     dependencies:
-      use-sync-external-store: 1.2.2(react@19.0.0)
+      use-sync-external-store: 1.4.0(react@19.0.0)
     transitivePeerDependencies:
       - react
 
@@ -8430,10 +8425,6 @@ snapshots:
       tslib: 2.8.1
     optionalDependencies:
       '@types/react': 19.0.2
-
-  use-sync-external-store@1.2.2(react@19.0.0):
-    dependencies:
-      react: 19.0.0
 
   use-sync-external-store@1.4.0(react@19.0.0):
     dependencies:
