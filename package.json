@@ -7,7 +7,7 @@
     "build": "next build",
     "dev": "npm-run-all --parallel next:dev convex:dev ",
     "convex:dev": "convex dev --tail-logs",
-    "next:dev": "next dev --turbo",
+    "next:dev": "next dev --turbo --experimental-https",
     "format": "prettier --check . --ignore-path .gitignore --ignore-path .prettierignore",
     "lint": "next lint",
     "start": "next start",
