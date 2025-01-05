@@ -31,7 +31,7 @@ importers:
         version: 10.2.0(react@19.0.0)
       '@legendapp/state':
         specifier: ^3.0.0-beta.16
-        version: 3.0.0-beta.20(react@19.0.0)
+        version: 3.0.0-beta.21(react@19.0.0)
       '@radix-ui/react-avatar':
         specifier: ^1.1.1
         version: 1.1.2(@types/react-dom@19.0.2(@types/react@19.0.2))(@types/react@19.0.2)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -1039,8 +1039,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
 
-  '@legendapp/state@3.0.0-beta.20':
-    resolution: {integrity: sha512-/MBU4MT7hK5yKpU8f2Af9LweB5KaxcpkbTIO0RAhErMxpecN55kEcVhBnCDocxrztsug7yFfNumxUSg18AkeaA==}
+  '@legendapp/state@3.0.0-beta.21':
+    resolution: {integrity: sha512-iKbjmO6hFVbQX3zKnEkwXU+VLh7WWTh9mP8EVEYKB2vn3S+vPHnJGgy5aOrbjZvVX8JGPbvhEnHfJxnN4MQI5w==}
 
   '@microsoft/fetch-event-source@2.0.1':
     resolution: {integrity: sha512-W6CLUJ2eBMw3Rec70qrsEW0jOm/3twwJv21mrmj2yORiaVmVYGS4sSS5yUwvQc1ZlDLYGPnClVWmUUMagKNsfA==}
@@ -4950,7 +4950,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
 
-  '@legendapp/state@3.0.0-beta.20(react@19.0.0)':
+  '@legendapp/state@3.0.0-beta.21(react@19.0.0)':
     dependencies:
       use-sync-external-store: 1.4.0(react@19.0.0)
     transitivePeerDependencies:
