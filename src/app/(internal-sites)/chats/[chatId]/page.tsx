@@ -41,9 +41,9 @@ import {
   Video,
   X,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { usePostHog } from "posthog-js/react";
-import React, { use, useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useMediaQuery } from "react-responsive";
 import { toast } from "sonner";
@@ -173,8 +173,8 @@ const useScrollBehavior = (
   };
 };
 
-export default function Page(props: { params: Promise<{ chatId: string }> }) {
-  const params = use(props.params);
+export default function Page() {
+  const params = useParams<{ chatId: string }>();
   const [progress, setProgress] = React.useState(13);
 
   // We could change this to contain the whole message instead of just the id

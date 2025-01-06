@@ -125,7 +125,7 @@ export function SignUpForm() {
           setSignUpComplete(true);
           return;
         }
-      } catch (_e) {
+      } catch {
         console.error("Problem with the sign-in process");
         // TODO: Make a toast that something went wrong
         setFormIsLoading(false);

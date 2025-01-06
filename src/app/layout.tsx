@@ -7,7 +7,7 @@ import { cn } from "~/lib/utils";
 import { ConvexQueryCacheProvider } from "convex-helpers/react/cache/provider";
 import { GeistSans } from "geist/font/sans";
 import type { Metadata, Viewport } from "next";
-import React, { Suspense } from "react";
+import React from "react";
 import { Monitoring } from "react-scan/dist/core/monitor/params/next";
 import { CSPostHogProvider } from "./_analytics/provider";
 
