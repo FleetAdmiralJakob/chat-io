@@ -7,6 +7,7 @@ import { cn } from "~/lib/utils";
 import { ConvexQueryCacheProvider } from "convex-helpers/react/cache/provider";
 import { GeistSans } from "geist/font/sans";
 import type { Metadata, Viewport } from "next";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import React from "react";
 import { Monitoring } from "react-scan/dist/core/monitor/params/next";
 import { CSPostHogProvider } from "./_analytics/provider";
@@ -81,7 +82,7 @@ export default function RootLayout({
             <CSPostHogProvider>
               <ConvexClientProvider>
                 <ConvexQueryCacheProvider>
-                  {children}
+                  <NuqsAdapter>{children}</NuqsAdapter>
                   <Toaster />
                 </ConvexQueryCacheProvider>
               </ConvexClientProvider>
