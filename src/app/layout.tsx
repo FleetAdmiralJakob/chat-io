@@ -9,7 +9,7 @@ import { GeistSans } from "geist/font/sans";
 import type { Metadata, Viewport } from "next";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import React from "react";
-import { Monitoring } from "react-scan/dist/core/monitor/params/next";
+import { Monitoring } from "react-scan/monitoring/next";
 import { CSPostHogProvider } from "./_analytics/provider";
 
 const APP_NAME = "Chat.io";
@@ -72,6 +72,14 @@ export default function RootLayout({
           "min-h-screen bg-background antialiased",
         )}
       >
+        <Monitoring
+          apiKey="w-1y_WGLno534NOfDIi-JKYqMI4xpUf_"
+          url="https://monitoring.react-scan.com/api/v1/ingest"
+          // eslint-disable-next-line no-restricted-properties
+          commit={process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA}
+          // eslint-disable-next-line no-restricted-properties
+          branch={process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_REF}
+        />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -89,10 +97,6 @@ export default function RootLayout({
             </CSPostHogProvider>
           </ClerkProvider>
         </ThemeProvider>
-        <Monitoring
-          apiKey="w-1y_WGLno534NOfDIi-JKYqMI4xpUf_"
-          url="https://monitoring.react-scan.com/api/v1/ingest"
-        />
       </body>
     </html>
   );
