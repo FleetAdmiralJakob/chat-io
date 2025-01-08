@@ -1,11 +1,11 @@
 import { usePrevious } from "~/lib/hooks";
 import { cn } from "~/lib/utils";
-import { api } from "convex/_generated/api";
 import type { Doc, Id } from "convex/_generated/dataModel";
 import { useMutation } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { api } from "../../convex/_generated/api";
 import type { Message, UserInfos } from "./message";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
