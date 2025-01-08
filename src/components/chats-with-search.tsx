@@ -16,7 +16,7 @@ const ChatsWithSearch = ({
   const [devModeClick, setDevModeClick] = useState<number>(0);
 
   return (
-    <div className="min-w-96 pb-24 lg:ml-24">
+    <div className="pb-24 lg:ml-24">
       <div className="relative flex h-full w-full justify-center">
         <h1
           className="pt-28 text-4xl font-bold"
@@ -37,7 +37,7 @@ const ChatsWithSearch = ({
         Current User: {user ? user.username : "No user"} <br />{" "}
         <div onClick={() => devMode$.set(false)}>Disable dev mode</div>
         <SignOutButton />
-      </DevMode>{" "}
+      </DevMode>
       <br />
       <Chats classNameChatList={classNameChatList} />
     </div>
