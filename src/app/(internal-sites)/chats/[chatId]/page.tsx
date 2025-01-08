@@ -8,6 +8,7 @@ import { useQueryWithStatus } from "~/app/convex-client-provider";
 import ChatsWithSearch from "~/components/chats-with-search";
 import { DevMode } from "~/components/dev-mode-info";
 import { Message } from "~/components/message";
+import { useReactToMessage } from "~/components/reactions";
 import { Avatar, AvatarFallback } from "~/components/ui/avatar";
 import Badge from "~/components/ui/badge";
 import { Form, FormControl, FormField } from "~/components/ui/form";
@@ -481,78 +482,7 @@ export default function Page() {
     middleware: [autoPlacement({ padding: 4 })],
   });
 
-  const reactToMessage = useMutation(
-    api.messages.reactToMessage,
-  ).withOptimisticUpdate((localStore, args) => {
-    const messageId = args.messageId;
-    const emoji = args.reaction;
-
-    if (!userInfo.data) return;
-
-    const reaction = {
-      _id: crypto.randomUUID() as Id<"reactions">,
-      _creationTime: Date.now(),
-      messageId,
-      userId: userInfo.data._id,
-      emoji,
-      userInfo,
-    };
-
-    const existingMessages = localStore.getQuery(api.messages.getMessages, {
-      chatId: params.chatId,
-    });
-
-    if (existingMessages) {
-      const updateMessageReactions = (message: Message) => {
-        // Skip messages that don't match target message ID or aren't message type
-        if (message._id !== messageId || message.type !== "message") {
-          return message;
-        }
-
-        // Check if user already has the exact same emoji reaction
-        const existingReaction = message.reactions?.find(
-          (r) => r.userId === userInfo.data?._id && r.emoji === emoji,
-        );
-
-        // If user already reacted with this emoji, remove it (toggle off)
-        if (existingReaction) {
-          return {
-            ...message,
-            reactions: message.reactions.filter(
-              (r) => !(r.userId === userInfo.data?._id && r.emoji === emoji),
-            ),
-          };
-        }
-
-        // Check if user has reacted with a different emoji
-        const hasOtherReaction = message.reactions?.find(
-          (r) => r.userId === userInfo.data?._id,
-        );
-
-        // If user has different reaction, update existing one to new emoji
-        if (hasOtherReaction) {
-          return {
-            ...message,
-            reactions: message.reactions.map((r) =>
-              r.userId === userInfo.data?._id ? { ...r, emoji } : r,
-            ),
-          };
-        }
-
-        // No existing reactions from user - add new reaction
-        return {
-          ...message,
-          reactions: [...(message.reactions || []), reaction],
-        };
-      };
-
-      localStore.setQuery(
-        api.messages.getMessages,
-        { chatId: params.chatId },
-        existingMessages.map(updateMessageReactions),
-      );
-    }
-  });
+  const reactToMessage = useReactToMessage(params.chatId, userInfo.data);
 
   const reactToMessageHandler = (messageId: Id<"messages">, emoji: string) => {
     void reactToMessage({ messageId, reaction: emoji });

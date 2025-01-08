@@ -1,12 +1,88 @@
 import { usePrevious } from "~/lib/hooks";
 import { cn } from "~/lib/utils";
-import type { api } from "convex/_generated/api";
+import { api } from "convex/_generated/api";
 import type { Doc, Id } from "convex/_generated/dataModel";
+import { useMutation } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import type { Message, UserInfos } from "./message";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+
+export const useReactToMessage = (chatId: string, userInfo: UserInfos[0]) => {
+  return useMutation(api.messages.reactToMessage).withOptimisticUpdate(
+    (localStore, args) => {
+      const messageId = args.messageId;
+      const emoji = args.reaction;
+
+      if (!userInfo) return;
+
+      const reaction = {
+        _id: crypto.randomUUID() as Id<"reactions">,
+        _creationTime: Date.now(),
+        messageId,
+        userId: userInfo._id,
+        emoji,
+        userInfo,
+      };
+
+      const existingMessages = localStore.getQuery(api.messages.getMessages, {
+        chatId: chatId,
+      });
+
+      if (existingMessages) {
+        const updateMessageReactions = (message: Message) => {
+          // Skip messages that don't match target message ID or aren't message type
+          if (message._id !== messageId || message.type !== "message") {
+            return message;
+          }
+
+          // Check if user already has the exact same emoji reaction
+          const existingReaction = message.reactions?.find(
+            (r) => r.userId === userInfo?._id && r.emoji === emoji,
+          );
+
+          // If user already reacted with this emoji, remove it (toggle off)
+          if (existingReaction) {
+            return {
+              ...message,
+              reactions: message.reactions.filter(
+                (r) => !(r.userId === userInfo?._id && r.emoji === emoji),
+              ),
+            };
+          }
+
+          // Check if user has reacted with a different emoji
+          const hasOtherReaction = message.reactions?.find(
+            (r) => r.userId === userInfo?._id,
+          );
+
+          // If user has different reaction, update existing one to new emoji
+          if (hasOtherReaction) {
+            return {
+              ...message,
+              reactions: message.reactions.map((r) =>
+                r.userId === userInfo?._id ? { ...r, emoji } : r,
+              ),
+            };
+          }
+
+          // No existing reactions from user - add new reaction
+          return {
+            ...message,
+            reactions: [...(message.reactions || []), reaction],
+          };
+        };
+
+        localStore.setQuery(
+          api.messages.getMessages,
+          { chatId: chatId },
+          existingMessages.map(updateMessageReactions),
+        );
+      }
+    },
+  );
+};
 
 export const ReactionHandler = (props: {
   message: Message;
@@ -46,6 +122,7 @@ export const ReactionHandler = (props: {
         <PopoverContent>
           <ReactionDetails
             reactions={message.reactions}
+            chatId={message.privateChatId}
             userInfos={userInfos}
           />
         </PopoverContent>
@@ -112,6 +189,7 @@ const ReactionQuickView = ({
 const ReactionDetails = ({
   reactions,
   userInfos, // Tuple containing current user data and other chat participants' data
+  chatId,
 }: {
   reactions: Doc<"reactions">[];
   userInfos: [
@@ -123,7 +201,10 @@ const ReactionDetails = ({
         >["otherUser"]
     ),
   ];
+  chatId: Id<"privateChats">;
 }) => {
+  const reactToMessage = useReactToMessage(chatId, userInfos[0]);
+
   // Group reactions by emoji
   // Creates object like: { "👍": [reaction1, reaction2], "❤️": [reaction3] }
   const reactionsByEmoji = reactions.reduce(
@@ -140,22 +221,43 @@ const ReactionDetails = ({
     <div className="flex flex-col gap-2 p-2">
       {Object.entries(reactionsByEmoji).map(([emoji, reactions]) => (
         <div key={emoji}>
-          <div className="flex items-center gap-2">
+          <div
+            className={cn(
+              "flex items-center gap-2",
+              reactions.some((r) => r.userId === userInfos[0]?._id) &&
+                "cursor-pointer hover:opacity-70",
+            )}
+            onClick={() => {
+              if (reactions.some((r) => r.userId === userInfos[0]?._id)) {
+                if (reactions[0]) {
+                  void reactToMessage({
+                    messageId: reactions[0].messageId,
+                    reaction: emoji,
+                  });
+                }
+              }
+            }}
+          >
             <span className="text-xl">{emoji}</span>
-            <div className="text-sm">
+            <div className="flex flex-col text-sm">
               {/* Create comma-separated list of usernames who used this emoji */}
-              {reactions
-                .map((reaction) => {
-                  // Find user info either from current user or other chat participants
-                  const user =
-                    userInfos[0]?._id === reaction.userId
-                      ? userInfos[0]
-                      : Array.isArray(userInfos[1])
-                        ? userInfos[1].find((u) => u._id === reaction.userId)
-                        : userInfos[1];
-                  return user?.username;
-                })
-                .join(", ")}
+              <span className="font-bold">
+                {reactions
+                  .map((reaction) => {
+                    // Find user info either from current user or other chat participants
+                    const user =
+                      userInfos[0]?._id === reaction.userId
+                        ? userInfos[0]
+                        : Array.isArray(userInfos[1])
+                          ? userInfos[1].find((u) => u._id === reaction.userId)
+                          : userInfos[1];
+                    return user?.username;
+                  })
+                  .join(", ")}
+              </span>
+              {reactions.some((r) => r.userId === userInfos[0]?._id) && (
+                <span className="opacity-80">Click to remove</span>
+              )}
             </div>
           </div>
         </div>
