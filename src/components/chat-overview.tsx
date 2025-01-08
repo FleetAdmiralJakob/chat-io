@@ -100,7 +100,7 @@ const Chats: React.FC<{
       <div className="mb-4 flex w-full justify-center">
         <div
           className={cn(
-            "mt-20 flex flex-col items-center truncate rounded-lg border-2 border-secondary bg-primary lg:w-1/2 xl:w-1/3",
+            "mt-20 flex w-10/12 flex-col items-center truncate rounded-lg border-2 border-secondary bg-primary lg:w-1/2 xl:w-1/3",
             classNameChatList,
           )}
         >
