@@ -490,6 +490,21 @@ export default function Page() {
     setShowFullEmojiPicker(false);
   };
 
+  const [highlightedMessageId, setHighlightedMessageId] =
+    useState<Id<"messages"> | null>(null);
+
+  const scrollToMessage = useCallback((messageId: Id<"messages">) => {
+    const messageElement = document.getElementById(`message-${messageId}`);
+    if (messageElement) {
+      messageElement.scrollIntoView({ behavior: "smooth", block: "center" });
+      setHighlightedMessageId(messageId);
+      // Remove highlight after animation
+      setTimeout(() => {
+        setHighlightedMessageId(null);
+      }, 2000); // 2 seconds highlight duration
+    }
+  }, []);
+
   return (
     <main className="flex h-screen flex-col">
       {selectedMessageId ? (
@@ -657,6 +672,8 @@ export default function Page() {
                       setShowFullEmojiPicker={setShowFullEmojiPicker}
                       isInBottomHalf={isInBottomHalf}
                       setIsInBottomHalf={setIsInBottomHalf}
+                      highlightedMessageId={highlightedMessageId}
+                      scrollToMessage={scrollToMessage}
                     />
                   </React.Fragment>
                 ))}
@@ -696,7 +713,12 @@ export default function Page() {
                     exit={{ opacity: 0, translateY: 70 }}
                     transition={{ duration: 0.5 }}
                   >
-                    <div className="relative m-4 mb-2 rounded-lg border border-secondary-foreground bg-secondary p-2">
+                    <div
+                      onMouseDown={() => {
+                        scrollToMessage(replyToMessageId);
+                      }}
+                      className="relative m-4 mb-2 cursor-pointer rounded-lg border border-secondary-foreground bg-secondary p-2"
+                    >
                       <div className="flex items-center justify-between">
                         <p className="text-sm text-destructive-foreground">
                           Replying to:
@@ -704,7 +726,10 @@ export default function Page() {
                       </div>
                       <button
                         className="absolute right-4 top-1/2 flex h-8 w-8 -translate-y-1/2 transform cursor-pointer items-center justify-center rounded-sm border-2 border-secondary-foreground bg-primary p-1 lg:h-10 lg:w-10 lg:p-2"
-                        onClick={() => setReplyToMessageId(undefined)}
+                        onMouseDown={(e) => {
+                          e.stopPropagation(); // This prevents the parent's onMouseDown from firing
+                          setReplyToMessageId(undefined);
+                        }}
                         aria-label="Cancel reply"
                         onKeyDown={(e) => {
                           if (e.key === "Escape") {

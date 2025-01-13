@@ -50,10 +50,23 @@ const EditedLabel = ({ message }: { message: Message }) => (
   </div>
 );
 
-const ReplyToMessage = ({ message }: { message: Message }) => {
+const ReplyToMessage = ({
+  message,
+  scrollToMessage,
+}: {
+  message: Message;
+  scrollToMessage: (messageId: Id<"messages">) => void;
+}) => {
   if (message.type === "message" && message.replyTo) {
     return (
-      <div className="mb-2 rounded-lg border border-secondary-foreground bg-primary p-2">
+      <div
+        onClick={() => {
+          if (message.type === "message" && message.replyTo) {
+            scrollToMessage(message.replyTo._id);
+          }
+        }}
+        className="mb-2 cursor-pointer rounded-lg border border-secondary-foreground bg-primary p-2"
+      >
         <div className="flex items-center justify-between">
           <p className="text-sm text-destructive-foreground">Replied to:</p>
         </div>
@@ -81,6 +94,8 @@ export const Message = ({
   isInBottomHalf,
   setIsInBottomHalf,
   reactToMessageHandler,
+  highlightedMessageId,
+  scrollToMessage,
 }: {
   message: Message;
   selectedMessageId: Id<"messages"> | null;
@@ -101,6 +116,8 @@ export const Message = ({
   };
   setIsInBottomHalf: React.Dispatch<React.SetStateAction<boolean | null>>;
   reactToMessageHandler: (messageId: Id<"messages">, emoji: string) => void;
+  highlightedMessageId: Id<"messages"> | null;
+  scrollToMessage: (messageId: Id<"messages">) => void;
 }) => {
   const clerkUser = useUser();
 
@@ -449,7 +466,7 @@ export const Message = ({
           })}
         >
           <EditedLabel message={message} />
-          <ReplyToMessage message={message} />
+          <ReplyToMessage message={message} scrollToMessage={scrollToMessage} />
           <div
             {...longPressEvent}
             ref={(ref) => {
@@ -466,6 +483,7 @@ export const Message = ({
               checkClickPosition(e);
               setSelectedMessageId(message._id);
             }}
+            id={`message-${message._id}`}
             className={cn(
               "max-w-[66.6667%] cursor-default break-words rounded-sm bg-accent p-3",
               {
@@ -475,6 +493,7 @@ export const Message = ({
                   message.type == "rejectedRequest",
                 "mb-3":
                   message.type === "message" && message.reactions.length > 0,
+                "animate-pulse": highlightedMessageId === message._id,
               },
             )}
           >
@@ -622,7 +641,7 @@ export const Message = ({
           })}
         >
           <EditedLabel message={message} />
-          <ReplyToMessage message={message} />
+          <ReplyToMessage message={message} scrollToMessage={scrollToMessage} />
           <div
             {...longPressEvent}
             ref={(ref) => {
@@ -639,6 +658,7 @@ export const Message = ({
               checkClickPosition(e);
               setSelectedMessageId(message._id);
             }}
+            id={`message-${message._id}`}
             className={cn(
               "max-w-[66.6667%] cursor-default break-words rounded-sm bg-secondary p-3",
               {
@@ -648,6 +668,7 @@ export const Message = ({
                   message.type === "rejectedRequest",
                 "mb-3":
                   message.type === "message" && message.reactions.length > 0,
+                "animate-pulse": highlightedMessageId === message._id,
               },
             )}
           >
