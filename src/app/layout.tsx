@@ -7,6 +7,7 @@ import { cn } from "~/lib/utils";
 import { ConvexQueryCacheProvider } from "convex-helpers/react/cache/provider";
 import { GeistSans } from "geist/font/sans";
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import React from "react";
 import { Monitoring } from "react-scan/monitoring/next";
@@ -66,6 +67,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <Script
+          src="https://unpkg.com/react-scan/dist/install-hook.global.js"
+          strategy="beforeInteractive"
+        />
+      </head>
       <body
         className={cn(
           GeistSans.className,
