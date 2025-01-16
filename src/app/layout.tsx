@@ -60,6 +60,8 @@ export const viewport: Viewport = {
   ],
 };
 
+export const dynamic = "force-static";
+
 export default function RootLayout({
   children,
 }: {

@@ -15,8 +15,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
-export const dynamic = "force-static";
-
 interface ContributorsProps {
   name: string;
   job: string;
