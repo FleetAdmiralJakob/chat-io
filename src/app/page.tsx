@@ -87,7 +87,6 @@ export default function PublicHomepage() {
                   scrollCallback();
                 }}
                 aria-label="Automatically scroll down to all the features of Chat.io"
-                role="navigation"
                 aria-controls="features-section"
                 className="flex aspect-square h-7 animate-bounce items-center justify-center rounded-full bg-foreground text-primary-foreground"
               >
