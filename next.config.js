@@ -39,6 +39,10 @@ const baseConfig = withAxiom(
     async rewrites() {
       return [
         {
+          source: "/home",
+          destination: "/",
+        },
+        {
           source: "/ingest/static/:path*",
           destination: process.env.NEXT_PUBLIC_POSTHOG_HOST + "/static/:path*",
         },
