@@ -22,6 +22,13 @@ export default function PublicHomepage() {
   };
   const [devModeClick, setDevModeClick] = useState<number>(0);
 
+  const handleDevModeClick = () => {
+    setDevModeClick((prevState) => prevState + 1);
+    if (devModeClick >= 9) {
+      devMode$.set(true);
+    }
+  };
+
   return (
     <>
       <AuroraBackground>
@@ -48,17 +55,11 @@ export default function PublicHomepage() {
                   tabIndex={0}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
-                      setDevModeClick((prevState) => prevState + 1);
-                      if (devModeClick >= 9) {
-                        devMode$.set(true);
-                      }
+                      handleDevModeClick();
                     }
                   }}
-                  onClick={() => {
-                    setDevModeClick((prevState) => prevState + 1);
-                    if (devModeClick >= 9) {
-                      devMode$.set(true);
-                    }
+                  onMouseDown={() => {
+                    handleDevModeClick();
                   }}
                 />
                 <h2 className="mr-8 text-3xl font-bold tracking-tight text-foreground sm:text-[5rem]">
