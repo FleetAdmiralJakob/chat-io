@@ -44,6 +44,16 @@ export default function PublicHomepage() {
                   src={icon}
                   alt="logo of Chat.io"
                   className="h-1/4 w-1/4"
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      setDevModeClick((prevState) => prevState + 1);
+                      if (devModeClick >= 9) {
+                        devMode$.set(true);
+                      }
+                    }
+                  }}
                   onClick={() => {
                     setDevModeClick((prevState) => prevState + 1);
                     if (devModeClick >= 9) {
