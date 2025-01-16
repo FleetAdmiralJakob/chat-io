@@ -47,7 +47,7 @@ export default function PublicHomepage() {
                   role="button"
                   tabIndex={0}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
+                    if (e.key === "Enter" || e.key === " ") {
                       setDevModeClick((prevState) => prevState + 1);
                       if (devModeClick >= 9) {
                         devMode$.set(true);
