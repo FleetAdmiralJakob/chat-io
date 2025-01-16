@@ -25,7 +25,7 @@ export default function PublicHomepage() {
   return (
     <>
       <AuroraBackground>
-        <div className="z-10 flex min-h-screen flex-col items-center text-foreground">
+        <div className="z-10 mb-10 flex min-h-screen flex-col items-center text-foreground">
           <DevMode>
             <div onClick={() => devMode$.set(false)}>Disable dev mode</div>
           </DevMode>
@@ -100,33 +100,49 @@ export default function PublicHomepage() {
             Discover the multitude of features packed into Chat.io
           </p>
 
-          <div className="block">
-            <CloudDownload className="mb-2 ml-7 h-10 w-10" />
-            <p className="mb-5 text-xl">Installable</p>
-          </div>
-          <p className="w-3/4 text-secondary-foreground md:w-1/2 lg:w-1/4">
-            Whether you have on iOS, Android, Windows, or Mac, Chat.io installs
-            smoothly across all major platforms, ensuring a consistent and
-            reliable messaging experience across all your devices.
-          </p>
-          <div>
-            <SiGithub className="mb-2 ml-10 mt-16 text-4xl" />
-            <p className="mb-5 text-xl">Open Source</p>
-          </div>
-          <p className="w-3/4 text-secondary-foreground md:w-1/2 lg:w-1/4">
-            By embracing open-source principles, Chat.io invites collaboration
-            and innovation from a global community of developers, ensuring a
-            robust and customizable chat solution tailored to your needs.
-          </p>
-          <div>
-            <ShieldCheck className="mb-2 ml-4 mt-16 h-10 w-10" />
-            <p className="mb-5 text-xl">Privacy</p>
-          </div>
-          <p className="mb-20 w-3/4 text-secondary-foreground md:w-1/2 lg:w-1/4">
-            Chat.io boasts strong security measures, including robust encryption
-            and strict access controls, ensuring user data is always
-            safeguarded.
-          </p>
+          <section
+            aria-label="Feature: Installation"
+            className="flex w-3/4 flex-col items-center md:w-1/2 lg:w-1/4"
+          >
+            <div>
+              <CloudDownload className="mb-2 ml-7 h-10 w-10" />
+              <h2 className="mb-5 text-xl">Installable</h2>
+            </div>
+            <p className="text-secondary-foreground">
+              Whether you have on iOS, Android, Windows, or Mac, Chat.io
+              installs smoothly across all major platforms, ensuring a
+              consistent and reliable messaging experience across all your
+              devices.
+            </p>
+          </section>
+          <section
+            aria-label="Feature: Open Source"
+            className="flex w-3/4 flex-col items-center md:w-1/2 lg:w-1/4"
+          >
+            <div>
+              <SiGithub className="mb-2 ml-10 mt-16 h-9 w-9" />
+              <p className="mb-5 text-xl">Open Source</p>
+            </div>
+            <p className="text-secondary-foreground">
+              By embracing open-source principles, Chat.io invites collaboration
+              and innovation from a global community of developers, ensuring a
+              robust and customizable chat solution tailored to your needs.
+            </p>
+          </section>
+          <section
+            aria-label="Feature: Privacy"
+            className="flex w-3/4 flex-col items-center md:w-1/2 lg:w-1/4"
+          >
+            <div>
+              <ShieldCheck className="mb-2 ml-4 mt-16 h-10 w-10" />
+              <p className="mb-5 text-xl">Privacy</p>
+            </div>
+            <p className="text-secondary-foreground">
+              Chat.io boasts strong security measures, including robust
+              encryption and strict access controls, ensuring user data is
+              always safeguarded.
+            </p>
+          </section>
         </div>
       </AuroraBackground>
       <Footer />
