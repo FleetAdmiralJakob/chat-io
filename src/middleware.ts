@@ -12,6 +12,7 @@ const isPublicRoute = createRouteMatcher([
   "/sign-in",
 ]);
 const isApiRoute = createRouteMatcher(["/api/(.*)"]);
+const isRootRoute = createRouteMatcher(["/"]);
 
 export default clerkMiddleware(
   async (auth, req) => {
@@ -22,6 +23,10 @@ export default clerkMiddleware(
 
     if (!userId && !isPublic) redirectToSignIn();
     if (!isPublic) await auth.protect();
+
+    if (isRootRoute(req) && userId) {
+      return NextResponse.redirect(new URL("/chats", req.url));
+    }
 
     return NextResponse.next();
   },
