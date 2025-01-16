@@ -3,8 +3,6 @@ import icon from "~/assets/chatio.png";
 import Image from "next/image";
 import Link from "next/link";
 
-export const dynamic = "force-static";
-
 const SignInPage = () => {
   return (
     <main className="relative flex min-h-screen flex-col items-center justify-center">
