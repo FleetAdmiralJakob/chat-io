@@ -97,7 +97,7 @@ export default function PublicHomepage() {
           <p className="w-3/4 text-secondary-foreground md:w-1/2 lg:w-1/4">
             Whether you have on iOS, Android, Windows, or Mac, Chat.io installs
             smoothly across all major platforms, ensuring a consistent and
-            reliable weather experience across all your devices.
+            reliable messaging experience across all your devices.
           </p>
           <div>
             <SiGithub className="mb-2 ml-10 mt-16 text-4xl" />
