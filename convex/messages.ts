@@ -181,15 +181,14 @@ export const deleteMessage = mutation({
       throw new ConvexError("chatId was invalid");
     }
 
-    const existingReaction = await ctx
-      .table("reactions", "messageId", (q) =>
-        q.eq("messageId", parsedMessageId),
-      )
-      .filter((q) => q.eq(q.field("userId"), convexUser._id))
-      .first();
+    const messageReactions = await ctx.table("reactions", "messageId", (q) =>
+      q.eq("messageId", parsedMessageId),
+    );
 
-    if (existingReaction) {
-      await existingReaction.delete();
+    if (messageReactions) {
+      for (const reaction of messageReactions) {
+        await reaction.delete();
+      }
     }
 
     const message = await ctx.table("messages").getX(parsedMessageId);
