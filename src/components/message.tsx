@@ -57,7 +57,11 @@ const ReplyToMessage = ({
   message: Message;
   scrollToMessage: (messageId: Id<"messages">) => void;
 }) => {
-  if (message.type === "message" && message.replyTo) {
+  if (
+    message.type === "message" &&
+    message.replyTo &&
+    !message.replyTo.deleted
+  ) {
     return (
       <div
         onClick={() => {
