@@ -1,3 +1,4 @@
+import { defineEnt, defineEntSchema } from "convex-ents";
 import { ConvexError, v } from "convex/values";
 import emojiRegex from "emoji-regex";
 import { mutation, query } from "./lib/functions";
@@ -164,10 +165,31 @@ export const deleteMessage = mutation({
       return null;
     }
 
+    const convexUser = await ctx
+      .table("users")
+      .get("clerkId", identity.tokenIdentifier);
+
+    if (!convexUser?._id) {
+      throw new ConvexError(
+        "Mismatch between Clerk and Convex. This is an error by us.",
+      );
+    }
+
     const parsedMessageId = ctx.table("messages").normalizeId(args.messageId);
 
     if (!parsedMessageId) {
       throw new ConvexError("chatId was invalid");
+    }
+
+    const existingReaction = await ctx
+      .table("reactions", "messageId", (q) =>
+        q.eq("messageId", parsedMessageId),
+      )
+      .filter((q) => q.eq(q.field("userId"), convexUser._id))
+      .first();
+
+    if (existingReaction) {
+      await existingReaction.delete();
     }
 
     const message = await ctx.table("messages").getX(parsedMessageId);
