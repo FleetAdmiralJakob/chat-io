@@ -31,7 +31,7 @@ importers:
         version: 11.1.0(react@19.0.0)
       '@legendapp/state':
         specifier: ^3.0.0-beta.16
-        version: 3.0.0-beta.23(react@19.0.0)
+        version: 3.0.0-beta.24(react@19.0.0)
       '@radix-ui/react-avatar':
         specifier: ^1.1.1
         version: 1.1.2(@types/react-dom@19.0.3(@types/react@19.0.8))(@types/react@19.0.8)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -1027,8 +1027,13 @@ packages:
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
 
-  '@legendapp/state@3.0.0-beta.23':
-    resolution: {integrity: sha512-oodfIE5REhhmqhihg683Onz11MwHVb+XNizssKyZldyjV/EY5KZPSAFS/JFb79KBp93iBZ0/kRY5gQSLH+Z1cA==}
+  '@legendapp/state@3.0.0-beta.24':
+    resolution: {integrity: sha512-WO08YCuC3DAQ85Kz5nYy+FrtK4f+mTMmNWMpzLq6uHpHFTHOLzvmrst50iapdX2aQScQRa2vQeTReWZVc4p2LQ==}
+    peerDependencies:
+      expo-sqlite: ^15.0.0
+    peerDependenciesMeta:
+      expo-sqlite:
+        optional: true
 
   '@microsoft/fetch-event-source@2.0.1':
     resolution: {integrity: sha512-W6CLUJ2eBMw3Rec70qrsEW0jOm/3twwJv21mrmj2yORiaVmVYGS4sSS5yUwvQc1ZlDLYGPnClVWmUUMagKNsfA==}
@@ -4908,7 +4913,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
 
-  '@legendapp/state@3.0.0-beta.23(react@19.0.0)':
+  '@legendapp/state@3.0.0-beta.24(react@19.0.0)':
     dependencies:
       use-sync-external-store: 1.4.0(react@19.0.0)
     transitivePeerDependencies:
