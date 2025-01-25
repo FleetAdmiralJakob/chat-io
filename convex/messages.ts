@@ -1,4 +1,3 @@
-import { defineEnt, defineEntSchema } from "convex-ents";
 import { ConvexError, v } from "convex/values";
 import emojiRegex from "emoji-regex";
 import { mutation, query } from "./lib/functions";
