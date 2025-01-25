@@ -165,20 +165,10 @@ export const deleteMessage = mutation({
       return null;
     }
 
-    const convexUser = await ctx
-      .table("users")
-      .get("clerkId", identity.tokenIdentifier);
-
-    if (!convexUser?._id) {
-      throw new ConvexError(
-        "Mismatch between Clerk and Convex. This is an error by us.",
-      );
-    }
-
     const parsedMessageId = ctx.table("messages").normalizeId(args.messageId);
 
     if (!parsedMessageId) {
-      throw new ConvexError("chatId was invalid");
+      throw new ConvexError("messageId was invalid");
     }
 
     const messageReactions = await ctx.table("reactions", "messageId", (q) =>
