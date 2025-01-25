@@ -178,7 +178,7 @@ export const deleteMessage = mutation({
     const parsedMessageId = ctx.table("messages").normalizeId(args.messageId);
 
     if (!parsedMessageId) {
-      throw new ConvexError("chatId was invalid");
+      throw new ConvexError("messageId was invalid");
     }
 
     const messageReactions = await ctx.table("reactions", "messageId", (q) =>
