@@ -7,7 +7,7 @@ const SignInPage = () => {
   return (
     <main className="relative flex min-h-screen flex-col items-center justify-center">
       <div className="mt-10 flex w-4/5 items-center justify-center gap-8 pb-4 xl:mt-0">
-        <Image src={icon} className={"w-20 xl:w-24"} alt="logo of Chat.io" />
+        <Image src={icon} className="w-20 xl:w-24" alt="logo of Chat.io" />
         <h1 className="pr-9 text-xl font-bold tracking-tight sm:text-3xl">
           Welcome back to Chat.io
         </h1>
