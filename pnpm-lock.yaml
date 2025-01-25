@@ -127,7 +127,7 @@ importers:
         version: 2.3.1(next@15.1.6(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@19.0.0-beta-e552027-20250112)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
       posthog-js:
         specifier: ^1.195.0
-        version: 1.209.0
+        version: 1.210.2
       react:
         specifier: ^19.0.0
         version: 19.0.0
@@ -3532,8 +3532,8 @@ packages:
     resolution: {integrity: sha512-9ZhXKM/rw350N1ovuWHbGxnGh/SNJ4cnxHiM0rxE4VN41wsg8P8zWn9hv/buK00RP4WvlOyr/RBDiptyxVbkZQ==}
     engines: {node: '>=0.10.0'}
 
-  posthog-js@1.209.0:
-    resolution: {integrity: sha512-LwjYO0HPhyIqMx7JEFZ/tFY10O8IR4rFBlie1rsFSTYE9Jy0uW1RNGPlNc891V46OXT8MO384P3NHFdauWGFHA==}
+  posthog-js@1.210.2:
+    resolution: {integrity: sha512-rIbn/h9ur7uA0PS4dClOr9w6txLfHS94yh9yafA5VM2eXToM951XtMYtIQ6bi6wFzpvpFvTQFeYLQ/9/xZ59AQ==}
 
   preact@10.25.4:
     resolution: {integrity: sha512-jLdZDb+Q+odkHJ+MpW/9U5cODzqnB+fy2EiHSZES7ldV5LK7yjlVzTp7R8Xy6W6y75kfK8iWYtFVH7lvjwrCMA==}
@@ -7702,7 +7702,7 @@ snapshots:
     dependencies:
       xtend: 4.0.2
 
-  posthog-js@1.209.0:
+  posthog-js@1.210.2:
     dependencies:
       core-js: 3.40.0
       fflate: 0.4.8
