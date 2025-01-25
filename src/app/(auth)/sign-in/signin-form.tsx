@@ -272,7 +272,7 @@ export function SignInForm() {
 
         {!isEmailLogin && (
           <span
-            className={cn("text-sm text-secondary-foreground", {
+            className={cn("text-secondary-foreground text-sm", {
               hidden: form.formState.errors.identifier,
             })}
           >
@@ -285,7 +285,7 @@ export function SignInForm() {
           control={form.control}
           name="password"
           render={({ field }) => (
-            <FormItem className="xl:flex-2 xl:w-full">
+            <FormItem className="xl:w-full xl:flex-2">
               <FormLabel>Password</FormLabel>
               <FormControl>
                 <Input
@@ -319,7 +319,7 @@ export function SignInForm() {
         {wholeFormError && (
           <>
             <br />
-            <div className="text-sm font-medium text-destructive">
+            <div className="text-destructive text-sm font-medium">
               {wholeFormError}
             </div>
           </>
