@@ -174,11 +174,7 @@ export const deleteMessage = mutation({
       q.eq("messageId", parsedMessageId),
     );
 
-    if (messageReactions) {
-      for (const reaction of messageReactions) {
-        await reaction.delete();
-      }
-    }
+    await Promise.all(messageReactions.map((reaction) => reaction.delete()));
 
     const message = await ctx.table("messages").getX(parsedMessageId);
 
