@@ -144,7 +144,9 @@ export const Message = ({
         api.messages.getMessages,
         { chatId },
         existingMessages.map((message) =>
-          message._id === messageId ? { ...message, deleted: true } : message,
+          message._id === messageId
+            ? { ...message, deleted: true, reactions: [] }
+            : message,
         ),
       );
 
