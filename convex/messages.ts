@@ -1,4 +1,3 @@
-import { defineEnt, defineEntSchema } from "convex-ents";
 import { ConvexError, v } from "convex/values";
 import emojiRegex from "emoji-regex";
 import { mutation, query } from "./lib/functions";
@@ -175,11 +174,7 @@ export const deleteMessage = mutation({
       q.eq("messageId", parsedMessageId),
     );
 
-    if (messageReactions) {
-      for (const reaction of messageReactions) {
-        await reaction.delete();
-      }
-    }
+    await Promise.all(messageReactions.map((reaction) => reaction.delete()));
 
     const message = await ctx.table("messages").getX(parsedMessageId);
 
