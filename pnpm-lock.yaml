@@ -31,7 +31,7 @@ importers:
         version: 11.2.0(react@19.0.0)
       '@legendapp/state':
         specifier: ^3.0.0-beta.16
-        version: 3.0.0-beta.24(react@19.0.0)
+        version: 3.0.0-beta.26(react@19.0.0)
       '@radix-ui/react-avatar':
         specifier: ^1.1.1
         version: 1.1.2(@types/react-dom@19.0.3(@types/react@19.0.8))(@types/react@19.0.8)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -1040,8 +1040,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
 
-  '@legendapp/state@3.0.0-beta.24':
-    resolution: {integrity: sha512-WO08YCuC3DAQ85Kz5nYy+FrtK4f+mTMmNWMpzLq6uHpHFTHOLzvmrst50iapdX2aQScQRa2vQeTReWZVc4p2LQ==}
+  '@legendapp/state@3.0.0-beta.26':
+    resolution: {integrity: sha512-73dStDOMy2s+I4bN1ZSncQygVcZYKJQwvFZa0X0SWzOybHrhZR55C0TMVpPk2mFkDnLZoEc+32+3CwSDSQwMBA==}
     peerDependencies:
       expo-sqlite: ^15.0.0
     peerDependenciesMeta:
@@ -4954,7 +4954,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
 
-  '@legendapp/state@3.0.0-beta.24(react@19.0.0)':
+  '@legendapp/state@3.0.0-beta.26(react@19.0.0)':
     dependencies:
       use-sync-external-store: 1.4.0(react@19.0.0)
     transitivePeerDependencies:
