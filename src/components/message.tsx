@@ -75,7 +75,7 @@ const ReplyToMessage = ({
           <strong>{message.replyTo.from.username}</strong>:{" "}
           {message.replyTo.deleted ? (
             <div className="flex">
-              The original message is deleted
+              The original message was deleted
               <Ban className="ml-1 h-5 w-5" />
             </div>
           ) : (
