@@ -13,7 +13,7 @@ import { api } from "../../convex/_generated/api";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { Skeleton } from "./ui/skeleton";
 
-type Chats = FunctionReturnType<typeof api.chats.getChats>;
+export type Chats = FunctionReturnType<typeof api.chats.getChats>;
 
 const SkeletonsChat = (props: { amount: number }) => {
   return Array.from({ length: props.amount }).map((_, index) => (

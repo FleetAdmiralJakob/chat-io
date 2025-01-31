@@ -2,7 +2,9 @@ import { useUser } from "@clerk/nextjs";
 import { useFloating, type ReferenceType } from "@floating-ui/react";
 import { useLongPress } from "@reactuses/core";
 import { useQueryWithStatus } from "~/app/convex-client-provider";
+import { ForwardDialog } from "~/components/forwardMessage";
 import { cn } from "~/lib/utils";
+import { useQuery } from "convex-helpers/react/cache/hooks";
 import { useMutation } from "convex/react";
 import { type FunctionReturnType } from "convex/server";
 import dayjs from "dayjs";
@@ -20,7 +22,8 @@ import {
   Reply,
   Trash2,
 } from "lucide-react";
-import React, { useEffect } from "react";
+import { parseAsBoolean, parseAsString, useQueryState } from "nuqs";
+import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useInView } from "react-intersection-observer";
 import { toast } from "sonner";
@@ -269,6 +272,17 @@ export const Message = ({
     );
   };
 
+  const [ForwardedMessageId, setForwardedMessageId] = useQueryState(
+    // It is used to show the forward dialog
+    "forward",
+    parseAsString.withDefault(""),
+  );
+
+  const ForwardHandler = () => {
+    void setForwardedMessageId(message._id);
+    console.log("ForwardHandler");
+  };
+
   const replyToMessageHandler = (messageId: Id<"messages">) => {
     setReplyToMessageId(messageId);
     setSelectedMessageId(null);
@@ -293,6 +307,7 @@ export const Message = ({
     delay: 300,
   };
   const longPressEvent = useLongPress(onLongPress, defaultOptions);
+  const existingChats = useQuery(api.chats.getChats);
 
   return (
     <div className="flex" ref={ref}>
@@ -589,10 +604,21 @@ export const Message = ({
                         <Reply />
                         <p className="ml-1">Reply</p>
                       </button>
-                      <div className="flex w-full cursor-pointer border-t-2 border-secondary-foreground p-2 pr-8">
+                      <div
+                        className="flex w-full cursor-pointer border-t-2 border-secondary-foreground p-2 pr-8"
+                        onClick={() => {
+                          ForwardHandler();
+                        }}
+                      >
                         <Forward />
                         <p className="ml-1">Forward</p>
                       </div>
+                      <ForwardDialog
+                        ForwardedMessageId={ForwardedMessageId}
+                        setForwardedMessageId={setForwardedMessageId}
+                        chats={existingChats}
+                        userInfos={userInfos}
+                      />
                       <button
                         className="flex w-full cursor-pointer border-y-2 border-secondary-foreground p-2 pr-8"
                         onClick={() => {

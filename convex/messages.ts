@@ -276,6 +276,56 @@ export const markMessageRead = mutation({
   },
 });
 
+export const forwardMessage = mutation({
+  args: {
+    forwardObjects: v.array(
+      v.object({
+        username: v.string(),
+        userId: v.string(),
+      }),
+    ),
+
+    messageId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (identity === null) {
+      console.error("Unauthenticated call to mutation");
+      return null;
+    }
+
+    console.log(args.forwardObjects);
+
+    if (args.forwardObjects.length === 0) {
+      throw new ConvexError("No users to forward to");
+    } else {
+      for (const forwardObject of args.forwardObjects) {
+        const user = await ctx
+          .table("users")
+          .getX("clerkId", identity.tokenIdentifier);
+
+        console.log(
+          `Searching for private chat with userId: ${forwardObject.userId}`,
+        );
+
+        const privateChat = await ctx
+          .table("privateChats")
+          .filter((q) => q.eq("users", forwardObject.userId))
+          .first();
+
+        if (!privateChat) {
+          console.error(
+            `No private chat found for userId: ${forwardObject.userId}`,
+          );
+        } else {
+          console.log(privateChat);
+        }
+      }
+    }
+  },
+});
+
 export const editMessage = mutation({
   args: { messageId: v.id("messages"), newContent: v.string() },
   handler: async (ctx, args) => {
