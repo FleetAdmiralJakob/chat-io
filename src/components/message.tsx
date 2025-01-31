@@ -616,7 +616,7 @@ export const Message = ({
                       <ForwardDialog
                         ForwardedMessageId={ForwardedMessageId}
                         setForwardedMessageId={setForwardedMessageId}
-                        chats={existingChats!}
+                        chats={existingChats}
                         userInfos={userInfos}
                       />
                       <button
@@ -806,7 +806,7 @@ export const Message = ({
                       <ForwardDialog
                         ForwardedMessageId={ForwardedMessageId}
                         setForwardedMessageId={setForwardedMessageId}
-                        chats={existingChats!}
+                        chats={existingChats}
                         userInfos={userInfos}
                       />
                       <div className="flex p-2 pr-8 text-secondary-foreground">

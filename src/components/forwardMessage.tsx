@@ -18,7 +18,7 @@ import { api } from "../../convex/_generated/api";
 interface ForwardDialogProps {
   ForwardedMessageId: string;
   setForwardedMessageId: Dispatch<SetStateAction<string>>;
-  chats: Chats;
+  chats: Chats | undefined;
   userInfos: UserInfos;
 }
 
@@ -57,6 +57,7 @@ export const ForwardDialog = ({
 
   const onForwardSubmit = async (forwardObjects: ForwardUser[]) => {
     await forwardMessage({ messageId: ForwardedMessageId, forwardObjects });
+    setForwardedMessageId("");
   };
 
   useEffect(() => {
@@ -77,50 +78,54 @@ export const ForwardDialog = ({
           <DialogDescription>Select a user to forward them.</DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          {chats?.map((chat, index) => (
-            <div key={index}>
-              {chat.users.map((user, index) => {
-                return (
-                  <div
-                    onClick={() =>
-                      handleForward({
-                        username: user.username,
-                        userId: user._id,
-                        chatId: chat._id,
-                      })
-                    }
-                    key={index}
-                    className={cn(
-                      "flex rounded-xl bg-secondary p-5",
-                      user.username == userInfos[0]?.username
-                        ? "h-0 p-0"
-                        : null,
-                    )}
-                  >
-                    <Checkbox
-                      checked={
-                        chatsToForwardTo.length > 0
-                          ? chatsToForwardTo.some(
-                              (forwardObject) =>
-                                forwardObject.userId === user._id,
-                            )
-                          : false
+          {chats === undefined ? (
+            <div>Loading ...</div>
+          ) : (
+            chats?.map((chat, index) => (
+              <div key={index}>
+                {chat.users.map((user, index) => {
+                  return (
+                    <div
+                      onClick={() =>
+                        handleForward({
+                          username: user.username,
+                          userId: user._id,
+                          chatId: chat._id,
+                        })
                       }
+                      key={index}
                       className={cn(
-                        "mr-3 mt-1 flex",
+                        "flex cursor-pointer rounded-xl bg-secondary p-5",
                         user.username == userInfos[0]?.username
-                          ? "hidden"
+                          ? "h-0 p-0"
                           : null,
                       )}
-                    />
-                    {user.username != userInfos[0]?.username ? (
-                      <p className="font-medium">{user.username}</p>
-                    ) : null}
-                  </div>
-                );
-              })}
-            </div>
-          ))}
+                    >
+                      <Checkbox
+                        checked={
+                          chatsToForwardTo.length > 0
+                            ? chatsToForwardTo.some(
+                                (forwardObject) =>
+                                  forwardObject.userId === user._id,
+                              )
+                            : false
+                        }
+                        className={cn(
+                          "mr-3 mt-1 flex",
+                          user.username == userInfos[0]?.username
+                            ? "hidden"
+                            : null,
+                        )}
+                      />
+                      {user.username != userInfos[0]?.username ? (
+                        <p className="font-medium">{user.username}</p>
+                      ) : null}
+                    </div>
+                  );
+                })}
+              </div>
+            ))
+          )}
         </div>
         <Button
           onClick={async () => {
