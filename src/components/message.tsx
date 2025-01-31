@@ -616,7 +616,7 @@ export const Message = ({
                       <ForwardDialog
                         ForwardedMessageId={ForwardedMessageId}
                         setForwardedMessageId={setForwardedMessageId}
-                        chats={existingChats}
+                        chats={existingChats!}
                         userInfos={userInfos}
                       />
                       <button
@@ -794,10 +794,21 @@ export const Message = ({
                         <Reply />
                         <p className="ml-1">Reply</p>
                       </button>
-                      <div className="flex w-full cursor-pointer border-b-2 border-secondary-foreground p-2 pr-8">
+                      <div
+                        onClick={() => {
+                          ForwardHandler();
+                        }}
+                        className="flex w-full cursor-pointer border-b-2 border-secondary-foreground p-2 pr-8"
+                      >
                         <Forward />
                         <p className="ml-1">Forward</p>
                       </div>
+                      <ForwardDialog
+                        ForwardedMessageId={ForwardedMessageId}
+                        setForwardedMessageId={setForwardedMessageId}
+                        chats={existingChats!}
+                        userInfos={userInfos}
+                      />
                       <div className="flex p-2 pr-8 text-secondary-foreground">
                         <Info />
                         <p className="ml-1">{sentInfo()}</p>

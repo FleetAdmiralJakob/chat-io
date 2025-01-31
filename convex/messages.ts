@@ -1,5 +1,6 @@
 import { ConvexError, v } from "convex/values";
 import emojiRegex from "emoji-regex";
+import { api } from "./_generated/api";
 import { mutation, query } from "./lib/functions";
 
 export const getMessages = query({
@@ -282,6 +283,7 @@ export const forwardMessage = mutation({
       v.object({
         username: v.string(),
         userId: v.string(),
+        chatId: v.string(),
       }),
     ),
 
@@ -295,33 +297,60 @@ export const forwardMessage = mutation({
       return null;
     }
 
-    console.log(args.forwardObjects);
+    for (const forwardObject of args.forwardObjects) {
+      const parsedChatId = ctx
+        .table("privateChats")
+        .normalizeId(forwardObject.chatId);
 
-    if (args.forwardObjects.length === 0) {
-      throw new ConvexError("No users to forward to");
-    } else {
-      for (const forwardObject of args.forwardObjects) {
-        const user = await ctx
-          .table("users")
-          .getX("clerkId", identity.tokenIdentifier);
-
-        console.log(
-          `Searching for private chat with userId: ${forwardObject.userId}`,
-        );
-
-        const privateChat = await ctx
-          .table("privateChats")
-          .filter((q) => q.eq("users", forwardObject.userId))
-          .first();
-
-        if (!privateChat) {
-          console.error(
-            `No private chat found for userId: ${forwardObject.userId}`,
-          );
-        } else {
-          console.log(privateChat);
-        }
+      if (!parsedChatId) {
+        throw new ConvexError("chatId was invalid");
       }
+
+      const chat = await ctx.table("privateChats").getX(parsedChatId);
+
+      if (!chat) {
+        throw new ConvexError("Chat does not exist");
+      }
+
+      const parsedUserId = ctx.table("users").normalizeId(forwardObject.userId);
+
+      if (!parsedUserId) {
+        throw new ConvexError("userId was invalid");
+      }
+
+      const usersInChat = await chat.edge("users");
+
+      const user = usersInChat.find(
+        (user) => user.clerkId === identity.tokenIdentifier,
+      );
+
+      if (!user) {
+        throw new ConvexError(
+          "UNAUTHORIZED REQUEST: User tried to forward a message to a chat in which he is not in.",
+        );
+      }
+
+      const parsedMessageId = ctx.table("messages").normalizeId(args.messageId);
+
+      if (!parsedMessageId) {
+        throw new ConvexError("messageId was invalid");
+      }
+
+      const message = await ctx.table("messages").getX(parsedMessageId);
+
+      if (!message) {
+        throw new ConvexError("Message does not exist");
+      }
+
+      await ctx.table("messages").insert({
+        userId: user._id,
+        privateChatId: parsedChatId,
+        content: message.content,
+        deleted: false,
+        readBy: [user._id],
+        modified: false,
+        replyTo: message.replyTo,
+      });
     }
   },
 });

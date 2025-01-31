@@ -25,6 +25,7 @@ interface ForwardDialogProps {
 export interface ForwardUser {
   username: string;
   userId: string;
+  chatId: string;
 }
 
 export const ForwardDialog = ({
@@ -81,6 +82,13 @@ export const ForwardDialog = ({
               {chat.users.map((user, index) => {
                 return (
                   <div
+                    onClick={() =>
+                      handleForward({
+                        username: user.username,
+                        userId: user._id,
+                        chatId: chat._id,
+                      })
+                    }
                     key={index}
                     className={cn(
                       "flex rounded-xl bg-secondary p-5",
@@ -90,11 +98,13 @@ export const ForwardDialog = ({
                     )}
                   >
                     <Checkbox
-                      onClick={() =>
-                        handleForward({
-                          username: user.username,
-                          userId: user._id,
-                        })
+                      checked={
+                        chatsToForwardTo.length > 0
+                          ? chatsToForwardTo.some(
+                              (forwardObject) =>
+                                forwardObject.userId === user._id,
+                            )
+                          : false
                       }
                       className={cn(
                         "mr-3 mt-1 flex",
