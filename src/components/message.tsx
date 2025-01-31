@@ -57,7 +57,7 @@ const ReplyToMessage = ({
   message: Message;
   scrollToMessage: (messageId: Id<"messages">) => void;
 }) => {
-  if (message.type === "message" && message.replyTo) {
+  if (message.type === "message" && message.replyTo && !message.deleted) {
     return (
       <div
         onClick={() => {
@@ -73,7 +73,14 @@ const ReplyToMessage = ({
 
         <p className="text-sm">
           <strong>{message.replyTo.from.username}</strong>:{" "}
-          {message.replyTo.content}
+          {message.replyTo.deleted ? (
+            <div className="flex">
+              The original message was deleted
+              <Ban className="ml-1 h-5 w-5" />
+            </div>
+          ) : (
+            message.replyTo.content
+          )}
         </p>
       </div>
     );
