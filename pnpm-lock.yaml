@@ -182,7 +182,7 @@ importers:
         version: 8.42.3
       '@types/node':
         specifier: ^22.10.7
-        version: 22.12.0
+        version: 22.13.0
       '@types/react':
         specifier: ^19.0.7
         version: 19.0.8
@@ -1947,9 +1947,6 @@ packages:
 
   '@types/node@20.17.16':
     resolution: {integrity: sha512-vOTpLduLkZXePLxHiHsBLp98mHGnl8RptV4YAO3HfKO5UHjDvySGbxKtpYfy8Sx5+WKcgc45qNreJJRVM3L6mw==}
-
-  '@types/node@22.12.0':
-    resolution: {integrity: sha512-Fll2FZ1riMjNmlmJOdAyY5pUbkftXslB5DgEzlIuNaiWhXd00FhWxVC/r4yV/4wBb9JfImTu+jiSvXTkJ7F/gA==}
 
   '@types/node@22.13.0':
     resolution: {integrity: sha512-ClIbNe36lawluuvq3+YYhnIN2CELi+6q8NpnM7PYp4hBn/TatfboPgVSm2rwKRfnV2M+Ty9GWDFI64KEe+kysA==}
@@ -5923,7 +5920,7 @@ snapshots:
 
   '@types/connect@3.4.36':
     dependencies:
-      '@types/node': 22.12.0
+      '@types/node': 22.13.0
 
   '@types/eslint-scope@3.7.7':
     dependencies:
@@ -5947,15 +5944,11 @@ snapshots:
 
   '@types/mysql@2.15.26':
     dependencies:
-      '@types/node': 22.12.0
+      '@types/node': 22.13.0
 
   '@types/node@20.17.16':
     dependencies:
       undici-types: 6.19.8
-
-  '@types/node@22.12.0':
-    dependencies:
-      undici-types: 6.20.0
 
   '@types/node@22.13.0':
     dependencies:
@@ -5967,7 +5960,7 @@ snapshots:
 
   '@types/pg@8.6.1':
     dependencies:
-      '@types/node': 22.12.0
+      '@types/node': 22.13.0
       pg-protocol: 1.7.0
       pg-types: 2.2.0
 
@@ -5983,7 +5976,7 @@ snapshots:
 
   '@types/tedious@4.0.14':
     dependencies:
-      '@types/node': 22.12.0
+      '@types/node': 22.13.0
 
   '@types/trusted-types@2.0.7': {}
 
