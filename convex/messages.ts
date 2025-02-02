@@ -283,7 +283,7 @@ export const forwardMessage = mutation({
       v.object({
         username: v.string(),
         userId: v.string(),
-        chatId: v.string(),
+        chatId: v.id("privateChats"),
       }),
     ),
 
@@ -292,31 +292,15 @@ export const forwardMessage = mutation({
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
 
+    console.log(args);
+
     if (identity === null) {
       console.error("Unauthenticated call to mutation");
       return null;
     }
 
     for (const forwardObject of args.forwardObjects) {
-      const parsedChatId = ctx
-        .table("privateChats")
-        .normalizeId(forwardObject.chatId);
-
-      if (!parsedChatId) {
-        throw new ConvexError("chatId was invalid");
-      }
-
-      const chat = await ctx.table("privateChats").getX(parsedChatId);
-
-      if (!chat) {
-        throw new ConvexError("Chat does not exist");
-      }
-
-      const parsedUserId = ctx.table("users").normalizeId(forwardObject.userId);
-
-      if (!parsedUserId) {
-        throw new ConvexError("userId was invalid");
-      }
+      const chat = await ctx.table("privateChats").getX(forwardObject.chatId);
 
       const usersInChat = await chat.edge("users");
 
@@ -344,7 +328,7 @@ export const forwardMessage = mutation({
 
       await ctx.table("messages").insert({
         userId: user._id,
-        privateChatId: parsedChatId,
+        privateChatId: forwardObject.chatId,
         content: message.content,
         deleted: false,
         readBy: [user._id],

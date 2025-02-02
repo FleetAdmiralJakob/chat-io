@@ -273,14 +273,13 @@ export const Message = ({
   };
 
   const [ForwardedMessageId, setForwardedMessageId] = useQueryState(
-    // It is used to show the forward dialog
+    // It is used to show if the forward dialog should be shown. If the string is empty the dialog should be not shown if there is an id inside it should
     "forward",
     parseAsString.withDefault(""),
   );
 
   const ForwardHandler = () => {
     void setForwardedMessageId(message._id);
-    console.log("ForwardHandler");
   };
 
   const replyToMessageHandler = (messageId: Id<"messages">) => {
