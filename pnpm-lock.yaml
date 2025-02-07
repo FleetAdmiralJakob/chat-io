@@ -81,13 +81,13 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       convex:
-        specifier: ^1.18.2
+        specifier: ^1.19.0
         version: 1.19.0(@clerk/clerk-react@5.22.11(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       convex-ents:
         specifier: ^0.13.0
         version: 0.13.0(convex@1.19.0(@clerk/clerk-react@5.22.11(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0))
       convex-helpers:
-        specifier: ^0.1.67
+        specifier: ^0.1.71
         version: 0.1.71(convex@1.19.0(@clerk/clerk-react@5.22.11(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)(zod@3.24.1)
       dayjs:
         specifier: ^1.11.13
