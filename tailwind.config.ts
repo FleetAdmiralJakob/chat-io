@@ -84,16 +84,11 @@ const config = withUt({
             backgroundPosition: "350% 50%, 350% 50%",
           },
         },
-        jump: {
-          "0%, 100%": { transform: "translateY(0) scale(1)" },
-          "50%": { transform: "translateY(-8px) scale(1.2)" },
-        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         aurora: "aurora 60s linear infinite",
-        jump: "jump ease-in-out",
       },
     },
   },

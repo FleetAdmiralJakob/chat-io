@@ -9,8 +9,10 @@ import { cn } from "~/lib/utils";
 import { ConvexQueryCacheProvider } from "convex-helpers/react/cache/provider";
 import { GeistSans } from "geist/font/sans";
 import type { Metadata, Viewport } from "next";
-import React, { Suspense } from "react";
-import { Monitoring } from "react-scan/dist/core/monitor/params/next";
+import Script from "next/script";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
+import React from "react";
+import { Monitoring } from "react-scan/monitoring/next";
 import { extractRouterConfig } from "uploadthing/server";
 import { CSPostHogProvider } from "./_analytics/provider";
 
@@ -61,6 +63,8 @@ export const viewport: Viewport = {
   ],
 };
 
+export const dynamic = "force-static";
+
 export default function RootLayout({
   children,
 }: {
@@ -68,12 +72,26 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <Script
+          src="https://unpkg.com/react-scan/dist/install-hook.global.js"
+          strategy="beforeInteractive"
+        />
+      </head>
       <body
         className={cn(
           GeistSans.className,
           "min-h-screen bg-background antialiased",
         )}
       >
+        <Monitoring
+          apiKey="w-1y_WGLno534NOfDIi-JKYqMI4xpUf_"
+          url="https://monitoring.react-scan.com/api/v1/ingest"
+          // eslint-disable-next-line no-restricted-properties
+          commit={process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA}
+          // eslint-disable-next-line no-restricted-properties
+          branch={process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_REF}
+        />
         <NextSSRPlugin
           /**
            * The `extractRouterConfig` will extract **only** the route configs
@@ -93,17 +111,13 @@ export default function RootLayout({
             <CSPostHogProvider>
               <ConvexClientProvider>
                 <ConvexQueryCacheProvider>
-                  {children}
+                  <NuqsAdapter>{children}</NuqsAdapter>
                   <Toaster />
                 </ConvexQueryCacheProvider>
               </ConvexClientProvider>
             </CSPostHogProvider>
           </ClerkProvider>
         </ThemeProvider>
-        <Monitoring
-          apiKey="w-1y_WGLno534NOfDIi-JKYqMI4xpUf_"
-          url="https://monitoring.react-scan.com/api/v1/ingest"
-        />
       </body>
     </html>
   );

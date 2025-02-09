@@ -1,6 +1,5 @@
 <img width="1392" alt="image" src="https://github.com/user-attachments/assets/3ae685cd-0a61-4ee2-b996-1e9cf73c4d6f">
 
-
 # Create T3 App
 
 This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.

@@ -2,11 +2,6 @@ import { useUser } from "@clerk/nextjs";
 import { useFloating, type ReferenceType } from "@floating-ui/react";
 import { useLongPress } from "@reactuses/core";
 import { useQueryWithStatus } from "~/app/convex-client-provider";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "~/components/ui/popover";
 import { cn } from "~/lib/utils";
 import { useMutation } from "convex/react";
 import { type FunctionReturnType } from "convex/server";
@@ -25,12 +20,13 @@ import {
   Reply,
   Trash2,
 } from "lucide-react";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useInView } from "react-intersection-observer";
 import { toast } from "sonner";
 import { api } from "../../convex/_generated/api";
-import type { Doc, Id } from "../../convex/_generated/dataModel";
+import type { Id } from "../../convex/_generated/dataModel";
+import { ReactionHandler } from "./reactions";
 
 dayjs.extend(relativeTime);
 
@@ -38,159 +34,59 @@ export type Message = NonNullable<
   FunctionReturnType<typeof api.messages.getMessages>
 >[number];
 
+export type UserInfos = [
+  FunctionReturnType<typeof api.users.getUserData> | undefined,
+  (
+    | undefined
+    | NonNullable<
+        FunctionReturnType<typeof api.chats.getChatInfoFromId>
+      >["otherUser"]
+  ),
+];
+
 const EditedLabel = ({ message }: { message: Message }) => (
   <div className="mr-2 text-[75%] font-bold text-secondary-foreground">
     {message.type === "message" && message.modified && "Edited"}
   </div>
 );
 
-const ReplyToMessage = ({ message }: { message: Message }) => {
-  if (message.type === "message" && message.replyTo) {
+const ReplyToMessage = ({
+  message,
+  scrollToMessage,
+}: {
+  message: Message;
+  scrollToMessage: (messageId: Id<"messages">) => void;
+}) => {
+  if (message.type === "message" && message.replyTo && !message.deleted) {
     return (
-      <div className="mb-2 rounded-lg border border-secondary-foreground bg-primary p-2">
+      <div
+        onClick={() => {
+          if (message.type === "message" && message.replyTo) {
+            scrollToMessage(message.replyTo._id);
+          }
+        }}
+        className="mb-2 cursor-pointer rounded-lg border border-secondary-foreground bg-primary p-2"
+      >
         <div className="flex items-center justify-between">
           <p className="text-sm text-destructive-foreground">Replied to:</p>
         </div>
 
         <p className="text-sm">
           <strong>{message.replyTo.from.username}</strong>:{" "}
-          {message.replyTo.content}
+          {message.replyTo.deleted ? (
+            <div className="flex">
+              The original message was deleted
+              <Ban className="ml-1 h-5 w-5" />
+            </div>
+          ) : (
+            message.replyTo.content
+          )}
         </p>
       </div>
     );
   } else {
     return null;
   }
-};
-
-const ReactionQuickView = ({
-  reactions,
-}: {
-  reactions: Doc<"reactions">[];
-}) => {
-  const [animatingEmojis, setAnimatingEmojis] = useState<Set<string>>(
-    new Set(),
-  );
-  const previousReactions = useRef<string[]>([]);
-  const isFirstRender = useRef(true);
-
-  useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      previousReactions.current = reactions.map((r) => r.emoji);
-      return; // Skip animation logic on first render
-    }
-
-    const currentReactions = reactions.map((r) => r.emoji);
-    const newReactions = currentReactions.filter(
-      (emoji) => !previousReactions.current.includes(emoji),
-    );
-
-    if (newReactions.length > 0) {
-      setAnimatingEmojis(new Set(newReactions));
-      const timeoutId = setTimeout(() => {
-        setAnimatingEmojis(new Set());
-      }, 500); // Match this with your animation duration
-      // The setTimeout should be cleaned up when the component unmounts or when new reactions are added before the animation completes.
-      return () => clearTimeout(timeoutId);
-    }
-
-    previousReactions.current = currentReactions;
-  }, [reactions]);
-
-  return (
-    reactions
-      // Reduce the reactions array to count occurrences of each emoji
-      // acc: accumulator array of {emoji, count} objects
-      // reaction: current reaction being processed
-      // Returns: array of unique emojis with their counts
-      .reduce(
-        (acc, reaction) => {
-          const existingReaction = acc.find((r) => r.emoji === reaction.emoji);
-          if (existingReaction) {
-            existingReaction.count++;
-          } else {
-            acc.push({
-              emoji: reaction.emoji,
-              count: 1,
-            });
-          }
-          return acc;
-        },
-        [] as { emoji: string; count: number }[],
-      )
-      .map((reaction, index) => (
-        <div
-          key={index}
-          className={cn(
-            "flex items-center justify-center rounded-full bg-primary/20 text-sm",
-            !isFirstRender.current &&
-              animatingEmojis.has(reaction.emoji) &&
-              // Match the duration with the timeout above
-              "animate-jump duration-500",
-          )}
-        >
-          <span className="flex aspect-square h-6 items-center justify-center pt-0.5">
-            {reaction.emoji}
-          </span>
-          {reaction.count > 1 && (
-            <span className="pl-1 text-xs text-secondary-foreground">
-              {reaction.count}
-            </span>
-          )}
-        </div>
-      ))
-  );
-};
-
-const ReactionDetails = ({
-  reactions,
-  userInfos,
-}: {
-  reactions: Doc<"reactions">[];
-  userInfos: [
-    FunctionReturnType<typeof api.users.getUserData> | undefined,
-    (
-      | undefined
-      | NonNullable<
-          FunctionReturnType<typeof api.chats.getChatInfoFromId>
-        >["otherUser"]
-    ),
-  ];
-}) => {
-  // Group reactions by emoji
-  const reactionsByEmoji = reactions.reduce(
-    (acc, reaction) => {
-      (acc[reaction.emoji] = acc[reaction.emoji] ?? []).push(reaction);
-      return acc;
-    },
-    {} as Record<string, typeof reactions>,
-  );
-
-  return (
-    <div className="flex flex-col gap-2 p-2">
-      {Object.entries(reactionsByEmoji).map(([emoji, reactions]) => (
-        <div key={emoji}>
-          <div className="flex items-center gap-2">
-            <span className="text-xl">{emoji}</span>
-            <div className="text-sm">
-              {reactions
-                .map((reaction) => {
-                  const user =
-                    userInfos[0]?._id === reaction.userId
-                      ? userInfos[0]
-                      : Array.isArray(userInfos[1])
-                        ? userInfos[1].find((u) => u._id === reaction.userId)
-                        : userInfos[1];
-                  return user?.username;
-                })
-                .join(", ")}
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
 };
 
 export const Message = ({
@@ -205,6 +101,8 @@ export const Message = ({
   isInBottomHalf,
   setIsInBottomHalf,
   reactToMessageHandler,
+  highlightedMessageId,
+  scrollToMessage,
 }: {
   message: Message;
   selectedMessageId: Id<"messages"> | null;
@@ -217,15 +115,7 @@ export const Message = ({
   setReplyToMessageId: React.Dispatch<
     React.SetStateAction<Id<"messages"> | undefined>
   >;
-  userInfos: [
-    FunctionReturnType<typeof api.users.getUserData> | undefined,
-    (
-      | undefined
-      | NonNullable<
-          FunctionReturnType<typeof api.chats.getChatInfoFromId>
-        >["otherUser"]
-    ),
-  ];
+  userInfos: UserInfos;
   setShowFullEmojiPicker: React.Dispatch<React.SetStateAction<boolean>>;
   isInBottomHalf: boolean | null;
   refsFullEmojiPicker: {
@@ -233,6 +123,8 @@ export const Message = ({
   };
   setIsInBottomHalf: React.Dispatch<React.SetStateAction<boolean | null>>;
   reactToMessageHandler: (messageId: Id<"messages">, emoji: string) => void;
+  highlightedMessageId: Id<"messages"> | null;
+  scrollToMessage: (messageId: Id<"messages">) => void;
 }) => {
   const clerkUser = useUser();
 
@@ -252,7 +144,9 @@ export const Message = ({
         api.messages.getMessages,
         { chatId },
         existingMessages.map((message) =>
-          message._id === messageId ? { ...message, deleted: true } : message,
+          message._id === messageId
+            ? { ...message, deleted: true, reactions: [] }
+            : message,
         ),
       );
 
@@ -581,7 +475,7 @@ export const Message = ({
           })}
         >
           <EditedLabel message={message} />
-          <ReplyToMessage message={message} />
+          <ReplyToMessage message={message} scrollToMessage={scrollToMessage} />
           <div
             {...longPressEvent}
             ref={(ref) => {
@@ -598,6 +492,7 @@ export const Message = ({
               checkClickPosition(e);
               setSelectedMessageId(message._id);
             }}
+            id={`message-${message._id}`}
             className={cn(
               "max-w-[66.6667%] cursor-default break-words rounded-sm bg-accent p-3",
               {
@@ -607,6 +502,7 @@ export const Message = ({
                   message.type == "rejectedRequest",
                 "mb-3":
                   message.type === "message" && message.reactions.length > 0,
+                "animate-pulse": highlightedMessageId === message._id,
               },
             )}
           >
@@ -643,26 +539,12 @@ export const Message = ({
             )}
           </div>
 
-          {message.type === "message" &&
-            message.reactions &&
-            message.reactions.length > 0 && (
-              <Popover>
-                <PopoverTrigger
-                  className={cn(
-                    "absolute bottom-4 right-0 flex -translate-x-[0%] select-none items-center justify-center gap-1 rounded-full bg-secondary px-1 lg:select-auto",
-                    { "z-50": message._id === selectedMessageId },
-                  )}
-                >
-                  <ReactionQuickView reactions={message.reactions} />
-                </PopoverTrigger>
-                <PopoverContent>
-                  <ReactionDetails
-                    reactions={message.reactions}
-                    userInfos={userInfos}
-                  />
-                </PopoverContent>
-              </Popover>
-            )}
+          <ReactionHandler
+            message={message}
+            selectedMessageId={selectedMessageId}
+            userInfos={userInfos}
+            side="right"
+          />
 
           <div className="mr-2 text-[75%] font-bold text-secondary-foreground">
             {message.type == "message" && !message.deleted
@@ -768,7 +650,7 @@ export const Message = ({
           })}
         >
           <EditedLabel message={message} />
-          <ReplyToMessage message={message} />
+          <ReplyToMessage message={message} scrollToMessage={scrollToMessage} />
           <div
             {...longPressEvent}
             ref={(ref) => {
@@ -785,6 +667,7 @@ export const Message = ({
               checkClickPosition(e);
               setSelectedMessageId(message._id);
             }}
+            id={`message-${message._id}`}
             className={cn(
               "max-w-[66.6667%] cursor-default break-words rounded-sm bg-secondary p-3",
               {
@@ -794,6 +677,7 @@ export const Message = ({
                   message.type === "rejectedRequest",
                 "mb-3":
                   message.type === "message" && message.reactions.length > 0,
+                "animate-pulse": highlightedMessageId === message._id,
               },
             )}
           >
@@ -853,26 +737,12 @@ export const Message = ({
             )}
           </div>
 
-          {message.type === "message" &&
-            message.reactions &&
-            message.reactions.length > 0 && (
-              <Popover>
-                <PopoverTrigger
-                  className={cn(
-                    "absolute bottom-0 left-0 flex select-none items-center justify-center gap-1 rounded-full bg-secondary px-1 lg:select-auto",
-                    { "z-50": message._id === selectedMessageId },
-                  )}
-                >
-                  <ReactionQuickView reactions={message.reactions} />
-                </PopoverTrigger>
-                <PopoverContent>
-                  <ReactionDetails
-                    reactions={message.reactions}
-                    userInfos={userInfos}
-                  />
-                </PopoverContent>
-              </Popover>
-            )}
+          <ReactionHandler
+            message={message}
+            selectedMessageId={selectedMessageId}
+            userInfos={userInfos}
+            side="left"
+          />
 
           {chatContainerElement &&
           message._id == selectedMessageId &&

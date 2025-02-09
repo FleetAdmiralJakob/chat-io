@@ -1,8 +1,9 @@
 import { fileURLToPath } from "node:url";
 import { withSentryConfig } from "@sentry/nextjs";
 import withSerwistInit from "@serwist/next";
-import createJiti from "jiti";
+import { createJiti } from "jiti";
 import { withAxiom } from "next-axiom";
+import ReactComponentName from "react-scan/react-component-name/webpack";
 
 // @ts-check
 
@@ -17,7 +18,7 @@ const jiti = createJiti(fileURLToPath(import.meta.url));
  * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially useful
  * for Docker builds.
  */
-jiti("./src/env.ts");
+await jiti.import("./src/env.ts");
 
 /** @type {import("next").NextConfig} */
 const baseConfig = withAxiom(
@@ -38,6 +39,10 @@ const baseConfig = withAxiom(
     async rewrites() {
       return [
         {
+          source: "/home",
+          destination: "/",
+        },
+        {
           source: "/ingest/static/:path*",
           destination: process.env.NEXT_PUBLIC_POSTHOG_HOST + "/static/:path*",
         },
@@ -53,6 +58,14 @@ const baseConfig = withAxiom(
     },
     // This is required to support PostHog trailing slash API requests
     skipTrailingSlashRedirect: true,
+
+    // Next.js being Next.js and not providing any type definitions for their own config
+    webpack: (config) => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      config.plugins.push(ReactComponentName({}));
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      return config;
+    },
   }),
 );
 

@@ -1,5 +1,5 @@
+import { isClerkAPIResponseError } from "@clerk/nextjs/errors";
 import { clerkClient } from "@clerk/nextjs/server";
-import { isClerkAPIResponseError } from "@clerk/shared";
 import {
   formSchemaSignUp,
   formSchemaUserUpdate,
@@ -7,6 +7,7 @@ import {
   type FormSchemaUserUpdate,
 } from "~/lib/validators";
 import { log } from "next-axiom";
+import { after } from "next/server";
 
 export async function OPTIONS(request: Request) {
   const unparsedSignUpHeaders = (await request.json()) as FormSchemaUserUpdate;
@@ -31,7 +32,13 @@ export async function POST(request: Request) {
   const unparsedSignUpHeaders = (await request.json()) as FormSchemaSignUp;
   const parsedSignUpHeaders = formSchemaSignUp.safeParse(unparsedSignUpHeaders);
   if (!parsedSignUpHeaders.success) {
-    log.error("Could not parse the sign-up headers", parsedSignUpHeaders.error);
+    after(() => {
+      log.error(
+        "Could not parse the sign-up headers",
+        parsedSignUpHeaders.error,
+      );
+    });
+
     return Response.json(
       { message: parsedSignUpHeaders.error.message },
       { status: 400 },
@@ -56,7 +63,9 @@ export async function POST(request: Request) {
         if (
           e.errors.some((error) => error.meta?.paramName === "email_address")
         ) {
-          log.error("Failed to create an account. Email already exists.");
+          after(() => {
+            log.error("Failed to create an account. Email already exists.");
+          });
 
           return Response.json(
             {
@@ -68,7 +77,10 @@ export async function POST(request: Request) {
         }
 
         if (e.errors.some((error) => error.meta?.paramName === "username")) {
-          log.error("Failed to create an account. Username already exists.");
+          after(() => {
+            log.error("Failed to create an account. Username already exists.");
+          });
+
           return Response.json(
             {
               message: "Failed to create an account. Username already exists.",
@@ -79,9 +91,12 @@ export async function POST(request: Request) {
         }
       }
       if (e.errors.some((error) => error.code === "form_password_pwned")) {
-        log.error(
-          "Failed to create an account. Password has been found in an online data breach.",
-        );
+        after(() => {
+          log.error(
+            "Failed to create an account. Password has been found in an online data breach.",
+          );
+        });
+
         return Response.json(
           {
             message:
@@ -92,17 +107,24 @@ export async function POST(request: Request) {
         );
       }
     }
-    log.error("Failed to create an accoutn", {
-      parsedSignUpHeaders,
-      error: e,
+
+    after(() => {
+      log.error("Failed to create an accoutn", {
+        parsedSignUpHeaders,
+        error: e,
+      });
     });
+
     return Response.json(
       { message: "Failed to create an account" },
       { status: 400 },
     );
   }
 
-  log.info("User created successfully");
+  after(() => {
+    log.info("User created successfully");
+  });
+
   return Response.json(
     { message: "User created successfully" },
     { status: 200 },

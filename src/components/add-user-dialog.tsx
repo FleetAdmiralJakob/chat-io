@@ -30,8 +30,8 @@ import { cn } from "~/lib/utils";
 import { useMutation } from "convex/react";
 import { ConvexError } from "convex/values";
 import { UserRoundPlus } from "lucide-react";
+import { parseAsBoolean, useQueryState } from "nuqs";
 import { usePostHog } from "posthog-js/react";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { api } from "../../convex/_generated/api";
@@ -67,7 +67,10 @@ export function AddUserDialog({
 }: {
   classNameDialogTrigger?: string;
 }) {
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useQueryState(
+    "dialog",
+    parseAsBoolean.withDefault(false),
+  );
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -88,7 +91,7 @@ export function AddUserDialog({
         friendsUsernameId: values.usernameId,
       });
       form.reset();
-      setDialogOpen(false);
+      void setDialogOpen(false);
       posthog.capture("new_connection_added");
     } catch (e) {
       if (e instanceof ConvexError) {

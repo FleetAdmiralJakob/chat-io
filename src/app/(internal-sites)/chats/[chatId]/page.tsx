@@ -8,6 +8,7 @@ import { useQueryWithStatus } from "~/app/convex-client-provider";
 import ChatsWithSearch from "~/components/chats-with-search";
 import { DevMode } from "~/components/dev-mode-info";
 import { Message } from "~/components/message";
+import { useReactToMessage } from "~/components/reactions";
 import { Avatar, AvatarFallback } from "~/components/ui/avatar";
 import Badge from "~/components/ui/badge";
 import { Form, FormControl, FormField } from "~/components/ui/form";
@@ -41,9 +42,9 @@ import {
   Video,
   X,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { usePostHog } from "posthog-js/react";
-import React, { use, useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useMediaQuery } from "react-responsive";
 import { toast } from "sonner";
@@ -173,8 +174,82 @@ const useScrollBehavior = (
   };
 };
 
-export default function Page(props: { params: Promise<{ chatId: string }> }) {
-  const params = use(props.params);
+interface MessageContextProps {
+  replyToMessageId?: Id<"messages">;
+  editingMessageId: Id<"messages"> | null;
+  messages: FunctionReturnType<typeof api.messages.getMessages> | undefined;
+  setReplyToMessageId: (id: undefined) => void;
+  scrollToMessage: (messageId: Id<"messages">) => void;
+}
+
+const MessageContext: React.FC<MessageContextProps> = ({
+  replyToMessageId,
+  editingMessageId,
+  messages,
+  setReplyToMessageId,
+  scrollToMessage,
+}) => {
+  if (!replyToMessageId && !editingMessageId) return null;
+
+  const message = messages?.find(
+    (msg) => msg._id === (replyToMessageId ?? editingMessageId),
+  );
+
+  if (!message || message.type !== "message") return null;
+
+  const isEditing = Boolean(editingMessageId);
+  const contextText = isEditing ? "Editing message:" : "Replying to:";
+  const handleClose = () => {
+    setReplyToMessageId(undefined);
+  };
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0, translateY: 70 }}
+        animate={{ opacity: 1, translateY: 0 }}
+        exit={{ opacity: 0, translateY: 70 }}
+        transition={{ duration: 0.5 }}
+      >
+        <div
+          onMouseDown={() => {
+            scrollToMessage(message._id);
+          }}
+          className="relative m-4 mb-2 cursor-pointer rounded-lg border border-secondary-foreground bg-secondary p-2"
+        >
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-destructive-foreground">{contextText}</p>
+          </div>
+          <button
+            className={cn(
+              "absolute right-4 top-1/2 flex h-8 w-8 -translate-y-1/2 transform cursor-pointer items-center justify-center rounded-sm border-2 border-secondary-foreground bg-primary p-1 lg:h-10 lg:w-10 lg:p-2",
+              editingMessageId ? "hidden" : "",
+            )}
+            onMouseDown={(e) => {
+              e.stopPropagation();
+              handleClose();
+            }}
+            aria-label="Cancel reply"
+            onKeyDown={(e) => {
+              if (e.key === "Escape") {
+                handleClose();
+              }
+            }}
+          >
+            <X className="h-4 w-4" />
+          </button>
+
+          <p className="text-sm">
+            <strong>{message.from.username}</strong>: {message.content}
+          </p>
+        </div>
+      </motion.div>
+    </AnimatePresence>
+  );
+};
+
+export default function Page() {
+  const params = useParams<{ chatId: string }>();
   const [progress, setProgress] = React.useState(13);
 
   // We could change this to contain the whole message instead of just the id
@@ -481,84 +556,28 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
     middleware: [autoPlacement({ padding: 4 })],
   });
 
-  const reactToMessage = useMutation(
-    api.messages.reactToMessage,
-  ).withOptimisticUpdate((localStore, args) => {
-    const messageId = args.messageId;
-    const emoji = args.reaction;
-
-    if (!userInfo.data) return;
-
-    const reaction = {
-      _id: crypto.randomUUID() as Id<"reactions">,
-      _creationTime: Date.now(),
-      messageId,
-      userId: userInfo.data._id,
-      emoji,
-      userInfo,
-    };
-
-    const existingMessages = localStore.getQuery(api.messages.getMessages, {
-      chatId: params.chatId,
-    });
-
-    if (existingMessages) {
-      const updateMessageReactions = (message: Message) => {
-        // Skip messages that don't match target message ID or aren't message type
-        if (message._id !== messageId || message.type !== "message") {
-          return message;
-        }
-
-        // Check if user already has the exact same emoji reaction
-        const existingReaction = message.reactions?.find(
-          (r) => r.userId === userInfo.data?._id && r.emoji === emoji,
-        );
-
-        // If user already reacted with this emoji, remove it (toggle off)
-        if (existingReaction) {
-          return {
-            ...message,
-            reactions: message.reactions.filter(
-              (r) => !(r.userId === userInfo.data?._id && r.emoji === emoji),
-            ),
-          };
-        }
-
-        // Check if user has reacted with a different emoji
-        const hasOtherReaction = message.reactions?.find(
-          (r) => r.userId === userInfo.data?._id,
-        );
-
-        // If user has different reaction, update existing one to new emoji
-        if (hasOtherReaction) {
-          return {
-            ...message,
-            reactions: message.reactions.map((r) =>
-              r.userId === userInfo.data?._id ? { ...r, emoji } : r,
-            ),
-          };
-        }
-
-        // No existing reactions from user - add new reaction
-        return {
-          ...message,
-          reactions: [...(message.reactions || []), reaction],
-        };
-      };
-
-      localStore.setQuery(
-        api.messages.getMessages,
-        { chatId: params.chatId },
-        existingMessages.map(updateMessageReactions),
-      );
-    }
-  });
+  const reactToMessage = useReactToMessage(params.chatId, userInfo.data);
 
   const reactToMessageHandler = (messageId: Id<"messages">, emoji: string) => {
     void reactToMessage({ messageId, reaction: emoji });
     setSelectedMessageId(null);
     setShowFullEmojiPicker(false);
   };
+
+  const [highlightedMessageId, setHighlightedMessageId] =
+    useState<Id<"messages"> | null>(null);
+
+  const scrollToMessage = useCallback((messageId: Id<"messages">) => {
+    const messageElement = document.getElementById(`message-${messageId}`);
+    if (messageElement) {
+      messageElement.scrollIntoView({ behavior: "smooth", block: "center" });
+      setHighlightedMessageId(messageId);
+      // Remove highlight after animation
+      setTimeout(() => {
+        setHighlightedMessageId(null);
+      }, 2000); // 2 seconds highlight duration
+    }
+  }, []);
 
   return (
     <main className="flex h-screen flex-col">
@@ -727,6 +746,8 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
                       setShowFullEmojiPicker={setShowFullEmojiPicker}
                       isInBottomHalf={isInBottomHalf}
                       setIsInBottomHalf={setIsInBottomHalf}
+                      highlightedMessageId={highlightedMessageId}
+                      scrollToMessage={scrollToMessage}
                     />
                   </React.Fragment>
                 ))}
@@ -758,50 +779,13 @@ export default function Page(props: { params: Promise<{ chatId: string }> }) {
 
           <div className="flex w-full items-center justify-start">
             <div className="flex w-full flex-col gap-2">
-              <AnimatePresence>
-                {replyToMessageId && (
-                  <motion.div
-                    initial={{ opacity: 0, translateY: 70 }}
-                    animate={{ opacity: 1, translateY: 0 }}
-                    exit={{ opacity: 0, translateY: 70 }}
-                    transition={{ duration: 0.5 }}
-                  >
-                    <div className="relative m-4 mb-2 rounded-lg border border-secondary-foreground bg-secondary p-2">
-                      <div className="flex items-center justify-between">
-                        <p className="text-sm text-destructive-foreground">
-                          Replying to:
-                        </p>
-                      </div>
-                      <button
-                        className="absolute right-4 top-1/2 flex h-8 w-8 -translate-y-1/2 transform cursor-pointer items-center justify-center rounded-sm border-2 border-secondary-foreground bg-primary p-1 lg:h-10 lg:w-10 lg:p-2"
-                        onClick={() => setReplyToMessageId(undefined)}
-                        aria-label="Cancel reply"
-                        onKeyDown={(e) => {
-                          if (e.key === "Escape") {
-                            setReplyToMessageId(undefined);
-                          }
-                        }}
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-
-                      <p className="text-sm">
-                        {(() => {
-                          const message = messages.data?.find(
-                            (msg) => msg._id === replyToMessageId,
-                          );
-                          return message?.type === "message" ? (
-                            <>
-                              <strong>{message.from.username}</strong>:{" "}
-                              {message.content}
-                            </>
-                          ) : null;
-                        })()}
-                      </p>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              <MessageContext
+                replyToMessageId={replyToMessageId}
+                editingMessageId={editingMessageId}
+                messages={messages.data}
+                setReplyToMessageId={setReplyToMessageId}
+                scrollToMessage={scrollToMessage}
+              />
               <div className="z-10 flex w-full justify-between gap-8 bg-primary p-4 pb-10 lg:pb-4">
                 <Form {...textMessageForm}>
                   <form

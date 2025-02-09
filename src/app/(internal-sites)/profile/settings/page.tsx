@@ -1,7 +1,7 @@
 "use client";
 
 import { useUser } from "@clerk/nextjs";
-import { isClerkAPIResponseError } from "@clerk/shared";
+import { isClerkAPIResponseError } from "@clerk/nextjs/errors";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,

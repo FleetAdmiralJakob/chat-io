@@ -1,6 +1,7 @@
 "use client";
 
-import { SiGithub, SiLinkedin } from "@icons-pack/react-simple-icons";
+import { SiGithub } from "@icons-pack/react-simple-icons";
+import { LinkedInLogoIcon } from "@radix-ui/react-icons";
 import Footer from "~/components/footer";
 import { cn } from "~/lib/utils";
 import {
@@ -13,8 +14,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
-
-export const dynamic = "force-static";
 
 interface ContributorsProps {
   name: string;
@@ -103,7 +102,7 @@ const ContributorCard = (props: { contributor: ContributorsProps }) => {
         {props.contributor.linkedin ? (
           <Link className="flex" href={props.contributor.linkedin}>
             <p className="hidden cursor-pointer lg:flex">LinkedIn</p>
-            <SiLinkedin className="ml-1 mt-2.5 h-5 w-5 lg:mt-1" />
+            <LinkedInLogoIcon className="ml-1 mt-2.5 h-5 w-5 lg:mt-1" />
           </Link>
         ) : null}
 
