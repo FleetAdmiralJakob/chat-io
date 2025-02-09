@@ -1,5 +1,7 @@
 import "~/styles/globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
+import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
+import { ourFileRouter } from "~/app/api/uploadthing/core";
 import ConvexClientProvider from "~/app/convex-client-provider";
 import { ThemeProvider } from "~/components/theme-provider";
 import { Toaster } from "~/components/ui/sonner";
@@ -11,6 +13,7 @@ import Script from "next/script";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import React from "react";
 import { Monitoring } from "react-scan/monitoring/next";
+import { extractRouterConfig } from "uploadthing/server";
 import { CSPostHogProvider } from "./_analytics/provider";
 
 const APP_NAME = "Chat.io";
@@ -88,6 +91,15 @@ export default function RootLayout({
           commit={process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA}
           // eslint-disable-next-line no-restricted-properties
           branch={process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_REF}
+        />
+        <NextSSRPlugin
+          /**
+           * The `extractRouterConfig` will extract **only** the route configs
+           * from the router to prevent additional information from being
+           * leaked to the client. The data passed to the client is the same
+           * as if you were to fetch `/api/uploadthing` directly.
+           */
+          routerConfig={extractRouterConfig(ourFileRouter)}
         />
         <ThemeProvider
           attribute="class"
