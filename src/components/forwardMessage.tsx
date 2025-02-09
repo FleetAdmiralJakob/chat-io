@@ -13,7 +13,7 @@ import {
 import { cn } from "~/lib/utils";
 import { useMutation } from "convex/react";
 import { Forward, LoaderCircle } from "lucide-react";
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
 

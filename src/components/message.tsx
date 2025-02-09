@@ -22,8 +22,8 @@ import {
   Reply,
   Trash2,
 } from "lucide-react";
-import { parseAsBoolean, parseAsString, useQueryState } from "nuqs";
-import React, { useEffect, useState } from "react";
+import { parseAsString, useQueryState } from "nuqs";
+import React, { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useInView } from "react-intersection-observer";
 import { toast } from "sonner";
