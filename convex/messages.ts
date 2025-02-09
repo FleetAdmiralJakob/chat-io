@@ -1,6 +1,5 @@
 import { ConvexError, v } from "convex/values";
 import emojiRegex from "emoji-regex";
-import { api } from "./_generated/api";
 import { mutation, query } from "./lib/functions";
 
 export const getMessages = query({
@@ -291,8 +290,6 @@ export const forwardMessage = mutation({
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
-
-    console.log(args);
 
     if (identity === null) {
       console.error("Unauthenticated call to mutation");

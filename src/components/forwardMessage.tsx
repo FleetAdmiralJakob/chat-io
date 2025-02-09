@@ -12,8 +12,8 @@ import {
 } from "~/components/ui/dialog";
 import { cn } from "~/lib/utils";
 import { useMutation } from "convex/react";
-import { Forward } from "lucide-react";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Forward, LoaderCircle } from "lucide-react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
 
@@ -62,8 +62,6 @@ export const ForwardDialog = ({
     setForwardedMessageId("");
   };
 
-  console.log(chats);
-
   return (
     <Dialog
       onOpenChange={(e) => (!e ? setForwardedMessageId("") : null)}
@@ -77,9 +75,14 @@ export const ForwardDialog = ({
           </DialogTitle>
           <DialogDescription>Select a user to forward them.</DialogDescription>
         </DialogHeader>
-        <div className="grid">
+        <div
+          className={cn(
+            "grid",
+            chats === undefined ? "flex justify-center" : null,
+          )}
+        >
           {chats === undefined ? (
-            <div>Loading ...</div>
+            <LoaderCircle className="mr-1.5 animate-spin justify-center p-0.5" />
           ) : (
             chats?.map((chat, index) => (
               <div key={index}>
