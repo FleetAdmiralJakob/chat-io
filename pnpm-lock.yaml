@@ -21,8 +21,8 @@ importers:
         specifier: ^0.27.0
         version: 0.27.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@hookform/resolvers':
-        specifier: ^3.9.1
-        version: 3.10.0(react-hook-form@7.54.2(react@19.0.0))
+        specifier: ^4.0.0
+        version: 4.0.0(react-hook-form@7.54.2(react@19.0.0))
       '@ianvs/prettier-plugin-sort-imports':
         specifier: ^4.4.0
         version: 4.4.1(prettier@3.5.0)
@@ -875,8 +875,8 @@ packages:
   '@floating-ui/utils@0.2.9':
     resolution: {integrity: sha512-MDWhGtE+eHw5JW7lq4qhc5yRLS11ERl1c7Z6Xd0a58DozHES6EnNNwUWbMiG4J9Cgj053Bhk8zvlhFYKVhULwg==}
 
-  '@hookform/resolvers@3.10.0':
-    resolution: {integrity: sha512-79Dv+3mDF7i+2ajj7SkypSKHhl1cbln1OGavqrsF7p6mbUv11xpqpacPsGDCTRvCSjEEIez2ef1NveSVL3b0Ag==}
+  '@hookform/resolvers@4.0.0':
+    resolution: {integrity: sha512-93ZueVlTaeMF0pRbrLbcnzrxeb2mGA/xyO3RgfrsKs5OCtcfjoWcdjBJm+N7096Jfg/JYlGPjuyQCgqVEodSTg==}
     peerDependencies:
       react-hook-form: ^7.0.0
 
@@ -4839,7 +4839,7 @@ snapshots:
 
   '@floating-ui/utils@0.2.9': {}
 
-  '@hookform/resolvers@3.10.0(react-hook-form@7.54.2(react@19.0.0))':
+  '@hookform/resolvers@4.0.0(react-hook-form@7.54.2(react@19.0.0))':
     dependencies:
       react-hook-form: 7.54.2(react@19.0.0)
 
