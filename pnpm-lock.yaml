@@ -182,7 +182,7 @@ importers:
         version: 8.42.3
       '@types/node':
         specifier: ^22.10.7
-        version: 22.13.2
+        version: 22.13.3
       '@types/react':
         specifier: ^19.0.7
         version: 19.0.8
@@ -1970,14 +1970,14 @@ packages:
   '@types/mysql@2.15.26':
     resolution: {integrity: sha512-DSLCOXhkvfS5WNNPbfn2KdICAmk8lLc+/PNvnPnF7gOdMZCxopXduqv0OQ13y/yA/zXTSikZZqVgybUxOEg6YQ==}
 
-  '@types/node@20.17.18':
-    resolution: {integrity: sha512-9kS0opXVV3dJ+C7HPhXfDlOdMu4cjJSZhlSxlDK39IxVRxBbuiYjCkLYSO9d5UYqTd4DApxRK9T1xJiTAkfA0w==}
-
-  '@types/node@22.13.2':
-    resolution: {integrity: sha512-Z+r8y3XL9ZpI2EY52YYygAFmo2/oWfNSj4BCpAXE2McAexDk8VcnBMGC9Djn9gTKt4d2T/hhXqmPzo4hfIXtTg==}
+  '@types/node@20.17.19':
+    resolution: {integrity: sha512-LEwC7o1ifqg/6r2gn9Dns0f1rhK+fPFDoMiceTJ6kWmVk6bgXBI/9IOWfVan4WiAavK9pIVWdX0/e3J+eEUh5A==}
 
   '@types/node@22.13.3':
     resolution: {integrity: sha512-nR7dEScXY87nBVt9gPL0sP93GCxG7nMzFicbYjOcGdKcLytrXBgrnMIYcghBW0+YfLj3t7G5FgUccrhdZuTB9g==}
+
+  '@types/node@22.13.4':
+    resolution: {integrity: sha512-ywP2X0DYtX3y08eFVx5fNIw7/uIv8hYUKgXoK8oayJlLnKcRfEYCxWMVE1XagUdVtCJlZT1AU4LXEABW+L1Peg==}
 
   '@types/pg-pool@2.0.6':
     resolution: {integrity: sha512-TaAUE5rq2VQYxab5Ts7WZhKNmuN78Q6PiFonTDdpbx8a1H0M1vhy3rhiMjl+e2iHmogyMw7jZF4FrE6eJUy5HQ==}
@@ -6004,7 +6004,7 @@ snapshots:
 
   '@types/connect@3.4.36':
     dependencies:
-      '@types/node': 22.13.2
+      '@types/node': 22.13.3
 
   '@types/eslint-scope@3.7.7':
     dependencies:
@@ -6030,17 +6030,17 @@ snapshots:
 
   '@types/mysql@2.15.26':
     dependencies:
-      '@types/node': 22.13.2
+      '@types/node': 22.13.3
 
-  '@types/node@20.17.18':
+  '@types/node@20.17.19':
     dependencies:
       undici-types: 6.19.8
 
-  '@types/node@22.13.2':
+  '@types/node@22.13.3':
     dependencies:
       undici-types: 6.20.0
 
-  '@types/node@22.13.3':
+  '@types/node@22.13.4':
     dependencies:
       undici-types: 6.20.0
 
@@ -6050,7 +6050,7 @@ snapshots:
 
   '@types/pg@8.6.1':
     dependencies:
-      '@types/node': 22.13.2
+      '@types/node': 22.13.3
       pg-protocol: 1.7.1
       pg-types: 2.2.0
 
@@ -6066,7 +6066,7 @@ snapshots:
 
   '@types/tedious@4.0.14':
     dependencies:
-      '@types/node': 22.13.2
+      '@types/node': 22.13.3
 
   '@types/trusted-types@2.0.7': {}
 
@@ -7422,7 +7422,7 @@ snapshots:
 
   jest-worker@27.5.1:
     dependencies:
-      '@types/node': 22.13.3
+      '@types/node': 22.13.4
       merge-stream: 2.0.0
       supports-color: 8.1.1
 
@@ -7949,7 +7949,7 @@ snapshots:
       '@pivanov/utils': 0.0.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@preact/signals': 1.3.2(preact@10.25.4)
       '@rollup/pluginutils': 5.1.4(rollup@3.29.5)
-      '@types/node': 20.17.18
+      '@types/node': 20.17.19
       bippy: 0.2.7
       esbuild: 0.24.2
       estree-walker: 3.0.3
