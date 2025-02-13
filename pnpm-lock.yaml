@@ -127,7 +127,7 @@ importers:
         version: 2.3.2(next@15.1.7(@babel/core@7.26.7)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@19.0.0-beta-e552027-20250112)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
       posthog-js:
         specifier: ^1.195.0
-        version: 1.217.2
+        version: 1.217.4
       react:
         specifier: ^19.0.0
         version: 19.0.0
@@ -1976,6 +1976,9 @@ packages:
   '@types/node@22.13.2':
     resolution: {integrity: sha512-Z+r8y3XL9ZpI2EY52YYygAFmo2/oWfNSj4BCpAXE2McAexDk8VcnBMGC9Djn9gTKt4d2T/hhXqmPzo4hfIXtTg==}
 
+  '@types/node@22.13.3':
+    resolution: {integrity: sha512-nR7dEScXY87nBVt9gPL0sP93GCxG7nMzFicbYjOcGdKcLytrXBgrnMIYcghBW0+YfLj3t7G5FgUccrhdZuTB9g==}
+
   '@types/pg-pool@2.0.6':
     resolution: {integrity: sha512-TaAUE5rq2VQYxab5Ts7WZhKNmuN78Q6PiFonTDdpbx8a1H0M1vhy3rhiMjl+e2iHmogyMw7jZF4FrE6eJUy5HQ==}
 
@@ -3582,8 +3585,8 @@ packages:
     resolution: {integrity: sha512-9ZhXKM/rw350N1ovuWHbGxnGh/SNJ4cnxHiM0rxE4VN41wsg8P8zWn9hv/buK00RP4WvlOyr/RBDiptyxVbkZQ==}
     engines: {node: '>=0.10.0'}
 
-  posthog-js@1.217.2:
-    resolution: {integrity: sha512-3KC+UjI0UT5zh8kAOVqe/AfvRjBMKynRIBQNlv0TXnfpZG0+h3r/1ONecDgCCGLs/a/55SJCExrugDlx+HPH3w==}
+  posthog-js@1.217.4:
+    resolution: {integrity: sha512-ZIOb75F1pdMZl6e7C4mgH2accKArLA2RG3zMEjeils+3J/cylwgcr2Iw0QtzSLqQVvR7AFRRbXMZXUWsiB2zyA==}
 
   preact@10.25.4:
     resolution: {integrity: sha512-jLdZDb+Q+odkHJ+MpW/9U5cODzqnB+fy2EiHSZES7ldV5LK7yjlVzTp7R8Xy6W6y75kfK8iWYtFVH7lvjwrCMA==}
@@ -6037,6 +6040,10 @@ snapshots:
     dependencies:
       undici-types: 6.20.0
 
+  '@types/node@22.13.3':
+    dependencies:
+      undici-types: 6.20.0
+
   '@types/pg-pool@2.0.6':
     dependencies:
       '@types/pg': 8.6.1
@@ -7415,7 +7422,7 @@ snapshots:
 
   jest-worker@27.5.1:
     dependencies:
-      '@types/node': 22.13.2
+      '@types/node': 22.13.3
       merge-stream: 2.0.0
       supports-color: 8.1.1
 
@@ -7834,7 +7841,7 @@ snapshots:
     dependencies:
       xtend: 4.0.2
 
-  posthog-js@1.217.2:
+  posthog-js@1.217.4:
     dependencies:
       core-js: 3.40.0
       fflate: 0.4.8
