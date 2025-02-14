@@ -278,7 +278,7 @@ export const Message = ({
     parseAsString.withDefault(""),
   );
 
-  const ForwardHandler = () => {
+  const handleForward = () => {
     void setForwardedMessageId(message._id);
   };
 
@@ -603,15 +603,15 @@ export const Message = ({
                         <Reply />
                         <p className="ml-1">Reply</p>
                       </button>
-                      <div
+                      <button
                         className="flex w-full cursor-pointer border-t-2 border-secondary-foreground p-2 pr-8"
                         onClick={() => {
-                          ForwardHandler();
+                          handleForward();
                         }}
                       >
                         <Forward />
                         <p className="ml-1">Forward</p>
-                      </div>
+                      </button>
                       <ForwardDialog
                         ForwardedMessageId={ForwardedMessageId}
                         setForwardedMessageId={setForwardedMessageId}
@@ -795,7 +795,7 @@ export const Message = ({
                       </button>
                       <div
                         onClick={() => {
-                          ForwardHandler();
+                          handleForward();
                         }}
                         className="flex w-full cursor-pointer border-b-2 border-secondary-foreground p-2 pr-8"
                       >
