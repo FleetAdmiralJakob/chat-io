@@ -27,8 +27,8 @@ importers:
         specifier: ^4.4.0
         version: 4.4.1(prettier@3.5.1)
       '@icons-pack/react-simple-icons':
-        specifier: ^11.0.0
-        version: 11.2.0(react@19.0.0)
+        specifier: ^12.0.0
+        version: 12.0.0(react@19.0.0)
       '@legendapp/state':
         specifier: ^3.0.0-beta.16
         version: 3.0.0-beta.26(react@19.0.0)
@@ -930,8 +930,8 @@ packages:
       '@vue/compiler-sfc':
         optional: true
 
-  '@icons-pack/react-simple-icons@11.2.0':
-    resolution: {integrity: sha512-jCJ+1Fe0yiBQGYSfhx8QGU/9o27t8J4Hw3mxHEI9vohRltLSi5CaPzO2fCQcMNeTrAUAm4j+yaDuAutskiKRjA==}
+  '@icons-pack/react-simple-icons@12.0.0':
+    resolution: {integrity: sha512-7MqCY27RLQqzGAGYAcmsIIy/CU64TaFeTIFaFwEMkyeA6FWptg5AXWFm6UV9kvrCDwXYbzcWLz/cbhutLfcUUg==}
     peerDependencies:
       react: ^16.13 || ^17 || ^18 || ^19
 
@@ -4942,7 +4942,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@icons-pack/react-simple-icons@11.2.0(react@19.0.0)':
+  '@icons-pack/react-simple-icons@12.0.0(react@19.0.0)':
     dependencies:
       react: 19.0.0
 
