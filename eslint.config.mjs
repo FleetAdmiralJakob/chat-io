@@ -1,5 +1,3 @@
-/// <reference types="./eslint-types.d.ts" />
-
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { fixupConfigRules } from "@eslint/compat";
