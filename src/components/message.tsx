@@ -172,7 +172,7 @@ export const Message = ({
   });
 
   const checkClickPosition = (
-    e: React.MouseEvent | TouchEvent | MouseEvent,
+    e: React.MouseEvent | React.TouchEvent | TouchEvent | MouseEvent,
   ) => {
     const clickPosition =
       "touches" in e && e.touches[0]
@@ -300,6 +300,19 @@ export const Message = ({
     delay: 300,
   };
   const longPressEvent = useLongPress(onLongPress, defaultOptions);
+
+  const selectMessage = (
+    e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>,
+  ) => {
+    e.preventDefault();
+    if (
+      (message.type === "message" && message.deleted) ||
+      message.type !== "message"
+    )
+      return;
+    checkClickPosition(e);
+    setSelectedMessageId(message._id);
+  };
 
   return (
     <div className="flex" ref={ref}>
@@ -477,20 +490,17 @@ export const Message = ({
           <EditedLabel message={message} />
           <ReplyToMessage message={message} scrollToMessage={scrollToMessage} />
           <div
-            {...longPressEvent}
+            {...(isMobile ? longPressEvent : {})}
             ref={(ref) => {
               refsContextModal.setReference(ref);
               refsEmojiPickerQuickReaction.setReference(ref);
             }}
-            onContextMenu={(e) => {
-              e.preventDefault();
-              if (
-                (message.type === "message" && message.deleted) ||
-                message.type !== "message"
-              )
-                return;
-              checkClickPosition(e);
-              setSelectedMessageId(message._id);
+            onContextMenu={selectMessage}
+            onClick={(e) => {
+              // We need this for users with new macs
+              if (e.ctrlKey) {
+                selectMessage(e);
+              }
             }}
             id={`message-${message._id}`}
             className={cn(
@@ -652,20 +662,17 @@ export const Message = ({
           <EditedLabel message={message} />
           <ReplyToMessage message={message} scrollToMessage={scrollToMessage} />
           <div
-            {...longPressEvent}
+            {...(isMobile ? longPressEvent : {})}
             ref={(ref) => {
               refsContextModal.setReference(ref);
               refsEmojiPickerQuickReaction.setReference(ref);
             }}
-            onContextMenu={(e) => {
-              e.preventDefault();
-              if (
-                (message.type === "message" && message.deleted) ||
-                message.type !== "message"
-              )
-                return;
-              checkClickPosition(e);
-              setSelectedMessageId(message._id);
+            onContextMenu={selectMessage}
+            onClick={(e) => {
+              // We need this for users with new macs
+              if (e.ctrlKey) {
+                selectMessage(e);
+              }
             }}
             id={`message-${message._id}`}
             className={cn(
