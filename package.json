@@ -39,7 +39,7 @@
     "babel-plugin-react-compiler": "19.0.0-beta-e552027-20250112",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
-    "convex": "^1.19.0",
+    "convex": "^1.19.5",
     "convex-ents": "^0.13.0",
     "convex-helpers": "^0.1.71",
     "dayjs": "^1.11.13",
