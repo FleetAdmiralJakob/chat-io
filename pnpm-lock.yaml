@@ -148,7 +148,7 @@ importers:
         version: 10.0.1(react@19.0.0)
       react-scan:
         specifier: ^0.2.0
-        version: 0.2.8(next@15.2.0(@babel/core@7.26.9)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@19.0.0-beta-e552027-20250112)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rollup@3.29.5)
+        version: 0.2.9(next@15.2.0(@babel/core@7.26.9)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@19.0.0-beta-e552027-20250112)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rollup@3.29.5)
       sonner:
         specifier: ^2.0.0
         version: 2.0.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -3435,9 +3435,6 @@ packages:
       rrweb-snapshot:
         optional: true
 
-  preact@10.26.3:
-    resolution: {integrity: sha512-OJCfNTdttkOTCbTN+gCnXn/woDqz1dIjvP+gdCoYGP2kKuX6w79FAP8qgY/r7jgAunvqHVVmEOKzKOFWzrXZdw==}
-
   preact@10.26.4:
     resolution: {integrity: sha512-KJhO7LBFTjP71d83trW+Ilnjbo+ySsaAgCfXOXUlmGzJ4ygYPWmysm77yg4emwfmoz3b22yvH5IsVFHbhUaH5w==}
 
@@ -3596,8 +3593,8 @@ packages:
     peerDependencies:
       react: '>=16.8.0'
 
-  react-scan@0.2.8:
-    resolution: {integrity: sha512-+6Gvu9b0UMmzV0JkigA7Y2YcjQABiNrweP9l9j8nrutN5OAYLRe4JgfwiUohPFngMD+Y6I5N0kW+okXhvVLGUw==}
+  react-scan@0.2.9:
+    resolution: {integrity: sha512-vH1yyOMMl4mKEh4OLRSrpZU2i95MW5RvBKl1+9nB2sf5fxjzdsf/LUkPuLdR69HD8cyRusCPftiu/4W1xKPvtg==}
     hasBin: true
     peerDependencies:
       '@remix-run/react': '>=1.0.0'
@@ -5116,10 +5113,10 @@ snapshots:
 
   '@preact/signals-core@1.8.0': {}
 
-  '@preact/signals@1.3.2(preact@10.26.3)':
+  '@preact/signals@1.3.2(preact@10.26.4)':
     dependencies:
       '@preact/signals-core': 1.8.0
-      preact: 10.26.3
+      preact: 10.26.4
 
   '@prisma/instrumentation@6.4.1(@opentelemetry/api@1.9.0)':
     dependencies:
@@ -7558,8 +7555,6 @@ snapshots:
     optionalDependencies:
       '@rrweb/types': 2.0.0-alpha.17
 
-  preact@10.26.3: {}
-
   preact@10.26.4: {}
 
   prelude-ls@1.2.1: {}
@@ -7651,7 +7646,7 @@ snapshots:
       react: 19.0.0
       shallow-equal: 3.1.0
 
-  react-scan@0.2.8(next@15.2.0(@babel/core@7.26.9)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@19.0.0-beta-e552027-20250112)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rollup@3.29.5):
+  react-scan@0.2.9(next@15.2.0(@babel/core@7.26.9)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@19.0.0-beta-e552027-20250112)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rollup@3.29.5):
     dependencies:
       '@babel/core': 7.26.9
       '@babel/generator': 7.26.9
@@ -7659,7 +7654,7 @@ snapshots:
       '@clack/core': 0.3.5
       '@clack/prompts': 0.8.2
       '@pivanov/utils': 0.0.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
-      '@preact/signals': 1.3.2(preact@10.26.3)
+      '@preact/signals': 1.3.2(preact@10.26.4)
       '@rollup/pluginutils': 5.1.4(rollup@3.29.5)
       '@types/node': 20.17.23
       bippy: 0.2.7
@@ -7668,7 +7663,7 @@ snapshots:
       kleur: 4.1.5
       mri: 1.2.0
       playwright: 1.50.1
-      preact: 10.26.3
+      preact: 10.26.4
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
       tsx: 4.19.3
