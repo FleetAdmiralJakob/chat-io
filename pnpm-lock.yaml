@@ -148,7 +148,7 @@ importers:
         version: 10.0.1(react@19.0.0)
       react-scan:
         specifier: ^0.2.0
-        version: 0.2.11(@types/react@19.0.10)(next@15.2.1(@babel/core@7.26.9)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@19.0.0-beta-e552027-20250112)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rollup@4.34.9)
+        version: 0.2.12(@types/react@19.0.10)(next@15.2.1(@babel/core@7.26.9)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@19.0.0-beta-e552027-20250112)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rollup@4.34.9)
       sonner:
         specifier: ^2.0.0
         version: 2.0.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -2198,8 +2198,8 @@ packages:
     resolution: {integrity: sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==}
     engines: {node: '>=8'}
 
-  bippy@0.3.7:
-    resolution: {integrity: sha512-nY9cP//b0SbEHmcsAogMZicomKz0arc4jT9o17E73vFVFyen+jkV/bzHHq4USRNgcYrpYn/M8FUbJuxlTLX2Tg==}
+  bippy@0.3.8:
+    resolution: {integrity: sha512-0ou8fJWxUXK/+eRjUz5unbtX8Mrn0OYRs6QQwwUJtU6hsFDTSmSeI1fJC/2nrPA4G6GWcxwT+O6TbHyGhl4fEg==}
     peerDependencies:
       react: '>=17.0.1'
 
@@ -3695,8 +3695,8 @@ packages:
     peerDependencies:
       react: '>=16.8.0'
 
-  react-scan@0.2.11:
-    resolution: {integrity: sha512-OmegFVpSStAt0AshttcI6hWLocb97VPrGLTWJzGX5YiK79vT8KHExnKKmeEzqX9nJef8R/6XTYrKzWcQwAVCnw==}
+  react-scan@0.2.12:
+    resolution: {integrity: sha512-CLdbRWYXWpU0ohqb39l5MO6/imZuA3exxNWOiEpzYyM0gpsVTWI//65KrYwCmEyp5GKLkIPy1ykU00QhwfLNpQ==}
     hasBin: true
     peerDependencies:
       '@remix-run/react': '>=1.0.0'
@@ -6292,7 +6292,7 @@ snapshots:
 
   binary-extensions@2.3.0: {}
 
-  bippy@0.3.7(@types/react@19.0.10)(react@19.0.0):
+  bippy@0.3.8(@types/react@19.0.10)(react@19.0.0):
     dependencies:
       '@types/react-reconciler': 0.28.9(@types/react@19.0.10)
       react: 19.0.0
@@ -7814,7 +7814,7 @@ snapshots:
       react: 19.0.0
       shallow-equal: 3.1.0
 
-  react-scan@0.2.11(@types/react@19.0.10)(next@15.2.1(@babel/core@7.26.9)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@19.0.0-beta-e552027-20250112)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rollup@4.34.9):
+  react-scan@0.2.12(@types/react@19.0.10)(next@15.2.1(@babel/core@7.26.9)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@19.0.0-beta-e552027-20250112)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rollup@4.34.9):
     dependencies:
       '@babel/core': 7.26.9
       '@babel/generator': 7.26.9
@@ -7825,7 +7825,7 @@ snapshots:
       '@preact/signals': 1.3.2(preact@10.26.4)
       '@rollup/pluginutils': 5.1.4(rollup@4.34.9)
       '@types/node': 20.17.23
-      bippy: 0.3.7(@types/react@19.0.10)(react@19.0.0)
+      bippy: 0.3.8(@types/react@19.0.10)(react@19.0.0)
       esbuild: 0.24.2
       estree-walker: 3.0.3
       kleur: 4.1.5
