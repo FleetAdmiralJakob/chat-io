@@ -483,6 +483,25 @@ export const Message = ({
         >
           <EditedLabel message={message} />
           <ReplyToMessage message={message} scrollToMessage={scrollToMessage} />
+          <div className="text- text-[75%] italic text-destructive-foreground">
+            {message.type == "message" ? (
+              message.forwarded == undefined ? (
+                ""
+              ) : message.forwarded < 1 ? (
+                ""
+              ) : message.forwarded == 1 ? (
+                <div className="flex">
+                  Forwarded <Forward className="h-4" />
+                </div>
+              ) : (
+                <div className="flex">
+                  Frequently Forwarded <Forward className="h-4" />
+                </div>
+              )
+            ) : (
+              ""
+            )}
+          </div>
           <div
             {...longPressEvent}
             ref={(ref) => {

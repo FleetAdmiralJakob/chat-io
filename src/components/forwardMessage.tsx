@@ -60,24 +60,29 @@ export const ForwardDialog = ({
   const onForwardSubmit = async (forwardObjects: ForwardUser[]) => {
     await forwardMessage({ messageId: ForwardedMessageId, forwardObjects });
     setForwardedMessageId("");
+    setChatsToForwardTo([]);
+  };
+
+  const closeDialog = () => {
+    setForwardedMessageId("");
+    setChatsToForwardTo([]);
   };
 
   return (
     <Dialog
-      onOpenChange={(e) => (!e ? setForwardedMessageId("") : null)}
+      onOpenChange={(e) => (!e ? closeDialog() : null)}
       open={ForwardedMessageId !== ""}
     >
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle className="flex">
             <p className="mt-1">Fordward</p>{" "}
-            <Forward className="ml-2.5 align-top" />
           </DialogTitle>
           <DialogDescription>Select a user to forward them.</DialogDescription>
         </DialogHeader>
         <div
           className={cn(
-            "grid",
+            "grid max-h-72 overflow-auto",
             chats === undefined ? "flex justify-center" : null,
           )}
         >
@@ -96,7 +101,7 @@ export const ForwardDialog = ({
                       })
                     }
                     key={index}
-                    className="flex cursor-pointer rounded-xl bg-secondary p-5"
+                    className="mt-4 flex cursor-pointer rounded-xl bg-secondary p-5"
                   >
                     <Checkbox
                       checked={

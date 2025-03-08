@@ -150,6 +150,7 @@ export const createMessage = mutation({
       readBy: [convexUser._id],
       modified: false,
       replyTo: args.replyToId,
+      forwarded: 0,
     });
   },
 });
@@ -330,7 +331,7 @@ export const forwardMessage = mutation({
         deleted: false,
         readBy: [user._id],
         modified: false,
-        replyTo: message.replyTo,
+        forwarded: message.forwarded + 1,
       });
     }
   },
