@@ -92,10 +92,10 @@
   "ct3aMetadata": {
     "initVersion": "7.30.0"
   },
-  "packageManager": "pnpm@10.6.4",
+  "packageManager": "pnpm@10.6.5",
   "engineStrict": true,
   "engines": {
-    "pnpm": "10.6.4"
+    "pnpm": "10.6.5"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
