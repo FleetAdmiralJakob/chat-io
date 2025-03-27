@@ -174,6 +174,80 @@ const useScrollBehavior = (
   };
 };
 
+interface MessageContextProps {
+  replyToMessageId?: Id<"messages">;
+  editingMessageId: Id<"messages"> | null;
+  messages: FunctionReturnType<typeof api.messages.getMessages> | undefined;
+  setReplyToMessageId: (id: undefined) => void;
+  scrollToMessage: (messageId: Id<"messages">) => void;
+}
+
+const MessageContext: React.FC<MessageContextProps> = ({
+  replyToMessageId,
+  editingMessageId,
+  messages,
+  setReplyToMessageId,
+  scrollToMessage,
+}) => {
+  if (!replyToMessageId && !editingMessageId) return null;
+
+  const message = messages?.find(
+    (msg) => msg._id === (replyToMessageId ?? editingMessageId),
+  );
+
+  if (!message || message.type !== "message") return null;
+
+  const isEditing = Boolean(editingMessageId);
+  const contextText = isEditing ? "Editing message:" : "Replying to:";
+  const handleClose = () => {
+    setReplyToMessageId(undefined);
+  };
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0, translateY: 70 }}
+        animate={{ opacity: 1, translateY: 0 }}
+        exit={{ opacity: 0, translateY: 70 }}
+        transition={{ duration: 0.5 }}
+      >
+        <div
+          onMouseDown={() => {
+            scrollToMessage(message._id);
+          }}
+          className="relative m-4 mb-2 cursor-pointer rounded-lg border border-secondary-foreground bg-secondary p-2"
+        >
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-destructive-foreground">{contextText}</p>
+          </div>
+          <button
+            className={cn(
+              "absolute right-4 top-1/2 flex h-8 w-8 -translate-y-1/2 transform cursor-pointer items-center justify-center rounded-sm border-2 border-secondary-foreground bg-primary p-1 lg:h-10 lg:w-10 lg:p-2",
+              editingMessageId ? "hidden" : "",
+            )}
+            onMouseDown={(e) => {
+              e.stopPropagation();
+              handleClose();
+            }}
+            aria-label="Cancel reply"
+            onKeyDown={(e) => {
+              if (e.key === "Escape") {
+                handleClose();
+              }
+            }}
+          >
+            <X className="h-4 w-4" />
+          </button>
+
+          <p className="text-sm">
+            <strong>{message.from.username}</strong>: {message.content}
+          </p>
+        </div>
+      </motion.div>
+    </AnimatePresence>
+  );
+};
+
 export default function Page() {
   const params = useParams<{ chatId: string }>();
   const [progress, setProgress] = React.useState(13);
@@ -706,58 +780,13 @@ export default function Page() {
 
           <div className="flex w-full items-center justify-start">
             <div className="flex w-full flex-col gap-2">
-              <AnimatePresence>
-                {replyToMessageId && (
-                  <motion.div
-                    initial={{ opacity: 0, translateY: 70 }}
-                    animate={{ opacity: 1, translateY: 0 }}
-                    exit={{ opacity: 0, translateY: 70 }}
-                    transition={{ duration: 0.5 }}
-                  >
-                    <div
-                      onMouseDown={() => {
-                        scrollToMessage(replyToMessageId);
-                      }}
-                      className="relative m-4 mb-2 cursor-pointer rounded-lg border border-secondary-foreground bg-secondary p-2"
-                    >
-                      <div className="flex items-center justify-between">
-                        <p className="text-sm text-destructive-foreground">
-                          Replying to:
-                        </p>
-                      </div>
-                      <button
-                        className="absolute right-4 top-1/2 flex h-8 w-8 -translate-y-1/2 transform cursor-pointer items-center justify-center rounded-sm border-2 border-secondary-foreground bg-primary p-1 lg:h-10 lg:w-10 lg:p-2"
-                        onMouseDown={(e) => {
-                          e.stopPropagation(); // This prevents the parent's onMouseDown from firing
-                          setReplyToMessageId(undefined);
-                        }}
-                        aria-label="Cancel reply"
-                        onKeyDown={(e) => {
-                          if (e.key === "Escape") {
-                            setReplyToMessageId(undefined);
-                          }
-                        }}
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-
-                      <p className="text-sm">
-                        {(() => {
-                          const message = messages.data?.find(
-                            (msg) => msg._id === replyToMessageId,
-                          );
-                          return message?.type === "message" ? (
-                            <>
-                              <strong>{message.from.username}</strong>:{" "}
-                              {message.content}
-                            </>
-                          ) : null;
-                        })()}
-                      </p>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              <MessageContext
+                replyToMessageId={replyToMessageId}
+                editingMessageId={editingMessageId}
+                messages={messages.data}
+                setReplyToMessageId={setReplyToMessageId}
+                scrollToMessage={scrollToMessage}
+              />
               <div className="z-10 flex w-full justify-between gap-8 bg-primary p-4 pb-10 lg:pb-4">
                 <Form {...textMessageForm}>
                   <form
