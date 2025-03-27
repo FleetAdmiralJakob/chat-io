@@ -19,7 +19,7 @@ import { Id } from "../../convex/_generated/dataModel";
 
 interface ForwardDialogProps {
   ForwardedMessageId: string;
-  setForwardedMessageId: Dispatch<SetStateAction<string>>;
+  setForwardedMessageId: Dispatch<SetStateAction<Id<"messages"> | "">>;
   chats: Chats | undefined;
   userInfos: UserInfos;
 }

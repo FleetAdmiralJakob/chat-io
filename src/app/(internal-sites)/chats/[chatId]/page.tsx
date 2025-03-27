@@ -228,6 +228,7 @@ export default function Page() {
         _creationTime: now,
         content,
         deleted: false,
+        forwarded: 0,
         type: "message",
         privateChatId: chatId,
         from: userInfo.data,
