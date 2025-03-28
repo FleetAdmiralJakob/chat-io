@@ -2,7 +2,9 @@ import { useUser } from "@clerk/nextjs";
 import { useFloating, type ReferenceType } from "@floating-ui/react";
 import { useLongPress } from "@reactuses/core";
 import { useQueryWithStatus } from "~/app/convex-client-provider";
+import { ForwardDialog } from "~/components/forwardMessage";
 import { cn } from "~/lib/utils";
+import { useQuery } from "convex-helpers/react/cache/hooks";
 import { useMutation } from "convex/react";
 import { type FunctionReturnType } from "convex/server";
 import dayjs from "dayjs";
@@ -20,6 +22,7 @@ import {
   Reply,
   Trash2,
 } from "lucide-react";
+import { parseAsString, useQueryState } from "nuqs";
 import React, { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useInView } from "react-intersection-observer";
@@ -276,6 +279,16 @@ export const Message = ({
     );
   };
 
+  const [ForwardedMessageId, setForwardedMessageId] = useQueryState(
+    // It is used to show if the forward dialog should be shown. If the string is empty the dialog should be not shown if there is an id inside it should
+    "forward",
+    parseAsString.withDefault(""),
+  );
+
+  const handleForward = () => {
+    void setForwardedMessageId(message._id);
+  };
+
   const replyToMessageHandler = (messageId: Id<"messages">) => {
     setReplyToMessageId(messageId);
     setSelectedMessageId(null);
@@ -300,6 +313,7 @@ export const Message = ({
     delay: 300,
   };
   const longPressEvent = useLongPress(onLongPress, defaultOptions);
+  const existingChats = useQuery(api.chats.getChats);
 
   return (
     <div className="flex" ref={ref}>
@@ -476,6 +490,25 @@ export const Message = ({
         >
           <EditedLabel message={message} />
           <ReplyToMessage message={message} scrollToMessage={scrollToMessage} />
+          <div className="text- text-[75%] italic text-destructive-foreground">
+            {message.type == "message" ? (
+              message.forwarded == undefined ? (
+                ""
+              ) : message.forwarded < 1 ? (
+                ""
+              ) : message.forwarded == 1 ? (
+                <div className="flex">
+                  Forwarded <Forward className="h-4" />
+                </div>
+              ) : (
+                <div className="flex">
+                  Frequently Forwarded <Forward className="h-4" />
+                </div>
+              )
+            ) : (
+              ""
+            )}
+          </div>
           <div
             {...longPressEvent}
             ref={(ref) => {
@@ -596,10 +629,21 @@ export const Message = ({
                         <Reply />
                         <p className="ml-1">Reply</p>
                       </button>
-                      <div className="flex w-full cursor-pointer border-t-2 border-secondary-foreground p-2 pr-8">
+                      <button
+                        className="flex w-full cursor-pointer border-t-2 border-secondary-foreground p-2 pr-8"
+                        onClick={() => {
+                          handleForward();
+                        }}
+                      >
                         <Forward />
                         <p className="ml-1">Forward</p>
-                      </div>
+                      </button>
+                      <ForwardDialog
+                        ForwardedMessageId={ForwardedMessageId}
+                        setForwardedMessageId={setForwardedMessageId}
+                        chats={existingChats}
+                        userInfos={userInfos}
+                      />
                       <button
                         className="flex w-full cursor-pointer border-y-2 border-secondary-foreground p-2 pr-8"
                         onClick={() => {
@@ -775,10 +819,21 @@ export const Message = ({
                         <Reply />
                         <p className="ml-1">Reply</p>
                       </button>
-                      <div className="flex w-full cursor-pointer border-b-2 border-secondary-foreground p-2 pr-8">
+                      <div
+                        onClick={() => {
+                          handleForward();
+                        }}
+                        className="flex w-full cursor-pointer border-b-2 border-secondary-foreground p-2 pr-8"
+                      >
                         <Forward />
                         <p className="ml-1">Forward</p>
                       </div>
+                      <ForwardDialog
+                        ForwardedMessageId={ForwardedMessageId}
+                        setForwardedMessageId={setForwardedMessageId}
+                        chats={existingChats}
+                        userInfos={userInfos}
+                      />
                       <div className="flex p-2 pr-8 text-secondary-foreground">
                         <Info />
                         <p className="ml-1">{sentInfo()}</p>

@@ -150,6 +150,7 @@ export const createMessage = mutation({
       readBy: [convexUser._id],
       modified: false,
       replyTo: args.replyToId,
+      forwarded: 0,
     });
   },
 });
@@ -273,6 +274,66 @@ export const markMessageRead = mutation({
     }
 
     return { success: true };
+  },
+});
+
+export const forwardMessage = mutation({
+  args: {
+    forwardObjects: v.array(
+      v.object({
+        username: v.string(),
+        userId: v.string(),
+        chatId: v.id("privateChats"),
+      }),
+    ),
+
+    messageId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (identity === null) {
+      console.error("Unauthenticated call to mutation");
+      return null;
+    }
+
+    for (const forwardObject of args.forwardObjects) {
+      const chat = await ctx.table("privateChats").getX(forwardObject.chatId);
+
+      const usersInChat = await chat.edge("users");
+
+      const user = usersInChat.find(
+        (user) => user.clerkId === identity.tokenIdentifier,
+      );
+
+      if (!user) {
+        throw new ConvexError(
+          "UNAUTHORIZED REQUEST: User tried to forward a message to a chat in which he is not in.",
+        );
+      }
+
+      const parsedMessageId = ctx.table("messages").normalizeId(args.messageId);
+
+      if (!parsedMessageId) {
+        throw new ConvexError("messageId was invalid");
+      }
+
+      const message = await ctx.table("messages").getX(parsedMessageId);
+
+      if (!message) {
+        throw new ConvexError("Message does not exist");
+      }
+
+      await ctx.table("messages").insert({
+        userId: user._id,
+        privateChatId: forwardObject.chatId,
+        content: message.content,
+        deleted: false,
+        readBy: [user._id],
+        modified: false,
+        forwarded: message.forwarded + 1,
+      });
+    }
   },
 });
 
