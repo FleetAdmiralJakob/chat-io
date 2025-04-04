@@ -130,7 +130,7 @@ importers:
         version: 2.4.1(next@15.2.4(@babel/core@7.26.10)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@19.0.0-beta-e993439-20250328)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)
       posthog-js:
         specifier: ^1.195.0
-        version: 1.234.4
+        version: 1.234.9
       react:
         specifier: ^19.0.0
         version: 19.1.0
@@ -1914,6 +1914,9 @@ packages:
   '@types/node@22.13.14':
     resolution: {integrity: sha512-Zs/Ollc1SJ8nKUAgc7ivOEdIBM8JAKgrqqUYi2J997JuKO7/tpQC+WCetQ1sypiKCQWHdvdg9wBNpUPEWZae7w==}
 
+  '@types/node@22.14.0':
+    resolution: {integrity: sha512-Kmpl+z84ILoG+3T/zQFyAJsU6EPTmOCj8/2+83fSN6djd6I4o7uOuGIH6vq3PrjY5BGitSbFuMN18j3iknubbA==}
+
   '@types/pg-pool@2.0.6':
     resolution: {integrity: sha512-TaAUE5rq2VQYxab5Ts7WZhKNmuN78Q6PiFonTDdpbx8a1H0M1vhy3rhiMjl+e2iHmogyMw7jZF4FrE6eJUy5HQ==}
 
@@ -3587,8 +3590,8 @@ packages:
     resolution: {integrity: sha512-9ZhXKM/rw350N1ovuWHbGxnGh/SNJ4cnxHiM0rxE4VN41wsg8P8zWn9hv/buK00RP4WvlOyr/RBDiptyxVbkZQ==}
     engines: {node: '>=0.10.0'}
 
-  posthog-js@1.234.4:
-    resolution: {integrity: sha512-IH7ISmm7SP+GYeCJ+RjlBnA9AtmbT6W/mZUW/ca/erHNb1EE1K3//IzDGyGYs7dT26b/HH9Z9kdO51h7PVSi6w==}
+  posthog-js@1.234.9:
+    resolution: {integrity: sha512-Qxpg9YOlLa59lbkYcONZ9efmB6KTgkePnkhCTSnKIyUd826cs4J6VDTKHu+V/lugRtWLWB9R7CckvFE8QPaTbg==}
     peerDependencies:
       '@rrweb/types': 2.0.0-alpha.17
       rrweb-snapshot: 2.0.0-alpha.17
@@ -4209,6 +4212,9 @@ packages:
 
   undici-types@6.20.0:
     resolution: {integrity: sha512-Ny6QZ2Nju20vw1SRHe3d9jVu6gJ+4e3+MMpqu7pqE5HT6WsTSlce++GQmK5UXS8mzV8DSYHrQH+Xrf2jVcuKNg==}
+
+  undici-types@6.21.0:
+    resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
 
   unplugin@1.0.1:
     resolution: {integrity: sha512-aqrHaVBWW1JVKBHmGo33T5TxeL0qWzfvjWokObHA9bYmN7eNDkwOxmLjhioHl9878qDFMAaT51XNroRyuz7WxA==}
@@ -5975,6 +5981,10 @@ snapshots:
     dependencies:
       undici-types: 6.20.0
 
+  '@types/node@22.14.0':
+    dependencies:
+      undici-types: 6.21.0
+
   '@types/pg-pool@2.0.6':
     dependencies:
       '@types/pg': 8.6.1
@@ -7376,7 +7386,7 @@ snapshots:
 
   jest-worker@27.5.1:
     dependencies:
-      '@types/node': 22.13.14
+      '@types/node': 22.14.0
       merge-stream: 2.0.0
       supports-color: 8.1.1
 
@@ -7796,7 +7806,7 @@ snapshots:
     dependencies:
       xtend: 4.0.2
 
-  posthog-js@1.234.4:
+  posthog-js@1.234.9:
     dependencies:
       core-js: 3.41.0
       fflate: 0.4.8
@@ -8474,6 +8484,8 @@ snapshots:
   undici-types@6.19.8: {}
 
   undici-types@6.20.0: {}
+
+  undici-types@6.21.0: {}
 
   unplugin@1.0.1:
     dependencies:
