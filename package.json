@@ -35,7 +35,7 @@
     "@radix-ui/react-tooltip": "^1.1.4",
     "@reactuses/core": "^6.0.0",
     "@sentry/nextjs": "^9.0.0",
-    "@serwist/next": "9.0.12",
+    "@serwist/next": "9.0.14",
     "@t3-oss/env-nextjs": "^0.12.0",
     "babel-plugin-react-compiler": "19.0.0-beta-e993439-20250328",
     "class-variance-authority": "^0.7.0",
