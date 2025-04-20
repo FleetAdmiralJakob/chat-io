@@ -127,7 +127,7 @@ importers:
         version: 7.0.2
       nuqs:
         specifier: ^2.3.1
-        version: 2.4.1(next@15.2.4(@babel/core@7.26.10)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@19.0.0-beta-e993439-20250328)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)
+        version: 2.4.3(next@15.2.4(@babel/core@7.26.10)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@19.0.0-beta-e993439-20250328)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)
       posthog-js:
         specifier: ^1.195.0
         version: 1.234.10
@@ -3544,8 +3544,8 @@ packages:
     engines: {node: ^18.17.0 || >=20.5.0, npm: '>= 9'}
     hasBin: true
 
-  nuqs@2.4.1:
-    resolution: {integrity: sha512-u6sngTspqDe3jWHtcmqHQg3dl35niizCZAsm5gy7PBlgG2rwl71Dp2QUv5hwBaWKI9qz0wqILZY86TsRxq66SQ==}
+  nuqs@2.4.3:
+    resolution: {integrity: sha512-BgtlYpvRwLYiJuWzxt34q2bXu/AIS66sLU1QePIMr2LWkb+XH0vKXdbLSgn9t6p7QKzwI7f38rX3Wl9llTXQ8Q==}
     peerDependencies:
       '@remix-run/react': '>=2'
       next: '>=14.2.0'
@@ -7898,7 +7898,7 @@ snapshots:
       shell-quote: 1.8.2
       which: 5.0.0
 
-  nuqs@2.4.1(next@15.2.4(@babel/core@7.26.10)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@19.0.0-beta-e993439-20250328)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0):
+  nuqs@2.4.3(next@15.2.4(@babel/core@7.26.10)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@19.0.0-beta-e993439-20250328)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0):
     dependencies:
       mitt: 3.0.1
       react: 19.1.0
