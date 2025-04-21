@@ -82,7 +82,7 @@
     "autoprefixer": "^10.4.20",
     "eslint": "9.25.0",
     "eslint-config-next": "^15.0.3",
-    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-hooks": "^6.0.0",
     "postcss": "^8.4.49",
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.8",
