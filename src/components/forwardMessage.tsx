@@ -76,13 +76,13 @@ export const ForwardDialog = ({
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle className="flex">
-            <p className="mt-1">Fordward</p>{" "}
+            <p className="mt-1">Forward</p>{" "}
           </DialogTitle>
           <DialogDescription>Select a user to forward them.</DialogDescription>
         </DialogHeader>
         <div
           className={cn(
-            "grid max-h-72 overflow-auto",
+            "grid max-h-72 gap-4 overflow-auto",
             chats === undefined ? "flex justify-center" : null,
           )}
         >
@@ -131,7 +131,7 @@ export const ForwardDialog = ({
                       }
                       key={index}
                       className={cn(
-                        "mt-4 flex cursor-pointer rounded-xl bg-secondary p-5",
+                        "flex cursor-pointer rounded-xl bg-secondary p-5",
                         user.username == userInfos[0]?.username
                           ? "h-0 p-0"
                           : null,
