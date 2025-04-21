@@ -146,11 +146,28 @@ export const Message = ({
       localStore.setQuery(
         api.messages.getMessages,
         { chatId },
-        existingMessages.map((message) =>
-          message._id === messageId
-            ? { ...message, deleted: true, reactions: [] }
-            : message,
-        ),
+        existingMessages.map((message) => {
+          if (
+            message.type == "message" &&
+            message.replyTo &&
+            message.replyTo._id == messageId
+          ) {
+            return {
+              ...message,
+              replyTo: { ...message.replyTo, deleted: true },
+            };
+          }
+
+          if (message._id === messageId) {
+            return {
+              ...message,
+              content: "",
+              deleted: true,
+              reactions: [],
+            };
+          }
+          return message;
+        }),
       );
 
       localStore.setQuery(
