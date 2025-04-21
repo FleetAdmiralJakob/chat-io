@@ -58,15 +58,20 @@ export const ForwardDialog = ({
   };
 
   const onForwardSubmit = async (forwardObjects: ForwardUser[]) => {
+    setLoading(true);
     await forwardMessage({ messageId: ForwardedMessageId, forwardObjects });
     setForwardedMessageId("");
     setChatsToForwardTo([]);
+    setLoading(false);
   };
 
   const closeDialog = () => {
     setForwardedMessageId("");
     setChatsToForwardTo([]);
+    setLoading(false);
   };
+
+  const [loading, setLoading] = useState(false);
 
   return (
     <Dialog
@@ -167,9 +172,18 @@ export const ForwardDialog = ({
           onClick={async () => {
             await onForwardSubmit(chatsToForwardTo);
           }}
-          disabled={chatsToForwardTo.length == 0}
+          disabled={chatsToForwardTo.length == 0 || loading}
         >
-          <p>Forward</p> <Forward className="ml-1 p-0.5" />
+          <p>
+            {!loading ? (
+              "Forward"
+            ) : (
+              <div className="flex">
+                <LoaderCircle className="mr-1.5 animate-spin p-0.5" />
+                <p className="mt-0.5">Processing...</p>
+              </div>
+            )}
+          </p>
         </Button>
       </DialogContent>
     </Dialog>
