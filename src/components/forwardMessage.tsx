@@ -101,7 +101,7 @@ export const ForwardDialog = ({
                       })
                     }
                     key={index}
-                    className="mt-4 flex cursor-pointer rounded-xl bg-secondary p-5"
+                    className="flex cursor-pointer rounded-xl bg-secondary p-5"
                   >
                     <Checkbox
                       checked={
