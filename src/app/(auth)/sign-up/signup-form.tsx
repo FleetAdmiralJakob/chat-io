@@ -35,6 +35,7 @@ export function SignUpForm() {
   const [signUpComplete, setSignUpComplete] = React.useState(false);
   const [loadingSignOut, setLoadingSignOut] = React.useState(false);
   const { toast } = useToast();
+  const clerkUser = useUser();
 
   const { isLoaded, signIn, setActive } = useSignIn();
 
@@ -68,8 +69,8 @@ export function SignUpForm() {
   async function onSubmit(values: z.infer<typeof formSchemaSignUp>) {
     if (isAuthenticated || isLoading) {
       toast({
-        title: "You are already signed in as .",
-        description: "Do you want to sign out or forwarded?",
+        title: "You are already signed in as " + clerkUser.user?.username + ".",
+        description: "Do you want to sign out or be forwarded?",
         action: (
           <div className="flex justify-between">
             <SignOutButton>
