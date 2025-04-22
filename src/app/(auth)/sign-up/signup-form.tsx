@@ -1,6 +1,6 @@
 "use client";
 
-import { useSignIn } from "@clerk/nextjs";
+import { SignOutButton, useSignIn, useUser } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "~/components/ui/button";
 import {
@@ -13,6 +13,8 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
+import { Toaster } from "~/components/ui/toaster";
+import { useToast } from "~/hooks/use-toast";
 import { cn } from "~/lib/utils";
 import { formSchemaSignUp } from "~/lib/validators";
 import { useConvexAuth, useMutation } from "convex/react";
@@ -31,6 +33,8 @@ const signUpResponseSchema = z.object({
 export function SignUpForm() {
   const [formIsLoading, setFormIsLoading] = React.useState(false);
   const [signUpComplete, setSignUpComplete] = React.useState(false);
+  const [loadingSignOut, setLoadingSignOut] = React.useState(false);
+  const { toast } = useToast();
 
   const { isLoaded, signIn, setActive } = useSignIn();
 
@@ -63,7 +67,38 @@ export function SignUpForm() {
 
   async function onSubmit(values: z.infer<typeof formSchemaSignUp>) {
     if (isAuthenticated || isLoading) {
-      // TODO: Make a toast or something to tell the user has to sign out first
+      toast({
+        title: "You are already signed in as .",
+        description: "Do you want to sign out or forwarded?",
+        action: (
+          <div className="flex justify-between">
+            <SignOutButton>
+              <Button
+                disabled={loadingSignOut}
+                onClick={() => {
+                  setLoadingSignOut(true);
+                }}
+              >
+                {loadingSignOut ? (
+                  <>
+                    <LoaderCircle className="mr-1.5 animate-spin p-0.5" />{" "}
+                    Signing out...
+                  </>
+                ) : (
+                  "Sign out"
+                )}
+              </Button>
+            </SignOutButton>
+            <Button
+              onClick={() => {
+                router.push("/chats");
+              }}
+            >
+              Forward
+            </Button>
+          </div>
+        ),
+      });
       return;
     }
     setFormIsLoading(true);
@@ -137,6 +172,7 @@ export function SignUpForm() {
 
   return (
     <Form {...form}>
+      <Toaster />
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className="bg w-3/4 space-y-8 xl:w-5/12"
