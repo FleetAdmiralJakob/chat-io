@@ -576,7 +576,7 @@ export default function Page() {
       // Remove highlight after animation
       setTimeout(() => {
         setHighlightedMessageId(null);
-      }, 2000); // 2 seconds highlight duration
+      }, 2000); // 2-second highlight duration
     }
   }, []);
 
