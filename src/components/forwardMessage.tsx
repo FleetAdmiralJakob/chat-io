@@ -58,15 +58,20 @@ export const ForwardDialog = ({
   };
 
   const onForwardSubmit = async (forwardObjects: ForwardUser[]) => {
+    setLoading(true);
     await forwardMessage({ messageId: ForwardedMessageId, forwardObjects });
     setForwardedMessageId("");
     setChatsToForwardTo([]);
+    setLoading(false);
   };
 
   const closeDialog = () => {
     setForwardedMessageId("");
     setChatsToForwardTo([]);
+    setLoading(false);
   };
+
+  const [loading, setLoading] = useState(false);
 
   return (
     <Dialog
@@ -76,13 +81,13 @@ export const ForwardDialog = ({
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle className="flex">
-            <p className="mt-1">Fordward</p>{" "}
+            <p className="mt-1">Forward</p>{" "}
           </DialogTitle>
           <DialogDescription>Select a user to forward them.</DialogDescription>
         </DialogHeader>
         <div
           className={cn(
-            "grid max-h-72 overflow-auto",
+            "grid max-h-72 gap-4 overflow-auto",
             chats === undefined ? "flex justify-center" : null,
           )}
         >
@@ -101,7 +106,7 @@ export const ForwardDialog = ({
                       })
                     }
                     key={index}
-                    className="mt-4 flex cursor-pointer rounded-xl bg-secondary p-5"
+                    className="flex cursor-pointer rounded-xl bg-secondary p-5"
                   >
                     <Checkbox
                       checked={
@@ -131,7 +136,7 @@ export const ForwardDialog = ({
                       }
                       key={index}
                       className={cn(
-                        "mt-4 flex cursor-pointer rounded-xl bg-secondary p-5",
+                        "flex cursor-pointer rounded-xl bg-secondary p-5",
                         user.username == userInfos[0]?.username
                           ? "h-0 p-0"
                           : null,
@@ -167,9 +172,18 @@ export const ForwardDialog = ({
           onClick={async () => {
             await onForwardSubmit(chatsToForwardTo);
           }}
-          disabled={chatsToForwardTo.length == 0}
+          disabled={chatsToForwardTo.length == 0 || loading}
         >
-          <p>Forward</p> <Forward className="ml-1 p-0.5" />
+          <p>
+            {!loading ? (
+              "Forward"
+            ) : (
+              <div className="flex">
+                <LoaderCircle className="mr-1.5 animate-spin p-0.5" />
+                <p className="mt-0.5">Processing...</p>
+              </div>
+            )}
+          </p>
         </Button>
       </DialogContent>
     </Dialog>
