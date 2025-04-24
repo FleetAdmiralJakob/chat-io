@@ -2,6 +2,16 @@
 
 import { SignOutButton, useSignIn, useUser } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "~/components/login-dialog";
 import { Button } from "~/components/ui/button";
 import {
   Form,
@@ -13,8 +23,6 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
-import { Toaster } from "~/components/ui/toaster";
-import { useToast } from "~/hooks/use-toast";
 import { cn } from "~/lib/utils";
 import { formSchemaSignUp } from "~/lib/validators";
 import { useConvexAuth, useMutation } from "convex/react";
@@ -34,7 +42,7 @@ export function SignUpForm() {
   const [formIsLoading, setFormIsLoading] = React.useState(false);
   const [signUpComplete, setSignUpComplete] = React.useState(false);
   const [loadingSignOut, setLoadingSignOut] = React.useState(false);
-  const { toast } = useToast();
+  const [dialogOpen, setDialogOpen] = React.useState(false);
   const clerkUser = useUser();
 
   const { isLoaded, signIn, setActive } = useSignIn();
@@ -68,38 +76,7 @@ export function SignUpForm() {
 
   async function onSubmit(values: z.infer<typeof formSchemaSignUp>) {
     if (isAuthenticated || isLoading) {
-      toast({
-        title: "You are already signed in as " + clerkUser.user?.username + ".",
-        description: "Do you want to sign out or be forwarded?",
-        action: (
-          <div className="flex justify-between">
-            <SignOutButton>
-              <Button
-                disabled={loadingSignOut}
-                onClick={() => {
-                  setLoadingSignOut(true);
-                }}
-              >
-                {loadingSignOut ? (
-                  <>
-                    <LoaderCircle className="mr-1.5 animate-spin p-0.5" />{" "}
-                    Signing out...
-                  </>
-                ) : (
-                  "Sign out"
-                )}
-              </Button>
-            </SignOutButton>
-            <Button
-              onClick={() => {
-                router.push("/chats");
-              }}
-            >
-              Forward
-            </Button>
-          </div>
-        ),
-      });
+      setDialogOpen(true);
       return;
     }
     setFormIsLoading(true);
@@ -173,7 +150,52 @@ export function SignUpForm() {
 
   return (
     <Form {...form}>
-      <Toaster />
+      <AlertDialog
+        open={dialogOpen}
+        onOpenChange={() => {
+          setDialogOpen(!dialogOpen);
+        }}
+      >
+        {!loadingSignOut ? (
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                You are already signed in as {clerkUser.user?.username}.
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                Do you want to sign out or be forwarded?
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <SignOutButton>
+                <Button
+                  onClick={() => {
+                    setLoadingSignOut(true);
+                  }}
+                >
+                  Sign Out
+                </Button>
+              </SignOutButton>
+              <Button
+                className="mb-3 lg:mb-0"
+                onClick={() => {
+                  router.push("/chats");
+                }}
+              >
+                Forward
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        ) : dialogOpen ? (
+          <AlertDialogContent>
+            <div className="flex">
+              <LoaderCircle className="mr-1.5 animate-spin p-0.5" />
+              <span className="mt-0.5 text-sm">Signing out...</span>
+            </div>
+          </AlertDialogContent>
+        ) : null}
+      </AlertDialog>
+
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className="bg w-3/4 space-y-8 xl:w-5/12"
