@@ -182,7 +182,7 @@ export function SignUpForm() {
                   router.push("/chats");
                 }}
               >
-                Forward
+                Continue as {clerkUser.user?.username}
               </Button>
             </AlertDialogFooter>
           </AlertDialogContent>
