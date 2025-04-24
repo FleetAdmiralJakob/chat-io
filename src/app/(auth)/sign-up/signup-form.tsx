@@ -1,7 +1,15 @@
 "use client";
 
-import { useSignIn } from "@clerk/nextjs";
+import { SignOutButton, useSignIn, useUser } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "~/components/login-dialog";
 import { Button } from "~/components/ui/button";
 import {
   Form,
@@ -31,6 +39,9 @@ const signUpResponseSchema = z.object({
 export function SignUpForm() {
   const [formIsLoading, setFormIsLoading] = React.useState(false);
   const [signUpComplete, setSignUpComplete] = React.useState(false);
+  const [loadingSignOut, setLoadingSignOut] = React.useState(false);
+  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const clerkUser = useUser();
 
   const { isLoaded, signIn, setActive } = useSignIn();
 
@@ -63,7 +74,7 @@ export function SignUpForm() {
 
   async function onSubmit(values: z.infer<typeof formSchemaSignUp>) {
     if (isAuthenticated || isLoading) {
-      // TODO: Make a toast or something to tell the user has to sign out first
+      setDialogOpen(true);
       return;
     }
     setFormIsLoading(true);
@@ -137,6 +148,54 @@ export function SignUpForm() {
 
   return (
     <Form {...form}>
+      <AlertDialog
+        open={dialogOpen}
+        onOpenChange={() => {
+          setDialogOpen(!dialogOpen);
+        }}
+      >
+        {!loadingSignOut ? (
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                You are already signed in as {clerkUser.user?.username}.
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                Do you want to sign out or be forwarded?
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <SignOutButton>
+                <Button
+                  onClick={() => {
+                    setLoadingSignOut(true);
+                  }}
+                >
+                  Sign Out
+                </Button>
+              </SignOutButton>
+              <Button
+                className="mb-3 sm:w-44 lg:mb-0"
+                onClick={() => {
+                  router.push("/chats");
+                }}
+              >
+                <p className="w-48 truncate">
+                  Continue as {clerkUser.user?.username}
+                </p>
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        ) : dialogOpen ? (
+          <AlertDialogContent>
+            <div className="flex">
+              <LoaderCircle className="mr-1.5 animate-spin p-0.5" />
+              <span className="mt-0.5 text-sm">Signing out...</span>
+            </div>
+          </AlertDialogContent>
+        ) : null}
+      </AlertDialog>
+
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className="bg w-3/4 space-y-8 xl:w-5/12"
