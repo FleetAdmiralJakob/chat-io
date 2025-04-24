@@ -177,12 +177,14 @@ export function SignUpForm() {
                 </Button>
               </SignOutButton>
               <Button
-                className="mb-3 lg:mb-0"
+                className="mb-3 sm:w-44 lg:mb-0"
                 onClick={() => {
                   router.push("/chats");
                 }}
               >
-                Continue as {clerkUser.user?.username}
+                <p className="w-48 truncate">
+                  Continue as {clerkUser.user?.username}
+                </p>
               </Button>
             </AlertDialogFooter>
           </AlertDialogContent>
