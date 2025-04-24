@@ -2,7 +2,7 @@ import { useUser } from "@clerk/nextjs";
 import { useFloating, type ReferenceType } from "@floating-ui/react";
 import { useLongPress } from "@reactuses/core";
 import { useQueryWithStatus } from "~/app/convex-client-provider";
-import { ForwardDialog } from "~/components/forwardMessage";
+import { ForwardDialog } from "~/components/forward-message-dialog";
 import { cn } from "~/lib/utils";
 import { useQuery } from "convex-helpers/react/cache/hooks";
 import { useMutation } from "convex/react";

@@ -1,5 +1,5 @@
-import { Chats } from "~/components/chat-overview";
-import { UserInfos } from "~/components/message";
+import { type Chats } from "~/components/chat-overview";
+import { type UserInfos } from "~/components/message";
 import Badge from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
@@ -12,10 +12,10 @@ import {
 } from "~/components/ui/dialog";
 import { cn } from "~/lib/utils";
 import { useMutation } from "convex/react";
-import { Forward, LoaderCircle } from "lucide-react";
-import React, { Dispatch, SetStateAction, useState } from "react";
+import { LoaderCircle } from "lucide-react";
+import React, { useState, type Dispatch, type SetStateAction } from "react";
 import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
+import { type Id } from "../../convex/_generated/dataModel";
 
 interface ForwardDialogProps {
   ForwardedMessageId: string;
