@@ -59,7 +59,7 @@
     "posthog-js": "^1.195.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-hook-form": "7.56.2",
+    "react-hook-form": "7.56.3",
     "react-intersection-observer": "^9.13.1",
     "react-resizable-panels": "^3.0.0",
     "react-responsive": "^10.0.0",
