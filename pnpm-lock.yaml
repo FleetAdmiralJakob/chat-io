@@ -10,7 +10,7 @@ importers:
     dependencies:
       '@clerk/nextjs':
         specifier: ^6.17.0
-        version: 6.19.1(next@15.3.2(@babel/core@7.26.10)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@19.0.0-beta-e993439-20250328)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        version: 6.19.2(next@15.3.2(@babel/core@7.26.10)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@19.0.0-beta-e993439-20250328)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@emoji-mart/data':
         specifier: ^1.2.1
         version: 1.2.1
@@ -88,13 +88,13 @@ importers:
         version: 2.1.1
       convex:
         specifier: ^1.20.0
-        version: 1.24.1(@clerk/clerk-react@5.31.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)
+        version: 1.24.1(@clerk/clerk-react@5.31.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)
       convex-ents:
         specifier: ^0.13.0
-        version: 0.13.0(convex@1.24.1(@clerk/clerk-react@5.31.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0))
+        version: 0.13.0(convex@1.24.1(@clerk/clerk-react@5.31.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0))
       convex-helpers:
         specifier: ^0.1.71
-        version: 0.1.85(convex@1.24.1(@clerk/clerk-react@5.31.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0))(react@19.1.0)(typescript@5.8.3)(zod@3.24.4)
+        version: 0.1.85(convex@1.24.1(@clerk/clerk-react@5.31.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0))(react@19.1.0)(typescript@5.8.3)(zod@3.24.4)
       dayjs:
         specifier: ^1.11.13
         version: 1.11.13
@@ -106,7 +106,7 @@ importers:
         version: 10.4.0
       framer-motion:
         specifier: ^12.7.5
-        version: 12.10.4(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        version: 12.10.5(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       geist:
         specifier: ^1.3.1
         version: 1.4.2(next@15.3.2(@babel/core@7.26.10)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@19.0.0-beta-e993439-20250328)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))
@@ -133,7 +133,7 @@ importers:
         version: 2.4.3(next@15.3.2(@babel/core@7.26.10)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@19.0.0-beta-e993439-20250328)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)
       posthog-js:
         specifier: ^1.195.0
-        version: 1.240.5
+        version: 1.240.6
       react:
         specifier: ^19.0.0
         version: 19.1.0
@@ -185,7 +185,7 @@ importers:
         version: 9.6.1
       '@types/node':
         specifier: ^22.10.7
-        version: 22.15.16
+        version: 22.15.17
       '@types/react':
         specifier: ^19.0.7
         version: 19.1.3
@@ -318,8 +318,8 @@ packages:
   '@clack/prompts@0.8.2':
     resolution: {integrity: sha512-6b9Ab2UiZwJYA9iMyboYyW9yJvAO9V753ZhS+DHKEjZRKAxPPOb7MXXu84lsPFG+vZt6FRFniZ8rXi+zCIw4yQ==}
 
-  '@clerk/backend@1.31.4':
-    resolution: {integrity: sha512-b9ILPwY7UsNXHAPP+kDFr89EgaVLIGy/cbH8j+TIEwp3hWwPI4RXc0z3WKn5x8EG1Jo6UOVQKEPUS5/+GFh3Xw==}
+  '@clerk/backend@1.32.0':
+    resolution: {integrity: sha512-D0hC2mnU79wM4q8GU5ZFrMD3p9lHy3aM+qDi9WqD3L40d65JJ+lzD+rKSqfM5/gDtUWUdD2Ezvqa0ZObRXTcgg==}
     engines: {node: '>=18.17.0'}
     peerDependencies:
       svix: ^1.62.0
@@ -327,23 +327,23 @@ packages:
       svix:
         optional: true
 
-  '@clerk/clerk-react@5.31.1':
-    resolution: {integrity: sha512-Imm9ybnq/N/cciwv1C/sJfWd6J0HZx3b/2WHvhYzCAN+3gd8JW519CpU4WWhMLSCEFlDqJNSoaOGqBOdoD90Vw==}
+  '@clerk/clerk-react@5.31.2':
+    resolution: {integrity: sha512-uMclkpxhZ0yE9VZ9AIRDqAb4y5qodImEbTwBHvoT1261eAKoB38nanUEgBKVaIm1N/Z/e6KTUjGYkVHJ5KmE7A==}
     engines: {node: '>=18.17.0'}
     peerDependencies:
       react: ^18.0.0 || ^19.0.0 || ^19.0.0-0
       react-dom: ^18.0.0 || ^19.0.0 || ^19.0.0-0
 
-  '@clerk/nextjs@6.19.1':
-    resolution: {integrity: sha512-4SKPPYLFp5kQOJ2heM1L4oecBZh5sQ0XF1sC50zVzKJcNmDK8c51JHQRFFIz/ITJLa5GwIuWhuyueMi0pMEyGQ==}
+  '@clerk/nextjs@6.19.2':
+    resolution: {integrity: sha512-GW4ZNVlc7hj4klHo9Qy5zsvNjZqkwbTwZ1AvmsYNCj9yKLBdM+yOZe3DDkZMKcfhian/WF5ERG1JyERr6BxNaA==}
     engines: {node: '>=18.17.0'}
     peerDependencies:
       next: ^13.5.7 || ^14.2.25 || ^15.2.3
       react: ^18.0.0 || ^19.0.0 || ^19.0.0-0
       react-dom: ^18.0.0 || ^19.0.0 || ^19.0.0-0
 
-  '@clerk/shared@3.8.1':
-    resolution: {integrity: sha512-EUJ5l2Qn9Gm8uXXIsLMgDnqvkL9wtgSTchHxVcotmq2sVTAAS3+Tr5sHcvJUA66M75XxeXMRIEfDyskmiEJhyA==}
+  '@clerk/shared@3.8.2':
+    resolution: {integrity: sha512-y8g8/wbFo/3gCRsrk2rmGQ1uzIb8lPM4Wjggt4glC8mPqTGgMFuIAK0Sj0PAJOq5739sokFXc4CzZdMnu/P5ug==}
     engines: {node: '>=18.17.0'}
     peerDependencies:
       react: ^18.0.0 || ^19.0.0 || ^19.0.0-0
@@ -354,8 +354,8 @@ packages:
       react-dom:
         optional: true
 
-  '@clerk/types@4.57.1':
-    resolution: {integrity: sha512-oEk/egGlL9jDcy7OQxn86SPaGlnuhVHOM0T/aRJD80YWAEFy7A0MG/+H3s+2XdNXhzUFVdR1nhgFMcy1E1tEWQ==}
+  '@clerk/types@4.58.0':
+    resolution: {integrity: sha512-P30Vnqaw2UzoSZivNG61NvF9WiAVbKItOvkVJzUbwqDkISdmNOio8mWCeFuKq+bxjPESvS+S615Uplm7dl6jpg==}
     engines: {node: '>=18.17.0'}
 
   '@emnapi/core@1.4.3':
@@ -2128,11 +2128,11 @@ packages:
   '@types/mysql@2.15.26':
     resolution: {integrity: sha512-DSLCOXhkvfS5WNNPbfn2KdICAmk8lLc+/PNvnPnF7gOdMZCxopXduqv0OQ13y/yA/zXTSikZZqVgybUxOEg6YQ==}
 
-  '@types/node@20.17.45':
-    resolution: {integrity: sha512-vO9+E1smq+149wsmmLdM8SKVW7gRzLjfo0mU7kiykhV6rL+GEUhUmW7VywJNSxJHQzt9QBIHEo+3SG4MrFTqbA==}
+  '@types/node@20.17.46':
+    resolution: {integrity: sha512-0PQHLhZPWOxGW4auogW0eOQAuNIlCYvibIpG67ja0TOJ6/sehu+1en7sfceUn+QQtx4Rk3GxbLNwPh0Cav7TWw==}
 
-  '@types/node@22.15.16':
-    resolution: {integrity: sha512-3pr+KjwpVujqWqOKT8mNR+rd09FqhBLwg+5L/4t0cNYBzm/yEiYGCxWttjaPBsLtAo+WFNoXzGJfolM1JuRXoA==}
+  '@types/node@22.15.17':
+    resolution: {integrity: sha512-wIX2aSZL5FE+MR0JlvF87BNVrtFWf6AE6rxSE9X7OwnVvoyCQjpzSRJ+M87se/4QCkCiebQAqrJ0y6fwIyi7nw==}
 
   '@types/pg-pool@2.0.6':
     resolution: {integrity: sha512-TaAUE5rq2VQYxab5Ts7WZhKNmuN78Q6PiFonTDdpbx8a1H0M1vhy3rhiMjl+e2iHmogyMw7jZF4FrE6eJUy5HQ==}
@@ -3118,8 +3118,8 @@ packages:
   fraction.js@4.3.7:
     resolution: {integrity: sha512-ZsDfxO51wGAXREY55a7la9LScWpwv9RxIrYABrlvOFBlH/ShPnrtsXeuUIfXKKOVicNxQ+o8JTbJvjS4M89yew==}
 
-  framer-motion@12.10.4:
-    resolution: {integrity: sha512-gGkavMW3QFDCxI+adVu5sn2NtIRHYPGVLDSJ0S/6B0ZoxPaql2F9foWdg9sGIP6sPA8cbNDfxYf9VlhD3+FkVQ==}
+  framer-motion@12.10.5:
+    resolution: {integrity: sha512-p6VF1YkwWvNDFzg5IQ5lqPx11Td4TQ6LqDnshV7sWj0Nrp4dwz2/aEzmgh9WA9ridcTIJ625Fr0oiuhgqIoFwQ==}
     peerDependencies:
       '@emotion/is-prop-valid': '*'
       react: ^18.0.0 || ^19.0.0
@@ -3652,8 +3652,8 @@ packages:
   module-details-from-path@1.0.4:
     resolution: {integrity: sha512-EGWKgxALGMgzvxYF1UyGTy0HXX/2vHLkw6+NvDKW2jypWbHpjQuj4UMcqQWXHERJhVGKikolT06G3bcKe4fi7w==}
 
-  motion-dom@12.10.4:
-    resolution: {integrity: sha512-GSv8kz0ANFfeGrFKi99s3GQjLiL1IKH3KtSNEqrPiVbloHVRiNbNtpsYQq9rkV2AV+7jxvd1X1ObUMVDnAEnXA==}
+  motion-dom@12.10.5:
+    resolution: {integrity: sha512-F7XKmhxXEH/y3aWWf0N2w69wNSN+6PcJ1seqR1WolClmXpPhj+xwzs9j5CpsMFzeHR1D7irl3JcWMToPRwX6Hg==}
 
   motion-utils@12.9.4:
     resolution: {integrity: sha512-BW3I65zeM76CMsfh3kHid9ansEJk9Qvl+K5cu4DVHKGsI52n76OJ4z2CUJUV+Mn3uEP9k1JJA3tClG0ggSrRcg==}
@@ -3975,8 +3975,8 @@ packages:
     resolution: {integrity: sha512-9ZhXKM/rw350N1ovuWHbGxnGh/SNJ4cnxHiM0rxE4VN41wsg8P8zWn9hv/buK00RP4WvlOyr/RBDiptyxVbkZQ==}
     engines: {node: '>=0.10.0'}
 
-  posthog-js@1.240.5:
-    resolution: {integrity: sha512-sLaDiN0TrGQnF94ed85wo044ifJ5U9rBlIVe5rueLUtusE2Gc/Vis7VcHOjbBeAaJXCHwOcs/TUZZNxbRGzNgw==}
+  posthog-js@1.240.6:
+    resolution: {integrity: sha512-Pz5r/LrMchGf9jCVnTXJrbyMhKriZRGLSZ5qt8c8QrPkmG2JOnFHNWmmBlu+iqmzbY3+oROrhwyP4IgQl2z34w==}
     peerDependencies:
       '@rrweb/types': 2.0.0-alpha.17
       rrweb-snapshot: 2.0.0-alpha.17
@@ -4949,10 +4949,10 @@ snapshots:
       picocolors: 1.1.1
       sisteransi: 1.0.5
 
-  '@clerk/backend@1.31.4(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+  '@clerk/backend@1.32.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
     dependencies:
-      '@clerk/shared': 3.8.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      '@clerk/types': 4.57.1
+      '@clerk/shared': 3.8.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@clerk/types': 4.58.0
       cookie: 1.0.2
       snakecase-keys: 8.0.1
       tslib: 2.8.1
@@ -4960,20 +4960,20 @@ snapshots:
       - react
       - react-dom
 
-  '@clerk/clerk-react@5.31.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+  '@clerk/clerk-react@5.31.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
     dependencies:
-      '@clerk/shared': 3.8.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      '@clerk/types': 4.57.1
+      '@clerk/shared': 3.8.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@clerk/types': 4.58.0
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
       tslib: 2.8.1
 
-  '@clerk/nextjs@6.19.1(next@15.3.2(@babel/core@7.26.10)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@19.0.0-beta-e993439-20250328)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+  '@clerk/nextjs@6.19.2(next@15.3.2(@babel/core@7.26.10)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@19.0.0-beta-e993439-20250328)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
     dependencies:
-      '@clerk/backend': 1.31.4(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      '@clerk/clerk-react': 5.31.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      '@clerk/shared': 3.8.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      '@clerk/types': 4.57.1
+      '@clerk/backend': 1.32.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@clerk/clerk-react': 5.31.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@clerk/shared': 3.8.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@clerk/types': 4.58.0
       next: 15.3.2(@babel/core@7.26.10)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@19.0.0-beta-e993439-20250328)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
@@ -4982,9 +4982,9 @@ snapshots:
     transitivePeerDependencies:
       - svix
 
-  '@clerk/shared@3.8.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+  '@clerk/shared@3.8.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
     dependencies:
-      '@clerk/types': 4.57.1
+      '@clerk/types': 4.58.0
       dequal: 2.0.3
       glob-to-regexp: 0.4.1
       js-cookie: 3.0.5
@@ -4994,7 +4994,7 @@ snapshots:
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
 
-  '@clerk/types@4.57.1':
+  '@clerk/types@4.58.0':
     dependencies:
       csstype: 3.1.3
 
@@ -6554,7 +6554,7 @@ snapshots:
 
   '@types/connect@3.4.38':
     dependencies:
-      '@types/node': 22.15.16
+      '@types/node': 22.15.17
 
   '@types/eslint-scope@3.7.7':
     dependencies:
@@ -6576,13 +6576,13 @@ snapshots:
 
   '@types/mysql@2.15.26':
     dependencies:
-      '@types/node': 22.15.16
+      '@types/node': 22.15.17
 
-  '@types/node@20.17.45':
+  '@types/node@20.17.46':
     dependencies:
       undici-types: 6.19.8
 
-  '@types/node@22.15.16':
+  '@types/node@22.15.17':
     dependencies:
       undici-types: 6.21.0
 
@@ -6592,7 +6592,7 @@ snapshots:
 
   '@types/pg@8.6.1':
     dependencies:
-      '@types/node': 22.15.16
+      '@types/node': 22.15.17
       pg-protocol: 1.9.5
       pg-types: 2.2.0
 
@@ -6612,7 +6612,7 @@ snapshots:
 
   '@types/tedious@4.0.14':
     dependencies:
-      '@types/node': 22.15.16
+      '@types/node': 22.15.17
 
   '@types/trusted-types@2.0.7': {}
 
@@ -7149,25 +7149,25 @@ snapshots:
 
   convert-source-map@2.0.0: {}
 
-  convex-ents@0.13.0(convex@1.24.1(@clerk/clerk-react@5.31.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)):
+  convex-ents@0.13.0(convex@1.24.1(@clerk/clerk-react@5.31.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)):
     dependencies:
-      convex: 1.24.1(@clerk/clerk-react@5.31.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)
+      convex: 1.24.1(@clerk/clerk-react@5.31.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)
 
-  convex-helpers@0.1.85(convex@1.24.1(@clerk/clerk-react@5.31.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0))(react@19.1.0)(typescript@5.8.3)(zod@3.24.4):
+  convex-helpers@0.1.85(convex@1.24.1(@clerk/clerk-react@5.31.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0))(react@19.1.0)(typescript@5.8.3)(zod@3.24.4):
     dependencies:
-      convex: 1.24.1(@clerk/clerk-react@5.31.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)
+      convex: 1.24.1(@clerk/clerk-react@5.31.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)
     optionalDependencies:
       react: 19.1.0
       typescript: 5.8.3
       zod: 3.24.4
 
-  convex@1.24.1(@clerk/clerk-react@5.31.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0):
+  convex@1.24.1(@clerk/clerk-react@5.31.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0):
     dependencies:
       esbuild: 0.25.2
       jwt-decode: 4.0.0
       prettier: 3.5.3
     optionalDependencies:
-      '@clerk/clerk-react': 5.31.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@clerk/clerk-react': 5.31.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       react: 19.1.0
 
   cookie-signature@1.2.2: {}
@@ -7820,9 +7820,9 @@ snapshots:
 
   fraction.js@4.3.7: {}
 
-  framer-motion@12.10.4(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
+  framer-motion@12.10.5(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
     dependencies:
-      motion-dom: 12.10.4
+      motion-dom: 12.10.5
       motion-utils: 12.9.4
       tslib: 2.8.1
     optionalDependencies:
@@ -8151,7 +8151,7 @@ snapshots:
 
   jest-worker@27.5.1:
     dependencies:
-      '@types/node': 22.15.16
+      '@types/node': 22.15.17
       merge-stream: 2.0.0
       supports-color: 8.1.1
 
@@ -8318,7 +8318,7 @@ snapshots:
 
   module-details-from-path@1.0.4: {}
 
-  motion-dom@12.10.4:
+  motion-dom@12.10.5:
     dependencies:
       motion-utils: 12.9.4
 
@@ -8603,7 +8603,7 @@ snapshots:
     dependencies:
       xtend: 4.0.2
 
-  posthog-js@1.240.5:
+  posthog-js@1.240.6:
     dependencies:
       core-js: 3.42.0
       fflate: 0.4.8
@@ -8729,7 +8729,7 @@ snapshots:
       '@pivanov/utils': 0.0.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@preact/signals': 1.3.2(preact@10.26.4)
       '@rollup/pluginutils': 5.1.4(rollup@4.35.0)
-      '@types/node': 20.17.45
+      '@types/node': 20.17.46
       bippy: 0.3.8(@types/react@19.1.3)(react@19.1.0)
       esbuild: 0.24.2
       estree-walker: 3.0.3
