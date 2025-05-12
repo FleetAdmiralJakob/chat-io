@@ -19,5 +19,5 @@ export const DevMode = observer(
         {children}
       </div>
     );
-  },
+  }
 );

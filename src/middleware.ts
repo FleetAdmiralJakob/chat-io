@@ -30,7 +30,7 @@ export default clerkMiddleware(
 
     return NextResponse.next();
   },
-  { signInUrl: "/sign-up", signUpUrl: "/sign-up" },
+  { signInUrl: "/sign-up", signUpUrl: "/sign-up" }
 );
 
 export const config = {

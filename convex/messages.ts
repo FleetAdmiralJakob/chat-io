@@ -407,14 +407,14 @@ export const reactToMessage = mutation({
       throw new ConvexError("messageId was invalid");
     }
 
-    // Check if user already reacted to this message
+    // Check if the user already reacted to this message
     const existingReaction = await ctx
       .table("reactions", "messageId", (q) => q.eq("messageId", messageId))
       .filter((q) => q.eq(q.field("userId"), convexUser._id))
       .first();
 
     if (existingReaction && existingReaction.emoji === trimmedReaction) {
-      // Remove existing reaction
+      // Remove the existing reaction
       await existingReaction.delete();
       return null;
     } else if (existingReaction) {
@@ -425,7 +425,7 @@ export const reactToMessage = mutation({
       return existingReaction;
     }
 
-    // Create new reaction if none exists
+    // Create a new reaction if none exists
     const reaction = await ctx.table("reactions").insert({
       emoji: trimmedReaction,
       userId: convexUser._id,

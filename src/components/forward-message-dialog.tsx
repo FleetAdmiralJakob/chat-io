@@ -45,11 +45,11 @@ export const ForwardDialog = ({
     } else {
       if (
         chatsToForwardTo.some(
-          (forwardObject) => forwardObject.userId === user.userId,
+          (forwardObject) => forwardObject.userId === user.userId
         )
       ) {
         setChatsToForwardTo((prev) =>
-          prev.filter((filteredUser) => filteredUser.userId !== user.userId),
+          prev.filter((filteredUser) => filteredUser.userId !== user.userId)
         );
       } else {
         setChatsToForwardTo((prev) => [...prev, user]);
@@ -88,7 +88,7 @@ export const ForwardDialog = ({
         <div
           className={cn(
             "grid max-h-72 gap-4 overflow-auto",
-            chats === undefined ? "flex justify-center" : null,
+            chats === undefined ? "flex justify-center" : null
           )}
         >
           {chats === undefined ? (
@@ -113,7 +113,7 @@ export const ForwardDialog = ({
                         chatsToForwardTo.length > 0
                           ? chatsToForwardTo.some(
                               (forwardObject) =>
-                                forwardObject.userId === userInfos[0]!._id,
+                                forwardObject.userId === userInfos[0]!._id
                             )
                           : false
                       }
@@ -139,7 +139,7 @@ export const ForwardDialog = ({
                         "flex cursor-pointer rounded-xl bg-secondary p-5",
                         user.username == userInfos[0]?.username
                           ? "h-0 p-0"
-                          : null,
+                          : null
                       )}
                     >
                       <Checkbox
@@ -147,7 +147,7 @@ export const ForwardDialog = ({
                           chatsToForwardTo.length > 0
                             ? chatsToForwardTo.some(
                                 (forwardObject) =>
-                                  forwardObject.userId === user._id,
+                                  forwardObject.userId === user._id
                               )
                             : false
                         }
@@ -155,7 +155,7 @@ export const ForwardDialog = ({
                           "mr-3 mt-1 flex",
                           user.username == userInfos[0]?.username
                             ? "hidden"
-                            : null,
+                            : null
                         )}
                       />
                       {user.username != userInfos[0]?.username ? (

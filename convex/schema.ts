@@ -32,11 +32,7 @@ const schema = defineEntSchema({
   clearRequests: defineEnt({})
     .field(
       "status",
-      v.union(
-        v.literal("pending"),
-        v.literal("rejected"),
-        v.literal("expired"),
-      ),
+      v.union(v.literal("pending"), v.literal("rejected"), v.literal("expired"))
     )
     .edges("readBy", {
       to: "users",

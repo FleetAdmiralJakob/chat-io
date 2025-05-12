@@ -12,17 +12,17 @@ import { after } from "next/server";
 export async function OPTIONS(request: Request) {
   const unparsedSignUpHeaders = (await request.json()) as FormSchemaUserUpdate;
   const parsedSignUpHeaders = formSchemaUserUpdate.safeParse(
-    unparsedSignUpHeaders,
+    unparsedSignUpHeaders
   );
   if (!parsedSignUpHeaders.success) {
     return Response.json(
       { message: parsedSignUpHeaders.error.message },
-      { status: 400 },
+      { status: 400 }
     );
   } else {
     return Response.json(
       { message: parsedSignUpHeaders.error },
-      { status: 200 },
+      { status: 200 }
     );
   }
 }
@@ -35,13 +35,13 @@ export async function POST(request: Request) {
     after(() => {
       log.error(
         "Could not parse the sign-up headers",
-        parsedSignUpHeaders.error,
+        parsedSignUpHeaders.error
       );
     });
 
     return Response.json(
       { message: parsedSignUpHeaders.error.message },
-      { status: 400 },
+      { status: 400 }
     );
   }
 
@@ -72,7 +72,7 @@ export async function POST(request: Request) {
               message: "Failed to create an account. Email already exists.",
               statusText: "email_is_taken",
             },
-            { status: 400 },
+            { status: 400 }
           );
         }
 
@@ -86,14 +86,14 @@ export async function POST(request: Request) {
               message: "Failed to create an account. Username already exists.",
               statusText: "username_is_taken",
             },
-            { status: 400 },
+            { status: 400 }
           );
         }
       }
       if (e.errors.some((error) => error.code === "form_password_pwned")) {
         after(() => {
           log.error(
-            "Failed to create an account. Password has been found in an online data breach.",
+            "Failed to create an account. Password has been found in an online data breach."
           );
         });
 
@@ -103,7 +103,7 @@ export async function POST(request: Request) {
               "Failed to create an account. Password has been found in an online data breach.",
             statusText: "form_password_pwned",
           },
-          { status: 400 },
+          { status: 400 }
         );
       }
     }
@@ -117,7 +117,7 @@ export async function POST(request: Request) {
 
     return Response.json(
       { message: "Failed to create an account" },
-      { status: 400 },
+      { status: 400 }
     );
   }
 
@@ -127,6 +127,6 @@ export async function POST(request: Request) {
 
   return Response.json(
     { message: "User created successfully" },
-    { status: 200 },
+    { status: 200 }
   );
 }

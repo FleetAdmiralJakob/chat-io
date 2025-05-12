@@ -19,13 +19,13 @@ export const createChat = mutation({
 
     if (!user1) {
       throw new ConvexError(
-        "User not found: " + args.friendsUsername + args.friendsUsernameId,
+        "User not found: " + args.friendsUsername + args.friendsUsernameId
       );
     }
 
     if (!user2) {
       throw new ConvexError(
-        "Mismatch between Clerk and Convex. This is an error by us.",
+        "Mismatch between Clerk and Convex. This is an error by us."
       );
     } else if (user1.clerkId === identity.tokenIdentifier) {
       throw new ConvexError("Cannot create a chat with yourself.");
@@ -65,10 +65,10 @@ export const initialConvexSetup = mutation({
     if (!identity.nickname) {
       console.error(
         "Username is not defined. This is likely an error by us",
-        identity,
+        identity
       );
       throw new ConvexError(
-        "Username is not defined. This is likely an error by us.",
+        "Username is not defined. This is likely an error by us."
       );
     }
 
@@ -134,7 +134,7 @@ export const getChats = query({
         const allMessages = [...textMessages, ...requests];
 
         const sortedMessages = allMessages.sort(
-          (a, b) => b._creationTime - a._creationTime,
+          (a, b) => b._creationTime - a._creationTime
         );
         const latestMessage = sortedMessages[0];
 
@@ -149,7 +149,7 @@ export const getChats = query({
           }
           const isReadMessage =
             message.readBy.some(
-              (user) => user.clerkId === identity.tokenIdentifier,
+              (user) => user.clerkId === identity.tokenIdentifier
             ) &&
             (message.type !== "message" || !message.deleted);
           if (isReadMessage) {
@@ -201,14 +201,14 @@ export const getChatInfoFromId = query({
       !usersInChat.some((user) => user.clerkId === identity.tokenIdentifier)
     ) {
       throw new ConvexError(
-        "UNAUTHORIZED REQUEST: User requested chat info from a chat in which he is not in.",
+        "UNAUTHORIZED REQUEST: User requested chat info from a chat in which he is not in."
       );
     }
 
     return {
       basicChatInfo: chat,
       otherUser: usersInChat.filter(
-        (user) => user.clerkId !== identity.tokenIdentifier,
+        (user) => user.clerkId !== identity.tokenIdentifier
       ),
     };
   },

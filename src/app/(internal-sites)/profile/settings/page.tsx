@@ -86,7 +86,7 @@ const SettingsPage = () => {
     useState("");
   const [newPasswordErrorMessage, setNewPasswordErrorMessage] = useState("");
   const [emailValue, setEmailValue] = useState(
-    clerkUser.user?.primaryEmailAddress?.emailAddress ?? "",
+    clerkUser.user?.primaryEmailAddress?.emailAddress ?? ""
   );
   const [emailError, setEmailError] = useState(false);
   const [firstNameError, setFirstNameError] = useState("");
@@ -115,12 +115,12 @@ const SettingsPage = () => {
     }
 
     const parsedResponseBody = signUpResponseSchema.safeParse(
-      JSON.parse(responseBody),
+      JSON.parse(responseBody)
     );
 
     if (parsedResponseBody.data?.message) {
       const parsedJson = parsedJsonSchema.safeParse(
-        JSON.parse(parsedResponseBody.data.message),
+        JSON.parse(parsedResponseBody.data.message)
       );
 
       if (parsedJson.success) {
@@ -171,7 +171,7 @@ const SettingsPage = () => {
         setEmailError(true);
         if (error instanceof ZodError) {
           const errorFound = error.errors.find(
-            (error) => error.path[0] == "email",
+            (error) => error.path[0] == "email"
           );
           if (errorFound) {
             setEmailError(true);
@@ -181,7 +181,7 @@ const SettingsPage = () => {
         }
       }
     },
-    [],
+    []
   );
 
   const handleFirstNameChange = useCallback(
@@ -194,7 +194,7 @@ const SettingsPage = () => {
       } catch (error) {
         if (error instanceof ZodError) {
           const errorFound = error.errors.find(
-            (error) => error.path[0] == "firstName",
+            (error) => error.path[0] == "firstName"
           );
           if (errorFound) {
             setFirstNameError(errorFound.message);
@@ -204,7 +204,7 @@ const SettingsPage = () => {
         }
       }
     },
-    [],
+    []
   );
 
   const handleLastNameChange = useCallback(
@@ -217,7 +217,7 @@ const SettingsPage = () => {
       } catch (error) {
         if (error instanceof ZodError) {
           const errorFound = error.errors.find(
-            (error) => error.path[0] == "lastName",
+            (error) => error.path[0] == "lastName"
           );
           if (errorFound) {
             setLastNameError(errorFound.message);
@@ -227,7 +227,7 @@ const SettingsPage = () => {
         }
       }
     },
-    [],
+    []
   );
 
   const handleCurrentPassword = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -270,7 +270,7 @@ const SettingsPage = () => {
 
   async function checkPasswordAgainstClerkRules(
     currentPassword: string,
-    newPassword: string,
+    newPassword: string
   ) {
     try {
       try {
@@ -300,12 +300,12 @@ const SettingsPage = () => {
       if (isClerkAPIResponseError(e)) {
         if (e.errors.some((error) => error.code === "form_password_pwned")) {
           setNewPasswordErrorMessage(
-            "Password has been found in an online data breach.",
+            "Password has been found in an online data breach."
           );
         }
         if (
           e.errors.some(
-            (error) => error.code === "form_password_validation_failed",
+            (error) => error.code === "form_password_validation_failed"
           )
         ) {
           setCurrentPasswordErrorMessage("Invalid Current Password");
@@ -358,10 +358,10 @@ const SettingsPage = () => {
 
   return (
     <>
-      <div className="flex justify-center text-destructive-foreground lg:hidden">
+      <div className="text-destructive-foreground flex justify-center lg:hidden">
         <p className="absolute top-12 text-xl font-semibold">Settings</p>
         <ChevronLeft
-          className="absolute left-10 top-11 h-8 w-8"
+          className="absolute top-11 left-10 h-8 w-8"
           onClick={() => {
             router.back();
           }}
@@ -375,22 +375,22 @@ const SettingsPage = () => {
                 placeholder="First name"
                 value={firstName}
                 onChange={handleFirstNameChange}
-                className="border-2 border-secondary"
+                className="border-secondary border-2"
               />
               {firstName != "" ? (
                 firstNameError == "" ? (
                   <CircleCheck
-                    className="absolute right-3 top-1/2 -translate-y-1/2 transform"
+                    className="absolute top-1/2 right-3 -translate-y-1/2 transform"
                     color="#3DC726"
                   />
                 ) : (
-                  <CircleX className="absolute right-3 top-1/2 -translate-y-1/2 transform text-accent" />
+                  <CircleX className="text-accent absolute top-1/2 right-3 -translate-y-1/2 transform" />
                 )
               ) : (
                 ""
               )}
             </div>
-            <div className="ml-2 mt-0.5 text-[85%] text-secondary-foreground">
+            <div className="text-secondary-foreground mt-0.5 ml-2 text-[85%]">
               {firstNameError != "" && firstName != "" ? (
                 <p className="text-accent">{firstNameError}</p>
               ) : (
@@ -404,22 +404,22 @@ const SettingsPage = () => {
                 placeholder="Last name"
                 value={lastName}
                 onChange={handleLastNameChange}
-                className="border-2 border-secondary"
+                className="border-secondary border-2"
               />
               {lastName != "" ? (
                 lastNameError == "" ? (
                   <CircleCheck
-                    className="absolute right-3 top-1/2 -translate-y-1/2 transform"
+                    className="absolute top-1/2 right-3 -translate-y-1/2 transform"
                     color="#3DC726"
                   />
                 ) : (
-                  <CircleX className="absolute right-3 top-1/2 -translate-y-1/2 transform text-accent" />
+                  <CircleX className="text-accent absolute top-1/2 right-3 -translate-y-1/2 transform" />
                 )
               ) : (
                 ""
               )}
             </div>
-            <div className="ml-2 mt-0.5 text-[85%] text-secondary-foreground">
+            <div className="text-secondary-foreground mt-0.5 ml-2 text-[85%]">
               {lastNameError != "" && lastName != "" ? (
                 <p className="text-accent">{lastNameError}</p>
               ) : (
@@ -433,22 +433,22 @@ const SettingsPage = () => {
                 value={emailValue}
                 onChange={handleEmailChange}
                 placeholder="Email"
-                className="w-full border-2 border-secondary"
+                className="border-secondary w-full border-2"
               />
               {emailValue != "" ? (
                 !emailError ? (
                   <MailCheck
-                    className="absolute right-3 top-1/2 -translate-y-1/2 transform"
+                    className="absolute top-1/2 right-3 -translate-y-1/2 transform"
                     color="#3DC726"
                   />
                 ) : (
-                  <MailX className="absolute right-3 top-1/2 -translate-y-1/2 transform text-accent" />
+                  <MailX className="text-accent absolute top-1/2 right-3 -translate-y-1/2 transform" />
                 )
               ) : (
                 ""
               )}
             </div>
-            <p className="ml-2 mt-0.5 text-[85%] text-secondary-foreground">
+            <p className="text-secondary-foreground mt-0.5 ml-2 text-[85%]">
               If you forgott your password we can send you a Email
             </p>
           </div>
@@ -457,7 +457,7 @@ const SettingsPage = () => {
             onOpenChange={() => setDialogOpen((prevState) => !prevState)}
           >
             <DialogTrigger asChild>
-              <div className="mt-4 flex cursor-pointer rounded-sm border-2 border-secondary bg-primary p-2 px-3 text-[100%] text-destructive-foreground">
+              <div className="border-secondary bg-primary text-destructive-foreground mt-4 flex cursor-pointer rounded-xs border-2 p-2 px-3 text-[100%]">
                 <HardDriveUpload className="mr-1 h-5 w-5" />
                 <p>Update Password</p>
               </div>
@@ -482,7 +482,7 @@ const SettingsPage = () => {
                   />
                   <Label
                     htmlFor="username"
-                    className="text-right text-[80%] text-accent"
+                    className="text-accent text-right text-[80%]"
                   >
                     {currentPasswordErrorMessage}
                   </Label>
@@ -499,7 +499,7 @@ const SettingsPage = () => {
                   />
                   <Label
                     htmlFor="username"
-                    className="text-right text-[80%] text-accent"
+                    className="text-accent text-right text-[80%]"
                   >
                     {newPasswordErrorMessage}
                   </Label>
@@ -511,7 +511,7 @@ const SettingsPage = () => {
                   onClick={() => {
                     void checkPasswordAgainstClerkRules(
                       currentPassword,
-                      newPassword,
+                      newPassword
                     );
                   }}
                 >
@@ -529,7 +529,7 @@ const SettingsPage = () => {
                 .map((email) => email.emailAddress)
                 .toString()) ||
           "" ? (
-            <div className="mt-4 flex cursor-pointer rounded-sm border-2 border-secondary bg-primary p-2 px-3 text-[100%] text-destructive-foreground">
+            <div className="border-secondary bg-primary text-destructive-foreground mt-4 flex cursor-pointer rounded-xs border-2 p-2 px-3 text-[100%]">
               <CircleCheck className="mr-2 h-5 w-5" />
               <p onClick={submitHandler}>Save Changes</p>
             </div>

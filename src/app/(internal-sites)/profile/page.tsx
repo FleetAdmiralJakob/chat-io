@@ -20,7 +20,7 @@ interface settingsCard {
 
 export default function Profile() {
   const clerkUser = useUser();
-  const username = clerkUser.user ? (clerkUser.user.username ?? "") : "";
+  const username = clerkUser.user ? clerkUser.user.username ?? "" : "";
 
   const settings: settingsCard[] = [
     { title: username },
@@ -69,7 +69,7 @@ export default function Profile() {
                   {
                     "rounded-t-lg border-t-0": item.title == "Settings",
                     "rounded-b-lg": item.title == "Chats",
-                  },
+                  }
                 )}
               >
                 <div className="flex">

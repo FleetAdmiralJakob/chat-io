@@ -44,11 +44,11 @@ export type UserInfos = [
     | NonNullable<
         FunctionReturnType<typeof api.chats.getChatInfoFromId>
       >["otherUser"]
-  ),
+  )
 ];
 
 const EditedLabel = ({ message }: { message: Message }) => (
-  <div className="mr-2 text-[75%] font-bold text-secondary-foreground">
+  <div className="text-secondary-foreground mr-2 text-[75%] font-bold">
     {message.type === "message" && message.modified && "Edited"}
   </div>
 );
@@ -68,10 +68,10 @@ const ReplyToMessage = ({
             scrollToMessage(message.replyTo._id);
           }
         }}
-        className="mb-2 cursor-pointer rounded-lg border border-secondary-foreground bg-primary p-2"
+        className="border-secondary-foreground bg-primary mb-2 cursor-pointer rounded-lg border p-2"
       >
         <div className="flex items-center justify-between">
-          <p className="text-sm text-destructive-foreground">Replied to:</p>
+          <p className="text-destructive-foreground text-sm">Replied to:</p>
         </div>
 
         <p className="text-sm">
@@ -132,7 +132,7 @@ export const Message = ({
   const clerkUser = useUser();
 
   const deleteMessage = useMutation(
-    api.messages.deleteMessage,
+    api.messages.deleteMessage
   ).withOptimisticUpdate((localStore, args) => {
     const messageId: Id<"messages"> = args.messageId as Id<"messages">;
     const chatId: Id<"privateChats"> = args.chatId as Id<"privateChats">;
@@ -167,7 +167,7 @@ export const Message = ({
             };
           }
           return message;
-        }),
+        })
       );
 
       localStore.setQuery(
@@ -186,13 +186,13 @@ export const Message = ({
           } else {
             return chat;
           }
-        }),
+        })
       );
     }
   });
 
   const checkClickPosition = (
-    e: React.MouseEvent | TouchEvent | MouseEvent,
+    e: React.MouseEvent | TouchEvent | MouseEvent
   ) => {
     const clickPosition =
       "touches" in e && e.touches[0]
@@ -217,8 +217,8 @@ export const Message = ({
             ? "top-end"
             : "bottom-end"
           : isInBottomHalf
-            ? "top-start"
-            : "bottom-start",
+          ? "top-start"
+          : "bottom-start",
     });
 
   const {
@@ -231,8 +231,8 @@ export const Message = ({
           ? "bottom-end"
           : "top-end"
         : isInBottomHalf
-          ? "bottom-start"
-          : "top-start",
+        ? "bottom-start"
+        : "top-start",
   });
 
   const markRead = useMutation(api.messages.markMessageRead);
@@ -299,7 +299,7 @@ export const Message = ({
   const [ForwardedMessageId, setForwardedMessageId] = useQueryState(
     // It is used to show if the forward dialog should be shown. If the string is empty the dialog should be not shown if there is an id inside it should
     "forward",
-    parseAsString.withDefault(""),
+    parseAsString.withDefault("")
   );
 
   const handleForward = () => {
@@ -347,7 +347,7 @@ export const Message = ({
               style={floatingStylesEmojiPickerQuickReaction}
               className="z-50 py-3 opacity-100"
             >
-              <div className="flex gap-4 rounded-lg border-2 border-secondary-foreground bg-secondary p-2 text-2xl">
+              <div className="border-secondary-foreground bg-secondary flex gap-4 rounded-lg border-2 p-2 text-2xl">
                 <span
                   onMouseDown={() => reactToMessageHandler(message._id, "😂")}
                   role="button"
@@ -359,15 +359,15 @@ export const Message = ({
                     }
                   }}
                   className={cn(
-                    "flex aspect-square h-10 items-center justify-center rounded-full bg-card p-1 pt-1.5 hover:cursor-pointer dark:bg-primary",
+                    "bg-card dark:bg-primary flex aspect-square h-10 items-center justify-center rounded-full p-1 pt-1.5 hover:cursor-pointer",
                     {
                       "bg-muted-foreground dark:bg-card":
                         message.reactions.find(
                           (reaction) =>
                             reaction.emoji === "😂" &&
-                            reaction.userId === userInfos[0]?._id,
+                            reaction.userId === userInfos[0]?._id
                         ),
-                    },
+                    }
                   )}
                 >
                   <span className="transition-transform hover:scale-125">
@@ -385,15 +385,15 @@ export const Message = ({
                     }
                   }}
                   className={cn(
-                    "flex aspect-square h-10 items-center justify-center rounded-full bg-card p-1 pt-1.5 hover:cursor-pointer dark:bg-primary",
+                    "bg-card dark:bg-primary flex aspect-square h-10 items-center justify-center rounded-full p-1 pt-1.5 hover:cursor-pointer",
                     {
                       "bg-muted-foreground dark:bg-card":
                         message.reactions.find(
                           (reaction) =>
                             reaction.emoji === "❤️" &&
-                            reaction.userId === userInfos[0]?._id,
+                            reaction.userId === userInfos[0]?._id
                         ),
-                    },
+                    }
                   )}
                 >
                   <span className="transition-transform hover:scale-125">
@@ -411,15 +411,15 @@ export const Message = ({
                     }
                   }}
                   className={cn(
-                    "flex aspect-square h-10 items-center justify-center rounded-full bg-card p-1 pt-1.5 hover:cursor-pointer dark:bg-primary",
+                    "bg-card dark:bg-primary flex aspect-square h-10 items-center justify-center rounded-full p-1 pt-1.5 hover:cursor-pointer",
                     {
                       "bg-muted-foreground dark:bg-card":
                         message.reactions.find(
                           (reaction) =>
                             reaction.emoji === "👍" &&
-                            reaction.userId === userInfos[0]?._id,
+                            reaction.userId === userInfos[0]?._id
                         ),
-                    },
+                    }
                   )}
                 >
                   <span className="transition-transform hover:scale-125">
@@ -437,15 +437,15 @@ export const Message = ({
                     }
                   }}
                   className={cn(
-                    "flex aspect-square h-10 items-center justify-center rounded-full bg-card p-1 pt-1.5 hover:cursor-pointer dark:bg-primary",
+                    "bg-card dark:bg-primary flex aspect-square h-10 items-center justify-center rounded-full p-1 pt-1.5 hover:cursor-pointer",
                     {
                       "bg-muted-foreground dark:bg-card":
                         message.reactions.find(
                           (reaction) =>
                             reaction.emoji === "👎" &&
-                            reaction.userId === userInfos[0]?._id,
+                            reaction.userId === userInfos[0]?._id
                         ),
-                    },
+                    }
                   )}
                 >
                   <span className="transition-transform hover:scale-125">
@@ -463,15 +463,15 @@ export const Message = ({
                     }
                   }}
                   className={cn(
-                    "flex aspect-square h-10 items-center justify-center rounded-full bg-card p-1 pt-1.5 hover:cursor-pointer dark:bg-primary",
+                    "bg-card dark:bg-primary flex aspect-square h-10 items-center justify-center rounded-full p-1 pt-1.5 hover:cursor-pointer",
                     {
                       "bg-muted-foreground dark:bg-card":
                         message.reactions.find(
                           (reaction) =>
                             reaction.emoji === "😮" &&
-                            reaction.userId === userInfos[0]?._id,
+                            reaction.userId === userInfos[0]?._id
                         ),
-                    },
+                    }
                   )}
                 >
                   <span className="transition-transform hover:scale-125">
@@ -488,13 +488,13 @@ export const Message = ({
                   onKeyDown={() => {
                     setShowFullEmojiPicker((prevValue) => !prevValue);
                   }}
-                  className="flex aspect-square h-10 items-center justify-center rounded-full bg-card p-1 hover:cursor-pointer dark:bg-primary"
+                  className="bg-card dark:bg-primary flex aspect-square h-10 items-center justify-center rounded-full p-1 hover:cursor-pointer"
                 >
                   <Plus className="transition-transform hover:scale-125" />
                 </span>
               </div>
             </div>,
-            chatContainerElement,
+            chatContainerElement
           )
         : null}
       {message.from.username == clerkUser.user?.username ? (
@@ -507,7 +507,7 @@ export const Message = ({
         >
           <EditedLabel message={message} />
           <ReplyToMessage message={message} scrollToMessage={scrollToMessage} />
-          <div className="text- text-[75%] italic text-destructive-foreground">
+          <div className="text- text-destructive-foreground text-[75%] italic">
             {message.type == "message" && !message.deleted ? (
               message.forwarded == undefined ? (
                 ""
@@ -544,16 +544,16 @@ export const Message = ({
             }}
             id={`message-${message._id}`}
             className={cn(
-              "max-w-[66.6667%] cursor-default break-words rounded-sm bg-accent p-3",
+              "bg-accent max-w-[66.6667%] cursor-default rounded-xs p-3 break-words",
               {
                 "sticky z-50 opacity-100": message._id === selectedMessageId,
-                "my-2 max-w-[80%] border-2 border-secondary bg-primary":
+                "border-secondary bg-primary my-2 max-w-[80%] border-2":
                   message.type == "pendingRequest" ||
                   message.type == "rejectedRequest",
                 "mb-3":
                   message.type === "message" && message.reactions.length > 0,
                 "animate-pulse": highlightedMessageId === message._id,
-              },
+              }
             )}
           >
             {message.type === "message" && message.deleted ? (
@@ -564,7 +564,7 @@ export const Message = ({
             ) : (
               <div>
                 {message.type != "message" ? (
-                  <div className="font-semibold text-destructive-foreground">
+                  <div className="text-destructive-foreground font-semibold">
                     {message.type === "pendingRequest" ? (
                       <>
                         <p>You&apos;ve sent a request to clear the chat</p>
@@ -596,7 +596,7 @@ export const Message = ({
             side="right"
           />
 
-          <div className="mr-2 text-[75%] font-bold text-secondary-foreground">
+          <div className="text-secondary-foreground mr-2 text-[75%] font-bold">
             {message.type == "message" && !message.deleted
               ? message.readBy
                 ? message.readBy.map((user) => {
@@ -625,8 +625,8 @@ export const Message = ({
                   style={floatingStylesContextModal}
                   className="z-50 overflow-x-visible py-3 opacity-100"
                 >
-                  <div className="rounded-sm border-2 border-secondary-foreground">
-                    <div className="rounded-sm bg-secondary">
+                  <div className="border-secondary-foreground rounded-xs border-2">
+                    <div className="bg-secondary rounded-xs">
                       <div
                         className="flex w-full cursor-pointer p-2"
                         onClick={() => {
@@ -641,13 +641,13 @@ export const Message = ({
                       </div>
                       <button
                         onClick={() => replyToMessageHandler(message._id)}
-                        className="flex w-full cursor-pointer border-t-2 border-secondary-foreground p-2 pr-8"
+                        className="border-secondary-foreground flex w-full cursor-pointer border-t-2 p-2 pr-8"
                       >
                         <Reply />
                         <p className="ml-1">Reply</p>
                       </button>
                       <button
-                        className="flex w-full cursor-pointer border-t-2 border-secondary-foreground p-2 pr-8"
+                        className="border-secondary-foreground flex w-full cursor-pointer border-t-2 p-2 pr-8"
                         onClick={() => {
                           handleForward();
                         }}
@@ -662,7 +662,7 @@ export const Message = ({
                         userInfos={userInfos}
                       />
                       <button
-                        className="flex w-full cursor-pointer border-y-2 border-secondary-foreground p-2 pr-8"
+                        className="border-secondary-foreground flex w-full cursor-pointer border-y-2 p-2 pr-8"
                         onClick={() => {
                           setEditingMessageId(message._id);
                           setSelectedMessageId(null);
@@ -673,7 +673,7 @@ export const Message = ({
                         <p className="ml-1">Edit</p>
                       </button>
                       <button
-                        className="flex w-full p-2 text-accent"
+                        className="text-accent flex w-full p-2"
                         onMouseDown={() => {
                           void deleteMessage({
                             messageId: message._id,
@@ -686,14 +686,14 @@ export const Message = ({
                         <Trash2 />
                         <div className="ml-1">Delete</div>
                       </button>{" "}
-                      <div className="flex border-t-2 border-secondary-foreground p-2 pr-8 text-secondary-foreground">
+                      <div className="border-secondary-foreground text-secondary-foreground flex border-t-2 p-2 pr-8">
                         <Info />
                         <p className="ml-1">{sentInfo()}</p>
                       </div>
                     </div>
                   </div>
                 </div>,
-                chatContainerElement,
+                chatContainerElement
               )
             : null}
         </div>
@@ -730,16 +730,16 @@ export const Message = ({
             }}
             id={`message-${message._id}`}
             className={cn(
-              "max-w-[66.6667%] cursor-default break-words rounded-sm bg-secondary p-3",
+              "bg-secondary max-w-[66.6667%] cursor-default rounded-xs p-3 break-words",
               {
                 "sticky z-50 opacity-100": message._id == selectedMessageId,
-                "my-2 max-w-[80%] border-2 border-secondary bg-primary":
+                "border-secondary bg-primary my-2 max-w-[80%] border-2":
                   message.type === "pendingRequest" ||
                   message.type === "rejectedRequest",
                 "mb-3":
                   message.type === "message" && message.reactions.length > 0,
                 "animate-pulse": highlightedMessageId === message._id,
-              },
+              }
             )}
           >
             {message.type === "message" && message.deleted ? (
@@ -748,7 +748,7 @@ export const Message = ({
                 <p className="ml-2.5">This message was deleted</p>
               </div>
             ) : message.type != "message" ? (
-              <div className="font-semibold text-destructive-foreground">
+              <div className="text-destructive-foreground font-semibold">
                 <div>
                   {message.type === "pendingRequest" ? (
                     <>
@@ -762,7 +762,10 @@ export const Message = ({
                       </div>
                     </>
                   ) : message.type === "expiredRequest" ? (
-                    `The request of ${chatInfo.data?.otherUser[0]?.username + " to clear the chat"} has expired`
+                    `The request of ${
+                      chatInfo.data?.otherUser[0]?.username +
+                      " to clear the chat"
+                    } has expired`
                   ) : (
                     "You have rejected the request to clear the chat"
                   )}
@@ -772,7 +775,7 @@ export const Message = ({
                     <>
                       <button
                         onClick={acceptClearRequestHandler(message._id)}
-                        className="mt-4 flex rounded-sm bg-accept p-2 px-4"
+                        className="bg-accept mt-4 flex rounded-xs p-2 px-4"
                       >
                         <CircleCheck className="mr-1 p-0.5" />
                         <p>Accept</p>
@@ -780,9 +783,9 @@ export const Message = ({
                       <button
                         onClick={rejectClearRequestHandler(
                           message.privateChatId,
-                          message._id,
+                          message._id
                         )}
-                        className="ml-4 mt-4 flex rounded-sm bg-accent p-2 px-4 lg:ml-0"
+                        className="bg-accent mt-4 ml-4 flex rounded-xs p-2 px-4 lg:ml-0"
                       >
                         <CircleX className="mr-1 p-0.5" />
                         <p>Reject</p>{" "}
@@ -815,8 +818,8 @@ export const Message = ({
                   style={floatingStylesContextModal}
                   className="z-50 py-3 opacity-100"
                 >
-                  <div className="rounded-sm border-2 border-secondary-foreground">
-                    <div className="rounded-sm bg-secondary">
+                  <div className="border-secondary-foreground rounded-xs border-2">
+                    <div className="bg-secondary rounded-xs">
                       <div
                         onClick={() => {
                           void navigator.clipboard.writeText(message.content);
@@ -831,7 +834,7 @@ export const Message = ({
                       </div>
                       <button
                         onClick={() => replyToMessageHandler(message._id)}
-                        className="flex w-full cursor-pointer border-y-2 border-secondary-foreground p-2 pr-8"
+                        className="border-secondary-foreground flex w-full cursor-pointer border-y-2 p-2 pr-8"
                       >
                         <Reply />
                         <p className="ml-1">Reply</p>
@@ -840,7 +843,7 @@ export const Message = ({
                         onClick={() => {
                           handleForward();
                         }}
-                        className="flex w-full cursor-pointer border-b-2 border-secondary-foreground p-2 pr-8"
+                        className="border-secondary-foreground flex w-full cursor-pointer border-b-2 p-2 pr-8"
                       >
                         <Forward />
                         <p className="ml-1">Forward</p>
@@ -851,14 +854,14 @@ export const Message = ({
                         chats={existingChats}
                         userInfos={userInfos}
                       />
-                      <div className="flex p-2 pr-8 text-secondary-foreground">
+                      <div className="text-secondary-foreground flex p-2 pr-8">
                         <Info />
                         <p className="ml-1">{sentInfo()}</p>
                       </div>
                     </div>
                   </div>
                 </div>,
-                chatContainerElement,
+                chatContainerElement
               )
             : null}
         </div>

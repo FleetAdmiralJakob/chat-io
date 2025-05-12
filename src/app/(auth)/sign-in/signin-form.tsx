@@ -103,7 +103,7 @@ export function SignInForm() {
       },
       {
         keepErrors: false,
-      },
+      }
     );
   }, [isEmailLogin, form]);
 
@@ -152,13 +152,15 @@ export function SignInForm() {
                 home page
               </Link>
               .
-            </div>,
+            </div>
           );
         } else if (
           err.errors.some((err) => err.code === "form_identifier_not_found")
         ) {
           setWholeFormError(
-            `The ${isEmailLogin ? "email" : "username + id"} you entered does not exist. Please try again.`,
+            `The ${
+              isEmailLogin ? "email" : "username + id"
+            } you entered does not exist. Please try again.`
           );
         } else if (
           err.errors.some((err) => err.code === "form_password_incorrect")
@@ -187,7 +189,9 @@ export function SignInForm() {
         <Button
           type="button"
           variant="outline"
-          aria-label={`Switch to ${isEmailLogin ? "Username" : "Email"} login mode`}
+          aria-label={`Switch to ${
+            isEmailLogin ? "Username" : "Email"
+          } login mode`}
           onClick={() => setIsEmailLogin(!isEmailLogin)}
         >
           Switch to {isEmailLogin ? "Username" : "Email"} Login
@@ -235,7 +239,7 @@ export function SignInForm() {
                           e.target.value
                             .toLowerCase()
                             .replace(/\s/g, "")
-                            .substring(0, 15),
+                            .substring(0, 15)
                         )
                       }
                     />
@@ -258,7 +262,7 @@ export function SignInForm() {
                       {...field}
                       onChange={(e) =>
                         field.onChange(
-                          e.target.value.replace(/\D/g, "").slice(0, 5),
+                          e.target.value.replace(/\D/g, "").slice(0, 5)
                         )
                       }
                     />

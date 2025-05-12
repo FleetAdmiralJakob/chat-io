@@ -6,7 +6,7 @@ const crons = cronJobs();
 crons.interval(
   "expire open requests",
   { minutes: 1 },
-  internal.clearRequests.expirePendingRequests,
+  internal.clearRequests.expirePendingRequests
 );
 
 export default crons;

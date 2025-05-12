@@ -67,7 +67,7 @@ export function SignUpForm() {
         },
         () => {
           return undefined;
-        },
+        }
       );
     }
   }, [initialConvexSetup, isAuthenticated, router, signUpComplete]);
@@ -87,7 +87,7 @@ export function SignUpForm() {
     });
 
     const parsedResponseBody = signUpResponseSchema.safeParse(
-      await response.json(),
+      await response.json()
     );
 
     if (parsedResponseBody.data?.statusText === "username_is_taken") {
@@ -217,7 +217,7 @@ export function SignUpForm() {
                         e.target.value
                           .toLowerCase()
                           .replace(" ", "")
-                          .substring(0, 15),
+                          .substring(0, 15)
                       )
                     }
                   />
@@ -240,7 +240,7 @@ export function SignUpForm() {
                     {...field}
                     onChange={(e) =>
                       field.onChange(
-                        e.target.value.replace(/\D/g, "").slice(0, 5),
+                        e.target.value.replace(/\D/g, "").slice(0, 5)
                       )
                     }
                   />

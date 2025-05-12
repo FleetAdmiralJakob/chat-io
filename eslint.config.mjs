@@ -23,8 +23,8 @@ export default [
       "next/core-web-vitals",
       "plugin:@typescript-eslint/recommended-type-checked",
       "plugin:@typescript-eslint/stylistic-type-checked",
-      "plugin:react-hooks/recommended",
-    ),
+      "plugin:react-hooks/recommended"
+    )
   ),
   {
     languageOptions: {
