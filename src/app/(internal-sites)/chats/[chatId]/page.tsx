@@ -116,10 +116,10 @@ const SkeletonMessages = ({ count }: { count: number }) => {
 };
 
 const useScrollBehavior = (
-  messages: FunctionReturnType<typeof api.messages.getMessages> | undefined
+  messages: FunctionReturnType<typeof api.messages.getMessages> | undefined,
 ) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  // I have a isNearBottomRef because I want to to check if something is near the
+  // I have a isNearBottomRef because I want to check if something is near the
   // bottom without having to trigger a useEffect every time the state changes.
   // But I have a isNearBottom state too because I want to trigger changes in
   // the UI like the scroll to bottom button.
@@ -192,7 +192,7 @@ const MessageContext: React.FC<MessageContextProps> = ({
   if (!replyToMessageId && !editingMessageId) return null;
 
   const message = messages?.find(
-    (msg) => msg._id === (replyToMessageId ?? editingMessageId)
+    (msg) => msg._id === (replyToMessageId ?? editingMessageId),
   );
 
   if (!message || message.type !== "message") return null;
@@ -223,7 +223,7 @@ const MessageContext: React.FC<MessageContextProps> = ({
           <button
             className={cn(
               "border-secondary-foreground bg-primary absolute top-1/2 right-4 flex h-8 w-8 -translate-y-1/2 transform cursor-pointer items-center justify-center rounded-xs border-2 p-1 lg:h-10 lg:w-10 lg:p-2",
-              editingMessageId ? "hidden" : ""
+              editingMessageId ? "hidden" : "",
             )}
             onMouseDown={(e) => {
               e.stopPropagation();
@@ -278,7 +278,7 @@ export default function Page() {
   const posthog = usePostHog();
 
   const sendMessage = useMutation(
-    api.messages.createMessage
+    api.messages.createMessage,
   ).withOptimisticUpdate((localStore, args) => {
     const chatId: Id<"privateChats"> = args.chatId as Id<"privateChats">;
     const content = args.content;
@@ -291,7 +291,7 @@ export default function Page() {
     // onto the lists.
     if (existingMessages !== undefined && existingChats && userInfo.data) {
       const replyTo = existingMessages?.find(
-        (msg) => msg._id === args.replyToId
+        (msg) => msg._id === args.replyToId,
       );
       const now = Date.now();
       const newMessage: NonNullable<
@@ -335,13 +335,13 @@ export default function Page() {
           } else {
             return chat;
           }
-        })
+        }),
       );
     }
   });
 
   const editMessage = useMutation(
-    api.messages.editMessage
+    api.messages.editMessage,
   ).withOptimisticUpdate((localStore, args) => {
     const chatId: Id<"privateChats"> = params.chatId as Id<"privateChats">;
     const { newContent, messageId } = args;
@@ -368,11 +368,11 @@ export default function Page() {
         } else {
           return message;
         }
-      })
+      }),
     );
 
     const lastMessage = existingChats.find(
-      (chat) => chat._id === chatId
+      (chat) => chat._id === chatId,
     )?.lastMessage;
 
     if (lastMessage?._id === messageId && lastMessage.type === "message") {
@@ -393,7 +393,7 @@ export default function Page() {
           } else {
             return chat;
           }
-        })
+        }),
       );
     }
   });
@@ -482,7 +482,7 @@ export default function Page() {
   }, [replyToMessageId]);
 
   async function onTextMessageFormSubmit(
-    values: z.infer<typeof textMessageSchema>
+    values: z.infer<typeof textMessageSchema>,
   ) {
     const trimmedMessage = values.message.trim();
     if (!trimmedMessage) return;
@@ -531,7 +531,7 @@ export default function Page() {
           toast.error("A request to clear this chat is already pending");
         } else {
           toast.error(
-            "Failed to create clear chat request. Please try again later."
+            "Failed to create clear chat request. Please try again later.",
           );
         }
       } else {
@@ -696,7 +696,7 @@ export default function Page() {
                 "border-secondary-foreground lg:bg-primary mr-1 flex cursor-pointer rounded-xs px-2 text-sm lg:border-2 2xl:mr-16",
                 {
                   hidden: chatInfo.data?.basicChatInfo.support,
-                }
+                },
               )}
             >
               <div className="border-secondary-foreground h-10 rounded-xs border-2 lg:h-12 lg:rounded-none lg:border-0 lg:border-r-2">
@@ -793,7 +793,7 @@ export default function Page() {
                     className="w-full"
                     ref={formRef}
                     onSubmit={textMessageForm.handleSubmit(
-                      onTextMessageFormSubmit
+                      onTextMessageFormSubmit,
                     )}
                   >
                     <FormField
@@ -833,14 +833,14 @@ export default function Page() {
                   <Mic
                     className={cn(
                       "border-secondary-foreground bg-primary h-11 w-11 cursor-pointer rounded-xs border-2 p-2 lg:h-14 lg:w-14 lg:p-3",
-                      { hidden: inputValue !== "" }
+                      { hidden: inputValue !== "" },
                     )}
                   />
 
                   <X
                     className={cn(
                       "border-secondary-foreground bg-primary h-11 w-11 cursor-pointer rounded-xs border-2 p-2 lg:h-14 lg:w-14 lg:p-3",
-                      { hidden: editingMessageId === null }
+                      { hidden: editingMessageId === null },
                     )}
                     onClick={() => {
                       fullyResetInput();
@@ -851,19 +851,19 @@ export default function Page() {
                     onClick={(e) => {
                       setAnimationInput(!animationInput);
                       void textMessageForm.handleSubmit(
-                        onTextMessageFormSubmit
+                        onTextMessageFormSubmit,
                       )(e);
                     }}
                     className={cn(
                       "border-secondary-foreground bg-primary h-11 w-11 cursor-pointer rounded-xs border-2 p-2 lg:h-14 lg:w-14 lg:p-3",
-                      { hidden: inputValue === "" }
+                      { hidden: inputValue === "" },
                     )}
                   />
 
                   <Plus
                     className={cn(
                       "border-secondary-foreground bg-primary h-11 w-11 cursor-pointer rounded-xs border-2 p-2 lg:h-14 lg:w-14 lg:p-3",
-                      { hidden: inputValue !== "" }
+                      { hidden: inputValue !== "" },
                     )}
                     onClick={menuClick}
                   />
