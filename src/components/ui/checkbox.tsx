@@ -14,7 +14,7 @@ const Checkbox = ({
     ref={ref}
     className={cn(
       "peer border-primary bg-primary data-[state=checked]:bg-primary data-[state=checked]:text-foreground h-4 w-4 shrink-0 border shadow-sm focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50",
-      className,
+      className
     )}
     {...props}
   >
