@@ -86,7 +86,7 @@ const SettingsPage = () => {
     useState("");
   const [newPasswordErrorMessage, setNewPasswordErrorMessage] = useState("");
   const [emailValue, setEmailValue] = useState(
-    clerkUser.user?.primaryEmailAddress?.emailAddress ?? ""
+    clerkUser.user?.primaryEmailAddress?.emailAddress ?? "",
   );
   const [emailError, setEmailError] = useState(false);
   const [firstNameError, setFirstNameError] = useState("");
@@ -115,12 +115,12 @@ const SettingsPage = () => {
     }
 
     const parsedResponseBody = signUpResponseSchema.safeParse(
-      JSON.parse(responseBody)
+      JSON.parse(responseBody),
     );
 
     if (parsedResponseBody.data?.message) {
       const parsedJson = parsedJsonSchema.safeParse(
-        JSON.parse(parsedResponseBody.data.message)
+        JSON.parse(parsedResponseBody.data.message),
       );
 
       if (parsedJson.success) {
@@ -171,7 +171,7 @@ const SettingsPage = () => {
         setEmailError(true);
         if (error instanceof ZodError) {
           const errorFound = error.errors.find(
-            (error) => error.path[0] == "email"
+            (error) => error.path[0] == "email",
           );
           if (errorFound) {
             setEmailError(true);
@@ -181,7 +181,7 @@ const SettingsPage = () => {
         }
       }
     },
-    []
+    [],
   );
 
   const handleFirstNameChange = useCallback(
@@ -194,7 +194,7 @@ const SettingsPage = () => {
       } catch (error) {
         if (error instanceof ZodError) {
           const errorFound = error.errors.find(
-            (error) => error.path[0] == "firstName"
+            (error) => error.path[0] == "firstName",
           );
           if (errorFound) {
             setFirstNameError(errorFound.message);
@@ -204,7 +204,7 @@ const SettingsPage = () => {
         }
       }
     },
-    []
+    [],
   );
 
   const handleLastNameChange = useCallback(
@@ -217,7 +217,7 @@ const SettingsPage = () => {
       } catch (error) {
         if (error instanceof ZodError) {
           const errorFound = error.errors.find(
-            (error) => error.path[0] == "lastName"
+            (error) => error.path[0] == "lastName",
           );
           if (errorFound) {
             setLastNameError(errorFound.message);
@@ -227,7 +227,7 @@ const SettingsPage = () => {
         }
       }
     },
-    []
+    [],
   );
 
   const handleCurrentPassword = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -270,7 +270,7 @@ const SettingsPage = () => {
 
   async function checkPasswordAgainstClerkRules(
     currentPassword: string,
-    newPassword: string
+    newPassword: string,
   ) {
     try {
       try {
@@ -300,12 +300,12 @@ const SettingsPage = () => {
       if (isClerkAPIResponseError(e)) {
         if (e.errors.some((error) => error.code === "form_password_pwned")) {
           setNewPasswordErrorMessage(
-            "Password has been found in an online data breach."
+            "Password has been found in an online data breach.",
           );
         }
         if (
           e.errors.some(
-            (error) => error.code === "form_password_validation_failed"
+            (error) => error.code === "form_password_validation_failed",
           )
         ) {
           setCurrentPasswordErrorMessage("Invalid Current Password");
@@ -511,7 +511,7 @@ const SettingsPage = () => {
                   onClick={() => {
                     void checkPasswordAgainstClerkRules(
                       currentPassword,
-                      newPassword
+                      newPassword,
                     );
                   }}
                 >

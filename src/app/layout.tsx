@@ -78,7 +78,7 @@ export default function RootLayout({
       <body
         className={cn(
           GeistSans.className,
-          "min-h-screen bg-background antialiased"
+          "bg-background min-h-screen antialiased",
         )}
       >
         <Monitoring

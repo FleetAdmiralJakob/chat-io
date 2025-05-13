@@ -69,7 +69,7 @@ export function AddUserDialog({
 }) {
   const [dialogOpen, setDialogOpen] = useQueryState(
     "dialog",
-    parseAsBoolean.withDefault(false)
+    parseAsBoolean.withDefault(false),
   );
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -123,8 +123,8 @@ export function AddUserDialog({
             <DialogTrigger asChild>
               <button
                 className={cn(
-                  "inline-flex aspect-square w-11 items-center justify-center rounded-full bg-background",
-                  classNameDialogTrigger
+                  "bg-background inline-flex aspect-square w-11 items-center justify-center rounded-full",
+                  classNameDialogTrigger,
                 )}
                 aria-label="Click here to add a chat with a user"
               >
@@ -163,7 +163,7 @@ export function AddUserDialog({
                             e.target.value
                               .toLowerCase()
                               .replace(" ", "")
-                              .substring(0, 15)
+                              .substring(0, 15),
                           )
                         }
                       />
@@ -186,7 +186,7 @@ export function AddUserDialog({
                         {...field}
                         onChange={(e) =>
                           field.onChange(
-                            e.target.value.replace(/\D/g, "").slice(0, 5)
+                            e.target.value.replace(/\D/g, "").slice(0, 5),
                           )
                         }
                       />

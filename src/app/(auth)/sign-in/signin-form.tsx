@@ -103,7 +103,7 @@ export function SignInForm() {
       },
       {
         keepErrors: false,
-      }
+      },
     );
   }, [isEmailLogin, form]);
 
@@ -152,7 +152,7 @@ export function SignInForm() {
                 home page
               </Link>
               .
-            </div>
+            </div>,
           );
         } else if (
           err.errors.some((err) => err.code === "form_identifier_not_found")
@@ -160,7 +160,7 @@ export function SignInForm() {
           setWholeFormError(
             `The ${
               isEmailLogin ? "email" : "username + id"
-            } you entered does not exist. Please try again.`
+            } you entered does not exist. Please try again.`,
           );
         } else if (
           err.errors.some((err) => err.code === "form_password_incorrect")
@@ -239,7 +239,7 @@ export function SignInForm() {
                           e.target.value
                             .toLowerCase()
                             .replace(/\s/g, "")
-                            .substring(0, 15)
+                            .substring(0, 15),
                         )
                       }
                     />
@@ -262,7 +262,7 @@ export function SignInForm() {
                       {...field}
                       onChange={(e) =>
                         field.onChange(
-                          e.target.value.replace(/\D/g, "").slice(0, 5)
+                          e.target.value.replace(/\D/g, "").slice(0, 5),
                         )
                       }
                     />
@@ -276,7 +276,7 @@ export function SignInForm() {
 
         {!isEmailLogin && (
           <span
-            className={cn("text-sm text-secondary-foreground", {
+            className={cn("text-secondary-foreground text-sm", {
               hidden: form.formState.errors.identifier,
             })}
           >
@@ -289,7 +289,7 @@ export function SignInForm() {
           control={form.control}
           name="password"
           render={({ field }) => (
-            <FormItem className="xl:flex-2 xl:w-full">
+            <FormItem className="xl:w-full xl:flex-2">
               <FormLabel>Password</FormLabel>
               <FormControl>
                 <Input
@@ -323,7 +323,7 @@ export function SignInForm() {
         {wholeFormError && (
           <>
             <br />
-            <div className="text-sm font-medium text-destructive">
+            <div className="text-destructive text-sm font-medium">
               {wholeFormError}
             </div>
           </>

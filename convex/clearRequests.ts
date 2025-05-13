@@ -23,7 +23,7 @@ export const createClearRequest = mutation({
 
     if (!convexUser) {
       throw new ConvexError(
-        "Mismatch between Clerk and Convex. This is an error by us."
+        "Mismatch between Clerk and Convex. This is an error by us.",
       );
     }
 
@@ -36,7 +36,7 @@ export const createClearRequest = mutation({
       !usersInChat.some((user) => user.clerkId === identity.tokenIdentifier)
     ) {
       throw new ConvexError(
-        "UNAUTHORIZED REQUEST: User tried to create a request in a chat in which he is not in."
+        "UNAUTHORIZED REQUEST: User tried to create a request in a chat in which he is not in.",
       );
     }
 
@@ -91,13 +91,13 @@ export const rejectClearRequest = mutation({
       !usersInChat.some((user) => user.clerkId === identity.tokenIdentifier)
     ) {
       throw new ConvexError(
-        "UNAUTHORIZED REQUEST: User tried to reject a clear request in a chat in which he is not in."
+        "UNAUTHORIZED REQUEST: User tried to reject a clear request in a chat in which he is not in.",
       );
     }
 
     if ((await request.edge("user")).clerkId === identity.tokenIdentifier) {
       throw new ConvexError(
-        "UNAUTHORIZED REQUEST: User tried to reject his own clear request."
+        "UNAUTHORIZED REQUEST: User tried to reject his own clear request.",
       );
     }
 
@@ -136,13 +136,13 @@ export const acceptClearRequest = mutation({
       !usersInChat.some((user) => user.clerkId === identity.tokenIdentifier)
     ) {
       throw new ConvexError(
-        "UNAUTHORIZED REQUEST: User tried to accept a clear request in a chat in which he is not in."
+        "UNAUTHORIZED REQUEST: User tried to accept a clear request in a chat in which he is not in.",
       );
     }
 
     if ((await request.edge("user")).clerkId === identity.tokenIdentifier) {
       throw new ConvexError(
-        "UNAUTHORIZED REQUEST: User tried to accept his own clear request."
+        "UNAUTHORIZED REQUEST: User tried to accept his own clear request.",
       );
     }
 
@@ -164,7 +164,7 @@ export const expirePendingRequests = internalMutation({
   handler: async (ctx) => {
     for (const q1 of await ctx
       .table("clearRequests", "by_creation_time", (q) =>
-        q.lte("_creationTime", Date.now() - 24 * 60 * 60 * 1000)
+        q.lte("_creationTime", Date.now() - 24 * 60 * 60 * 1000),
       )
       .filter((q) => q.eq(q.field("status"), "pending"))) {
       if (q1) {

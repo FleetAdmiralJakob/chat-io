@@ -19,7 +19,7 @@ export const query = customQuery(
       table: entsTableFactory(ctx, entDefinitions),
       db: undefined,
     };
-  })
+  }),
 );
 
 export const internalQuery = customQuery(
@@ -29,7 +29,7 @@ export const internalQuery = customQuery(
       table: entsTableFactory(ctx, entDefinitions),
       db: undefined,
     };
-  })
+  }),
 );
 
 export const mutation = customMutation(
@@ -39,7 +39,7 @@ export const mutation = customMutation(
       table: entsTableFactory(ctx, entDefinitions),
       db: undefined,
     };
-  })
+  }),
 );
 
 export const internalMutation = customMutation(
@@ -49,5 +49,5 @@ export const internalMutation = customMutation(
       table: entsTableFactory(ctx, entDefinitions),
       db: undefined,
     };
-  })
+  }),
 );

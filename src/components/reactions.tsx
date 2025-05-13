@@ -39,7 +39,7 @@ export const useReactToMessage = (chatId: string, userInfo: UserInfos[0]) => {
 
           // Check if user already has the exact same emoji reaction
           const existingReaction = message.reactions?.find(
-            (r) => r.userId === userInfo?._id && r.emoji === emoji
+            (r) => r.userId === userInfo?._id && r.emoji === emoji,
           );
 
           // If user already reacted with this emoji, remove it (toggle off)
@@ -47,14 +47,14 @@ export const useReactToMessage = (chatId: string, userInfo: UserInfos[0]) => {
             return {
               ...message,
               reactions: message.reactions.filter(
-                (r) => !(r.userId === userInfo?._id && r.emoji === emoji)
+                (r) => !(r.userId === userInfo?._id && r.emoji === emoji),
               ),
             };
           }
 
           // Check if user has reacted with a different emoji
           const hasOtherReaction = message.reactions?.find(
-            (r) => r.userId === userInfo?._id
+            (r) => r.userId === userInfo?._id,
           );
 
           // If user has different reaction, update existing one to new emoji
@@ -62,7 +62,7 @@ export const useReactToMessage = (chatId: string, userInfo: UserInfos[0]) => {
             return {
               ...message,
               reactions: message.reactions.map((r) =>
-                r.userId === userInfo?._id ? { ...r, emoji } : r
+                r.userId === userInfo?._id ? { ...r, emoji } : r,
               ),
             };
           }
@@ -77,10 +77,10 @@ export const useReactToMessage = (chatId: string, userInfo: UserInfos[0]) => {
         localStore.setQuery(
           api.messages.getMessages,
           { chatId: chatId },
-          existingMessages.map(updateMessageReactions)
+          existingMessages.map(updateMessageReactions),
         );
       }
-    }
+    },
   );
 };
 
@@ -111,7 +111,7 @@ export const ReactionHandler = (props: {
           className={cn(
             "bg-secondary absolute flex -translate-x-[0%] items-center justify-center gap-1 rounded-full px-1 select-none lg:select-auto",
             { "z-50": message._id === selectedMessageId },
-            props.side === "left" ? "bottom-0 left-0" : "right-0 bottom-4"
+            props.side === "left" ? "bottom-0 left-0" : "right-0 bottom-4",
           )}
         >
           <ReactionQuickView
@@ -145,10 +145,13 @@ const ReactionQuickView = ({
 
   // Count how many times each emoji appears in reactions
   // Creates an object like: { "👍": 2, "❤️": 1 }
-  const currentReactionCounts = reactions.reduce((acc, reaction) => {
-    acc[reaction.emoji] = (acc[reaction.emoji] ?? 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+  const currentReactionCounts = reactions.reduce(
+    (acc, reaction) => {
+      acc[reaction.emoji] = (acc[reaction.emoji] ?? 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
 
   // Render each emoji and its count with animations
   return Object.entries(currentReactionCounts).map(([emoji, count]) => {
@@ -196,7 +199,7 @@ const ReactionDetails = ({
       | NonNullable<
           FunctionReturnType<typeof api.chats.getChatInfoFromId>
         >["otherUser"]
-    )
+    ),
   ];
   chatId: Id<"privateChats">;
 }) => {
@@ -204,12 +207,15 @@ const ReactionDetails = ({
 
   // Group reactions by emoji
   // Creates object like: { "👍": [reaction1, reaction2], "❤️": [reaction3] }
-  const reactionsByEmoji = reactions.reduce((acc, reaction) => {
-    const emojiArray = acc[reaction.emoji] ?? [];
-    emojiArray.push(reaction);
-    acc[reaction.emoji] = emojiArray;
-    return acc;
-  }, {} as Record<string, typeof reactions>);
+  const reactionsByEmoji = reactions.reduce(
+    (acc, reaction) => {
+      const emojiArray = acc[reaction.emoji] ?? [];
+      emojiArray.push(reaction);
+      acc[reaction.emoji] = emojiArray;
+      return acc;
+    },
+    {} as Record<string, typeof reactions>,
+  );
 
   return (
     <div className="flex flex-col gap-2 p-2">
@@ -219,7 +225,7 @@ const ReactionDetails = ({
             className={cn(
               "flex items-center gap-2",
               reactions.some((r) => r.userId === userInfos[0]?._id) &&
-                "cursor-pointer hover:opacity-70"
+                "cursor-pointer hover:opacity-70",
             )}
             onClick={() => {
               if (reactions.some((r) => r.userId === userInfos[0]?._id)) {
@@ -243,8 +249,8 @@ const ReactionDetails = ({
                       userInfos[0]?._id === reaction.userId
                         ? userInfos[0]
                         : Array.isArray(userInfos[1])
-                        ? userInfos[1].find((u) => u._id === reaction.userId)
-                        : userInfos[1];
+                          ? userInfos[1].find((u) => u._id === reaction.userId)
+                          : userInfos[1];
                     return user?.username;
                   })
                   .join(", ")}

@@ -19,7 +19,7 @@ const SkeletonsChat = (props: { amount: number }) => {
   return Array.from({ length: props.amount }).map((_, index) => (
     <div
       key={index}
-      className={cn("w-full border-t-2 border-secondary", {
+      className={cn("border-secondary w-full border-t-2", {
         "border-0": index == 0,
       })}
     >
@@ -32,7 +32,7 @@ const SkeletonsChat = (props: { amount: number }) => {
             <Skeleton className="h-3 w-32" />
           </div>
         </div>
-        <ArrowRight className="ml-3 text-secondary-foreground lg:mr-10" />
+        <ArrowRight className="text-secondary-foreground ml-3 lg:mr-10" />
       </div>
     </div>
   ));
@@ -45,11 +45,11 @@ const Chats: React.FC<{
   chats?.sort((a, b) => {
     const aLatestTime = Math.max(
       new Date(a._creationTime || 0).getTime(),
-      a.lastMessage ? new Date(a.lastMessage._creationTime || 0).getTime() : 0
+      a.lastMessage ? new Date(a.lastMessage._creationTime || 0).getTime() : 0,
     );
     const bLatestTime = Math.max(
       new Date(b._creationTime || 0).getTime(),
-      b.lastMessage ? new Date(b.lastMessage._creationTime || 0).getTime() : 0
+      b.lastMessage ? new Date(b.lastMessage._creationTime || 0).getTime() : 0,
     );
 
     return bLatestTime - aLatestTime;
@@ -57,7 +57,7 @@ const Chats: React.FC<{
   const clerkUser = useUser();
   const [searchTerm, setSearchTerm] = useState("");
   const [searchedChats, setSearchedChats] = useState<Chats | null | undefined>(
-    chats
+    chats,
   );
 
   useEffect(() => {
@@ -67,10 +67,10 @@ const Chats: React.FC<{
     }
     const filteredChats = chats?.filter((chat) => {
       const filteredChatUsers = (chat.users = chat.users.filter(
-        (user) => user.clerkId.split("|").pop() !== clerkUser.user?.id
+        (user) => user.clerkId.split("|").pop() !== clerkUser.user?.id,
       ));
       return filteredChatUsers.some((user) =>
-        user.username.toLowerCase().startsWith(searchTerm.toLowerCase().trim())
+        user.username.toLowerCase().startsWith(searchTerm.toLowerCase().trim()),
       ) ||
         (chat.support &&
           "Chat.io Support"
@@ -78,12 +78,12 @@ const Chats: React.FC<{
             .includes(searchTerm.toLowerCase().trim()))
         ? chat
         : !filteredChatUsers[0] &&
-          !chat.support &&
-          "My Notes Tool"
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase().trim())
-        ? chat
-        : false;
+            !chat.support &&
+            "My Notes Tool"
+              .toLowerCase()
+              .includes(searchTerm.toLowerCase().trim())
+          ? chat
+          : false;
     });
 
     setSearchedChats(filteredChats);
@@ -100,8 +100,8 @@ const Chats: React.FC<{
       <div className="mb-4 flex w-full justify-center">
         <div
           className={cn(
-            "mt-20 flex w-10/12 flex-col items-center truncate rounded-lg border-2 border-secondary bg-primary lg:w-1/2 xl:w-1/3",
-            classNameChatList
+            "border-secondary bg-primary mt-20 flex w-10/12 flex-col items-center truncate rounded-lg border-2 lg:w-1/2 xl:w-1/3",
+            classNameChatList,
           )}
         >
           {searchedChats ? (
@@ -109,7 +109,7 @@ const Chats: React.FC<{
               if (chat.support) {
                 return (
                   <div
-                    className={cn("w-full border-t-2 border-secondary", {
+                    className={cn("border-secondary w-full border-t-2", {
                       "border-0": index == 0,
                     })}
                     key={index}
@@ -131,10 +131,10 @@ const Chats: React.FC<{
                             </div>
                             <Badge>Support</Badge>
                           </div>
-                          <div className="ml-4 mt-0.5 text-sm text-destructive-foreground">
+                          <div className="text-destructive-foreground mt-0.5 ml-4 text-sm">
                             {chat.lastMessage &&
                               chat.lastMessage.type != "message" && (
-                                <div className="font-semibold text-destructive-foreground">
+                                <div className="text-destructive-foreground font-semibold">
                                   {chat.lastMessage.type === "pendingRequest"
                                     ? chat.lastMessage.clerkId
                                         .split("|")
@@ -142,17 +142,17 @@ const Chats: React.FC<{
                                       ? "You've sent a request to clear the chat"
                                       : `The support has sent a request to clear the chat`
                                     : chat.lastMessage?.type ===
-                                      "expiredRequest"
-                                    ? chat.lastMessage.clerkId
-                                        .split("|")
-                                        .pop() === clerkUser.user?.id
-                                      ? "Your request to clear the chat has expired"
-                                      : `The support's request to clear the chat has expired`
-                                    : chat.lastMessage.clerkId
-                                        .split("|")
-                                        .pop() === clerkUser.user?.username
-                                    ? "The support has rejected your request to clear the chat"
-                                    : "You have rejected the request to clear the chat"}
+                                        "expiredRequest"
+                                      ? chat.lastMessage.clerkId
+                                          .split("|")
+                                          .pop() === clerkUser.user?.id
+                                        ? "Your request to clear the chat has expired"
+                                        : `The support's request to clear the chat has expired`
+                                      : chat.lastMessage.clerkId
+                                            .split("|")
+                                            .pop() === clerkUser.user?.username
+                                        ? "The support has rejected your request to clear the chat"
+                                        : "You have rejected the request to clear the chat"}
                                 </div>
                               )}
 
@@ -161,7 +161,8 @@ const Chats: React.FC<{
                                 chat.lastMessage.content != "" ? (
                                   chat.lastMessage.readBy.some(
                                     (user) =>
-                                      user.username === clerkUser.user?.username
+                                      user.username ===
+                                      clerkUser.user?.username,
                                   ) ? (
                                     chat.lastMessage.content
                                   ) : (
@@ -184,25 +185,25 @@ const Chats: React.FC<{
                           </div>
                         </div>
                       </div>
-                      <ArrowRight className="ml-3 text-secondary-foreground lg:mr-10" />
+                      <ArrowRight className="text-secondary-foreground ml-3 lg:mr-10" />
                     </Link>
                   </div>
                 );
               }
               chat.users = chat.users.filter(
-                (user) => user.clerkId.split("|").pop() !== clerkUser.user?.id
+                (user) => user.clerkId.split("|").pop() !== clerkUser.user?.id,
               );
 
               return (
                 <div
-                  className={cn("w-full border-t-2 border-secondary", {
+                  className={cn("border-secondary w-full border-t-2", {
                     "border-0": index == 0,
                   })}
                   key={index}
                 >
                   <Link
                     className={cn(
-                      "flex w-full items-center justify-between truncate px-5 py-6 lg:ml-5 lg:border-0 lg:px-0"
+                      "flex w-full items-center justify-between truncate px-5 py-6 lg:ml-5 lg:border-0 lg:px-0",
                     )}
                     href={`/chats/${chat._id}`}
                   >
@@ -222,10 +223,10 @@ const Chats: React.FC<{
                             <p className="truncate text-lg">
                               {chat.users[0].username}
                             </p>
-                            <div className="mt-0.5 w-10/12 truncate text-sm font-normal text-destructive-foreground">
+                            <div className="text-destructive-foreground mt-0.5 w-10/12 truncate text-sm font-normal">
                               {chat.lastMessage &&
                                 chat.lastMessage.type != "message" && (
-                                  <div className="font-semibold text-destructive-foreground">
+                                  <div className="text-destructive-foreground font-semibold">
                                     {chat.lastMessage.type === "pendingRequest"
                                       ? chat.lastMessage.clerkId
                                           .split("|")
@@ -233,17 +234,18 @@ const Chats: React.FC<{
                                         ? "You've sent a request to clear the chat"
                                         : `${chat.users[0].username} has sent a request to clear the chat`
                                       : chat.lastMessage?.type ===
-                                        "expiredRequest"
-                                      ? chat.lastMessage.clerkId
-                                          .split("|")
-                                          .pop() === clerkUser.user?.id
-                                        ? "Your request to clear the chat has expired"
-                                        : `${chat.users[0].username}'s request to clear the chat has expired`
-                                      : chat.lastMessage.clerkId
-                                          .split("|")
-                                          .pop() === clerkUser.user?.username
-                                      ? `${chat.users[0].username} has rejected your request to clear the chat`
-                                      : "You have rejected the request to clear the chat"}
+                                          "expiredRequest"
+                                        ? chat.lastMessage.clerkId
+                                            .split("|")
+                                            .pop() === clerkUser.user?.id
+                                          ? "Your request to clear the chat has expired"
+                                          : `${chat.users[0].username}'s request to clear the chat has expired`
+                                        : chat.lastMessage.clerkId
+                                              .split("|")
+                                              .pop() ===
+                                            clerkUser.user?.username
+                                          ? `${chat.users[0].username} has rejected your request to clear the chat`
+                                          : "You have rejected the request to clear the chat"}
                                   </div>
                                 )}
 
@@ -253,7 +255,7 @@ const Chats: React.FC<{
                                     chat.lastMessage.readBy.some(
                                       (user) =>
                                         user.username ===
-                                        clerkUser.user?.username
+                                        clerkUser.user?.username,
                                     ) ? (
                                       chat.lastMessage.content
                                     ) : (
@@ -278,15 +280,15 @@ const Chats: React.FC<{
                         ) : (
                           <div className="flex flex-col">
                             <div className="flex">
-                              <p className="truncate whitespace-nowrap text-lg">
+                              <p className="truncate text-lg whitespace-nowrap">
                                 My Notes
                               </p>
                               <Badge>Tool</Badge>
                             </div>
-                            <div className="mt-0.5 w-10/12 truncate text-sm font-normal text-destructive-foreground">
+                            <div className="text-destructive-foreground mt-0.5 w-10/12 truncate text-sm font-normal">
                               {chat.lastMessage &&
                                 chat.lastMessage.type != "message" && (
-                                  <div className="font-semibold text-destructive-foreground">
+                                  <div className="text-destructive-foreground font-semibold">
                                     {chat.lastMessage.type === "pendingRequest"
                                       ? chat.lastMessage.clerkId
                                           .split("|")
@@ -294,17 +296,18 @@ const Chats: React.FC<{
                                         ? "You've sent a request to clear the chat"
                                         : `Your notes have sent a request to clear the chat`
                                       : chat.lastMessage?.type ===
-                                        "expiredRequest"
-                                      ? chat.lastMessage.clerkId
-                                          .split("|")
-                                          .pop() === clerkUser.user?.id
-                                        ? "Your request to clear the chat has expired"
-                                        : `Your notes' request to clear the chat has expired`
-                                      : chat.lastMessage.clerkId
-                                          .split("|")
-                                          .pop() === clerkUser.user?.username
-                                      ? "Your notes have rejected your request to clear the chat"
-                                      : "You have rejected the request to clear the chat"}
+                                          "expiredRequest"
+                                        ? chat.lastMessage.clerkId
+                                            .split("|")
+                                            .pop() === clerkUser.user?.id
+                                          ? "Your request to clear the chat has expired"
+                                          : `Your notes' request to clear the chat has expired`
+                                        : chat.lastMessage.clerkId
+                                              .split("|")
+                                              .pop() ===
+                                            clerkUser.user?.username
+                                          ? "Your notes have rejected your request to clear the chat"
+                                          : "You have rejected the request to clear the chat"}
                                   </div>
                                 )}
                               {chat.lastMessage ? (
@@ -313,7 +316,7 @@ const Chats: React.FC<{
                                     chat.lastMessage.readBy.some(
                                       (user) =>
                                         user.username ===
-                                        clerkUser.user?.username
+                                        clerkUser.user?.username,
                                     ) ? (
                                       chat.lastMessage.content
                                     ) : (
@@ -340,11 +343,11 @@ const Chats: React.FC<{
                     </div>
                     <div className="flex">
                       {chat.numberOfUnreadMessages > 0 && (
-                        <div className="flex h-6 w-9 items-center justify-center rounded-full bg-accent p-1 text-[70%] font-medium">
+                        <div className="bg-accent flex h-6 w-9 items-center justify-center rounded-full p-1 text-[70%] font-medium">
                           {chat.numberOfUnreadMessages}
                         </div>
                       )}
-                      <ArrowRight className="!important ml-3 h-6 w-6 text-secondary-foreground lg:mr-10" />
+                      <ArrowRight className="!important text-secondary-foreground ml-3 h-6 w-6 lg:mr-10" />
                     </div>
                   </Link>
                 </div>

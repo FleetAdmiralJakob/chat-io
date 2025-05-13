@@ -72,7 +72,7 @@ const ContributorCard = (props: { contributor: ContributorsProps }) => {
             "mt-2.5 ml-5 hidden h-7 w-7 cursor-pointer transition-transform duration-300 ease-in-out lg:flex",
             {
               "rotate-180 transform": cardOpen,
-            }
+            },
           )}
         />
       </div>
@@ -84,7 +84,7 @@ const ContributorCard = (props: { contributor: ContributorsProps }) => {
               !cardOpen,
             "transition-max-height max-h-screen duration-300 ease-in-out":
               cardOpen,
-          }
+          },
         )}
       >
         {props.contributor.website ? (

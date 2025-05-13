@@ -66,7 +66,7 @@ const baseConfig = withAxiom(
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return config;
     },
-  })
+  }),
 );
 
 const config = withSentryConfig(baseConfig, {

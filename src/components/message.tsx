@@ -44,7 +44,7 @@ export type UserInfos = [
     | NonNullable<
         FunctionReturnType<typeof api.chats.getChatInfoFromId>
       >["otherUser"]
-  )
+  ),
 ];
 
 const EditedLabel = ({ message }: { message: Message }) => (
@@ -132,7 +132,7 @@ export const Message = ({
   const clerkUser = useUser();
 
   const deleteMessage = useMutation(
-    api.messages.deleteMessage
+    api.messages.deleteMessage,
   ).withOptimisticUpdate((localStore, args) => {
     const messageId: Id<"messages"> = args.messageId as Id<"messages">;
     const chatId: Id<"privateChats"> = args.chatId as Id<"privateChats">;
@@ -167,7 +167,7 @@ export const Message = ({
             };
           }
           return message;
-        })
+        }),
       );
 
       localStore.setQuery(
@@ -186,13 +186,13 @@ export const Message = ({
           } else {
             return chat;
           }
-        })
+        }),
       );
     }
   });
 
   const checkClickPosition = (
-    e: React.MouseEvent | TouchEvent | MouseEvent
+    e: React.MouseEvent | TouchEvent | MouseEvent,
   ) => {
     const clickPosition =
       "touches" in e && e.touches[0]
@@ -217,8 +217,8 @@ export const Message = ({
             ? "top-end"
             : "bottom-end"
           : isInBottomHalf
-          ? "top-start"
-          : "bottom-start",
+            ? "top-start"
+            : "bottom-start",
     });
 
   const {
@@ -231,8 +231,8 @@ export const Message = ({
           ? "bottom-end"
           : "top-end"
         : isInBottomHalf
-        ? "bottom-start"
-        : "top-start",
+          ? "bottom-start"
+          : "top-start",
   });
 
   const markRead = useMutation(api.messages.markMessageRead);
@@ -299,7 +299,7 @@ export const Message = ({
   const [ForwardedMessageId, setForwardedMessageId] = useQueryState(
     // It is used to show if the forward dialog should be shown. If the string is empty the dialog should be not shown if there is an id inside it should
     "forward",
-    parseAsString.withDefault("")
+    parseAsString.withDefault(""),
   );
 
   const handleForward = () => {
@@ -365,9 +365,9 @@ export const Message = ({
                         message.reactions.find(
                           (reaction) =>
                             reaction.emoji === "😂" &&
-                            reaction.userId === userInfos[0]?._id
+                            reaction.userId === userInfos[0]?._id,
                         ),
-                    }
+                    },
                   )}
                 >
                   <span className="transition-transform hover:scale-125">
@@ -391,9 +391,9 @@ export const Message = ({
                         message.reactions.find(
                           (reaction) =>
                             reaction.emoji === "❤️" &&
-                            reaction.userId === userInfos[0]?._id
+                            reaction.userId === userInfos[0]?._id,
                         ),
-                    }
+                    },
                   )}
                 >
                   <span className="transition-transform hover:scale-125">
@@ -417,9 +417,9 @@ export const Message = ({
                         message.reactions.find(
                           (reaction) =>
                             reaction.emoji === "👍" &&
-                            reaction.userId === userInfos[0]?._id
+                            reaction.userId === userInfos[0]?._id,
                         ),
-                    }
+                    },
                   )}
                 >
                   <span className="transition-transform hover:scale-125">
@@ -443,9 +443,9 @@ export const Message = ({
                         message.reactions.find(
                           (reaction) =>
                             reaction.emoji === "👎" &&
-                            reaction.userId === userInfos[0]?._id
+                            reaction.userId === userInfos[0]?._id,
                         ),
-                    }
+                    },
                   )}
                 >
                   <span className="transition-transform hover:scale-125">
@@ -469,9 +469,9 @@ export const Message = ({
                         message.reactions.find(
                           (reaction) =>
                             reaction.emoji === "😮" &&
-                            reaction.userId === userInfos[0]?._id
+                            reaction.userId === userInfos[0]?._id,
                         ),
-                    }
+                    },
                   )}
                 >
                   <span className="transition-transform hover:scale-125">
@@ -494,7 +494,7 @@ export const Message = ({
                 </span>
               </div>
             </div>,
-            chatContainerElement
+            chatContainerElement,
           )
         : null}
       {message.from.username == clerkUser.user?.username ? (
@@ -553,7 +553,7 @@ export const Message = ({
                 "mb-3":
                   message.type === "message" && message.reactions.length > 0,
                 "animate-pulse": highlightedMessageId === message._id,
-              }
+              },
             )}
           >
             {message.type === "message" && message.deleted ? (
@@ -693,7 +693,7 @@ export const Message = ({
                     </div>
                   </div>
                 </div>,
-                chatContainerElement
+                chatContainerElement,
               )
             : null}
         </div>
@@ -739,7 +739,7 @@ export const Message = ({
                 "mb-3":
                   message.type === "message" && message.reactions.length > 0,
                 "animate-pulse": highlightedMessageId === message._id,
-              }
+              },
             )}
           >
             {message.type === "message" && message.deleted ? (
@@ -783,7 +783,7 @@ export const Message = ({
                       <button
                         onClick={rejectClearRequestHandler(
                           message.privateChatId,
-                          message._id
+                          message._id,
                         )}
                         className="bg-accent mt-4 ml-4 flex rounded-xs p-2 px-4 lg:ml-0"
                       >
@@ -861,7 +861,7 @@ export const Message = ({
                     </div>
                   </div>
                 </div>,
-                chatContainerElement
+                chatContainerElement,
               )
             : null}
         </div>

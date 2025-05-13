@@ -12,12 +12,12 @@ export const DevMode = observer(
   }) => {
     return (
       <div
-        className={cn("absolute left-0 top-0 hidden", className, {
+        className={cn("absolute top-0 left-0 hidden", className, {
           block: devMode$.get(),
         })}
       >
         {children}
       </div>
     );
-  }
+  },
 );

@@ -20,7 +20,7 @@ const Avatar = ({
         className,
         {
           "h-11 w-11 lg:h-14 lg:w-14": pathname.startsWith("/chats/"),
-        }
+        },
       )}
       {...props}
     />
@@ -52,7 +52,7 @@ const AvatarFallback = ({
     ref={ref}
     className={cn(
       "flex h-full w-full items-center justify-center rounded-full bg-black",
-      className
+      className,
     )}
     {...props}
   />

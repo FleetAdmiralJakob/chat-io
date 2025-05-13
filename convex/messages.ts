@@ -26,7 +26,7 @@ export const getMessages = query({
       !usersInChat.some((user) => user.clerkId === identity.tokenIdentifier)
     ) {
       throw new ConvexError(
-        "UNAUTHORIZED REQUEST: User requested messages from a chat in which he is not in."
+        "UNAUTHORIZED REQUEST: User requested messages from a chat in which he is not in.",
       );
     }
 
@@ -79,7 +79,7 @@ export const getMessages = query({
     ]);
 
     return [...messages, ...requests].sort(
-      (a, b) => a._creationTime - b._creationTime
+      (a, b) => a._creationTime - b._creationTime,
     );
   },
 });
@@ -110,7 +110,7 @@ export const createMessage = mutation({
 
     if (!convexUser) {
       throw new ConvexError(
-        "Mismatch between Clerk and Convex. This is an error by us."
+        "Mismatch between Clerk and Convex. This is an error by us.",
       );
     }
 
@@ -123,7 +123,7 @@ export const createMessage = mutation({
       !usersInChat.some((user) => user.clerkId === identity.tokenIdentifier)
     ) {
       throw new ConvexError(
-        "UNAUTHORIZED REQUEST: User tried to send a message in a chat in which he is not in."
+        "UNAUTHORIZED REQUEST: User tried to send a message in a chat in which he is not in.",
       );
     }
 
@@ -172,7 +172,7 @@ export const deleteMessage = mutation({
     }
 
     const messageReactions = await ctx.table("reactions", "messageId", (q) =>
-      q.eq("messageId", parsedMessageId)
+      q.eq("messageId", parsedMessageId),
     );
 
     await Promise.all(messageReactions.map((reaction) => reaction.delete()));
@@ -181,7 +181,7 @@ export const deleteMessage = mutation({
 
     if ((await message.edge("user")).clerkId !== identity.tokenIdentifier) {
       throw new ConvexError(
-        "UNAUTHORIZED REQUEST: User tried to delete a message from another person."
+        "UNAUTHORIZED REQUEST: User tried to delete a message from another person.",
       );
     }
 
@@ -213,7 +213,7 @@ export const markMessageRead = mutation({
 
     if (!convexUser?._id) {
       throw new ConvexError(
-        "Mismatch between Clerk and Convex. This is an error by us."
+        "Mismatch between Clerk and Convex. This is an error by us.",
       );
     }
 
@@ -232,7 +232,7 @@ export const markMessageRead = mutation({
         !usersInChat.some((user) => user.clerkId === identity.tokenIdentifier)
       ) {
         throw new ConvexError(
-          "User not authorized to mark messages in this chat"
+          "User not authorized to mark messages in this chat",
         );
       }
 
@@ -259,7 +259,7 @@ export const markMessageRead = mutation({
           !usersInChat.some((user) => user.clerkId === identity.tokenIdentifier)
         ) {
           throw new ConvexError(
-            "User not authorized to mark messages in this chat"
+            "User not authorized to mark messages in this chat",
           );
         }
 
@@ -284,7 +284,7 @@ export const forwardMessage = mutation({
         username: v.string(),
         userId: v.string(),
         chatId: v.id("privateChats"),
-      })
+      }),
     ),
 
     messageId: v.string(),
@@ -303,12 +303,12 @@ export const forwardMessage = mutation({
       const usersInChat = await chat.edge("users");
 
       const user = usersInChat.find(
-        (user) => user.clerkId === identity.tokenIdentifier
+        (user) => user.clerkId === identity.tokenIdentifier,
       );
 
       if (!user) {
         throw new ConvexError(
-          "UNAUTHORIZED REQUEST: User tried to forward a message to a chat in which he is not in."
+          "UNAUTHORIZED REQUEST: User tried to forward a message to a chat in which he is not in.",
         );
       }
 
@@ -354,7 +354,7 @@ export const editMessage = mutation({
 
     if ((await message.edge("user")).clerkId !== identity.tokenIdentifier) {
       throw new ConvexError(
-        "UNAUTHORIZED REQUEST: User tried to edit a message from another person."
+        "UNAUTHORIZED REQUEST: User tried to edit a message from another person.",
       );
     }
 
@@ -386,7 +386,7 @@ export const reactToMessage = mutation({
 
     if (!convexUser?._id) {
       throw new ConvexError(
-        "Mismatch between Clerk and Convex. This is an error by us."
+        "Mismatch between Clerk and Convex. This is an error by us.",
       );
     }
 
