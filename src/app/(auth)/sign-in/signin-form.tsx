@@ -158,7 +158,9 @@ export function SignInForm() {
           err.errors.some((err) => err.code === "form_identifier_not_found")
         ) {
           setWholeFormError(
-            `The ${isEmailLogin ? "email" : "username + id"} you entered does not exist. Please try again.`,
+            `The ${
+              isEmailLogin ? "email" : "username + id"
+            } you entered does not exist. Please try again.`,
           );
         } else if (
           err.errors.some((err) => err.code === "form_password_incorrect")
@@ -187,7 +189,9 @@ export function SignInForm() {
         <Button
           type="button"
           variant="outline"
-          aria-label={`Switch to ${isEmailLogin ? "Username" : "Email"} login mode`}
+          aria-label={`Switch to ${
+            isEmailLogin ? "Username" : "Email"
+          } login mode`}
           onClick={() => setIsEmailLogin(!isEmailLogin)}
         >
           Switch to {isEmailLogin ? "Username" : "Email"} Login
@@ -272,7 +276,7 @@ export function SignInForm() {
 
         {!isEmailLogin && (
           <span
-            className={cn("text-sm text-secondary-foreground", {
+            className={cn("text-secondary-foreground text-sm", {
               hidden: form.formState.errors.identifier,
             })}
           >
@@ -285,7 +289,7 @@ export function SignInForm() {
           control={form.control}
           name="password"
           render={({ field }) => (
-            <FormItem className="xl:flex-2 xl:w-full">
+            <FormItem className="xl:w-full xl:flex-2">
               <FormLabel>Password</FormLabel>
               <FormControl>
                 <Input
@@ -319,7 +323,7 @@ export function SignInForm() {
         {wholeFormError && (
           <>
             <br />
-            <div className="text-sm font-medium text-destructive">
+            <div className="text-destructive text-sm font-medium">
               {wholeFormError}
             </div>
           </>

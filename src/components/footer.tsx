@@ -17,8 +17,8 @@ import {
 const Footer = () => {
   return (
     <>
-      <div className="block h-48 justify-between bg-card-foreground text-xl text-foreground lg:flex lg:h-24">
-        <div className="flex w-full justify-around pt-7 lg:ml-20 lg:mt-8 lg:w-1/6 lg:pt-0">
+      <div className="bg-card-foreground text-foreground block h-48 justify-between text-xl lg:flex lg:h-24">
+        <div className="flex w-full justify-around pt-7 lg:mt-8 lg:ml-20 lg:w-1/6 lg:pt-0">
           <Link
             href="https://github.com/FleetAdmiralJakob/chat-io"
             aria-label="See our project's code on GitHub"
@@ -38,7 +38,7 @@ const Footer = () => {
             <UsersRound className="h-6 w-6" />
           </Link>
         </div>
-        <div className="flex w-full flex-col gap-3 pl-14 pt-8 lg:w-2/5 lg:flex-row lg:justify-around lg:pt-0">
+        <div className="flex w-full flex-col gap-3 pt-8 pl-14 lg:w-2/5 lg:flex-row lg:justify-around lg:pt-0">
           <div className="flex items-center gap-1">
             <Globe />
             <Select>

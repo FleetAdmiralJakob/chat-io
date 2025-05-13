@@ -32,7 +32,7 @@ export default function PublicHomepage() {
   return (
     <>
       <AuroraBackground>
-        <div className="z-10 mb-10 flex min-h-screen flex-col items-center text-foreground">
+        <div className="text-foreground z-10 mb-10 flex min-h-screen flex-col items-center">
           <DevMode>
             <div onClick={() => devMode$.set(false)}>Disable dev mode</div>
           </DevMode>
@@ -62,11 +62,11 @@ export default function PublicHomepage() {
                     handleDevModeClick();
                   }}
                 />
-                <h2 className="mr-8 text-3xl font-bold tracking-tight text-foreground sm:text-[5rem]">
+                <h2 className="text-foreground mr-8 text-3xl font-bold tracking-tight sm:text-[5rem]">
                   Chat.io
                 </h2>
               </div>
-              <p className="w-3/4 bg-gradient-to-b from-gray-600 via-gray-500 to-gray-800 bg-clip-text text-2xl text-transparent dark:from-gray-300 dark:to-gray-600 sm:w-7/12">
+              <p className="w-3/4 bg-gradient-to-b from-gray-600 via-gray-500 to-gray-800 bg-clip-text text-2xl text-transparent sm:w-7/12 dark:from-gray-300 dark:to-gray-600">
                 Introducing Chat.io, the next evolution in messaging apps from
                 the creators of the beloved Weather.io. Building on our
                 experience crafting intuitive and feature-rich applications, we
@@ -75,7 +75,7 @@ export default function PublicHomepage() {
               </p>
               <div className="flex flex-col items-center gap-1 py-11">
                 <Link href="/sign-up">
-                  <Button className="bg-foreground p-6 text-2xl transition delay-150 duration-200 ease-in-out hover:bg-secondary-foreground hover:text-amber-50">
+                  <Button className="bg-foreground hover:bg-secondary-foreground p-6 text-2xl transition delay-150 duration-200 ease-in-out hover:text-amber-50">
                     Sign Up
                   </Button>
                 </Link>
@@ -88,7 +88,7 @@ export default function PublicHomepage() {
                 }}
                 aria-label="Automatically scroll down to all the features of Chat.io"
                 aria-controls="features-section"
-                className="flex aspect-square h-7 animate-bounce items-center justify-center rounded-full bg-foreground text-primary-foreground"
+                className="bg-foreground text-primary-foreground flex aspect-square h-7 animate-bounce items-center justify-center rounded-full"
               >
                 <ArrowDown className="h-6" />
               </button>
@@ -98,7 +98,7 @@ export default function PublicHomepage() {
           <p
             id="features-section"
             ref={aboutRef}
-            className="mb-20 mt-16 w-3/4 text-center text-2xl md:w-1/2 lg:w-1/4"
+            className="mt-16 mb-20 w-3/4 text-center text-2xl md:w-1/2 lg:w-1/4"
           >
             Discover the multitude of features packed into Chat.io
           </p>
@@ -123,7 +123,7 @@ export default function PublicHomepage() {
             className="flex w-3/4 flex-col items-center md:w-1/2 lg:w-1/4"
           >
             <div>
-              <SiGithub className="mb-2 ml-10 mt-16 h-9 w-9" />
+              <SiGithub className="mt-16 mb-2 ml-10 h-9 w-9" />
               <p className="mb-5 text-xl">Open Source</p>
             </div>
             <p className="text-secondary-foreground">
@@ -137,7 +137,7 @@ export default function PublicHomepage() {
             className="flex w-3/4 flex-col items-center md:w-1/2 lg:w-1/4"
           >
             <div>
-              <ShieldCheck className="mb-2 ml-4 mt-16 h-10 w-10" />
+              <ShieldCheck className="mt-16 mb-2 ml-4 h-10 w-10" />
               <p className="mb-5 text-xl">Privacy</p>
             </div>
             <p className="text-secondary-foreground">

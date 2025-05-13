@@ -251,7 +251,7 @@ export function SignUpForm() {
           />
         </div>
         <span
-          className={cn("text-sm text-secondary-foreground", {
+          className={cn("text-secondary-foreground text-sm", {
             hidden:
               form.formState.errors.username ??
               form.formState.errors.usernameId,
@@ -305,7 +305,7 @@ export function SignUpForm() {
           />
         </div>
         <span
-          className={cn("text-sm text-secondary-foreground", {
+          className={cn("text-secondary-foreground text-sm", {
             hidden:
               form.formState.errors.firstName ?? form.formState.errors.lastName,
           })}
