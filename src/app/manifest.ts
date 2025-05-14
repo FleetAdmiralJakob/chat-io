@@ -6,8 +6,8 @@ export default function manifest(): MetadataRoute.Manifest {
     short_name: "Chat.io",
     icons: [
       {
-        src: "/icons/icon-512x-512-any.png",
-        sizes: "512x512",
+        src: "/icons/chatio.png",
+        sizes: "193x193",
         type: "image/png",
         purpose: "any",
       },
