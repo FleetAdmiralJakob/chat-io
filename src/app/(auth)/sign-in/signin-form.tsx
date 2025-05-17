@@ -184,15 +184,6 @@ export function SignInForm() {
         onSubmit={form.handleSubmit(onSubmit)}
         className="bg w-3/4 space-y-8 xl:w-5/12"
       >
-        <Button
-          type="button"
-          variant="outline"
-          aria-label={`Switch to ${isEmailLogin ? "Username" : "Email"} login mode`}
-          onClick={() => setIsEmailLogin(!isEmailLogin)}
-        >
-          Switch to {isEmailLogin ? "Username" : "Email"} Login
-        </Button>
-
         {isEmailLogin ? (
           <FormField
             control={form.control}
@@ -302,6 +293,14 @@ export function SignInForm() {
             </FormItem>
           )}
         />
+        <Button
+          className="mr-5"
+          variant="outline"
+          aria-label={`Switch to ${isEmailLogin ? "Username" : "Email"} login mode`}
+          onClick={() => setIsEmailLogin(!isEmailLogin)}
+        >
+          Switch to {isEmailLogin ? "Username" : "Email"} Login
+        </Button>
         <Button
           disabled={formIsLoading}
           type="submit"
