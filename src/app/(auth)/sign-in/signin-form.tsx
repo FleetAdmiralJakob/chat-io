@@ -144,7 +144,10 @@ export function SignInForm() {
             // "You are already signed in. Please sign out before signing in again.",
             <div>
               You are already signed in. Please{" "}
-              <button className="underline" onMouseDown={() => signOut()}>
+              <button
+                className="cursor-pointer underline"
+                onMouseDown={() => signOut()}
+              >
                 sign out
               </button>{" "}
               before signing in again. Alternatively you can go back to the{" "}

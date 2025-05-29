@@ -88,7 +88,7 @@ export default function PublicHomepage() {
                 }}
                 aria-label="Automatically scroll down to all the features of Chat.io"
                 aria-controls="features-section"
-                className="bg-foreground text-primary-foreground flex aspect-square h-7 animate-bounce items-center justify-center rounded-full"
+                className="bg-foreground text-primary-foreground flex aspect-square h-7 animate-bounce cursor-pointer items-center justify-center rounded-full"
               >
                 <ArrowDown className="h-6" />
               </button>

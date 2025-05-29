@@ -123,7 +123,7 @@ export function AddUserDialog({
             <DialogTrigger asChild>
               <button
                 className={cn(
-                  "bg-background inline-flex aspect-square w-11 items-center justify-center rounded-full",
+                  "bg-background inline-flex aspect-square w-11 cursor-pointer items-center justify-center rounded-full",
                   classNameDialogTrigger,
                 )}
                 aria-label="Click here to add a chat with a user"

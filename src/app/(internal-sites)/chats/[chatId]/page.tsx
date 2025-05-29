@@ -624,7 +624,10 @@ export default function Page() {
             }}
           />
           <DevMode className="top-20 z-10">
-            <button onClick={createClearRequestHandler(params.chatId)}>
+            <button
+              className="cursor-pointer"
+              onClick={createClearRequestHandler(params.chatId)}
+            >
               Clear Chat Request
             </button>
             <p>chatId: {params.chatId}</p>

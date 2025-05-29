@@ -46,7 +46,7 @@ const contributorList: ContributorsProps[] = [
 const ContributorCard = (props: { contributor: ContributorsProps }) => {
   const [cardOpen, setCardOpen] = useState(false);
   return (
-    <div className="border-secondary-foreground bg-card-foreground flex w-11/12 justify-between rounded-2xl border-2 p-5 sm:w-7/12 lg:block lg:w-6/12 2xl:w-4/12">
+    <div className="bg-card-foreground flex w-11/12 justify-between rounded-2xl border-2 p-5 sm:w-7/12 lg:block lg:w-6/12 2xl:w-4/12">
       <div className="flex items-center lg:justify-between">
         <div className="flex flex-wrap items-center justify-start">
           <Image
@@ -61,7 +61,7 @@ const ContributorCard = (props: { contributor: ContributorsProps }) => {
             <p className="text-xl font-bold lg:mt-3">
               {props.contributor.name}
             </p>
-            <p className="border-secondary-foreground bg-primary text-secondary-foreground mt-2.5 h-9 rounded-xs border-2 px-3 pt-1 font-medium lg:ml-4">
+            <p className="border-secondary-foreground bg-primary text-secondary-foreground mt-2.5 h-9 rounded-sm border-2 px-3 pt-1 font-medium lg:ml-4">
               {props.contributor.job}
             </p>
           </div>

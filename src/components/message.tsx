@@ -673,7 +673,7 @@ export const Message = ({
                         <p className="ml-1">Edit</p>
                       </button>
                       <button
-                        className="text-accent flex w-full p-2"
+                        className="text-accent flex w-full cursor-pointer p-2"
                         onMouseDown={() => {
                           void deleteMessage({
                             messageId: message._id,
@@ -775,7 +775,7 @@ export const Message = ({
                     <>
                       <button
                         onClick={acceptClearRequestHandler(message._id)}
-                        className="bg-accept mt-4 flex rounded-xs p-2 px-4"
+                        className="bg-accept mt-4 flex cursor-pointer rounded-xs p-2 px-4"
                       >
                         <CircleCheck className="mr-1 p-0.5" />
                         <p>Accept</p>
@@ -785,7 +785,7 @@ export const Message = ({
                           message.privateChatId,
                           message._id,
                         )}
-                        className="bg-accent mt-4 ml-4 flex rounded-xs p-2 px-4 lg:ml-0"
+                        className="bg-accent mt-4 ml-4 flex cursor-pointer rounded-xs p-2 px-4 lg:ml-0"
                       >
                         <CircleX className="mr-1 p-0.5" />
                         <p>Reject</p>{" "}

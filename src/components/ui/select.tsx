@@ -20,7 +20,7 @@ const SelectTrigger = ({
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
-      "flex h-10 w-full items-center justify-between rounded-md py-2 pb-6 pl-0.5 text-xl ring-offset-white placeholder:text-slate-500 focus:ring-offset-2 focus:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:ring-offset-slate-950 dark:placeholder:text-slate-400 dark:focus:ring-slate-300 [&>span]:line-clamp-1",
+      "flex h-10 w-full cursor-pointer items-center justify-between rounded-md py-2 pb-6 pl-0.5 text-xl ring-offset-white placeholder:text-slate-500 focus:ring-offset-2 focus:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:ring-offset-slate-950 dark:placeholder:text-slate-400 dark:focus:ring-slate-300 [&>span]:line-clamp-1",
       className,
     )}
     {...props}
