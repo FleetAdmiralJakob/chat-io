@@ -76,7 +76,7 @@ importers:
         version: 9.0.14(next@15.3.2(@babel/core@7.27.1)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@19.0.0-beta-e993439-20250328)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(typescript@5.8.3)(webpack@5.98.0)
       '@t3-oss/env-nextjs':
         specifier: ^0.13.0
-        version: 0.13.6(arktype@2.1.20)(typescript@5.8.3)(zod@3.25.32)
+        version: 0.13.6(arktype@2.1.20)(typescript@5.8.3)(zod@3.25.34)
       babel-plugin-react-compiler:
         specifier: 19.0.0-beta-e993439-20250328
         version: 19.0.0-beta-e993439-20250328
@@ -88,13 +88,13 @@ importers:
         version: 2.1.1
       convex:
         specifier: ^1.20.0
-        version: 1.24.2(@clerk/clerk-react@5.31.7(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)
+        version: 1.24.3(@clerk/clerk-react@5.31.7(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)
       convex-ents:
         specifier: ^0.13.0
-        version: 0.13.0(convex@1.24.2(@clerk/clerk-react@5.31.7(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0))
+        version: 0.13.0(convex@1.24.3(@clerk/clerk-react@5.31.7(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0))
       convex-helpers:
         specifier: ^0.1.71
-        version: 0.1.89(convex@1.24.2(@clerk/clerk-react@5.31.7(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0))(react@19.1.0)(typescript@5.8.3)(zod@3.25.32)
+        version: 0.1.89(convex@1.24.3(@clerk/clerk-react@5.31.7(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0))(react@19.1.0)(typescript@5.8.3)(zod@3.25.34)
       dayjs:
         specifier: ^1.11.13
         version: 1.11.13
@@ -133,7 +133,7 @@ importers:
         version: 2.4.3(next@15.3.2(@babel/core@7.27.1)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@19.0.0-beta-e993439-20250328)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)
       posthog-js:
         specifier: ^1.195.0
-        version: 1.248.0
+        version: 1.248.1
       react:
         specifier: ^19.0.0
         version: 19.1.0
@@ -166,7 +166,7 @@ importers:
         version: 1.0.7(tailwindcss@3.4.17)
       zod:
         specifier: ^3.23.8
-        version: 3.25.32
+        version: 3.25.34
     devDependencies:
       '@eslint/compat':
         specifier: ^1.2.3
@@ -2403,6 +2403,11 @@ packages:
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
 
+  browserslist@4.25.0:
+    resolution: {integrity: sha512-PJ8gYKeS5e/whHBh8xrwYK+dAvEj7JXtz6uTucnMRB8OiGTsKccFekoRrjajPBHV8oOY+2tI4uxeceSimKwMFA==}
+    engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
+    hasBin: true
+
   buffer-from@1.1.2:
     resolution: {integrity: sha512-E+XQCRwSbaaiChtv6k6Dwgc+bx+Bs6vuKJHHl5kox/BaKbhiXzqQOwK4cO22yElGp2OCmjwVhT3HmxgyPGnJfQ==}
 
@@ -2438,6 +2443,9 @@ packages:
 
   caniuse-lite@1.0.30001718:
     resolution: {integrity: sha512-AflseV1ahcSunK53NfEs9gFWgOEmzr0f+kaMFA4xiLZlr9Hzt7HxcSpIFcnNCUkz6R6dWKa54rUz3HUmI3nVcw==}
+
+  caniuse-lite@1.0.30001720:
+    resolution: {integrity: sha512-Ec/2yV2nNPwb4DnTANEV99ZWwm3ZWfdlfkQbWSDDt+PsXEVYwlhPH8tdMaPunYTKKmz7AnHi2oNEi1GcmKCD8g==}
 
   chalk@3.0.0:
     resolution: {integrity: sha512-4D3B6Wf41KOYRFdszmDqMCGq5VV/uMAB273JILmO+3jAlh8X4qDtdtgCR3fxtbLEMzSx22QdhnDcJvu2u1fVwg==}
@@ -2533,8 +2541,8 @@ packages:
       zod:
         optional: true
 
-  convex@1.24.2:
-    resolution: {integrity: sha512-aFIDzo3FhsgSpaukCYhzdu5+ilCebwn/IIxRSlBe/JyE4kydWrcEmyJXDCg/uTI9KZKRmkUINmtDcYn3n/cyjA==}
+  convex@1.24.3:
+    resolution: {integrity: sha512-ybi+eKf8pGPJKtu7axjkLydmYfxvKfa/jHdnXN4IAjaI/TOAhPx9CrsV9TEHm+Mp4VU7pFbbbtZOrxN0KLn/kA==}
     engines: {node: '>=18.0.0', npm: '>=7.0.0'}
     hasBin: true
     peerDependencies:
@@ -2669,6 +2677,9 @@ packages:
 
   electron-to-chromium@1.5.155:
     resolution: {integrity: sha512-ps5KcGGmwL8VaeJlvlDlu4fORQpv3+GIcF5I3f9tUKUlJ/wsysh6HU8P5L1XWRYeXfA0oJd4PyM8ds8zTFf6Ng==}
+
+  electron-to-chromium@1.5.161:
+    resolution: {integrity: sha512-hwtetwfKNZo/UlwHIVBlKZVdy7o8bIZxxKs0Mv/ROPiQQQmDgdm5a+KvKtBsxM8ZjFzTaCeLoodZ8jiBE3o9rA==}
 
   emoji-mart@5.6.0:
     resolution: {integrity: sha512-eJp3QRe79pjwa+duv+n7+5YsNhRcMl812EcFVwrnRvYKoNPoQb5qxU8DG6Bgwji0akHdp6D4Ln6tYLG58MFSow==}
@@ -3736,8 +3747,8 @@ packages:
     resolution: {integrity: sha512-9ZhXKM/rw350N1ovuWHbGxnGh/SNJ4cnxHiM0rxE4VN41wsg8P8zWn9hv/buK00RP4WvlOyr/RBDiptyxVbkZQ==}
     engines: {node: '>=0.10.0'}
 
-  posthog-js@1.248.0:
-    resolution: {integrity: sha512-cboa0NgM4yhDBpqNldgC2KwQX+QfKvViwr1J14zEv0L47j9RvdKnnDj2PtMQQ3z9mFmlHUFatCVSulcNRHLh7w==}
+  posthog-js@1.248.1:
+    resolution: {integrity: sha512-2KBbvvLbiNqQdoEgjczZJ7im5QT8zi0Q29a8AmfXs0UGyaYxmgqPCrE1elQmGBuAm1S3T+Xw2D6Ff0VQPXE6Rw==}
     peerDependencies:
       '@rrweb/types': 2.0.0-alpha.17
       rrweb-snapshot: 2.0.0-alpha.17
@@ -4511,8 +4522,8 @@ packages:
   zod@3.24.3:
     resolution: {integrity: sha512-HhY1oqzWCQWuUqvBFnsyrtZRhyPeR7SUGv+C4+MsisMuVfSPx8HpwWqH8tRahSlt6M3PiFAcoeFhZAqIXTxoSg==}
 
-  zod@3.25.32:
-    resolution: {integrity: sha512-OSm2xTIRfW8CV5/QKgngwmQW/8aPfGdaQFlrGoErlgg/Epm7cjb6K6VEyExfe65a3VybUOnu381edLb0dfJl0g==}
+  zod@3.25.34:
+    resolution: {integrity: sha512-lZHvSc2PpWdcfpHlyB33HA9nqP16GpC9IpiG4lYq9jZCJVLZNnWd6Y1cj79bcLSBKTkxepfpjckPv5Y5VOPlwA==}
 
 snapshots:
 
@@ -6149,19 +6160,19 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  '@t3-oss/env-core@0.13.6(arktype@2.1.20)(typescript@5.8.3)(zod@3.25.32)':
+  '@t3-oss/env-core@0.13.6(arktype@2.1.20)(typescript@5.8.3)(zod@3.25.34)':
     optionalDependencies:
       arktype: 2.1.20
       typescript: 5.8.3
-      zod: 3.25.32
+      zod: 3.25.34
 
-  '@t3-oss/env-nextjs@0.13.6(arktype@2.1.20)(typescript@5.8.3)(zod@3.25.32)':
+  '@t3-oss/env-nextjs@0.13.6(arktype@2.1.20)(typescript@5.8.3)(zod@3.25.34)':
     dependencies:
-      '@t3-oss/env-core': 0.13.6(arktype@2.1.20)(typescript@5.8.3)(zod@3.25.32)
+      '@t3-oss/env-core': 0.13.6(arktype@2.1.20)(typescript@5.8.3)(zod@3.25.34)
     optionalDependencies:
       arktype: 2.1.20
       typescript: 5.8.3
-      zod: 3.25.32
+      zod: 3.25.34
 
   '@testing-library/dom@10.4.0':
     dependencies:
@@ -6679,6 +6690,13 @@ snapshots:
       node-releases: 2.0.19
       update-browserslist-db: 1.1.3(browserslist@4.24.5)
 
+  browserslist@4.25.0:
+    dependencies:
+      caniuse-lite: 1.0.30001720
+      electron-to-chromium: 1.5.161
+      node-releases: 2.0.19
+      update-browserslist-db: 1.1.3(browserslist@4.25.0)
+
   buffer-from@1.1.2: {}
 
   busboy@1.6.0:
@@ -6711,6 +6729,8 @@ snapshots:
   caniuse-lite@1.0.30001717: {}
 
   caniuse-lite@1.0.30001718: {}
+
+  caniuse-lite@1.0.30001720: {}
 
   chalk@3.0.0:
     dependencies:
@@ -6778,19 +6798,19 @@ snapshots:
 
   convert-source-map@2.0.0: {}
 
-  convex-ents@0.13.0(convex@1.24.2(@clerk/clerk-react@5.31.7(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)):
+  convex-ents@0.13.0(convex@1.24.3(@clerk/clerk-react@5.31.7(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)):
     dependencies:
-      convex: 1.24.2(@clerk/clerk-react@5.31.7(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)
+      convex: 1.24.3(@clerk/clerk-react@5.31.7(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)
 
-  convex-helpers@0.1.89(convex@1.24.2(@clerk/clerk-react@5.31.7(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0))(react@19.1.0)(typescript@5.8.3)(zod@3.25.32):
+  convex-helpers@0.1.89(convex@1.24.3(@clerk/clerk-react@5.31.7(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0))(react@19.1.0)(typescript@5.8.3)(zod@3.25.34):
     dependencies:
-      convex: 1.24.2(@clerk/clerk-react@5.31.7(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)
+      convex: 1.24.3(@clerk/clerk-react@5.31.7(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)
     optionalDependencies:
       react: 19.1.0
       typescript: 5.8.3
-      zod: 3.25.32
+      zod: 3.25.34
 
-  convex@1.24.2(@clerk/clerk-react@5.31.7(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0):
+  convex@1.24.3(@clerk/clerk-react@5.31.7(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0):
     dependencies:
       esbuild: 0.25.2
       jwt-decode: 4.0.0
@@ -6898,6 +6918,8 @@ snapshots:
   electron-to-chromium@1.5.127: {}
 
   electron-to-chromium@1.5.155: {}
+
+  electron-to-chromium@1.5.161: {}
 
   emoji-mart@5.6.0: {}
 
@@ -8086,7 +8108,7 @@ snapshots:
     dependencies:
       xtend: 4.0.2
 
-  posthog-js@1.248.0:
+  posthog-js@1.248.1:
     dependencies:
       core-js: 3.42.0
       fflate: 0.4.8
@@ -8810,6 +8832,12 @@ snapshots:
       escalade: 3.2.0
       picocolors: 1.1.1
 
+  update-browserslist-db@1.1.3(browserslist@4.25.0):
+    dependencies:
+      browserslist: 4.25.0
+      escalade: 3.2.0
+      picocolors: 1.1.1
+
   uri-js@4.4.1:
     dependencies:
       punycode: 2.3.1
@@ -8872,7 +8900,7 @@ snapshots:
       '@webassemblyjs/wasm-edit': 1.14.1
       '@webassemblyjs/wasm-parser': 1.14.1
       acorn: 8.14.1
-      browserslist: 4.24.5
+      browserslist: 4.25.0
       chrome-trace-event: 1.0.4
       enhanced-resolve: 5.18.1
       es-module-lexer: 1.7.0
@@ -8980,4 +9008,4 @@ snapshots:
 
   zod@3.24.3: {}
 
-  zod@3.25.32: {}
+  zod@3.25.34: {}
