@@ -119,7 +119,7 @@ const useScrollBehavior = (
   messages: FunctionReturnType<typeof api.messages.getMessages> | undefined,
 ) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  // I have a isNearBottomRef because I want to to check if something is near the
+  // I have a isNearBottomRef because I want to check if something is near the
   // bottom without having to trigger a useEffect every time the state changes.
   // But I have a isNearBottom state too because I want to trigger changes in
   // the UI like the scroll to bottom button.
@@ -215,14 +215,14 @@ const MessageContext: React.FC<MessageContextProps> = ({
           onMouseDown={() => {
             scrollToMessage(message._id);
           }}
-          className="relative m-4 mb-2 cursor-pointer rounded-lg border border-secondary-foreground bg-secondary p-2"
+          className="border-secondary-foreground bg-secondary relative m-4 mb-2 cursor-pointer rounded-lg border p-2"
         >
           <div className="flex items-center justify-between">
-            <p className="text-sm text-destructive-foreground">{contextText}</p>
+            <p className="text-destructive-foreground text-sm">{contextText}</p>
           </div>
           <button
             className={cn(
-              "absolute right-4 top-1/2 flex h-8 w-8 -translate-y-1/2 transform cursor-pointer items-center justify-center rounded-sm border-2 border-secondary-foreground bg-primary p-1 lg:h-10 lg:w-10 lg:p-2",
+              "border-secondary-foreground bg-primary absolute top-1/2 right-4 flex h-8 w-8 -translate-y-1/2 transform cursor-pointer items-center justify-center rounded-xs border-2 p-1 lg:h-10 lg:w-10 lg:p-2",
               editingMessageId ? "hidden" : "",
             )}
             onMouseDown={(e) => {
@@ -591,7 +591,7 @@ export default function Page() {
           className="fixed inset-0 z-50 bg-black opacity-75"
         ></div>
       ) : null}
-      <ResizablePanelGroup className="w-full flex-grow" direction="horizontal">
+      <ResizablePanelGroup className="w-full grow" direction="horizontal">
         <ResizablePanel
           className="hidden w-full lg:block"
           defaultSize={50}
@@ -624,16 +624,19 @@ export default function Page() {
             }}
           />
           <DevMode className="top-20 z-10">
-            <button onClick={createClearRequestHandler(params.chatId)}>
+            <button
+              className="cursor-pointer"
+              onClick={createClearRequestHandler(params.chatId)}
+            >
               Clear Chat Request
             </button>
             <p>chatId: {params.chatId}</p>
             <div onClick={() => devMode$.set(false)}>Disable dev mode</div>
           </DevMode>
-          <div className="flex h-20 w-full items-center justify-between bg-primary py-6 lg:px-3">
+          <div className="bg-primary flex h-20 w-full items-center justify-between py-6 lg:px-3">
             <div className="text-lg lg:hidden">
               <ChevronLeft
-                className="ml-2 mr-1 cursor-pointer"
+                className="mr-1 ml-2 cursor-pointer"
                 onClick={() => {
                   router.back();
                 }}
@@ -672,7 +675,7 @@ export default function Page() {
                       <Skeleton className="h-5 w-32"></Skeleton>
                     )}
                   </div>
-                  <div className="text-sm text-destructive-foreground">
+                  <div className="text-destructive-foreground text-sm">
                     {chatInfo.data ? (
                       "Offline"
                     ) : (
@@ -693,30 +696,30 @@ export default function Page() {
             </div>
             <div
               className={cn(
-                "mr-1 flex cursor-pointer rounded-sm border-secondary-foreground px-2 text-sm lg:border-2 lg:bg-primary 2xl:mr-16",
+                "border-secondary-foreground lg:bg-primary mr-1 flex cursor-pointer rounded-xs px-2 text-sm lg:border-2 2xl:mr-16",
                 {
                   hidden: chatInfo.data?.basicChatInfo.support,
                 },
               )}
             >
-              <div className="h-10 rounded-sm border-2 border-secondary-foreground lg:h-12 lg:rounded-none lg:border-0 lg:border-r-2">
-                <Phone className="mx-1.5 mt-1.5 lg:mx-0 lg:ml-2 lg:mr-4 lg:mt-3" />
+              <div className="border-secondary-foreground h-10 rounded-xs border-2 lg:h-12 lg:rounded-none lg:border-0 lg:border-r-2">
+                <Phone className="mx-1.5 mt-1.5 lg:mx-0 lg:mt-3 lg:mr-4 lg:ml-2" />
               </div>
 
-              <div className="ml-3 h-10 rounded-sm border-2 border-secondary-foreground lg:ml-0 lg:h-12 lg:border-0">
-                <Video className="mx-1.5 mt-1.5 lg:mx-0 lg:ml-4 lg:mr-2 lg:mt-3" />
+              <div className="border-secondary-foreground ml-3 h-10 rounded-xs border-2 lg:ml-0 lg:h-12 lg:border-0">
+                <Video className="mx-1.5 mt-1.5 lg:mx-0 lg:mt-3 lg:mr-2 lg:ml-4" />
               </div>
             </div>
           </div>
           <div
-            className="relative h-full flex-grow overflow-x-hidden"
+            className="relative h-full grow overflow-x-hidden"
             onScroll={handleScroll}
             ref={messagesEndRef}
           >
             {messages.data ? (
               <div className="relative w-full p-3">
-                <div className="mb-8 flex w-full flex-col items-center justify-center gap-4 space-y-4 rounded-lg bg-secondary p-6 text-center shadow-lg">
-                  <div className="flex items-center justify-center gap-4 space-x-2 text-destructive-foreground dark:text-accent-foreground">
+                <div className="bg-secondary mb-8 flex w-full flex-col items-center justify-center gap-4 space-y-4 rounded-lg p-6 text-center shadow-lg">
+                  <div className="text-destructive-foreground dark:text-accent-foreground flex items-center justify-center gap-4 space-x-2">
                     <NotebookText className="h-6 w-6" />
                     <span className="text-xl font-semibold">
                       Let the Conversation Begin!
@@ -727,7 +730,7 @@ export default function Page() {
                     This is the beginning of an amazing chat. Share ideas,
                     express yourself, and connect!
                   </p>
-                  <div className="flex space-x-4 text-destructive-foreground">
+                  <div className="text-destructive-foreground flex space-x-4">
                     <SendHorizontal className="h-5 w-5 animate-pulse" />
                     <MessageSquare className="h-5 w-5 animate-pulse delay-500" />
                     <Sparkles className="h-5 w-5 animate-pulse delay-1000" />
@@ -757,10 +760,10 @@ export default function Page() {
                     <div className="flex justify-end">
                       <button
                         onClick={() => scrollToBottom()}
-                        className="flex h-10 w-10 items-center justify-center rounded-full bg-primary shadow-lg hover:bg-accent"
+                        className="bg-primary hover:bg-accent flex h-10 w-10 items-center justify-center rounded-full shadow-lg"
                         aria-label="Scroll to bottom"
                       >
-                        <ChevronDown className="h-6 w-6 text-destructive-foreground" />
+                        <ChevronDown className="text-destructive-foreground h-6 w-6" />
                       </button>
                     </div>
                   </div>
@@ -787,7 +790,7 @@ export default function Page() {
                 setReplyToMessageId={setReplyToMessageId}
                 scrollToMessage={scrollToMessage}
               />
-              <div className="z-10 flex w-full justify-between gap-8 bg-primary p-4 pb-10 lg:pb-4">
+              <div className="bg-primary z-10 flex w-full justify-between gap-8 p-4 pb-10 lg:pb-4">
                 <Form {...textMessageForm}>
                   <form
                     className="w-full"
@@ -806,7 +809,7 @@ export default function Page() {
                             control={textMessageForm.control}
                             render={({ field }) => (
                               <Input
-                                className="h-11 w-full rounded-2xl border-2 border-secondary-foreground bg-secondary p-2 lg:h-16"
+                                className="border-secondary-foreground bg-secondary h-11 w-full rounded-2xl border-2 p-2 lg:h-16"
                                 placeholder="Message ..."
                                 value={inputValue}
                                 onChange={(e) => {
@@ -832,14 +835,14 @@ export default function Page() {
                 <div className="flex items-center gap-8">
                   <Mic
                     className={cn(
-                      "h-11 w-11 cursor-pointer rounded-sm border-2 border-secondary-foreground bg-primary p-2 lg:h-14 lg:w-14 lg:p-3",
+                      "border-secondary-foreground bg-primary h-11 w-11 cursor-pointer rounded-xs border-2 p-2 lg:h-14 lg:w-14 lg:p-3",
                       { hidden: inputValue !== "" },
                     )}
                   />
 
                   <X
                     className={cn(
-                      "h-11 w-11 cursor-pointer rounded-sm border-2 border-secondary-foreground bg-primary p-2 lg:h-14 lg:w-14 lg:p-3",
+                      "border-secondary-foreground bg-primary h-11 w-11 cursor-pointer rounded-xs border-2 p-2 lg:h-14 lg:w-14 lg:p-3",
                       { hidden: editingMessageId === null },
                     )}
                     onClick={() => {
@@ -855,14 +858,14 @@ export default function Page() {
                       )(e);
                     }}
                     className={cn(
-                      "h-11 w-11 cursor-pointer rounded-sm border-2 border-secondary-foreground bg-primary p-2 lg:h-14 lg:w-14 lg:p-3",
+                      "border-secondary-foreground bg-primary h-11 w-11 cursor-pointer rounded-xs border-2 p-2 lg:h-14 lg:w-14 lg:p-3",
                       { hidden: inputValue === "" },
                     )}
                   />
 
                   <Plus
                     className={cn(
-                      "h-11 w-11 cursor-pointer rounded-sm border-2 border-secondary-foreground bg-primary p-2 lg:h-14 lg:w-14 lg:p-3",
+                      "border-secondary-foreground bg-primary h-11 w-11 cursor-pointer rounded-xs border-2 p-2 lg:h-14 lg:w-14 lg:p-3",
                       { hidden: inputValue !== "" },
                     )}
                     onClick={menuClick}
