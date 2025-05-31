@@ -50,7 +50,7 @@ export default function PublicHomepage() {
                 <Image
                   src={icon}
                   alt="logo of Chat.io"
-                  className="h-1/4 w-1/4"
+                  className="mr-9 h-1/6 w-1/6 rounded-2xl"
                   role="button"
                   tabIndex={0}
                   onKeyDown={(e) => {
