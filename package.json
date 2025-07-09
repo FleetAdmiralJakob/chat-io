@@ -15,7 +15,7 @@
     "convex:deploy": "convex deploy"
   },
   "dependencies": {
-    "@clerk/nextjs": "^6.17.0",
+    "@clerk/nextjs": "^6.23.3",
     "@emoji-mart/data": "^1.2.1",
     "@emoji-mart/react": "^1.1.1",
     "@floating-ui/react": "^0.27.0",
