@@ -540,7 +540,7 @@ export const Message = ({
             }}
             id={`message-${message._id}`}
             className={cn(
-              "bg-accent max-w-[66.6667%] cursor-default rounded-xs p-3 wrap-break-word",
+              "bg-accent max-w-[66.6667%] cursor-default rounded-md p-3 wrap-break-word",
               {
                 "sticky z-50 opacity-100": message._id === selectedMessageId,
                 "border-secondary bg-primary my-2 max-w-[80%] border-2":
@@ -621,8 +621,8 @@ export const Message = ({
                   style={floatingStylesContextModal}
                   className="z-50 overflow-x-visible py-3 opacity-100"
                 >
-                  <div className="border-secondary-foreground rounded-xs border-2">
-                    <div className="bg-secondary rounded-xs">
+                  <div className="border-secondary-foreground overflow-hidden rounded-md border-2">
+                    <div className="bg-secondary">
                       <div
                         className="flex w-full cursor-pointer p-2"
                         onClick={() => {
@@ -726,7 +726,7 @@ export const Message = ({
             }}
             id={`message-${message._id}`}
             className={cn(
-              "bg-secondary max-w-[66.6667%] cursor-default rounded-xs p-3 wrap-break-word",
+              "bg-secondary max-w-[66.6667%] cursor-default rounded-md p-3 wrap-break-word",
               {
                 "sticky z-50 opacity-100": message._id == selectedMessageId,
                 "border-secondary bg-primary my-2 max-w-[80%] border-2":

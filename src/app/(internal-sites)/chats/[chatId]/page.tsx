@@ -837,14 +837,14 @@ export default function Page() {
                 <div className="flex items-center gap-8">
                   <Mic
                     className={cn(
-                      "border-secondary-foreground bg-primary h-11 w-11 cursor-pointer rounded-xs border-2 p-2 lg:h-14 lg:w-14 lg:p-3",
+                      "border-secondary-foreground bg-primary h-11 w-11 cursor-pointer rounded-sm border-2 p-2 lg:h-14 lg:w-14 lg:p-3",
                       { hidden: inputValue !== "" },
                     )}
                   />
 
                   <X
                     className={cn(
-                      "border-secondary-foreground bg-primary h-11 w-11 cursor-pointer rounded-xs border-2 p-2 lg:h-14 lg:w-14 lg:p-3",
+                      "border-secondary-foreground bg-primary h-11 w-11 cursor-pointer rounded-sm border-2 p-2 lg:h-14 lg:w-14 lg:p-3",
                       { hidden: editingMessageId === null },
                     )}
                     onClick={() => {
@@ -860,14 +860,14 @@ export default function Page() {
                       )(e);
                     }}
                     className={cn(
-                      "border-secondary-foreground bg-primary h-11 w-11 cursor-pointer rounded-xs border-2 p-2 lg:h-14 lg:w-14 lg:p-3",
+                      "border-secondary-foreground bg-primary h-11 w-11 cursor-pointer rounded-sm border-2 p-2 lg:h-14 lg:w-14 lg:p-3",
                       { hidden: inputValue === "" },
                     )}
                   />
 
                   <Plus
                     className={cn(
-                      "border-secondary-foreground bg-primary h-11 w-11 cursor-pointer rounded-xs border-2 p-2 lg:h-14 lg:w-14 lg:p-3",
+                      "border-secondary-foreground bg-primary h-11 w-11 cursor-pointer rounded-sm border-2 p-2 lg:h-14 lg:w-14 lg:p-3",
                       { hidden: inputValue !== "" },
                     )}
                     onClick={menuClick}

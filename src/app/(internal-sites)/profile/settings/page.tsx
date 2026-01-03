@@ -337,26 +337,38 @@ const SettingsPage = () => {
   };
 
   const submitHandler = async () => {
-    const successList = [];
-    const userDataToUpdate: FormSchemaUserUpdate = {};
-    if (firstNameSuccess) {
-      void clerkUser.user?.update({ firstName: firstName });
-      successList.push("First Name");
-      userDataToUpdate.firstName = firstName;
-    }
-    if (lastNameSuccess) {
-      void clerkUser.user?.update({ lastName: lastName });
-      successList.push("Last Name");
-      userDataToUpdate.lastName = lastName;
-    }
+    const updateUserPromise = (async () => {
+      const successList: string[] = [];
+      const userDataToUpdate: FormSchemaUserUpdate = {};
 
-    if (emailSuccess) {
-      userDataToUpdate.email = emailValue;
-      setEmailValue(clerkUser.user?.primaryEmailAddress?.emailAddress ?? "");
-    }
+      if (firstNameSuccess) {
+        void clerkUser.user?.update({ firstName: firstName });
+        successList.push("First Name");
+        userDataToUpdate.firstName = firstName;
+      }
+      if (lastNameSuccess) {
+        void clerkUser.user?.update({ lastName: lastName });
+        successList.push("Last Name");
+        userDataToUpdate.lastName = lastName;
+      }
 
-    await userDataHandler(userDataToUpdate);
-    toast.success(successList.join(", ") + " updated successfully");
+      if (emailSuccess) {
+        userDataToUpdate.email = emailValue;
+        setEmailValue(clerkUser.user?.primaryEmailAddress?.emailAddress ?? "");
+      }
+
+      await userDataHandler(userDataToUpdate);
+
+      return successList;
+    })();
+
+    toast.promise(updateUserPromise, {
+      loading: "Updating user data...",
+      success: (successList: string[]) => {
+        return `${successList.join(", ")} updated successfully`;
+      },
+      error: "Error updating user data",
+    });
   };
 
   return (
@@ -371,7 +383,7 @@ const SettingsPage = () => {
         />
       </div>
       <main className="flex h-screen flex-col items-center justify-center lg:ml-24">
-        <div className="flex h-2/3 w-full flex-col items-center justify-center sm:h-1/2">
+        <div className="flex h-2/3 w-full flex-col items-center justify-center gap-7 sm:h-1/2">
           <div className="mb-4 w-11/12 lg:w-1/3">
             <div className="relative w-full">
               <Input
@@ -460,10 +472,10 @@ const SettingsPage = () => {
             onOpenChange={() => setDialogOpen((prevState) => !prevState)}
           >
             <DialogTrigger asChild>
-              <div className="border-secondary bg-primary text-destructive-foreground mt-4 flex cursor-pointer rounded-xs border-2 p-2 px-3 text-[100%]">
-                <HardDriveUpload className="mr-1 h-5 w-5" />
+              <Button variant="outline" className="gap-2">
+                <HardDriveUpload className="h-5 w-5" />
                 <p>Update Password</p>
-              </div>
+              </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-106.25">
               <DialogHeader>
@@ -532,10 +544,10 @@ const SettingsPage = () => {
                 .map((email) => email.emailAddress)
                 .toString()) ||
           "" ? (
-            <div className="border-secondary bg-primary text-destructive-foreground mt-4 flex cursor-pointer rounded-xs border-2 p-2 px-3 text-[100%]">
-              <CircleCheck className="mr-2 h-5 w-5" />
+            <Button className="gap-2">
+              <CircleCheck className="h-5 w-5" />
               <p onClick={submitHandler}>Save Changes</p>
-            </div>
+            </Button>
           ) : null}
         </div>
       </main>
