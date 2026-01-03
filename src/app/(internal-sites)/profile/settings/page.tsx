@@ -452,7 +452,7 @@ const SettingsPage = () => {
               )}
             </div>
             <p className="text-secondary-foreground mt-0.5 ml-2 text-[85%]">
-              If you forgott your password we can send you a Email
+              If you forgot your password we can send you an Email
             </p>
           </div>
           <Dialog
