@@ -11,7 +11,7 @@
     "format:check": "prettier --check . --ignore-path .gitignore --ignore-path .prettierignore",
     "format:write": "prettier --write . --ignore-path .gitignore --ignore-path .prettierignore",
     "typecheck": "tsc --noEmit",
-    "lint": "next lint",
+    "lint": "eslint .",
     "start": "next start",
     "preinstall": "npx only-allow pnpm",
     "convex:deploy": "convex deploy"
@@ -44,9 +44,9 @@
     "babel-plugin-react-compiler": "^19.1.0-rc.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
-    "convex": "^1.24.3",
+    "convex": "^1.31.2",
     "convex-ents": "^0.16.0",
-    "convex-helpers": "^0.1.89",
+    "convex-helpers": "^0.1.108",
     "dayjs": "^1.11.13",
     "emoji-mart": "^5.6.0",
     "emoji-regex": "^10.4.0",
@@ -73,26 +73,20 @@
     "zod": "^4.3.4"
   },
   "devDependencies": {
-    "@eslint/compat": "^2.0.0",
-    "@eslint/eslintrc": "^3.3.0",
-    "@eslint/js": "9.39.2",
     "@total-typescript/ts-reset": "^0.6.1",
-    "@types/eslint": "^9.6.1",
     "@types/node": "^22.15.24",
     "@types/react": "^19.1.6",
     "@types/react-dom": "^19.0.3",
-    "@typescript-eslint/eslint-plugin": "^8.33.0",
-    "@typescript-eslint/parser": "^8.33.0",
     "autoprefixer": "^10.4.20",
     "eslint": "9.39.2",
     "eslint-config-next": "^16.1.1",
-    "eslint-plugin-react-hooks": "^7.0.1",
     "postcss": "^8.5.4",
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.7.2",
     "serwist": "^9.4.2",
     "tailwindcss": "^4.1.8",
-    "typescript": "^5.6.3"
+    "typescript": "^5.6.3",
+    "typescript-eslint": "^8.51.0"
   },
   "ct3aMetadata": {
     "initVersion": "7.30.0"

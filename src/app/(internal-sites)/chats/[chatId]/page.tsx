@@ -591,7 +591,7 @@ export default function Page() {
           className="fixed inset-0 z-50 bg-black opacity-75"
         ></div>
       ) : null}
-      <ResizablePanelGroup className="w-full grow" direction="horizontal">
+      <ResizablePanelGroup className="w-full grow" orientation="horizontal">
         <ResizablePanel
           className="hidden w-full lg:block"
           defaultSize={50}

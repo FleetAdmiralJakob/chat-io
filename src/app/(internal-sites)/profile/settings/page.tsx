@@ -170,7 +170,7 @@ const SettingsPage = () => {
       } catch (error) {
         setEmailError(true);
         if (error instanceof ZodError) {
-          const errorFound = error.errors.find(
+          const errorFound = error.issues.find(
             (error) => error.path[0] == "email",
           );
           if (errorFound) {
@@ -193,7 +193,7 @@ const SettingsPage = () => {
         setFirstNameError("");
       } catch (error) {
         if (error instanceof ZodError) {
-          const errorFound = error.errors.find(
+          const errorFound = error.issues.find(
             (error) => error.path[0] == "firstName",
           );
           if (errorFound) {
@@ -216,7 +216,7 @@ const SettingsPage = () => {
         setLastNameError("");
       } catch (error) {
         if (error instanceof ZodError) {
-          const errorFound = error.errors.find(
+          const errorFound = error.issues.find(
             (error) => error.path[0] == "lastName",
           );
           if (errorFound) {
@@ -244,7 +244,7 @@ const SettingsPage = () => {
       setNewPasswordErrorMessage("");
     } catch (e) {
       if (e instanceof ZodError) {
-        const errorFound = e.errors.find((e) => e.path[0] == "password");
+        const errorFound = e.issues.find((e) => e.path[0] == "password");
         if (errorFound) {
           setNewPasswordErrorMessage(errorFound.message);
         } else {
@@ -278,7 +278,7 @@ const SettingsPage = () => {
         setNewPasswordErrorMessage("");
       } catch (e) {
         if (e instanceof ZodError) {
-          const errorFound = e.errors.find((e) => e.path[0] == "password");
+          const errorFound = e.issues.find((e) => e.path[0] == "password");
           if (errorFound) {
             setNewPasswordErrorMessage(errorFound.message);
             return;
