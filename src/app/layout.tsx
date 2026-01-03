@@ -9,7 +9,7 @@ import { GeistSans } from "geist/font/sans";
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
-import React from "react";
+import React, { Suspense } from "react";
 import { Monitoring } from "react-scan/monitoring/next";
 import { CSPostHogProvider } from "./_analytics/provider";
 
@@ -60,7 +60,8 @@ export const viewport: Viewport = {
   ],
 };
 
-export const dynamic = "force-static";
+// MIGRATED: Removed export const dynamic = 'force-static' (incompatible with Cache Components)
+// With Cache Components, everything is dynamic by default. Add "use cache" to pages/components that should be cached.
 
 export default function RootLayout({
   children,
@@ -89,23 +90,25 @@ export default function RootLayout({
           // eslint-disable-next-line no-restricted-properties
           branch={process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_REF}
         />
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <ClerkProvider dynamic>
-            <CSPostHogProvider>
-              <ConvexClientProvider>
-                <ConvexQueryCacheProvider>
-                  <NuqsAdapter>{children}</NuqsAdapter>
-                  <Toaster />
-                </ConvexQueryCacheProvider>
-              </ConvexClientProvider>
-            </CSPostHogProvider>
-          </ClerkProvider>
-        </ThemeProvider>
+        <Suspense fallback={<div className="min-h-screen" />}>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <ClerkProvider dynamic>
+              <CSPostHogProvider>
+                <ConvexClientProvider>
+                  <ConvexQueryCacheProvider>
+                    <NuqsAdapter>{children}</NuqsAdapter>
+                    <Toaster />
+                  </ConvexQueryCacheProvider>
+                </ConvexClientProvider>
+              </CSPostHogProvider>
+            </ClerkProvider>
+          </ThemeProvider>
+        </Suspense>
       </body>
     </html>
   );

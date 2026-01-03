@@ -23,6 +23,7 @@ await jiti.import("./src/env.ts");
 /** @type {import("next").NextConfig} */
 const baseConfig = withAxiom(
   withSerwist({
+    cacheComponents: true,
     transpilePackages: ["geist"],
     reactCompiler: true,
     async redirects() {
