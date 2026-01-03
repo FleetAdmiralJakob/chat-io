@@ -9,17 +9,17 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const Navbar = () => {
-  // Use lazy initial state to check iOS only once
-  const [isIOS] = useState(
-    () =>
-      typeof navigator !== "undefined" &&
-      /iPad|iPhone|iPod/.test(navigator.userAgent),
-  );
+  // Start with false to match SSR, then detect iOS after hydration
+  const [isIOS, setIsIOS] = useState(false);
   const pathname = usePathname();
   const isChatPath = pathname.startsWith("/chats/");
+
+  useEffect(() => {
+    setIsIOS(/iPad|iPhone|iPod/.test(navigator.userAgent)); // eslint-disable-line -- Intentional: detect iOS after hydration for padding
+  }, []);
 
   return (
     <div
