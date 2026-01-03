@@ -147,11 +147,7 @@ export const Message = ({
         api.messages.getMessages,
         { chatId },
         existingMessages.map((message) => {
-          if (
-            message.type == "message" &&
-            message.replyTo &&
-            message.replyTo._id == messageId
-          ) {
+          if (message.type == "message" && message.replyTo?._id == messageId) {
             return {
               ...message,
               replyTo: { ...message.replyTo, deleted: true },
@@ -544,7 +540,7 @@ export const Message = ({
             }}
             id={`message-${message._id}`}
             className={cn(
-              "bg-accent max-w-[66.6667%] cursor-default rounded-xs p-3 break-words",
+              "bg-accent max-w-[66.6667%] cursor-default rounded-xs p-3 wrap-break-word",
               {
                 "sticky z-50 opacity-100": message._id === selectedMessageId,
                 "border-secondary bg-primary my-2 max-w-[80%] border-2":
@@ -730,7 +726,7 @@ export const Message = ({
             }}
             id={`message-${message._id}`}
             className={cn(
-              "bg-secondary max-w-[66.6667%] cursor-default rounded-xs p-3 break-words",
+              "bg-secondary max-w-[66.6667%] cursor-default rounded-xs p-3 wrap-break-word",
               {
                 "sticky z-50 opacity-100": message._id == selectedMessageId,
                 "border-secondary bg-primary my-2 max-w-[80%] border-2":
@@ -814,6 +810,7 @@ export const Message = ({
             ? // The reason for the creation of the portal is that we need the portal at a point where it is over EVERYTHING even the input etc.
               createPortal(
                 <div
+                  // eslint-disable-next-line react-hooks/refs -- setFloating is a callback ref from Floating UI, not accessing .current
                   ref={refsContextModal.setFloating}
                   style={floatingStylesContextModal}
                   className="z-50 py-3 opacity-100"

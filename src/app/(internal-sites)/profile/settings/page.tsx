@@ -77,6 +77,7 @@ const parsedJsonSchema = z.array(errorSchema);
 
 const SettingsPage = () => {
   const clerkUser = useUser();
+
   const [lastName, setLastName] = useState(clerkUser.user?.lastName ?? "");
   const [firstName, setFirstName] = useState(clerkUser.user?.firstName ?? "");
   const [currentPassword, setCurrentPassword] = useState("");
@@ -91,6 +92,27 @@ const SettingsPage = () => {
   const [emailError, setEmailError] = useState(false);
   const [firstNameError, setFirstNameError] = useState("");
   const [lastNameError, setLastNameError] = useState("");
+
+  // Sync local form state when Clerk user data loads or changes
+  // This is intentional to update the form with external data - see:
+  // https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
+  useEffect(() => {
+    if (clerkUser.user?.firstName) {
+      setFirstName(clerkUser.user.firstName); // eslint-disable-line -- Intentional sync from Clerk
+    }
+
+    if (clerkUser.user?.lastName) {
+      setLastName(clerkUser.user.lastName);
+    }
+
+    if (clerkUser.user?.primaryEmailAddress?.emailAddress) {
+      setEmailValue(clerkUser.user.primaryEmailAddress.emailAddress);
+    }
+  }, [
+    clerkUser.user?.firstName,
+    clerkUser.user?.lastName,
+    clerkUser.user?.primaryEmailAddress?.emailAddress,
+  ]);
 
   const updateConvexUserData = useMutation(api.users.updateUserData);
 
@@ -138,25 +160,6 @@ const SettingsPage = () => {
       }
     }
   }, [emailValue, firstName, lastName]);
-
-  useEffect(() => {
-    if (clerkUser.user?.firstName) {
-      setFirstName(clerkUser.user.firstName);
-    }
-
-    if (clerkUser.user?.lastName) {
-      setLastName(clerkUser.user.lastName);
-    }
-
-    if (clerkUser.user?.emailAddresses.map((email) => email.emailAddress)) {
-      setEmailValue(clerkUser.user?.primaryEmailAddress?.emailAddress ?? "");
-    }
-  }, [
-    clerkUser.user?.firstName,
-    clerkUser.user?.lastName,
-    clerkUser.user?.emailAddresses,
-    clerkUser.user?.primaryEmailAddress?.emailAddress,
-  ]);
 
   const router = useRouter();
 
@@ -462,7 +465,7 @@ const SettingsPage = () => {
                 <p>Update Password</p>
               </div>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-106.25">
               <DialogHeader>
                 <DialogTitle>Change Password</DialogTitle>
                 <DialogDescription>

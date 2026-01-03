@@ -8,7 +8,7 @@ import { useQuery } from "convex-helpers/react/cache/hooks";
 import { type FunctionReturnType } from "convex/server";
 import { ArrowRight, Ban, NotebookText } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { api } from "../../convex/_generated/api";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { Skeleton } from "./ui/skeleton";
@@ -56,38 +56,32 @@ const Chats: React.FC<{
   });
   const clerkUser = useUser();
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchedChats, setSearchedChats] = useState<Chats | null | undefined>(
-    chats,
-  );
 
-  useEffect(() => {
-    if (!searchTerm) {
-      setSearchedChats(chats);
-      return;
-    }
-    const filteredChats = chats?.filter((chat) => {
-      const filteredChatUsers = (chat.users = chat.users.filter(
-        (user) => user.clerkId.split("|").pop() !== clerkUser.user?.id,
-      ));
-      return filteredChatUsers.some((user) =>
-        user.username.toLowerCase().startsWith(searchTerm.toLowerCase().trim()),
-      ) ||
-        (chat.support &&
-          "Chat.io Support"
+  // React Compiler automatically handles memoization - no need for useMemo
+  const searchedChats = !searchTerm
+    ? chats
+    : chats?.filter((chat) => {
+        const filteredChatUsers = (chat.users = chat.users.filter(
+          (user) => user.clerkId.split("|").pop() !== clerkUser.user?.id,
+        ));
+        return filteredChatUsers.some((user) =>
+          user.username
             .toLowerCase()
-            .includes(searchTerm.toLowerCase().trim()))
-        ? chat
-        : !filteredChatUsers[0] &&
-            !chat.support &&
-            "My Notes Tool"
+            .startsWith(searchTerm.toLowerCase().trim()),
+        ) ||
+          (chat.support &&
+            "Chat.io Support"
               .toLowerCase()
-              .includes(searchTerm.toLowerCase().trim())
+              .includes(searchTerm.toLowerCase().trim()))
           ? chat
-          : false;
-    });
-
-    setSearchedChats(filteredChats);
-  }, [searchTerm, chats, clerkUser.user?.id]);
+          : !filteredChatUsers[0] &&
+              !chat.support &&
+              "My Notes Tool"
+                .toLowerCase()
+                .includes(searchTerm.toLowerCase().trim())
+            ? chat
+            : false;
+      });
 
   return (
     <div className="mt-3 flex flex-col items-center justify-center">

@@ -9,16 +9,17 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const Navbar = () => {
-  const [isIOS, setIsIOS] = useState(false);
+  // Use lazy initial state to check iOS only once
+  const [isIOS] = useState(
+    () =>
+      typeof navigator !== "undefined" &&
+      /iPad|iPhone|iPod/.test(navigator.userAgent),
+  );
   const pathname = usePathname();
   const isChatPath = pathname.startsWith("/chats/");
-
-  useEffect(() => {
-    setIsIOS(/iPad|iPhone|iPod/.test(navigator.userAgent));
-  }, []);
 
   return (
     <div

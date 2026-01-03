@@ -19,6 +19,7 @@ export const useReactToMessage = (chatId: string, userInfo: UserInfos[0]) => {
 
       const reaction = {
         _id: crypto.randomUUID() as Id<"reactions">,
+        // eslint-disable-next-line react-hooks/purity -- Date.now() is called when mutation is invoked, not during render
         _creationTime: Date.now(),
         messageId,
         userId: userInfo._id,
@@ -94,12 +95,13 @@ export const ReactionHandler = (props: {
   const selectedMessageId = props.selectedMessageId;
   const userInfos = props.userInfos;
 
-  // Can't be a ref because it needs to be passed to a child component as a prop
+  // useState is used because this value is passed as a prop to child components
+  // and needs to be properly tracked by React
   const [isFirstMount, setIsFirstMount] = useState(true);
 
-  // Set isFirstMount to false AFTER the first render
+  // Set isFirstMount to false AFTER the first render to skip initial animations
   useEffect(() => {
-    setIsFirstMount(false);
+    setIsFirstMount(false); // eslint-disable-line -- Intentional: track first mount for animation
   }, []);
 
   return (
@@ -109,7 +111,7 @@ export const ReactionHandler = (props: {
       <Popover>
         <PopoverTrigger
           className={cn(
-            "bg-secondary absolute flex -translate-x-[0%] items-center justify-center gap-1 rounded-full px-1 select-none lg:select-auto",
+            "bg-secondary absolute flex translate-x-[0%] items-center justify-center gap-1 rounded-full px-1 select-none lg:select-auto",
             { "z-50": message._id === selectedMessageId },
             props.side === "left" ? "bottom-0 left-0" : "right-0 bottom-4",
           )}

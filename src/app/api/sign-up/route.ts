@@ -59,10 +59,16 @@ export async function POST(request: Request) {
     });
   } catch (e) {
     if (isClerkAPIResponseError(e)) {
+      // Helper to safely get paramName from error meta
+      const getParamName = (error: { meta?: Record<string, unknown> }) => {
+        if (error.meta && typeof error.meta.paramName === "string") {
+          return error.meta.paramName;
+        }
+        return undefined;
+      };
+
       if (e.errors.some((error) => error.code === "form_identifier_exists")) {
-        if (
-          e.errors.some((error) => error.meta?.paramName === "email_address")
-        ) {
+        if (e.errors.some((error) => getParamName(error) === "email_address")) {
           after(() => {
             log.error("Failed to create an account. Email already exists.");
           });
@@ -76,7 +82,7 @@ export async function POST(request: Request) {
           );
         }
 
-        if (e.errors.some((error) => error.meta?.paramName === "username")) {
+        if (e.errors.some((error) => getParamName(error) === "username")) {
           after(() => {
             log.error("Failed to create an account. Username already exists.");
           });

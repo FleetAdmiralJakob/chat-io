@@ -77,9 +77,10 @@ const EmojiPicker = ({
 
   return (
     <div
+      // eslint-disable-next-line react-hooks/refs -- setFloating is a callback ref from Floating UI, not accessing .current
       ref={refsFullEmojiPicker.setFloating}
       style={floatingStylesFullEmojiPicker}
-      className="z-[1000] opacity-100"
+      className="z-1000 opacity-100"
     >
       <Picker
         data={data}
@@ -97,8 +98,8 @@ const SkeletonMessage = () => {
       <div className="mt-5 flex items-center space-x-4 lg:ml-11">
         <Skeleton className="h-12 w-12 rounded-full" />
         <div className="space-y-2">
-          <Skeleton className="h-4 w-[250px]" />
-          <Skeleton className="h-4 w-[200px]" />
+          <Skeleton className="h-4 w-62.5" />
+          <Skeleton className="h-4 w-50" />
         </div>
       </div>
     </div>
@@ -195,7 +196,7 @@ const MessageContext: React.FC<MessageContextProps> = ({
     (msg) => msg._id === (replyToMessageId ?? editingMessageId),
   );
 
-  if (!message || message.type !== "message") return null;
+  if (message?.type !== "message") return null;
 
   const isEditing = Boolean(editingMessageId);
   const contextText = isEditing ? "Editing message:" : "Replying to:";
@@ -293,6 +294,7 @@ export default function Page() {
       const replyTo = existingMessages?.find(
         (msg) => msg._id === args.replyToId,
       );
+      // eslint-disable-next-line react-hooks/purity -- Date.now() is called when mutation is invoked, not during render
       const now = Date.now();
       const newMessage: NonNullable<
         FunctionReturnType<typeof api.messages.getMessages>
@@ -455,7 +457,7 @@ export default function Page() {
       const message = messages.data?.find((message) => {
         return message._id === editingMessageId;
       });
-      if (message && message.type === "message") {
+      if (message?.type === "message") {
         setReplyToMessageId(undefined);
         setInputValue(message.content);
         inputRef.current?.focus();
