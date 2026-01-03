@@ -24,9 +24,7 @@ await jiti.import("./src/env.ts");
 const baseConfig = withAxiom(
   withSerwist({
     transpilePackages: ["geist"],
-    experimental: {
-      reactCompiler: true,
-    },
+    reactCompiler: true,
     async redirects() {
       return [
         {
