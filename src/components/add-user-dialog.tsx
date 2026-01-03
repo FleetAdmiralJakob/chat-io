@@ -40,22 +40,22 @@ export const formSchema = z.object({
   username: z
     .string()
     .min(7, {
-      message: "Username must be at least 7 characters.",
+      error: "Username must be at least 7 characters.",
     })
     .max(15, {
-      message: "Username must be at most 20 characters.",
+      error: "Username must be at most 20 characters.",
     })
     .regex(new RegExp(/^[a-z]+$/), {
-      message:
+      error:
         "Username must be all lowercase. Without numbers or special characters.",
     }),
   usernameId: z
     .string()
     .min(5, {
-      message: "The ID for the username must be 5 characters long.",
+      error: "The ID for the username must be 5 characters long.",
     })
     .max(5, {
-      message: "The ID for the username must be 5 characters long.",
+      error: "The ID for the username must be 5 characters long.",
     })
     .refine((val) => !isNaN(Number(val)), {
       message: "The ID for the username must be a number",

@@ -34,30 +34,30 @@ import { z, ZodError } from "zod";
 import { api } from "../../../../../convex/_generated/api";
 
 const SettingValidator = z.object({
-  email: z.string().email(),
+  email: z.email(),
   password: z
     .string()
     .min(8, {
-      message: "Password must be at least 8 characters.",
+      error: "Password must be at least 8 characters.",
     })
     .max(20, {
-      message: "Password must be at most 20 characters.",
+      error: "Password must be at most 20 characters.",
     }),
   firstName: z
     .string()
     .min(2, {
-      message: "Name must be at least 2 characters.",
+      error: "Name must be at least 2 characters.",
     })
     .max(20, {
-      message: "Name must be at most 20 characters.",
+      error: "Name must be at most 20 characters.",
     }),
   lastName: z
     .string()
     .min(2, {
-      message: "Name must be at least 2 characters.",
+      error: "Name must be at least 2 characters.",
     })
     .max(20, {
-      message: "Name must be at most 20 characters.",
+      error: "Name must be at most 20 characters.",
     }),
 });
 
