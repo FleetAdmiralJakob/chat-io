@@ -35,6 +35,7 @@ profile:
   name: qodana.recommended
 include:
   - name: CheckDependencyLicenses
+  - name: ESLint
 # Enable inspections
 # include:
 #   - name: <SomeEnabledInspectionId>
