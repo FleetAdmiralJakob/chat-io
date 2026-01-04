@@ -36,6 +36,8 @@ profile:
 include:
   - name: CheckDependencyLicenses
   - name: ESLint
+bootstrap: |
+  pnpm install
 # Enable inspections
 # include:
 #   - name: <SomeEnabledInspectionId>
