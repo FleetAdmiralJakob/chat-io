@@ -698,17 +698,17 @@ export default function Page() {
             </div>
             <div
               className={cn(
-                "border-secondary-foreground lg:bg-primary mr-1 flex cursor-pointer rounded-xs px-2 text-sm lg:border-2 2xl:mr-16",
+                "border-secondary-foreground lg:bg-primary mr-1 flex cursor-pointer rounded-md px-2 text-sm lg:border-2 2xl:mr-16",
                 {
                   hidden: chatInfo.data?.basicChatInfo.support,
                 },
               )}
             >
-              <div className="border-secondary-foreground h-10 rounded-xs border-2 lg:h-12 lg:rounded-none lg:border-0 lg:border-r-2">
+              <div className="border-secondary-foreground h-10 border-2 lg:h-12 lg:rounded-none lg:border-0 lg:border-r-2">
                 <Phone className="mx-1.5 mt-1.5 lg:mx-0 lg:mt-3 lg:mr-4 lg:ml-2" />
               </div>
 
-              <div className="border-secondary-foreground ml-3 h-10 rounded-xs border-2 lg:ml-0 lg:h-12 lg:border-0">
+              <div className="border-secondary-foreground ml-3 h-10 border-2 lg:ml-0 lg:h-12 lg:border-0">
                 <Video className="mx-1.5 mt-1.5 lg:mx-0 lg:mt-3 lg:mr-2 lg:ml-4" />
               </div>
             </div>
