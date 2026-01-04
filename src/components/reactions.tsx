@@ -19,6 +19,7 @@ export const useReactToMessage = (chatId: string, userInfo: UserInfos[0]) => {
 
       const reaction = {
         _id: crypto.randomUUID() as Id<"reactions">,
+        // eslint-disable-next-line react-hooks/purity -- Date.now() is called when mutation is invoked, not during render
         _creationTime: Date.now(),
         messageId,
         userId: userInfo._id,
@@ -94,12 +95,13 @@ export const ReactionHandler = (props: {
   const selectedMessageId = props.selectedMessageId;
   const userInfos = props.userInfos;
 
-  // Can't be a ref because it needs to be passed to a child component as a prop
+  // useState is used because this value is passed as a prop to child components
+  // and needs to be properly tracked by React
   const [isFirstMount, setIsFirstMount] = useState(true);
 
-  // Set isFirstMount to false AFTER the first render
+  // Set isFirstMount to false AFTER the first render to skip initial animations
   useEffect(() => {
-    setIsFirstMount(false);
+    setIsFirstMount(false); // eslint-disable-line -- Intentional: track first mount for animation
   }, []);
 
   return (
@@ -109,9 +111,9 @@ export const ReactionHandler = (props: {
       <Popover>
         <PopoverTrigger
           className={cn(
-            "absolute flex -translate-x-[0%] select-none items-center justify-center gap-1 rounded-full bg-secondary px-1 lg:select-auto",
+            "bg-secondary absolute flex translate-x-[0%] items-center justify-center gap-1 rounded-full px-1 select-none lg:select-auto",
             { "z-50": message._id === selectedMessageId },
-            props.side === "left" ? "bottom-0 left-0" : "bottom-4 right-0",
+            props.side === "left" ? "bottom-0 left-0" : "right-0 bottom-4",
           )}
         >
           <ReactionQuickView
@@ -137,7 +139,7 @@ const ReactionQuickView = ({
   isFirstMount,
 }: {
   reactions: Doc<"reactions">[]; // Array of reaction documents from the database
-  isFirstMount: boolean; // Boolean that is true on first render, false on subsequent renders
+  isFirstMount: boolean; // Boolean that is true on the first render, false on subsequent renders
 }) => {
   // Hook that stores previous reactions to compare for animations
   // Maps reactions to just emoji strings for comparison
@@ -169,14 +171,14 @@ const ReactionQuickView = ({
         animate={{ y: 0, opacity: 1 }}
         // Spring animation configuration for smooth, bouncy feel
         transition={{ type: "spring", stiffness: 500, damping: 15 }}
-        className="flex items-center justify-center rounded-full bg-primary/20 text-sm"
+        className="bg-primary/20 flex items-center justify-center rounded-full text-sm"
       >
         <span className="flex aspect-square h-6 items-center justify-center pt-0.5">
           {emoji}
         </span>
         {/* Show count if more than one reaction */}
         {count > 1 && (
-          <span className="pl-1 text-xs text-secondary-foreground">
+          <span className="text-secondary-foreground pl-1 text-xs">
             {count}
           </span>
         )}

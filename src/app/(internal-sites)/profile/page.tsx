@@ -36,18 +36,18 @@ export default function Profile() {
         <p className="my-10 text-xl font-bold sm:text-2xl">Profile</p>
       </div>
       <div className="flex w-full flex-col items-center justify-center">
-        <div className="mb-8 flex w-11/12 flex-col items-center justify-center rounded-xl border-2 border-secondary lg:w-2/3 xl:w-1/3">
+        <div className="border-secondary mb-8 flex w-11/12 flex-col items-center justify-center rounded-xl border-2 lg:w-2/3 xl:w-1/3">
           {settings.map((item, index) => {
             if (item.title == username) {
               return (
                 <div
                   key={index}
-                  className="flex w-full cursor-pointer rounded-lg bg-primary p-6 text-xl sm:text-2xl xl:text-lg"
+                  className="bg-primary flex w-full cursor-pointer rounded-lg p-6 text-xl sm:text-2xl xl:text-lg"
                 >
-                  <div className="mr-5 flex h-10 w-10 items-center justify-center rounded-3xl bg-background text-sm font-medium text-destructive-foreground">
+                  <div className="bg-background text-destructive-foreground mr-5 flex h-10 w-10 items-center justify-center rounded-3xl text-sm font-medium">
                     {item.title.slice(0, 2).toUpperCase()}
                   </div>
-                  <p className="pt-2 font-semibold text-destructive-foreground">
+                  <p className="text-destructive-foreground pt-2 font-semibold">
                     {item.title}
                   </p>
                 </div>
@@ -55,7 +55,7 @@ export default function Profile() {
             }
           })}
         </div>
-        <div className="flex w-11/12 flex-col items-center justify-center rounded-xl border-2 border-secondary lg:w-2/3 xl:w-1/3">
+        <div className="border-secondary flex w-11/12 flex-col items-center justify-center rounded-xl border-2 lg:w-2/3 xl:w-1/3">
           {settings.map((item) => {
             if (item.title == username) {
               return;
@@ -65,7 +65,7 @@ export default function Profile() {
                 key={item.title}
                 href={`/profile/${item.title.toLowerCase()}`}
                 className={cn(
-                  "flex w-full cursor-pointer justify-between border-t-2 border-secondary bg-primary p-6 text-xl sm:text-2xl xl:text-lg",
+                  "border-secondary bg-primary flex w-full cursor-pointer justify-between border-t-2 p-6 text-xl sm:text-2xl xl:text-lg",
                   {
                     "rounded-t-lg border-t-0": item.title == "Settings",
                     "rounded-b-lg": item.title == "Chats",
@@ -73,36 +73,36 @@ export default function Profile() {
                 )}
               >
                 <div className="flex">
-                  <div className="mr-5 flex h-10 w-10 items-center justify-center rounded-3xl bg-secondary text-sm font-medium text-destructive-foreground">
+                  <div className="bg-secondary text-destructive-foreground mr-5 flex h-10 w-10 items-center justify-center rounded-3xl text-sm font-medium">
                     {item.icon}
                   </div>
-                  <p className="flex items-center font-semibold text-destructive-foreground">
+                  <p className="text-destructive-foreground flex items-center font-semibold">
                     {item.title}
                   </p>
                 </div>
                 <div className="flex items-center">
-                  <ArrowRight className="ml-3 flex text-secondary-foreground" />
+                  <ArrowRight className="text-secondary-foreground ml-3 flex" />
                 </div>
               </Link>
             );
           })}
         </div>
-        <div className="mb-4 mt-8 flex w-full flex-col items-center justify-center rounded-xl pb-[30%] lg:pb-0">
-          <div className="w-11/12 rounded-xl border-2 border-secondary lg:w-2/3 xl:w-1/3">
+        <div className="mt-8 mb-4 flex w-full flex-col items-center justify-center rounded-xl pb-[30%] lg:pb-0">
+          <div className="border-secondary w-11/12 rounded-xl border-2 lg:w-2/3 xl:w-1/3">
             <Link
               href="/contributors"
-              className="flex w-full cursor-pointer justify-between rounded-lg bg-primary p-6 text-xl sm:text-2xl lg:border-0 xl:text-lg"
+              className="bg-primary flex w-full cursor-pointer justify-between rounded-lg p-6 text-xl sm:text-2xl lg:border-0 xl:text-lg"
             >
               <div className="flex">
-                <div className="mr-5 flex h-10 w-10 items-center justify-center rounded-3xl bg-secondary text-sm font-medium text-destructive-foreground">
+                <div className="bg-secondary text-destructive-foreground mr-5 flex h-10 w-10 items-center justify-center rounded-3xl text-sm font-medium">
                   <UsersRound />
                 </div>
-                <p className="flex items-center font-semibold text-destructive-foreground">
+                <p className="text-destructive-foreground flex items-center font-semibold">
                   Contributors
                 </p>
               </div>
               <div className="flex items-center">
-                <ArrowRight className="ml-3 flex text-secondary-foreground" />
+                <ArrowRight className="text-secondary-foreground ml-3 flex" />
               </div>
             </Link>
           </div>

@@ -40,25 +40,25 @@ export const formSchema = z.object({
   username: z
     .string()
     .min(7, {
-      message: "Username must be at least 7 characters.",
+      error: "Username must be at least 7 characters.",
     })
     .max(15, {
-      message: "Username must be at most 20 characters.",
+      error: "Username must be at most 20 characters.",
     })
     .regex(new RegExp(/^[a-z]+$/), {
-      message:
+      error:
         "Username must be all lowercase. Without numbers or special characters.",
     }),
   usernameId: z
     .string()
     .min(5, {
-      message: "The ID for the username must be 5 characters long.",
+      error: "The ID for the username must be 5 characters long.",
     })
     .max(5, {
-      message: "The ID for the username must be 5 characters long.",
+      error: "The ID for the username must be 5 characters long.",
     })
     .refine((val) => !isNaN(Number(val)), {
-      message: "The ID for the username must be a number",
+      error: "The ID for the username must be a number",
     }),
 });
 
@@ -123,7 +123,7 @@ export function AddUserDialog({
             <DialogTrigger asChild>
               <button
                 className={cn(
-                  "inline-flex aspect-square w-11 items-center justify-center rounded-full bg-background",
+                  "bg-background inline-flex aspect-square w-11 cursor-pointer items-center justify-center rounded-full",
                   classNameDialogTrigger,
                 )}
                 aria-label="Click here to add a chat with a user"

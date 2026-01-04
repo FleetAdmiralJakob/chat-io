@@ -12,18 +12,19 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const Navbar = () => {
+  // Start with false to match SSR, then detect iOS after hydration
   const [isIOS, setIsIOS] = useState(false);
   const pathname = usePathname();
   const isChatPath = pathname.startsWith("/chats/");
 
   useEffect(() => {
-    setIsIOS(/iPad|iPhone|iPod/.test(navigator.userAgent));
+    setIsIOS(/iPad|iPhone|iPod/.test(navigator.userAgent)); // eslint-disable-line -- Intentional: detect iOS after hydration for padding
   }, []);
 
   return (
     <div
       className={cn(
-        "fixed bottom-0 flex h-24 w-full items-center justify-around border-t-2 border-secondary bg-primary text-2xl text-secondary-foreground lg:h-full lg:w-24 lg:flex-col lg:justify-start lg:border-r-2 lg:border-t-0 lg:border-secondary",
+        "border-secondary bg-primary text-secondary-foreground lg:border-secondary fixed bottom-0 flex h-24 w-full items-center justify-around border-t-2 text-2xl lg:h-full lg:w-24 lg:flex-col lg:justify-start lg:border-t-0 lg:border-r-2",
         { "pb-3": isIOS },
         { "hidden lg:flex": isChatPath },
       )}

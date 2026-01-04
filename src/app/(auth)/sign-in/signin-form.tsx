@@ -24,27 +24,27 @@ import { z } from "zod";
 
 export const formSchema = z.object({
   identifier: z.union([
-    z.string().email(),
+    z.email(),
     z.object({
       username: z
         .string()
         .min(7, {
-          message: "Username must be at least 7 characters.",
+          error: "Username must be at least 7 characters.",
         })
         .max(15, {
-          message: "Username must be at most 15 characters.",
+          error: "Username must be at most 15 characters.",
         })
         .regex(new RegExp(/^[a-z]+$/), {
-          message:
+          error:
             "Username must be all lowercase. Without numbers or special characters.",
         }),
       usernameId: z
         .string()
         .min(5, {
-          message: "The ID for the username must be 5 characters long.",
+          error: "The ID for the username must be 5 characters long.",
         })
         .max(5, {
-          message: "The ID for the username must be 5 characters long.",
+          error: "The ID for the username must be 5 characters long.",
         })
         .refine((val) => !isNaN(Number(val)), {
           message: "The ID for the username must be a number",
@@ -54,10 +54,10 @@ export const formSchema = z.object({
   password: z
     .string()
     .min(8, {
-      message: "Password must be at least 8 characters.",
+      error: "Password must be at least 8 characters.",
     })
     .max(20, {
-      message: "Password must be at most 20 characters.",
+      error: "Password must be at most 20 characters.",
     }),
 });
 
@@ -144,7 +144,10 @@ export function SignInForm() {
             // "You are already signed in. Please sign out before signing in again.",
             <div>
               You are already signed in. Please{" "}
-              <button className="underline" onMouseDown={() => signOut()}>
+              <button
+                className="cursor-pointer underline"
+                onMouseDown={() => signOut()}
+              >
                 sign out
               </button>{" "}
               before signing in again. Alternatively you can go back to the{" "}
@@ -158,7 +161,9 @@ export function SignInForm() {
           err.errors.some((err) => err.code === "form_identifier_not_found")
         ) {
           setWholeFormError(
-            `The ${isEmailLogin ? "email" : "username + id"} you entered does not exist. Please try again.`,
+            `The ${
+              isEmailLogin ? "email" : "username + id"
+            } you entered does not exist. Please try again.`,
           );
         } else if (
           err.errors.some((err) => err.code === "form_password_incorrect")
@@ -187,7 +192,9 @@ export function SignInForm() {
         <Button
           type="button"
           variant="outline"
-          aria-label={`Switch to ${isEmailLogin ? "Username" : "Email"} login mode`}
+          aria-label={`Switch to ${
+            isEmailLogin ? "Username" : "Email"
+          } login mode`}
           onClick={() => setIsEmailLogin(!isEmailLogin)}
         >
           Switch to {isEmailLogin ? "Username" : "Email"} Login
@@ -272,7 +279,7 @@ export function SignInForm() {
 
         {!isEmailLogin && (
           <span
-            className={cn("text-sm text-secondary-foreground", {
+            className={cn("text-secondary-foreground text-sm", {
               hidden: form.formState.errors.identifier,
             })}
           >
@@ -285,7 +292,7 @@ export function SignInForm() {
           control={form.control}
           name="password"
           render={({ field }) => (
-            <FormItem className="xl:flex-2 xl:w-full">
+            <FormItem className="xl:w-full xl:flex-2">
               <FormLabel>Password</FormLabel>
               <FormControl>
                 <Input
@@ -319,7 +326,7 @@ export function SignInForm() {
         {wholeFormError && (
           <>
             <br />
-            <div className="text-sm font-medium text-destructive">
+            <div className="text-destructive text-sm font-medium">
               {wholeFormError}
             </div>
           </>

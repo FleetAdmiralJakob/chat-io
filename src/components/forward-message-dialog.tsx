@@ -106,7 +106,7 @@ export const ForwardDialog = ({
                       })
                     }
                     key={index}
-                    className="flex cursor-pointer rounded-xl bg-secondary p-5"
+                    className="bg-secondary flex cursor-pointer rounded-xl p-5"
                   >
                     <Checkbox
                       checked={
@@ -117,7 +117,7 @@ export const ForwardDialog = ({
                             )
                           : false
                       }
-                      className="mr-3 mt-1 flex"
+                      className="mt-1 mr-3 flex"
                     />
                     <div className="flex">
                       My Notes <Badge>Tool</Badge>
@@ -136,7 +136,7 @@ export const ForwardDialog = ({
                       }
                       key={index}
                       className={cn(
-                        "flex cursor-pointer rounded-xl bg-secondary p-5",
+                        "bg-secondary flex cursor-pointer rounded-xl p-5",
                         user.username == userInfos[0]?.username
                           ? "h-0 p-0"
                           : null,
@@ -152,7 +152,7 @@ export const ForwardDialog = ({
                             : false
                         }
                         className={cn(
-                          "mr-3 mt-1 flex",
+                          "mt-1 mr-3 flex",
                           user.username == userInfos[0]?.username
                             ? "hidden"
                             : null,

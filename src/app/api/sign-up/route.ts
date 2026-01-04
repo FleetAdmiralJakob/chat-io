@@ -20,14 +20,13 @@ export async function OPTIONS(request: Request) {
       { status: 400 },
     );
   } else {
-    return Response.json(
-      { message: parsedSignUpHeaders.error },
-      { status: 200 },
-    );
+    return Response.json({ data: parsedSignUpHeaders.data }, { status: 200 });
   }
 }
 
-// TODO: This probably deserves a rate limiter + a check for not creating a bunch of trash users to spam us.
+/* TODO:
+ * This probably deserves a rate limiter + a check for not creating a bunch of trash users to spam us.
+ * Arcjet has good ratelimiting. Take a look at Upstash as well. */
 export async function POST(request: Request) {
   const unparsedSignUpHeaders = (await request.json()) as FormSchemaSignUp;
   const parsedSignUpHeaders = formSchemaSignUp.safeParse(unparsedSignUpHeaders);
@@ -59,10 +58,16 @@ export async function POST(request: Request) {
     });
   } catch (e) {
     if (isClerkAPIResponseError(e)) {
+      // Helper to safely get paramName from error meta
+      const getParamName = (error: { meta?: Record<string, unknown> }) => {
+        if (error.meta && typeof error.meta.paramName === "string") {
+          return error.meta.paramName;
+        }
+        return undefined;
+      };
+
       if (e.errors.some((error) => error.code === "form_identifier_exists")) {
-        if (
-          e.errors.some((error) => error.meta?.paramName === "email_address")
-        ) {
+        if (e.errors.some((error) => getParamName(error) === "email_address")) {
           after(() => {
             log.error("Failed to create an account. Email already exists.");
           });
@@ -76,7 +81,7 @@ export async function POST(request: Request) {
           );
         }
 
-        if (e.errors.some((error) => error.meta?.paramName === "username")) {
+        if (e.errors.some((error) => getParamName(error) === "username")) {
           after(() => {
             log.error("Failed to create an account. Username already exists.");
           });
@@ -109,7 +114,7 @@ export async function POST(request: Request) {
     }
 
     after(() => {
-      log.error("Failed to create an accoutn", {
+      log.error("Failed to create an account", {
         parsedSignUpHeaders,
         error: e,
       });

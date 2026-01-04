@@ -1,10 +1,8 @@
-import type { PluginCreator } from "postcss";
 import type { Config } from "tailwindcss";
-// @ts-expect-error - Tailwind CSS does not have types for this package unfortunately
 import { default as flattenColorPalette } from "tailwindcss/lib/util/flattenColorPalette";
 
 const config = {
-  darkMode: ["class"],
+  darkMode: "class",
   content: [
     "./pages/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",
@@ -27,38 +25,38 @@ const config = {
           white: "#009BFA",
         },
         accept: "#00834C",
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
+        border: "var(--border)",
+        input: "var(--input)",
+        ring: "var(--ring)",
+        background: "var(--background)",
+        foreground: "var(--foreground)",
         primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
+          DEFAULT: "var(--primary)",
+          foreground: "var(--primary-foreground)",
         },
         secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
+          DEFAULT: "var(--secondary)",
+          foreground: "var(--secondary-foreground)",
         },
         destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
+          DEFAULT: "var(--destructive)",
+          foreground: "var(--destructive-foreground)",
         },
         muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
+          DEFAULT: "var(--muted)",
+          foreground: "var(--muted-foreground)",
         },
         accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
+          DEFAULT: "var(--accent)",
+          foreground: "var(--accent-foreground)",
         },
         popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
+          DEFAULT: "var(--popover)",
+          foreground: "var(--popover-foreground)",
         },
         card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
+          DEFAULT: "var(--card)",
+          foreground: "var(--card-foreground)",
         },
       },
       borderRadius: {
@@ -91,8 +89,7 @@ const config = {
       },
     },
   },
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  plugins: [require("tailwindcss-animate"), addVariablesForColors],
+  plugins: [addVariablesForColors],
 } satisfies Config;
 
 // This plugin adds each Tailwind color as a global CSS variable, e.g. var(--gray-200).
@@ -100,14 +97,15 @@ function addVariablesForColors({
   addBase,
   theme,
 }: {
-  addBase: PluginCreator<object>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  theme: (path: string) => any;
+  addBase: (base: Record<string, Record<string, string>>) => void;
+  theme: (path: string) => unknown;
 }) {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
-  const allColors = flattenColorPalette(theme("colors"));
+  const rawColors = theme("colors") as Record<
+    string,
+    string | Record<string, string>
+  >;
+  const allColors = flattenColorPalette(rawColors);
   const newVars = Object.fromEntries(
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     Object.entries(allColors).map(([key, val]) => [`--${key}`, val]),
   );
 

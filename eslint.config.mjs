@@ -1,41 +1,34 @@
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-import { fixupConfigRules } from "@eslint/compat";
-import { FlatCompat } from "@eslint/eslintrc";
-import js from "@eslint/js";
-import tsParser from "@typescript-eslint/parser";
+// @ts-check
+import nextVitals from "eslint-config-next/core-web-vitals";
+import { defineConfig, globalIgnores } from "eslint/config";
+import tseslint from "typescript-eslint";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-  recommendedConfig: js.configs.recommended,
-  allConfig: js.configs.all,
-});
-
-export default [
-  {
-    ignores: [".next/**", "convex/_generated/**", "public/sw.js"],
-  },
-  ...fixupConfigRules(
-    compat.extends(
-      "next/core-web-vitals",
-      "plugin:@typescript-eslint/recommended-type-checked",
-      "plugin:@typescript-eslint/stylistic-type-checked",
-      "plugin:react-hooks/recommended",
-    ),
-  ),
+const eslintConfig = defineConfig([
+  ...nextVitals,
+  // Use type-checked configs for stricter TypeScript linting
+  // (eslint-config-next/typescript only includes 'recommended', not the type-checked variants)
+  ...tseslint.configs.recommendedTypeChecked,
+  ...tseslint.configs.stylisticTypeChecked,
+  // Override default ignores of eslint-config-next
+  globalIgnores([
+    // Default ignores of eslint-config-next:
+    ".next/**",
+    "out/**",
+    "build/**",
+    "next-env.d.ts",
+    // Project-specific ignores:
+    "convex/_generated/**",
+    "public/sw.js",
+  ]),
   {
     languageOptions: {
-      parser: tsParser,
       parserOptions: {
-        project: true,
-        ecmaVersion: "latest",
-        sourceType: "module",
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
       },
     },
     rules: {
+      // TypeScript-eslint rules
       "@typescript-eslint/array-type": "off",
       "@typescript-eslint/consistent-type-definitions": "off",
       "@typescript-eslint/consistent-type-imports": [
@@ -101,4 +94,6 @@ export default [
       "no-restricted-imports": "off",
     },
   },
-];
+]);
+
+export default eslintConfig;

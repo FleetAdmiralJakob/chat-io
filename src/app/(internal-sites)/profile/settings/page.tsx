@@ -34,36 +34,37 @@ import { z, ZodError } from "zod";
 import { api } from "../../../../../convex/_generated/api";
 
 const SettingValidator = z.object({
-  email: z.string().email(),
+  email: z.email(),
   password: z
     .string()
     .min(8, {
-      message: "Password must be at least 8 characters.",
+      error: "Password must be at least 8 characters.",
     })
     .max(20, {
-      message: "Password must be at most 20 characters.",
+      error: "Password must be at most 20 characters.",
     }),
   firstName: z
     .string()
     .min(2, {
-      message: "Name must be at least 2 characters.",
+      error: "Name must be at least 2 characters.",
     })
     .max(20, {
-      message: "Name must be at most 20 characters.",
+      error: "Name must be at most 20 characters.",
     }),
   lastName: z
     .string()
     .min(2, {
-      message: "Name must be at least 2 characters.",
+      error: "Name must be at least 2 characters.",
     })
     .max(20, {
-      message: "Name must be at most 20 characters.",
+      error: "Name must be at most 20 characters.",
     }),
 });
 
 const signUpResponseSchema = z.object({
-  message: z.string(),
+  message: z.string().optional(),
   statusText: z.string().optional(),
+  data: z.unknown().optional(),
 });
 
 // Define the error schema using Zod
@@ -77,6 +78,7 @@ const parsedJsonSchema = z.array(errorSchema);
 
 const SettingsPage = () => {
   const clerkUser = useUser();
+
   const [lastName, setLastName] = useState(clerkUser.user?.lastName ?? "");
   const [firstName, setFirstName] = useState(clerkUser.user?.firstName ?? "");
   const [currentPassword, setCurrentPassword] = useState("");
@@ -91,6 +93,69 @@ const SettingsPage = () => {
   const [emailError, setEmailError] = useState(false);
   const [firstNameError, setFirstNameError] = useState("");
   const [lastNameError, setLastNameError] = useState("");
+
+  // ============================================================================
+  // DIRTY FLAGS - Prevent race conditions between user edits and Clerk updates
+  // ============================================================================
+  //
+  // Problem: Clerk can update user data at any time (e.g., from another browser tab,
+  // background sync, or external API call). Without these flags, if you're typing
+  // "John" into the firstName field and Clerk decides to sync, it would overwrite
+  // your in-progress edit with the old value from the server. Frustrating!
+  //
+  // Solution: Track whether the user has started editing each field ("dirty" state).
+  // - When user types in a field → set dirty flag to TRUE
+  // - When syncing from Clerk → only update if dirty flag is FALSE
+  // - After successful save → reset dirty flag to FALSE (allow future syncs)
+  //
+  // This ensures user edits are never lost due to external data updates.
+  // ============================================================================
+  const [isFirstNameDirty, setIsFirstNameDirty] = useState(false);
+  const [isLastNameDirty, setIsLastNameDirty] = useState(false);
+  const [isEmailDirty, setIsEmailDirty] = useState(false);
+
+  // ============================================================================
+  // CLERK → LOCAL STATE SYNC
+  // ============================================================================
+  // This effect syncs data FROM Clerk INTO our local form state.
+  //
+  // WHY: When the page loads or Clerk data changes externally, we want to
+  // display the latest values in the form inputs.
+  //
+  // THE CATCH: We ONLY sync if the user hasn't started editing that field yet!
+  // (That's what the dirty flags are for - see comments above)
+  //
+  // Example flow:
+  // 1. Page loads, dirty flags are all FALSE → Clerk data fills the form ✓
+  // 2. User starts typing firstName → isFirstNameDirty becomes TRUE
+  // 3. Clerk syncs new data → firstName is SKIPPED (dirty), others still sync ✓
+  // 4. User saves → isFirstNameDirty resets to FALSE → future syncs work again ✓
+  //
+  // Reference: https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
+  // ============================================================================
+  useEffect(() => {
+    // Only sync firstName if user hasn't modified it yet
+    if (clerkUser.user?.firstName && !isFirstNameDirty) {
+      setFirstName(clerkUser.user.firstName); // eslint-disable-line -- Intentional sync from Clerk
+    }
+
+    // Only sync lastName if user hasn't modified it yet
+    if (clerkUser.user?.lastName && !isLastNameDirty) {
+      setLastName(clerkUser.user.lastName);
+    }
+
+    // Only sync email if user hasn't modified it yet
+    if (clerkUser.user?.primaryEmailAddress?.emailAddress && !isEmailDirty) {
+      setEmailValue(clerkUser.user.primaryEmailAddress.emailAddress);
+    }
+  }, [
+    clerkUser.user?.firstName,
+    clerkUser.user?.lastName,
+    clerkUser.user?.primaryEmailAddress?.emailAddress,
+    isFirstNameDirty,
+    isLastNameDirty,
+    isEmailDirty,
+  ]);
 
   const updateConvexUserData = useMutation(api.users.updateUserData);
 
@@ -139,29 +204,12 @@ const SettingsPage = () => {
     }
   }, [emailValue, firstName, lastName]);
 
-  useEffect(() => {
-    if (clerkUser.user?.firstName) {
-      setFirstName(clerkUser.user.firstName);
-    }
-
-    if (clerkUser.user?.lastName) {
-      setLastName(clerkUser.user.lastName);
-    }
-
-    if (clerkUser.user?.emailAddresses.map((email) => email.emailAddress)) {
-      setEmailValue(clerkUser.user?.primaryEmailAddress?.emailAddress ?? "");
-    }
-  }, [
-    clerkUser.user?.firstName,
-    clerkUser.user?.lastName,
-    clerkUser.user?.emailAddresses,
-    clerkUser.user?.primaryEmailAddress?.emailAddress,
-  ]);
-
   const router = useRouter();
 
   const handleEmailChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
+      // Mark email as "dirty" - the user is now editing, so don't let Clerk overwrite!
+      setIsEmailDirty(true);
       setEmailValue(e.target.value);
 
       try {
@@ -170,7 +218,7 @@ const SettingsPage = () => {
       } catch (error) {
         setEmailError(true);
         if (error instanceof ZodError) {
-          const errorFound = error.errors.find(
+          const errorFound = error.issues.find(
             (error) => error.path[0] == "email",
           );
           if (errorFound) {
@@ -186,6 +234,8 @@ const SettingsPage = () => {
 
   const handleFirstNameChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
+      // Mark firstName as "dirty" - user is now editing, so don't let Clerk overwrite!
+      setIsFirstNameDirty(true);
       setFirstName(e.target.value);
 
       try {
@@ -193,7 +243,7 @@ const SettingsPage = () => {
         setFirstNameError("");
       } catch (error) {
         if (error instanceof ZodError) {
-          const errorFound = error.errors.find(
+          const errorFound = error.issues.find(
             (error) => error.path[0] == "firstName",
           );
           if (errorFound) {
@@ -209,6 +259,8 @@ const SettingsPage = () => {
 
   const handleLastNameChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
+      // Mark lastName as "dirty" - user is now editing, so don't let Clerk overwrite!
+      setIsLastNameDirty(true);
       setLastName(e.target.value);
 
       try {
@@ -216,7 +268,7 @@ const SettingsPage = () => {
         setLastNameError("");
       } catch (error) {
         if (error instanceof ZodError) {
-          const errorFound = error.errors.find(
+          const errorFound = error.issues.find(
             (error) => error.path[0] == "lastName",
           );
           if (errorFound) {
@@ -244,7 +296,7 @@ const SettingsPage = () => {
       setNewPasswordErrorMessage("");
     } catch (e) {
       if (e instanceof ZodError) {
-        const errorFound = e.errors.find((e) => e.path[0] == "password");
+        const errorFound = e.issues.find((e) => e.path[0] == "password");
         if (errorFound) {
           setNewPasswordErrorMessage(errorFound.message);
         } else {
@@ -278,7 +330,7 @@ const SettingsPage = () => {
         setNewPasswordErrorMessage("");
       } catch (e) {
         if (e instanceof ZodError) {
-          const errorFound = e.errors.find((e) => e.path[0] == "password");
+          const errorFound = e.issues.find((e) => e.path[0] == "password");
           if (errorFound) {
             setNewPasswordErrorMessage(errorFound.message);
             return;
@@ -334,63 +386,81 @@ const SettingsPage = () => {
   };
 
   const submitHandler = async () => {
-    const successList = [];
-    const userDataToUpdate: FormSchemaUserUpdate = {};
-    if (firstNameSuccess) {
-      void clerkUser.user?.update({ firstName: firstName });
-      successList.push("First Name");
-      userDataToUpdate.firstName = firstName;
-    }
-    if (lastNameSuccess) {
-      void clerkUser.user?.update({ lastName: lastName });
-      successList.push("Last Name");
-      userDataToUpdate.lastName = lastName;
-    }
+    const updateUserPromise = (async () => {
+      const successList: string[] = [];
+      const userDataToUpdate: FormSchemaUserUpdate = {};
 
-    if (emailSuccess) {
-      userDataToUpdate.email = emailValue;
-      setEmailValue(clerkUser.user?.primaryEmailAddress?.emailAddress ?? "");
-    }
+      if (firstNameSuccess) {
+        void clerkUser.user?.update({ firstName: firstName });
+        successList.push("First Name");
+        userDataToUpdate.firstName = firstName;
+        // Reset dirty flag → allow Clerk to sync this field again in the future
+        setIsFirstNameDirty(false);
+      }
+      if (lastNameSuccess) {
+        void clerkUser.user?.update({ lastName: lastName });
+        successList.push("Last Name");
+        userDataToUpdate.lastName = lastName;
+        // Reset dirty flag → allow Clerk to sync this field again in the future
+        setIsLastNameDirty(false);
+      }
 
-    await userDataHandler(userDataToUpdate);
-    toast.success(successList.join(", ") + " updated successfully");
+      if (emailSuccess) {
+        userDataToUpdate.email = emailValue;
+        setEmailValue(clerkUser.user?.primaryEmailAddress?.emailAddress ?? "");
+        // Reset dirty flag → allow Clerk to sync this field again in the future
+        setIsEmailDirty(false);
+      }
+
+      await userDataHandler(userDataToUpdate);
+
+      return successList;
+    })();
+
+    toast.promise(updateUserPromise, {
+      loading: "Updating user data...",
+      success: (successList: string[]) => {
+        return `${successList.join(", ")} updated successfully`;
+      },
+      error: "Error updating user data",
+    });
   };
 
   return (
     <>
-      <div className="flex justify-center text-destructive-foreground lg:hidden">
+      <div className="text-destructive-foreground flex justify-center lg:hidden">
         <p className="absolute top-12 text-xl font-semibold">Settings</p>
         <ChevronLeft
-          className="absolute left-10 top-11 h-8 w-8"
+          className="absolute top-11 left-10 h-8 w-8"
           onClick={() => {
             router.back();
           }}
         />
       </div>
       <main className="flex h-screen flex-col items-center justify-center lg:ml-24">
-        <div className="flex h-2/3 w-full flex-col items-center justify-center sm:h-1/2">
+        <div className="flex h-2/3 w-full flex-col items-center justify-center gap-7 sm:h-1/2">
           <div className="mb-4 w-11/12 lg:w-1/3">
             <div className="relative w-full">
               <Input
                 placeholder="First name"
                 value={firstName}
                 onChange={handleFirstNameChange}
-                className="border-2 border-secondary"
+                className="border-secondary border-2"
               />
               {firstName != "" ? (
                 firstNameError == "" ? (
                   <CircleCheck
-                    className="absolute right-3 top-1/2 -translate-y-1/2 transform"
+                    className="absolute top-1/2 right-3 -translate-y-1/2 transform"
                     color="#3DC726"
                   />
                 ) : (
-                  <CircleX className="absolute right-3 top-1/2 -translate-y-1/2 transform text-accent" />
+                  <CircleX className="text-accent absolute top-1/2 right-3 -translate-y-1/2 transform" />
                 )
               ) : (
                 ""
               )}
             </div>
-            <div className="ml-2 mt-0.5 text-[85%] text-secondary-foreground">
+            <div className="text-secondary-foreground mt-0.5 ml-2 text-[85%]">
               {firstNameError != "" && firstName != "" ? (
                 <p className="text-accent">{firstNameError}</p>
               ) : (
@@ -404,22 +474,22 @@ const SettingsPage = () => {
                 placeholder="Last name"
                 value={lastName}
                 onChange={handleLastNameChange}
-                className="border-2 border-secondary"
+                className="border-secondary border-2"
               />
               {lastName != "" ? (
                 lastNameError == "" ? (
                   <CircleCheck
-                    className="absolute right-3 top-1/2 -translate-y-1/2 transform"
+                    className="absolute top-1/2 right-3 -translate-y-1/2 transform"
                     color="#3DC726"
                   />
                 ) : (
-                  <CircleX className="absolute right-3 top-1/2 -translate-y-1/2 transform text-accent" />
+                  <CircleX className="text-accent absolute top-1/2 right-3 -translate-y-1/2 transform" />
                 )
               ) : (
                 ""
               )}
             </div>
-            <div className="ml-2 mt-0.5 text-[85%] text-secondary-foreground">
+            <div className="text-secondary-foreground mt-0.5 ml-2 text-[85%]">
               {lastNameError != "" && lastName != "" ? (
                 <p className="text-accent">{lastNameError}</p>
               ) : (
@@ -433,23 +503,23 @@ const SettingsPage = () => {
                 value={emailValue}
                 onChange={handleEmailChange}
                 placeholder="Email"
-                className="w-full border-2 border-secondary"
+                className="border-secondary w-full border-2"
               />
               {emailValue != "" ? (
                 !emailError ? (
                   <MailCheck
-                    className="absolute right-3 top-1/2 -translate-y-1/2 transform"
+                    className="absolute top-1/2 right-3 -translate-y-1/2 transform"
                     color="#3DC726"
                   />
                 ) : (
-                  <MailX className="absolute right-3 top-1/2 -translate-y-1/2 transform text-accent" />
+                  <MailX className="text-accent absolute top-1/2 right-3 -translate-y-1/2 transform" />
                 )
               ) : (
                 ""
               )}
             </div>
-            <p className="ml-2 mt-0.5 text-[85%] text-secondary-foreground">
-              If you forgott your password we can send you a Email
+            <p className="text-secondary-foreground mt-0.5 ml-2 text-[85%]">
+              If you forgot your password we can send you an Email
             </p>
           </div>
           <Dialog
@@ -457,12 +527,12 @@ const SettingsPage = () => {
             onOpenChange={() => setDialogOpen((prevState) => !prevState)}
           >
             <DialogTrigger asChild>
-              <div className="mt-4 flex cursor-pointer rounded-sm border-2 border-secondary bg-primary p-2 px-3 text-[100%] text-destructive-foreground">
-                <HardDriveUpload className="mr-1 h-5 w-5" />
+              <Button variant="outline" className="gap-2">
+                <HardDriveUpload className="h-5 w-5" />
                 <p>Update Password</p>
-              </div>
+              </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-106.25">
               <DialogHeader>
                 <DialogTitle>Change Password</DialogTitle>
                 <DialogDescription>
@@ -482,7 +552,7 @@ const SettingsPage = () => {
                   />
                   <Label
                     htmlFor="username"
-                    className="text-right text-[80%] text-accent"
+                    className="text-accent text-right text-[80%]"
                   >
                     {currentPasswordErrorMessage}
                   </Label>
@@ -499,7 +569,7 @@ const SettingsPage = () => {
                   />
                   <Label
                     htmlFor="username"
-                    className="text-right text-[80%] text-accent"
+                    className="text-accent text-right text-[80%]"
                   >
                     {newPasswordErrorMessage}
                   </Label>
@@ -529,10 +599,10 @@ const SettingsPage = () => {
                 .map((email) => email.emailAddress)
                 .toString()) ||
           "" ? (
-            <div className="mt-4 flex cursor-pointer rounded-sm border-2 border-secondary bg-primary p-2 px-3 text-[100%] text-destructive-foreground">
-              <CircleCheck className="mr-2 h-5 w-5" />
-              <p onClick={submitHandler}>Save Changes</p>
-            </div>
+            <Button onClick={submitHandler} className="gap-2">
+              <CircleCheck className="h-5 w-5" />
+              <p>Save Changes</p>
+            </Button>
           ) : null}
         </div>
       </main>
