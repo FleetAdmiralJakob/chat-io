@@ -38,7 +38,8 @@ include:
   - name: ESLint
 bootstrap: |
   pnpm install
-  echo -e '/// <reference types="next" />\n/// <reference types="next/image-types/global" />' > next-env.d.ts
+  echo '/// <reference types="next" />' > next-env.d.ts
+  echo '/// <reference types="next/image-types/global" />' >> next-env.d.ts
 # Enable inspections
 # include:
 #   - name: <SomeEnabledInspectionId>
