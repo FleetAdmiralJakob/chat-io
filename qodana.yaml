@@ -37,11 +37,9 @@ include:
   - name: CheckDependencyLicenses
   - name: ESLint
 bootstrap: |
-  pwd
   pnpm install
-  echo '/// <reference types="next" />' > next-env.d.ts
-  echo '/// <reference types="next/image-types/global" />' >> next-env.d.ts
-  cat next-env.d.ts
+  echo "/// <reference types=\"next\" />" > next-env.d.ts
+  echo "/// <reference types=\"next/image-types/global\" />" >> next-env.d.ts
 # Enable inspections
 # include:
 #   - name: <SomeEnabledInspectionId>
