@@ -2,6 +2,7 @@ import { v } from "convex/values";
 import { mutation, query } from "./lib/functions";
 
 export const getUserData = query({
+  args: {},
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
 
