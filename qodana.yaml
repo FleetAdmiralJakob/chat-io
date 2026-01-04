@@ -38,6 +38,7 @@ bootstrap: |
   /// <reference types="next" />
   /// <reference types="next/image-types/global" />
   EOF
+  cat next-env.d.ts
 # Enable inspections
 # include:
 #   - name: <SomeEnabledInspectionId>
