@@ -20,14 +20,13 @@ export async function OPTIONS(request: Request) {
       { status: 400 },
     );
   } else {
-    return Response.json(
-      { message: parsedSignUpHeaders.data },
-      { status: 200 },
-    );
+    return Response.json({ data: parsedSignUpHeaders.data }, { status: 200 });
   }
 }
 
-// TODO: This probably deserves a rate limiter + a check for not creating a bunch of trash users to spam us.
+/* TODO:
+ * This probably deserves a rate limiter + a check for not creating a bunch of trash users to spam us.
+ * Arcjet has good ratelimiting. Take a look at Upstash as well. */
 export async function POST(request: Request) {
   const unparsedSignUpHeaders = (await request.json()) as FormSchemaSignUp;
   const parsedSignUpHeaders = formSchemaSignUp.safeParse(unparsedSignUpHeaders);
@@ -115,7 +114,7 @@ export async function POST(request: Request) {
     }
 
     after(() => {
-      log.error("Failed to create an accoutn", {
+      log.error("Failed to create an account", {
         parsedSignUpHeaders,
         error: e,
       });

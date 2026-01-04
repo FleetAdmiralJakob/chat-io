@@ -62,8 +62,9 @@ const SettingValidator = z.object({
 });
 
 const signUpResponseSchema = z.object({
-  message: z.string(),
+  message: z.string().optional(),
   statusText: z.string().optional(),
+  data: z.unknown().optional(),
 });
 
 // Define the error schema using Zod
@@ -93,25 +94,67 @@ const SettingsPage = () => {
   const [firstNameError, setFirstNameError] = useState("");
   const [lastNameError, setLastNameError] = useState("");
 
-  // Sync local form state when Clerk user data loads or changes
-  // This is intentional to update the form with external data - see:
-  // https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
+  // ============================================================================
+  // DIRTY FLAGS - Prevent race conditions between user edits and Clerk updates
+  // ============================================================================
+  //
+  // Problem: Clerk can update user data at any time (e.g., from another browser tab,
+  // background sync, or external API call). Without these flags, if you're typing
+  // "John" into the firstName field and Clerk decides to sync, it would overwrite
+  // your in-progress edit with the old value from the server. Frustrating!
+  //
+  // Solution: Track whether the user has started editing each field ("dirty" state).
+  // - When user types in a field → set dirty flag to TRUE
+  // - When syncing from Clerk → only update if dirty flag is FALSE
+  // - After successful save → reset dirty flag to FALSE (allow future syncs)
+  //
+  // This ensures user edits are never lost due to external data updates.
+  // ============================================================================
+  const [isFirstNameDirty, setIsFirstNameDirty] = useState(false);
+  const [isLastNameDirty, setIsLastNameDirty] = useState(false);
+  const [isEmailDirty, setIsEmailDirty] = useState(false);
+
+  // ============================================================================
+  // CLERK → LOCAL STATE SYNC
+  // ============================================================================
+  // This effect syncs data FROM Clerk INTO our local form state.
+  //
+  // WHY: When the page loads or Clerk data changes externally, we want to
+  // display the latest values in the form inputs.
+  //
+  // THE CATCH: We ONLY sync if the user hasn't started editing that field yet!
+  // (That's what the dirty flags are for - see comments above)
+  //
+  // Example flow:
+  // 1. Page loads, dirty flags are all FALSE → Clerk data fills the form ✓
+  // 2. User starts typing firstName → isFirstNameDirty becomes TRUE
+  // 3. Clerk syncs new data → firstName is SKIPPED (dirty), others still sync ✓
+  // 4. User saves → isFirstNameDirty resets to FALSE → future syncs work again ✓
+  //
+  // Reference: https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
+  // ============================================================================
   useEffect(() => {
-    if (clerkUser.user?.firstName) {
+    // Only sync firstName if user hasn't modified it yet
+    if (clerkUser.user?.firstName && !isFirstNameDirty) {
       setFirstName(clerkUser.user.firstName); // eslint-disable-line -- Intentional sync from Clerk
     }
 
-    if (clerkUser.user?.lastName) {
+    // Only sync lastName if user hasn't modified it yet
+    if (clerkUser.user?.lastName && !isLastNameDirty) {
       setLastName(clerkUser.user.lastName);
     }
 
-    if (clerkUser.user?.primaryEmailAddress?.emailAddress) {
+    // Only sync email if user hasn't modified it yet
+    if (clerkUser.user?.primaryEmailAddress?.emailAddress && !isEmailDirty) {
       setEmailValue(clerkUser.user.primaryEmailAddress.emailAddress);
     }
   }, [
     clerkUser.user?.firstName,
     clerkUser.user?.lastName,
     clerkUser.user?.primaryEmailAddress?.emailAddress,
+    isFirstNameDirty,
+    isLastNameDirty,
+    isEmailDirty,
   ]);
 
   const updateConvexUserData = useMutation(api.users.updateUserData);
@@ -165,6 +208,8 @@ const SettingsPage = () => {
 
   const handleEmailChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
+      // Mark email as "dirty" - the user is now editing, so don't let Clerk overwrite!
+      setIsEmailDirty(true);
       setEmailValue(e.target.value);
 
       try {
@@ -189,6 +234,8 @@ const SettingsPage = () => {
 
   const handleFirstNameChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
+      // Mark firstName as "dirty" - user is now editing, so don't let Clerk overwrite!
+      setIsFirstNameDirty(true);
       setFirstName(e.target.value);
 
       try {
@@ -212,6 +259,8 @@ const SettingsPage = () => {
 
   const handleLastNameChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
+      // Mark lastName as "dirty" - user is now editing, so don't let Clerk overwrite!
+      setIsLastNameDirty(true);
       setLastName(e.target.value);
 
       try {
@@ -345,16 +394,22 @@ const SettingsPage = () => {
         void clerkUser.user?.update({ firstName: firstName });
         successList.push("First Name");
         userDataToUpdate.firstName = firstName;
+        // Reset dirty flag → allow Clerk to sync this field again in the future
+        setIsFirstNameDirty(false);
       }
       if (lastNameSuccess) {
         void clerkUser.user?.update({ lastName: lastName });
         successList.push("Last Name");
         userDataToUpdate.lastName = lastName;
+        // Reset dirty flag → allow Clerk to sync this field again in the future
+        setIsLastNameDirty(false);
       }
 
       if (emailSuccess) {
         userDataToUpdate.email = emailValue;
         setEmailValue(clerkUser.user?.primaryEmailAddress?.emailAddress ?? "");
+        // Reset dirty flag → allow Clerk to sync this field again in the future
+        setIsEmailDirty(false);
       }
 
       await userDataHandler(userDataToUpdate);
