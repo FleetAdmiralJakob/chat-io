@@ -503,7 +503,7 @@ export const Message = ({
         >
           <EditedLabel message={message} />
           <ReplyToMessage message={message} scrollToMessage={scrollToMessage} />
-          <div className="text- text-destructive-foreground text-[75%] italic">
+          <div className="text-destructive-foreground text-[75%] italic">
             {message.type == "message" && !message.deleted ? (
               message.forwarded == undefined ? (
                 ""
