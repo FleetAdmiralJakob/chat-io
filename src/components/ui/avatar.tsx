@@ -33,7 +33,7 @@ const AvatarImage = ({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Image> & {
-  ref: React.RefObject<React.ElementRef<typeof AvatarPrimitive.Image>>;
+  ref: React.RefObject<React.ComponentRef<typeof AvatarPrimitive.Image>>;
 }) => (
   <AvatarPrimitive.Image
     ref={ref}

@@ -147,7 +147,7 @@ const SelectSeparator = ({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.Separator> & {
-  ref: React.RefObject<React.ElementRef<typeof SelectPrimitive.Separator>>;
+  ref: React.RefObject<React.ComponentRef<typeof SelectPrimitive.Separator>>;
 }) => (
   <SelectPrimitive.Separator
     ref={ref}

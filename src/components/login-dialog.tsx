@@ -106,7 +106,7 @@ const AlertDialogAction = ({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Action> & {
-  ref: React.RefObject<React.ElementRef<typeof AlertDialogPrimitive.Action>>;
+  ref: React.RefObject<React.ComponentRef<typeof AlertDialogPrimitive.Action>>;
 }) => (
   <AlertDialogPrimitive.Action
     ref={ref}
@@ -121,7 +121,7 @@ const AlertDialogCancel = ({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Cancel> & {
-  ref: React.RefObject<React.ElementRef<typeof AlertDialogPrimitive.Cancel>>;
+  ref: React.RefObject<React.ComponentRef<typeof AlertDialogPrimitive.Cancel>>;
 }) => (
   <AlertDialogPrimitive.Cancel
     ref={ref}
