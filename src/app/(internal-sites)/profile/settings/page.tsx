@@ -599,9 +599,9 @@ const SettingsPage = () => {
                 .map((email) => email.emailAddress)
                 .toString()) ||
           "" ? (
-            <Button className="gap-2">
+            <Button onClick={submitHandler} className="gap-2">
               <CircleCheck className="h-5 w-5" />
-              <p onClick={submitHandler}>Save Changes</p>
+              <p>Save Changes</p>
             </Button>
           ) : null}
         </div>
