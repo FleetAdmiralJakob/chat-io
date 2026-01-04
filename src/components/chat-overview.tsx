@@ -8,7 +8,7 @@ import { useQuery } from "convex-helpers/react/cache/hooks";
 import { type FunctionReturnType } from "convex/server";
 import { ArrowRight, Ban, NotebookText } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { api } from "../../convex/_generated/api";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { Skeleton } from "./ui/skeleton";
@@ -19,7 +19,7 @@ const SkeletonsChat = (props: { amount: number }) => {
   return Array.from({ length: props.amount }).map((_, index) => (
     <div
       key={index}
-      className={cn("w-full border-t-2 border-secondary", {
+      className={cn("border-secondary w-full border-t-2", {
         "border-0": index == 0,
       })}
     >
@@ -32,7 +32,7 @@ const SkeletonsChat = (props: { amount: number }) => {
             <Skeleton className="h-3 w-32" />
           </div>
         </div>
-        <ArrowRight className="ml-3 text-secondary-foreground lg:mr-10" />
+        <ArrowRight className="text-secondary-foreground ml-3 lg:mr-10" />
       </div>
     </div>
   ));
@@ -56,38 +56,32 @@ const Chats: React.FC<{
   });
   const clerkUser = useUser();
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchedChats, setSearchedChats] = useState<Chats | null | undefined>(
-    chats,
-  );
 
-  useEffect(() => {
-    if (!searchTerm) {
-      setSearchedChats(chats);
-      return;
-    }
-    const filteredChats = chats?.filter((chat) => {
-      const filteredChatUsers = (chat.users = chat.users.filter(
-        (user) => user.clerkId.split("|").pop() !== clerkUser.user?.id,
-      ));
-      return filteredChatUsers.some((user) =>
-        user.username.toLowerCase().startsWith(searchTerm.toLowerCase().trim()),
-      ) ||
-        (chat.support &&
-          "Chat.io Support"
+  // React Compiler automatically handles memoization - no need for useMemo
+  const searchedChats = !searchTerm
+    ? chats
+    : chats?.filter((chat) => {
+        const filteredChatUsers = (chat.users = chat.users.filter(
+          (user) => user.clerkId.split("|").pop() !== clerkUser.user?.id,
+        ));
+        return filteredChatUsers.some((user) =>
+          user.username
             .toLowerCase()
-            .includes(searchTerm.toLowerCase().trim()))
-        ? chat
-        : !filteredChatUsers[0] &&
-            !chat.support &&
-            "My Notes Tool"
+            .startsWith(searchTerm.toLowerCase().trim()),
+        ) ||
+          (chat.support &&
+            "Chat.io Support"
               .toLowerCase()
-              .includes(searchTerm.toLowerCase().trim())
+              .includes(searchTerm.toLowerCase().trim()))
           ? chat
-          : false;
-    });
-
-    setSearchedChats(filteredChats);
-  }, [searchTerm, chats, clerkUser.user?.id]);
+          : !filteredChatUsers[0] &&
+              !chat.support &&
+              "My Notes Tool"
+                .toLowerCase()
+                .includes(searchTerm.toLowerCase().trim())
+            ? chat
+            : false;
+      });
 
   return (
     <div className="mt-3 flex flex-col items-center justify-center">
@@ -100,7 +94,7 @@ const Chats: React.FC<{
       <div className="mb-4 flex w-full justify-center">
         <div
           className={cn(
-            "mt-20 flex w-10/12 flex-col items-center truncate rounded-lg border-2 border-secondary bg-primary lg:w-1/2 xl:w-1/3",
+            "border-secondary bg-primary mt-20 flex w-10/12 flex-col items-center truncate rounded-lg border-2 lg:w-1/2 xl:w-1/3",
             classNameChatList,
           )}
         >
@@ -109,7 +103,7 @@ const Chats: React.FC<{
               if (chat.support) {
                 return (
                   <div
-                    className={cn("w-full border-t-2 border-secondary", {
+                    className={cn("border-secondary w-full border-t-2", {
                       "border-0": index == 0,
                     })}
                     key={index}
@@ -131,10 +125,10 @@ const Chats: React.FC<{
                             </div>
                             <Badge>Support</Badge>
                           </div>
-                          <div className="ml-4 mt-0.5 text-sm text-destructive-foreground">
+                          <div className="text-destructive-foreground mt-0.5 ml-4 text-sm">
                             {chat.lastMessage &&
                               chat.lastMessage.type != "message" && (
-                                <div className="font-semibold text-destructive-foreground">
+                                <div className="text-destructive-foreground font-semibold">
                                   {chat.lastMessage.type === "pendingRequest"
                                     ? chat.lastMessage.clerkId
                                         .split("|")
@@ -185,7 +179,7 @@ const Chats: React.FC<{
                           </div>
                         </div>
                       </div>
-                      <ArrowRight className="ml-3 text-secondary-foreground lg:mr-10" />
+                      <ArrowRight className="text-secondary-foreground ml-3 lg:mr-10" />
                     </Link>
                   </div>
                 );
@@ -196,7 +190,7 @@ const Chats: React.FC<{
 
               return (
                 <div
-                  className={cn("w-full border-t-2 border-secondary", {
+                  className={cn("border-secondary w-full border-t-2", {
                     "border-0": index == 0,
                   })}
                   key={index}
@@ -223,10 +217,10 @@ const Chats: React.FC<{
                             <p className="truncate text-lg">
                               {chat.users[0].username}
                             </p>
-                            <div className="mt-0.5 w-10/12 truncate text-sm font-normal text-destructive-foreground">
+                            <div className="text-destructive-foreground mt-0.5 w-10/12 truncate text-sm font-normal">
                               {chat.lastMessage &&
                                 chat.lastMessage.type != "message" && (
-                                  <div className="font-semibold text-destructive-foreground">
+                                  <div className="text-destructive-foreground font-semibold">
                                     {chat.lastMessage.type === "pendingRequest"
                                       ? chat.lastMessage.clerkId
                                           .split("|")
@@ -280,15 +274,15 @@ const Chats: React.FC<{
                         ) : (
                           <div className="flex flex-col">
                             <div className="flex">
-                              <p className="truncate whitespace-nowrap text-lg">
+                              <p className="truncate text-lg whitespace-nowrap">
                                 My Notes
                               </p>
                               <Badge>Tool</Badge>
                             </div>
-                            <div className="mt-0.5 w-10/12 truncate text-sm font-normal text-destructive-foreground">
+                            <div className="text-destructive-foreground mt-0.5 w-10/12 truncate text-sm font-normal">
                               {chat.lastMessage &&
                                 chat.lastMessage.type != "message" && (
-                                  <div className="font-semibold text-destructive-foreground">
+                                  <div className="text-destructive-foreground font-semibold">
                                     {chat.lastMessage.type === "pendingRequest"
                                       ? chat.lastMessage.clerkId
                                           .split("|")
@@ -343,11 +337,11 @@ const Chats: React.FC<{
                     </div>
                     <div className="flex">
                       {chat.numberOfUnreadMessages > 0 && (
-                        <div className="flex h-6 w-9 items-center justify-center rounded-full bg-accent p-1 text-[70%] font-medium">
+                        <div className="bg-accent flex h-6 w-9 items-center justify-center rounded-full p-1 text-[70%] font-medium">
                           {chat.numberOfUnreadMessages}
                         </div>
                       )}
-                      <ArrowRight className="!important ml-3 h-6 w-6 text-secondary-foreground lg:mr-10" />
+                      <ArrowRight className="!important text-secondary-foreground ml-3 h-6 w-6 lg:mr-10" />
                     </div>
                   </Link>
                 </div>

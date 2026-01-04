@@ -24,6 +24,9 @@ jobs:
         shell: bash
         run: cp .env.example .env
 
+      - name: Generate next-env.d.ts
+        run: echo -e '/// <reference types="next" />\n/// <reference types="next/image-types/global" />' > next-env.d.ts
+
       - name: Lint
         run: pnpm lint
 
@@ -36,4 +39,18 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: Format
-        run: pnpm format
+        run: pnpm format:check
+
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Generate next-env.d.ts
+        run: echo -e '/// <reference types="next" />\n/// <reference types="next/image-types/global" />' > next-env.d.ts
+
+      - name: Typecheck
+        run: pnpm typecheck
