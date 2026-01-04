@@ -22,7 +22,7 @@ export const formSchemaSignUp = z.object({
       error: "The ID for the username must be 5 characters long.",
     })
     .refine((val) => !isNaN(Number(val)), {
-      message: "The ID for the username must be a number",
+      error: "The ID for the username must be a number",
     }),
   firstName: z
     .string()
