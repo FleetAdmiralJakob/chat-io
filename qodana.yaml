@@ -8,7 +8,6 @@
 #               as its contents will be included in the Qodana report.          #
 #################################################################################
 
-
 version: "1.0"
 # Execute shell command before Qodana execution (Applied in CI/CD pipeline)
 # bootstrap: sh ./prepare-qodana.sh

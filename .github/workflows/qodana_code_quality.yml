@@ -3,7 +3,6 @@
 #             https://www.jetbrains.com/help/qodana/about-qodana.html           #
 #-------------------------------------------------------------------------------#
 
-
 name: Qodana
 on:
   workflow_dispatch:
@@ -22,9 +21,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha }}  # to check out the actual pull request commit, not the merge commit
-          fetch-depth: 0  # a full history is required for pull request analysis
-      - name: 'Qodana Scan'
+          ref: ${{ github.event.pull_request.head.sha }} # to check out the actual pull request commit, not the merge commit
+          fetch-depth: 0 # a full history is required for pull request analysis
+      - name: "Qodana Scan"
         uses: JetBrains/qodana-action@v2025.2
         with:
           # When pr-mode is set to true, Qodana analyzes only the files that have been changed
@@ -38,4 +37,4 @@ jobs:
           push-fixes: "none"
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN_821953099 }}
-          QODANA_ENDPOINT: 'https://qodana.cloud'
+          QODANA_ENDPOINT: "https://qodana.cloud"
