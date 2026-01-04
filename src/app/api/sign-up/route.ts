@@ -21,7 +21,7 @@ export async function OPTIONS(request: Request) {
     );
   } else {
     return Response.json(
-      { message: parsedSignUpHeaders.error },
+      { message: parsedSignUpHeaders.data },
       { status: 200 },
     );
   }
