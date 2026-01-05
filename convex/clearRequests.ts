@@ -161,6 +161,7 @@ export const acceptClearRequest = mutation({
 });
 
 export const expirePendingRequests = internalMutation({
+  args: {},
   handler: async (ctx) => {
     for (const q1 of await ctx
       .table("clearRequests", "by_creation_time", (q) =>

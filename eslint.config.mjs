@@ -1,9 +1,12 @@
 // @ts-check
+import convexPlugin from "@convex-dev/eslint-plugin";
 import nextVitals from "eslint-config-next/core-web-vitals";
 import { defineConfig, globalIgnores } from "eslint/config";
 import tseslint from "typescript-eslint";
 
 const eslintConfig = defineConfig([
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- The library does not have proper types, and therefore we cannot type this properly
+  ...convexPlugin.configs.recommended,
   ...nextVitals,
   // Use type-checked configs for stricter TypeScript linting
   // (eslint-config-next/typescript only includes 'recommended', not the type-checked variants)
