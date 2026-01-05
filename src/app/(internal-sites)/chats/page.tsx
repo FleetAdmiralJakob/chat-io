@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
 import ChatWithSearch from "~/components/chats-with-search";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Chats",
