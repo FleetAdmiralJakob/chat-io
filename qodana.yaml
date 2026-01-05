@@ -34,8 +34,7 @@ include:
   - name: ESLint
 bootstrap: |
   pnpm install
-  printf '%s\n' '/// <reference types="next" />' '/// <reference types="next/image-types/global" />' > next-env.d.ts
-# Enable inspections
+  pnpm next build || true # Let Next.js generate next-env.d.ts automatically
 # include:
 #   - name: <SomeEnabledInspectionId>
 
