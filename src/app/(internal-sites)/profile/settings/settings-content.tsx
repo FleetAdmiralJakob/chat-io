@@ -346,8 +346,6 @@ export default function SettingsContent() {
       });
       setDialogOpen(false);
       toast.success("Password changed successfully");
-
-      console.log("Password changed successfully");
     } catch (e) {
       if (isClerkAPIResponseError(e)) {
         if (e.errors.some((error) => error.code === "form_password_pwned")) {
