@@ -12,6 +12,7 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 import React, { Suspense } from "react";
 import { Monitoring } from "react-scan/monitoring/next";
 import { CSPostHogProvider } from "./_analytics/provider";
+import { SerwistProvider } from "./serwist-provider";
 
 const APP_NAME = "Chat.io";
 const APP_DEFAULT_TITLE = "Chat.io";
@@ -82,33 +83,35 @@ export default function RootLayout({
           "bg-background min-h-screen antialiased",
         )}
       >
-        <Monitoring
-          apiKey="w-1y_WGLno534NOfDIi-JKYqMI4xpUf_"
-          url="https://monitoring.react-scan.com/api/v1/ingest"
-          // eslint-disable-next-line no-restricted-properties
-          commit={process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA}
-          // eslint-disable-next-line no-restricted-properties
-          branch={process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_REF}
-        />
-        <Suspense fallback={<div className="min-h-screen" />}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <ClerkProvider dynamic>
-              <CSPostHogProvider>
-                <ConvexClientProvider>
-                  <ConvexQueryCacheProvider>
-                    <NuqsAdapter>{children}</NuqsAdapter>
-                    <Toaster />
-                  </ConvexQueryCacheProvider>
-                </ConvexClientProvider>
-              </CSPostHogProvider>
-            </ClerkProvider>
-          </ThemeProvider>
-        </Suspense>
+        <SerwistProvider swUrl="/sw.js">
+          <Monitoring
+            apiKey="w-1y_WGLno534NOfDIi-JKYqMI4xpUf_"
+            url="https://monitoring.react-scan.com/api/v1/ingest"
+            // eslint-disable-next-line no-restricted-properties
+            commit={process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA}
+            // eslint-disable-next-line no-restricted-properties
+            branch={process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_REF}
+          />
+          <Suspense fallback={<div className="min-h-screen" />}>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <ClerkProvider dynamic>
+                <CSPostHogProvider>
+                  <ConvexClientProvider>
+                    <ConvexQueryCacheProvider>
+                      <NuqsAdapter>{children}</NuqsAdapter>
+                      <Toaster />
+                    </ConvexQueryCacheProvider>
+                  </ConvexClientProvider>
+                </CSPostHogProvider>
+              </ClerkProvider>
+            </ThemeProvider>
+          </Suspense>
+        </SerwistProvider>
       </body>
     </html>
   );

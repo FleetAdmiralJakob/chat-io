@@ -7,11 +7,6 @@ import ReactComponentName from "react-scan/react-component-name/webpack";
 
 // @ts-check
 
-const withSerwist = withSerwistInit({
-  swSrc: "src/sw.ts",
-  swDest: "public/sw.js",
-});
-
 const jiti = createJiti(fileURLToPath(import.meta.url));
 
 /**
@@ -21,52 +16,50 @@ const jiti = createJiti(fileURLToPath(import.meta.url));
 await jiti.import("./src/env.ts");
 
 /** @type {import("next").NextConfig} */
-const baseConfig = withAxiom(
-  withSerwist({
-    cacheComponents: true,
-    transpilePackages: ["geist"],
-    reactCompiler: true,
-    async redirects() {
-      return [
-        {
-          source: "/github",
-          destination: "https://github.com/FleetAdmiralJakob/chat-io",
-          permanent: true,
-        },
-      ];
-    },
-    async rewrites() {
-      return [
-        {
-          source: "/home",
-          destination: "/",
-        },
-        {
-          source: "/ingest/static/:path*",
-          destination: process.env.NEXT_PUBLIC_POSTHOG_HOST + "/static/:path*",
-        },
-        {
-          source: "/ingest/:path*",
-          destination: process.env.NEXT_PUBLIC_POSTHOG_HOST + "/:path*",
-        },
-        {
-          source: "/ingest/decide",
-          destination: process.env.NEXT_PUBLIC_POSTHOG_HOST + "/decide",
-        },
-      ];
-    },
-    // This is required to support PostHog trailing slash API requests
-    skipTrailingSlashRedirect: true,
+const baseConfig = withAxiom({
+  cacheComponents: true,
+  transpilePackages: ["geist"],
+  reactCompiler: true,
+  async redirects() {
+    return [
+      {
+        source: "/github",
+        destination: "https://github.com/FleetAdmiralJakob/chat-io",
+        permanent: true,
+      },
+    ];
+  },
+  async rewrites() {
+    return [
+      {
+        source: "/home",
+        destination: "/",
+      },
+      {
+        source: "/ingest/static/:path*",
+        destination: process.env.NEXT_PUBLIC_POSTHOG_HOST + "/static/:path*",
+      },
+      {
+        source: "/ingest/:path*",
+        destination: process.env.NEXT_PUBLIC_POSTHOG_HOST + "/:path*",
+      },
+      {
+        source: "/ingest/decide",
+        destination: process.env.NEXT_PUBLIC_POSTHOG_HOST + "/decide",
+      },
+    ];
+  },
+  // This is required to support PostHog trailing slash API requests
+  skipTrailingSlashRedirect: true,
 
-    // Next.js being Next.js and not providing any type definitions for their own config
-    webpack: (config) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-      config.plugins.push(ReactComponentName({}));
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      return config;
-    },
-  }),
-);
+  // Next.js being Next.js and not providing any type definitions for their own config
+  webpack: (config) => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    config.plugins.push(ReactComponentName({}));
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return config;
+  },
+});
 
 const config = withSentryConfig(baseConfig, {
   // For all available options, see:
