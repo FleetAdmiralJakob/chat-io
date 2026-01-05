@@ -1,7 +1,19 @@
 import { SignInForm } from "~/app/(auth)/sign-in/signin-form";
 import icon from "~/assets/chatio.png";
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Sign In",
+  description:
+    "Sign in to your Chat.io account to connect with friends and start chatting.",
+  openGraph: {
+    title: "Sign In",
+    description:
+      "Sign in to your Chat.io account to connect with friends and start chatting.",
+  },
+};
 
 const SignInPage = () => {
   return (

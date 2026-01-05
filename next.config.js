@@ -1,6 +1,5 @@
 import { fileURLToPath } from "node:url";
 import { withSentryConfig } from "@sentry/nextjs";
-import withSerwistInit from "@serwist/next";
 import { createJiti } from "jiti";
 import { withAxiom } from "next-axiom";
 import ReactComponentName from "react-scan/react-component-name/webpack";

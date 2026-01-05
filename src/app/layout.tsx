@@ -17,7 +17,7 @@ import { SerwistProvider } from "./serwist-provider";
 const APP_NAME = "Chat.io";
 const APP_DEFAULT_TITLE = "Chat.io";
 const APP_TITLE_TEMPLATE = "%s - Chat.io";
-const APP_DESCRIPTION = "Best PWA app in the world!";
+const APP_DESCRIPTION = "Best messaging PWA app in the world!";
 
 export const metadata: Metadata = {
   applicationName: APP_NAME,

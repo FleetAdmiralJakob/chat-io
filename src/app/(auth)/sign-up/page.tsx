@@ -1,7 +1,19 @@
 import { SignUpForm } from "~/app/(auth)/sign-up/signup-form";
 import icon from "~/assets/chatio.png";
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Sign Up",
+  description:
+    "Create a new Chat.io account and start chatting with friends in real-time.",
+  openGraph: {
+    title: "Sign Up",
+    description:
+      "Create a new Chat.io account and start chatting with friends in real-time.",
+  },
+};
 
 const SignInPage = () => {
   return (
