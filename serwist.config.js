@@ -18,7 +18,7 @@ export default serwist.withNextConfig((nextConfig) => ({
   // If you want to precache any other page that is not
   // already detected by Serwist, add them here. Otherwise,
   // delete `revision`.
-  additionalPrecacheEntries: [{ url: "/precached", revision }],
+  // additionalPrecacheEntries: [{ url: "/precached", revision }],
   globIgnores: [
     `${nextConfig.distDir}/server/pages/**/*.json`,
     `${nextConfig.distDir}/server/app/ignored.html`,

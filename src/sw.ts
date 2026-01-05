@@ -24,6 +24,18 @@ const serwist = new Serwist({
   navigationPreload: true,
   runtimeCaching: defaultCache,
   // TODO: Make a fallback page
+  /*
+  fallbacks: {
+    entries: [
+      {
+        url: "/~offline",
+        matcher({ request }) {
+          return request.destination === "document";
+        },
+      },
+    ],
+  },
+   */
 });
 
 serwist.addEventListeners();
