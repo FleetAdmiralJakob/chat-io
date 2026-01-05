@@ -1,7 +1,6 @@
 import "~/styles/globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import ConvexClientProvider from "~/app/convex-client-provider";
-import { PWATitleFix } from "~/components/pwa-title-fix";
 import { ThemeProvider } from "~/components/theme-provider";
 import { Toaster } from "~/components/ui/sonner";
 import { cn } from "~/lib/utils";
@@ -106,7 +105,6 @@ export default function RootLayout({
                     <ConvexQueryCacheProvider>
                       <NuqsAdapter>{children}</NuqsAdapter>
                       <Toaster />
-                      <PWATitleFix />
                     </ConvexQueryCacheProvider>
                   </ConvexClientProvider>
                 </CSPostHogProvider>
