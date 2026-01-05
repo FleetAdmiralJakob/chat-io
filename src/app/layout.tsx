@@ -20,7 +20,9 @@ const APP_TITLE_TEMPLATE = "%s - Chat.io";
 const APP_DESCRIPTION = "Best messaging PWA app in the world!";
 
 export const metadata: Metadata = {
-  applicationName: APP_NAME,
+  // Note: applicationName is intentionally omitted here.
+  // It's defined in manifest.ts for PWA, and including it here causes
+  // Edge PWA to show duplicate names like "Chat.io - Profile - Chat.io"
   title: {
     default: APP_DEFAULT_TITLE,
     template: APP_TITLE_TEMPLATE,
