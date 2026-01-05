@@ -206,7 +206,7 @@ importers:
         version: 0.7.2(@ianvs/prettier-plugin-sort-imports@4.7.0(prettier@3.7.4))(prettier@3.7.4)
       serwist:
         specifier: ^9.4.2
-        version: 9.4.2(typescript@5.9.3)
+        version: 9.5.0(typescript@5.9.3)
       tailwindcss:
         specifier: ^4.1.8
         version: 4.1.18
@@ -2091,6 +2091,9 @@ packages:
         optional: true
       typescript:
         optional: true
+
+  '@serwist/utils@9.5.0':
+    resolution: {integrity: sha512-DBzmJgL63/VYcQ/TpSYXW1FJKRILesOxytu+1MHY0vW2WFhW7pYkLgVuHqksP5K+3ypt54M3+2QNDDMixrnutQ==}
 
   '@serwist/webpack-plugin@9.4.2':
     resolution: {integrity: sha512-pj7NxWkEB9yG6xQJ3NKGnbw+sFdzIi66eLgfvVIPco2toBbNllC/SFLo3+VtE0ITi5XcMAgfT87dT1Y/0iVGVA==}
@@ -4308,6 +4311,14 @@ packages:
       typescript:
         optional: true
 
+  serwist@9.5.0:
+    resolution: {integrity: sha512-wjrsPWHI5ZM20jIsVKZGN/uAdS2aKOgmIOE4dqUaFhK6SVIzgoJZjTnZ3v29T+NmneuD753jlhGui9eYypsj0A==}
+    peerDependencies:
+      typescript: '>=5.0.0'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+
   set-function-length@1.2.2:
     resolution: {integrity: sha512-pgRc4hJ4/sNjWCSS9AmnS40x3bNMDTknHgL5UaMBTMyJnU90EgWh1Rz+MC9eFu4BuN/UwZjKQuY/1v3rM7HMfg==}
     engines: {node: '>= 0.4'}
@@ -6447,6 +6458,8 @@ snapshots:
       typescript: 5.9.3
     transitivePeerDependencies:
       - webpack
+
+  '@serwist/utils@9.5.0': {}
 
   '@serwist/webpack-plugin@9.4.2(typescript@5.9.3)(webpack@5.104.1)':
     dependencies:
@@ -8772,6 +8785,13 @@ snapshots:
 
   serwist@9.4.2(typescript@5.9.3):
     dependencies:
+      idb: 8.0.3
+    optionalDependencies:
+      typescript: 5.9.3
+
+  serwist@9.5.0(typescript@5.9.3):
+    dependencies:
+      '@serwist/utils': 9.5.0
       idb: 8.0.3
     optionalDependencies:
       typescript: 5.9.3
