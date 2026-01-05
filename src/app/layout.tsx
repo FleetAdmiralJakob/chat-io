@@ -1,6 +1,7 @@
 import "~/styles/globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import ConvexClientProvider from "~/app/convex-client-provider";
+import { PWATitleFix } from "~/components/pwa-title-fix";
 import { ThemeProvider } from "~/components/theme-provider";
 import { Toaster } from "~/components/ui/sonner";
 import { cn } from "~/lib/utils";
@@ -20,9 +21,7 @@ const APP_TITLE_TEMPLATE = "%s - Chat.io";
 const APP_DESCRIPTION = "Best messaging PWA app in the world!";
 
 export const metadata: Metadata = {
-  // Note: applicationName is intentionally omitted here.
-  // It's defined in manifest.ts for PWA, and including it here causes
-  // Edge PWA to show duplicate names like "Chat.io - Profile - Chat.io"
+  applicationName: APP_NAME,
   title: {
     default: APP_DEFAULT_TITLE,
     template: APP_TITLE_TEMPLATE,
@@ -107,6 +106,7 @@ export default function RootLayout({
                     <ConvexQueryCacheProvider>
                       <NuqsAdapter>{children}</NuqsAdapter>
                       <Toaster />
+                      <PWATitleFix />
                     </ConvexQueryCacheProvider>
                   </ConvexClientProvider>
                 </CSPostHogProvider>
