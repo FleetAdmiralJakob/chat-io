@@ -1,6 +1,6 @@
+import type { Metadata } from "next";
 import { SignUpForm } from "~/app/(auth)/sign-up/signup-form";
 import icon from "~/assets/chatio.png";
-import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 
