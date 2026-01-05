@@ -6,7 +6,6 @@ import tseslint from "typescript-eslint";
 const eslintConfig = defineConfig([
   ...nextVitals,
   // Use type-checked configs for stricter TypeScript linting
-  // (eslint-config-next/typescript only includes 'recommended', not the type-checked variants)
   ...tseslint.configs.recommendedTypeChecked,
   ...tseslint.configs.stylisticTypeChecked,
   // Override default ignores of eslint-config-next
