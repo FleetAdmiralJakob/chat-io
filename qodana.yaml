@@ -34,6 +34,7 @@ include:
   - name: ESLint
 bootstrap: |
   pnpm install
+  cp .env.example .env
   pnpm next build || true # Let Next.js generate next-env.d.ts automatically
 # include:
 #   - name: <SomeEnabledInspectionId>
