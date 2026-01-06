@@ -11,7 +11,6 @@ import { Message } from "~/components/message";
 import { useReactToMessage } from "~/components/reactions";
 import { Avatar, AvatarFallback } from "~/components/ui/avatar";
 import Badge from "~/components/ui/badge";
-import { Form, FormControl, FormField } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { Progress } from "~/components/ui/progress";
 import {
@@ -793,47 +792,41 @@ export default function Page() {
                 scrollToMessage={scrollToMessage}
               />
               <div className="bg-primary z-10 flex w-full justify-between gap-8 p-4 pb-10 lg:pb-4">
-                <Form {...textMessageForm}>
-                  <form
-                    className="w-full"
-                    ref={formRef}
-                    onSubmit={textMessageForm.handleSubmit(
-                      onTextMessageFormSubmit,
+                <form
+                  id="form-text-message"
+                  className="w-full"
+                  ref={formRef}
+                  onSubmit={textMessageForm.handleSubmit(
+                    onTextMessageFormSubmit,
+                  )}
+                >
+                  <Controller
+                    name="message"
+                    control={textMessageForm.control}
+                    render={({ field, fieldState }) => (
+                      <Input
+                        {...field}
+                        id="form-text-message-input"
+                        className="border-secondary-foreground bg-secondary h-11 w-full rounded-2xl border-2 p-2 lg:h-16"
+                        placeholder="Message ..."
+                        value={inputValue}
+                        onChange={(e) => {
+                          handleChange(e);
+                          field.onChange(e);
+                        }}
+                        aria-invalid={fieldState.invalid}
+                        aria-label="Message input"
+                        aria-describedby={
+                          replyToMessageId ? "reply-context" : undefined
+                        }
+                        ref={(e) => {
+                          field.ref(e);
+                          inputRef.current = e;
+                        }}
+                      />
                     )}
-                  >
-                    <FormField
-                      control={textMessageForm.control}
-                      name="message"
-                      render={() => (
-                        <FormControl>
-                          <Controller
-                            name="message"
-                            control={textMessageForm.control}
-                            render={({ field }) => (
-                              <Input
-                                className="border-secondary-foreground bg-secondary h-11 w-full rounded-2xl border-2 p-2 lg:h-16"
-                                placeholder="Message ..."
-                                value={inputValue}
-                                onChange={(e) => {
-                                  handleChange(e);
-                                  field.onChange(e);
-                                }}
-                                aria-label="Message input"
-                                aria-describedby={
-                                  replyToMessageId ? "reply-context" : undefined
-                                }
-                                ref={(e) => {
-                                  field.ref(e);
-                                  inputRef.current = e;
-                                }}
-                              />
-                            )}
-                          />
-                        </FormControl>
-                      )}
-                    />
-                  </form>
-                </Form>
+                  />
+                </form>
                 <div className="flex items-center gap-8">
                   <Mic
                     className={cn(

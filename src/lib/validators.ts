@@ -1,5 +1,35 @@
 import { z } from "zod";
 
+/**
+ * Sign Up Form Schema
+ *
+ * IMPORTANT: Understanding `.optional()` vs `.or(z.literal(""))`:
+ *
+ * Zod's `.optional()` only allows `undefined` to bypass validation.
+ * When a form field has a default value of "" (empty string), `.optional()` alone
+ * will NOT work because "" is not `undefined` - it's still a string value that
+ * gets validated against `.min()`, `.max()`, etc.
+ *
+ * Example of the problem:
+ * ```
+ * z.string().min(2).optional()
+ * ```
+ * - `undefined` → ✅ passes (optional allows undefined)
+ * - `""` → ❌ fails (empty string is validated against min(2))
+ * - `"ab"` → ✅ passes
+ *
+ * Solution: Use `.or(z.literal(""))` to explicitly allow empty strings:
+ * ```
+ * z.string().min(2).optional().or(z.literal(""))
+ * ```
+ * - `undefined` → ✅ passes
+ * - `""` → ✅ passes (literal "" is allowed)
+ * - `"ab"` → ✅ passes
+ * - `"a"` → ❌ fails (too short, not empty)
+ *
+ * This is necessary because React Hook Form initializes fields with "" by default,
+ * and HTML inputs always return strings (never undefined).
+ */
 export const formSchemaSignUp = z.object({
   username: z
     .string()
@@ -24,6 +54,15 @@ export const formSchemaSignUp = z.object({
     .refine((val) => !isNaN(Number(val)), {
       error: "The ID for the username must be a number",
     }),
+  /**
+   * First name is optional - users can stay anonymous.
+   *
+   * The `.or(z.literal(""))` allows empty strings to pass validation.
+   * Without this, an empty string would fail the `.min(2)` check because
+   * Zod's `.optional()` only allows `undefined`, not empty strings.
+   *
+   * Valid values: undefined | "" | string (2-20 chars)
+   */
   firstName: z
     .string()
     .min(2, {
@@ -32,7 +71,14 @@ export const formSchemaSignUp = z.object({
     .max(20, {
       error: "Name must be at most 20 characters.",
     })
-    .optional(),
+    .optional()
+    .or(z.literal("")),
+  /**
+   * Last name is optional - users can stay anonymous.
+   * Same pattern as firstName - see comments above.
+   *
+   * Valid values: undefined | "" | string (2-20 chars)
+   */
   lastName: z
     .string()
     .min(2, {
@@ -41,8 +87,16 @@ export const formSchemaSignUp = z.object({
     .max(20, {
       error: "Name must be at most 20 characters.",
     })
-    .optional(),
-  email: z.email().optional(),
+    .optional()
+    .or(z.literal("")),
+  /**
+   * Email is optional - used for password recovery.
+   * The `.or(z.literal(""))` allows empty strings since form inputs
+   * always return strings, never undefined.
+   *
+   * Valid values: undefined | "" | valid email string
+   */
+  email: z.email().optional().or(z.literal("")),
   password: z
     .string()
     .min(8, {
@@ -55,6 +109,17 @@ export const formSchemaSignUp = z.object({
 
 export type FormSchemaSignUp = z.infer<typeof formSchemaSignUp>;
 
+/**
+ * User Update Form Schema
+ *
+ * NOTE: This schema does NOT use `.or(z.literal(""))` for optional fields.
+ * If this form is used with React Hook Form and empty string defaults,
+ * you may need to add the same pattern as formSchemaSignUp.
+ *
+ * Currently expects:
+ * - `undefined` for empty optional fields (not "")
+ * - Or the form should transform "" to undefined before validation
+ */
 export const formSchemaUserUpdate = z.object({
   firstName: z
     .string()
