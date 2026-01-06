@@ -1122,10 +1122,148 @@ function Component() {
 ```bash
 pnpm dev          # Start dev server with Turbopack + Convex + Serwist
 pnpm build        # Build for production
-pnpm lint         # Run ESLint with type checking
+pnpm lint         # Run ESLint with type-checked rules
 pnpm typecheck    # Run TypeScript type checking
+pnpm format:check # Check formatting without making changes
 pnpm format:write # Format code with Prettier
 ```
+
+---
+
+## Code Quality Workflow (MANDATORY)
+
+> **⚠️ CRITICAL**: After making ANY code changes, you MUST validate your changes. Never assume code is correct without verification.
+
+### Post-Edit Validation Checklist
+
+**After EVERY code change, perform these steps IN ORDER:**
+
+1. **Check for IDE errors** - Use `get_errors` tool to check for TypeScript/lint errors in modified files
+2. **Run type checking** - `pnpm typecheck` to verify no type errors across the project
+3. **Run linting** - `pnpm lint` to catch code quality issues
+4. **Format code** - `pnpm format:write` to ensure consistent formatting
+
+```bash
+# Quick validation sequence (run after changes)
+pnpm typecheck && pnpm lint && pnpm format:write
+```
+
+### TypeScript Configuration
+
+This project uses **strict TypeScript** with enhanced safety:
+
+| Option | Value | Effect |
+|--------|-------|--------|
+| `strict` | `true` | Enables all strict type-checking options |
+| `noUncheckedIndexedAccess` | `true` | Array/object access returns `T \| undefined` |
+| `checkJs` | `true` | Type-check JavaScript files too |
+| `noEmit` | `true` | Only type-check, don't emit files |
+
+**Key implications of `noUncheckedIndexedAccess`:**
+```typescript
+const arr = [1, 2, 3];
+const first = arr[0];  // Type: number | undefined
+
+// ✅ MUST check before using
+if (first !== undefined) {
+  console.log(first.toFixed(2));
+}
+
+// ❌ WRONG - TypeScript error
+console.log(arr[0].toFixed(2));  // Object is possibly 'undefined'
+```
+
+### ESLint Configuration
+
+This project uses **type-checked ESLint** with strict rules:
+
+**Enabled rule sets:**
+- `typescript-eslint/recommendedTypeChecked` - Type-aware linting
+- `typescript-eslint/stylisticTypeChecked` - Consistent code style
+- `eslint-config-next/core-web-vitals` - Next.js best practices
+- `@convex-dev/eslint-plugin` - Convex-specific rules
+
+**Custom enforced rules:**
+
+| Rule | Effect |
+|------|--------|
+| `consistent-type-imports` | Enforces `import { type X }` syntax |
+| `no-unused-vars` | Warns on unused variables (allows `_` prefix) |
+| `no-restricted-properties` | Blocks `process.env` access |
+| `no-restricted-imports` | Blocks direct `convex/react` hooks |
+
+**To fix lint errors:**
+```bash
+# Check for errors
+pnpm lint
+
+# Many issues are auto-fixable
+pnpm lint --fix
+```
+
+### Prettier Configuration
+
+This project uses **Prettier** with these plugins:
+
+| Plugin | Purpose |
+|--------|---------|
+| `@ianvs/prettier-plugin-sort-imports` | Auto-sorts imports |
+| `prettier-plugin-tailwindcss` | Sorts Tailwind classes |
+
+**Import sort order** (automatically enforced):
+1. React imports
+2. External packages (alphabetical)
+3. Internal `~/` imports (alphabetical)
+4. Relative imports
+5. Type-only imports last within each group
+
+**To format code:**
+```bash
+# Check formatting without changes
+pnpm format:check
+
+# Format all files
+pnpm format:write
+```
+
+### Error Resolution Workflow
+
+When you encounter errors, follow this workflow:
+
+```
+┌─────────────────────────────────────────────────┐
+│           Error encountered?                    │
+└─────────────────────────────────────────────────┘
+                        │
+        ┌───────────────┼───────────────┐
+        ▼               ▼               ▼
+   TypeScript?       ESLint?         Prettier?
+        │               │               │
+        ▼               ▼               ▼
+   Fix the type      Fix or add       Run format:
+   error manually    eslint-disable   write
+        │            (with reason)      │
+        │               │               │
+        └───────────────┼───────────────┘
+                        ▼
+              Re-run validation checks
+```
+
+**ESLint disable comments** (use sparingly with justification):
+```typescript
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- External lib lacks types
+const data = externalLib.getData();
+```
+
+### Pre-Commit Expectations
+
+Before considering any task complete:
+
+- [ ] `get_errors` returns no errors for modified files
+- [ ] `pnpm typecheck` passes with no errors
+- [ ] `pnpm lint` passes (or only has pre-existing warnings)
+- [ ] `pnpm format:write` has been run
+- [ ] Code follows all project conventions from this document
 
 ---
 
@@ -1204,13 +1342,26 @@ export const createItem = mutation({
 
 ## Remember
 
-1. **ALWAYS** use `~/` path alias for imports
-2. **ALWAYS** use `import { env } from "~/env"` for environment variables
-3. **ALWAYS** use `useQuery` from `convex-helpers/react/cache/hooks`
-4. **ALWAYS** use custom Convex wrappers from `convex/lib/functions.ts`
-5. **ALWAYS** use `cn()` for className composition
-6. **ALWAYS** use `.or(z.literal(""))` for optional form fields in Zod
-7. **NEVER** use `forwardRef` - use React 19's ref prop instead
-8. **NEVER** access `process.env` directly
-9. **Use MCP tools** to look up documentation before implementing unfamiliar APIs
+### Code Quality (MANDATORY after every change)
+1. **ALWAYS** run `get_errors` on modified files to check for TypeScript/lint errors
+2. **ALWAYS** run `pnpm typecheck` to verify type safety
+3. **ALWAYS** run `pnpm lint` to catch code quality issues
+4. **ALWAYS** run `pnpm format:write` to format code consistently
+5. **NEVER** consider a task complete without validation passing
+
+### Code Conventions
+6. **ALWAYS** use `~/` path alias for imports
+7. **ALWAYS** use `import { env } from "~/env"` for environment variables
+8. **ALWAYS** use `useQuery` from `convex-helpers/react/cache/hooks`
+9. **ALWAYS** use custom Convex wrappers from `convex/lib/functions.ts`
+10. **ALWAYS** use `cn()` for className composition
+11. **ALWAYS** use `.or(z.literal(""))` for optional form fields in Zod
+12. **ALWAYS** use inline type imports: `import { type X }` not `import type { X }`
+13. **ALWAYS** check for `undefined` when accessing arrays/objects (due to `noUncheckedIndexedAccess`)
+14. **NEVER** use `forwardRef` - use React 19's ref prop instead
+15. **NEVER** access `process.env` directly
+
+### Documentation & Tools
+16. **Use MCP tools** to look up documentation before implementing unfamiliar APIs
+17. **Use browser automation** (not curl) to verify page changes
 
