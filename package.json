@@ -79,7 +79,7 @@
     "@serwist/cli": "^9.5.0",
     "@serwist/next": "^9.5.0",
     "@total-typescript/ts-reset": "^0.6.1",
-    "@types/node": "^22.15.24",
+    "@types/node": "^24.0.0",
     "@types/react": "^19.1.6",
     "@types/react-dom": "^19.0.3",
     "autoprefixer": "^10.4.20",
