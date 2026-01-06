@@ -12,13 +12,11 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "~/components/ui/form";
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "~/components/ui/field";
 import { Input } from "~/components/ui/input";
 import {
   Tooltip,
@@ -32,7 +30,7 @@ import { ConvexError } from "convex/values";
 import { UserRoundPlus } from "lucide-react";
 import { parseAsBoolean, useQueryState } from "nuqs";
 import { usePostHog } from "posthog-js/react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { api } from "../../convex/_generated/api";
 
@@ -96,18 +94,26 @@ export function AddUserDialog({
     } catch (e) {
       if (e instanceof ConvexError) {
         if (e.message.includes("Cannot create a chat with yourself")) {
-          form.setError("usernameId", {
+          form.setError("root", {
             message: "Cannot create a chat with yourself.",
           });
         } else if (e.message.includes("User not found")) {
-          form.setError("usernameId", {
-            message: "User not found",
+          form.setError("root", {
+            message: "User not found. Please check the username and ID.",
           });
         } else if (e.message.includes("Chat already created")) {
-          form.setError("usernameId", {
+          form.setError("root", {
             message: "Chat already created.",
           });
+        } else {
+          form.setError("root", {
+            message: "An unexpected error occurred.",
+          });
         }
+      } else {
+        form.setError("root", {
+          message: "Failed to add contact. Please try again.",
+        });
       }
     }
   }
@@ -137,70 +143,87 @@ export function AddUserDialog({
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
-      <DialogContent className="sm:max-w-[425px]">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <DialogHeader>
-              <DialogTitle>Add a contact</DialogTitle>
-              <DialogDescription>
-                Add a user you want to chat with.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <FormField
-                control={form.control}
-                name="username"
-                render={({ field }) => (
-                  <FormItem className="block items-center gap-4">
-                    <FormLabel>Username</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="exampleuser"
-                        className="col-span-3 mt-1"
-                        {...field}
-                        onChange={(e) =>
-                          field.onChange(
-                            e.target.value
-                              .toLowerCase()
-                              .replace(" ", "")
-                              .substring(0, 15),
-                          )
-                        }
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="usernameId"
-                render={({ field }) => (
-                  <FormItem className="block items-center gap-4">
-                    <FormLabel>Username ID</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="01010"
-                        type="number"
-                        className="col-span-3 mt-1"
-                        {...field}
-                        onChange={(e) =>
-                          field.onChange(
-                            e.target.value.replace(/\D/g, "").slice(0, 5),
-                          )
-                        }
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <DialogFooter>
-              <Button type="submit">Add</Button>
-            </DialogFooter>
-          </form>
-        </Form>
+      <DialogContent className="sm:max-w-106.25">
+        <form
+          className="flex flex-col gap-4"
+          id="form-add-user-dialog"
+          onSubmit={form.handleSubmit(onSubmit)}
+        >
+          <DialogHeader>
+            <DialogTitle>Add a contact</DialogTitle>
+            <DialogDescription>
+              Add a user you want to chat with.
+            </DialogDescription>
+          </DialogHeader>
+          <FieldGroup>
+            <Controller
+              control={form.control}
+              name="username"
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="form-add-user-dialog-username">
+                    Username
+                  </FieldLabel>
+                  <Input
+                    {...field}
+                    placeholder="exampleuser"
+                    id="form-add-user-dialog-username"
+                    aria-invalid={fieldState.invalid}
+                    onChange={(e) =>
+                      field.onChange(
+                        e.target.value
+                          .toLowerCase()
+                          .replace(" ", "")
+                          .substring(0, 15),
+                      )
+                    }
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+            <Controller
+              control={form.control}
+              name="usernameId"
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="form-add-user-dialog-usernameId">
+                    Username ID
+                  </FieldLabel>
+                  <Input
+                    {...field}
+                    placeholder="01010"
+                    id="form-add-user-dialog-usernameId"
+                    type="number"
+                    aria-invalid={fieldState.invalid}
+                    onChange={(e) =>
+                      field.onChange(
+                        e.target.value.replace(/\D/g, "").slice(0, 5),
+                      )
+                    }
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+          </FieldGroup>
+          {form.formState.errors.root && (
+            <p className="text-destructive text-sm">
+              {form.formState.errors.root.message}
+            </p>
+          )}
+          <DialogFooter>
+            <Field>
+              <Button form="form-add-user-dialog" type="submit">
+                Add
+              </Button>
+            </Field>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );
