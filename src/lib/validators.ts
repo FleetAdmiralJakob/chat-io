@@ -142,7 +142,7 @@ export const formSchemaUserUpdate = z.object({
       error: "Name must be at most 20 characters.",
     })
     .optional(),
-  email: z.email().optional(),
+  email: z.email({ error: "Please enter a valid email address." }).optional(),
 });
 
 export type FormSchemaUserUpdate = z.infer<typeof formSchemaUserUpdate>;
