@@ -785,7 +785,7 @@ export default defineSchema({
 
 #### src/App.tsx
 
-```typescript
+```tsx
 export default function App() {
   return <div>Hello World</div>;
 }

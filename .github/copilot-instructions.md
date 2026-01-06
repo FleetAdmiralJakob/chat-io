@@ -417,7 +417,7 @@ export default async function Page() {
 
 **Add `"use client"` directive only when needed:**
 
-```typescript
+```tsx
 "use client";
 
 import { useState } from "react";
@@ -440,7 +440,7 @@ export function Counter() {
 
 **DO NOT use `forwardRef`. Use the new ref prop directly:**
 
-```typescript
+```tsx
 // ✅ CORRECT - React 19 pattern
 const Button = ({
   ref,
@@ -474,7 +474,7 @@ export default async function StaticPage() {
 
 **Wrap async components with Suspense:**
 
-```typescript
+```tsx
 import { Suspense } from "react";
 
 export default function Page() {
@@ -638,7 +638,7 @@ const sendMessage = useMutation(api.messages.send).withOptimisticUpdate(
 
 Components are in `src/components/ui/`. **Copy the pattern, don't modify core components:**
 
-```typescript
+```tsx
 "use client";
 
 import * as DialogPrimitive from "@radix-ui/react-dialog";
@@ -670,7 +670,7 @@ const DialogContent = ({
 
 **ALWAYS use `cn()` for conditional classes:**
 
-```typescript
+```tsx
 import { cn } from "~/lib/utils";
 
 // ✅ CORRECT
@@ -750,7 +750,7 @@ This project uses Tailwind CSS v4 with CSS variables:
 
 **Use semantic color names:**
 
-```typescript
+```tsx
 // ✅ CORRECT - Semantic colors
 <div className="bg-background text-foreground border-border" />
 <button className="bg-primary text-primary-foreground" />
@@ -768,7 +768,7 @@ This project uses Tailwind CSS v4 with CSS variables:
 
 **Pattern for form validation:**
 
-```typescript
+```tsx
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -878,7 +878,7 @@ function Component() {
 
 **Use nuqs for URL query parameter state:**
 
-```typescript
+```tsx
 import { parseAsString, parseAsBoolean, useQueryState } from "nuqs";
 
 function Component() {
@@ -966,7 +966,7 @@ export default function manifest(): MetadataRoute.Manifest {
 
 ### Capturing Exceptions
 
-```typescript
+```tsx
 import * as Sentry from "@sentry/nextjs";
 
 // In try-catch blocks
@@ -1052,7 +1052,7 @@ posthog.reset();
 
 ### Basic Animation
 
-```typescript
+```tsx
 import { motion } from "framer-motion";
 
 <motion.div
@@ -1065,7 +1065,7 @@ import { motion } from "framer-motion";
 
 ### Animate Presence
 
-```typescript
+```tsx
 import { AnimatePresence, motion } from "framer-motion";
 
 <AnimatePresence mode="wait">
@@ -1090,7 +1090,7 @@ import { AnimatePresence, motion } from "framer-motion";
 
 Use Clerk components in layouts:
 
-```typescript
+```tsx
 import { ClerkProvider } from "@clerk/nextjs";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -1104,7 +1104,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
 ### Getting User Info
 
-```typescript
+```tsx
 "use client";
 
 import { useUser, useAuth } from "@clerk/nextjs";
@@ -1296,7 +1296,7 @@ Before considering any task complete:
 
 ### Server Component with Data Fetching
 
-```typescript
+```tsx
 // app/chats/page.tsx
 export default async function ChatsPage() {
   return (
@@ -1309,7 +1309,7 @@ export default async function ChatsPage() {
 
 ### Client Component with Convex
 
-```typescript
+```tsx
 "use client";
 
 import { useQuery } from "convex-helpers/react/cache/hooks";
@@ -1324,7 +1324,7 @@ export function ChatsContent() {
 
 ### Form with Validation
 
-```typescript
+```tsx
 "use client";
 
 const schema = z.object({
