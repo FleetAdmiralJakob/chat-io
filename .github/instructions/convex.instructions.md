@@ -122,6 +122,42 @@ export const exampleQuery = query({
 - ALWAYS include argument and return validators for all Convex functions. This includes all of `query`, `internalQuery`, `mutation`, `internalMutation`, `action`, and `internalAction`. If a function doesn't return anything, include `returns: v.null()` as its output validator.
 - If the JavaScript implementation of a Convex function doesn't have a return value, it implicitly returns `null`.
 
+### Custom function wrappers (Chat.io specific)
+
+- **IMPORTANT:** In this project, all Convex functions MUST import the wrappers from `"./lib/functions"` instead of `"./_generated/server"`.
+- The custom wrappers in `convex/lib/functions.ts` wrap the base Convex functions (`query`, `mutation`, `internalQuery`, `internalMutation`) and expose `ctx.table` backed by `convex-ents` for simplified database access with relationship support.
+- Files like `messages.ts`, `users.ts`, `clearRequests.ts`, and `chats.ts` already use these wrappers and MUST continue to do so.
+- When using the custom wrappers, use `ctx.table("tableName")` for database operations instead of `ctx.db`. The `ctx.db` is intentionally set to `undefined` to enforce usage of `ctx.table`.
+
+**Minimal usage example:**
+
+```typescript
+import { ConvexError, v } from "convex/values";
+import { mutation, query } from "./lib/functions";
+
+export const getUser = query({
+  args: { userId: v.string() },
+  handler: async (ctx, args) => {
+    // Use ctx.table instead of ctx.db
+    return ctx.table("users").get("clerkId", args.userId);
+  },
+});
+
+export const createMessage = mutation({
+  args: { content: v.string(), chatId: v.id("privateChats") },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError("Unauthorized");
+    }
+    // Access related data via edges
+    const chat = await ctx.table("privateChats").getX(args.chatId);
+    const users = await chat.edge("users");
+    // ... rest of handler
+  },
+});
+```
+
 ### Function calling
 
 - Use `ctx.runQuery` to call a query from a query, mutation, or action.
@@ -323,30 +359,31 @@ export default crons;
 
 - Convex includes file storage for large files like images, videos, and PDFs.
 - The `ctx.storage.getUrl()` method returns a signed URL for a given file. It returns `null` if the file doesn't exist.
-- Do NOT use the deprecated `ctx.storage.getMetadata` call for loading a file's metadata.
+- Do NOT use the deprecated `ctx.storage.getMetadata` call for loading a file's metadata. Instead, query the `_storage` system table. For example, you can use `ctx.db.system.get` to get an `Id<"_storage">`.
 
-                    Instead, query the `_storage` system table. For example, you can use `ctx.db.system.get` to get an `Id<"_storage">`.
-
-```
-import { query } from "./_generated/server";
+```typescript
 import { Id } from "./_generated/dataModel";
+import { query } from "./_generated/server";
 
 type FileMetadata = {
-    _id: Id<"_storage">;
-    _creationTime: number;
-    contentType?: string;
-    sha256: string;
-    size: number;
-}
+  _id: Id<"_storage">;
+  _creationTime: number;
+  contentType?: string;
+  sha256: string;
+  size: number;
+};
 
 export const exampleQuery = query({
-    args: { fileId: v.id("_storage") },
-    returns: v.null(),
-    handler: async (ctx, args) => {
-        const metadata: FileMetadata | null = await ctx.db.system.get("_storage", args.fileId);
-        console.log(metadata);
-        return null;
-    },
+  args: { fileId: v.id("_storage") },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const metadata: FileMetadata | null = await ctx.db.system.get(
+      "_storage",
+      args.fileId,
+    );
+    console.log(metadata);
+    return null;
+  },
 });
 ```
 
@@ -358,7 +395,7 @@ export const exampleQuery = query({
 
 ### Task
 
-```
+```text
 Create a real-time chat application backend with AI responses. The app should:
 - Allow creating users with names
 - Support multiple chat channels
@@ -474,7 +511,7 @@ Internal Functions:
 
 #### package.json
 
-```typescript
+```json
 {
   "name": "chat-app",
   "description": "This example shows how to build a chat app without authentication.",
@@ -491,7 +528,7 @@ Internal Functions:
 
 #### tsconfig.json
 
-```typescript
+```json
 {
   "compilerOptions": {
     "target": "ESNext",
@@ -718,7 +755,7 @@ export default defineSchema({
 
 #### convex/tsconfig.json
 
-```typescript
+```json
 {
   /* This TypeScript project config describes the environment that
    * Convex functions run in and is used to typecheck them.

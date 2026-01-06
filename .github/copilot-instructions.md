@@ -5,6 +5,7 @@
 ## Project Overview
 
 Chat.io is a real-time messaging Progressive Web App (PWA) built with:
+
 - **Next.js 16** with App Router, React Compiler, and Cache Components
 - **React 19** with the new ref API (no forwardRef)
 - **Convex** as the real-time backend with convex-ents for relationships
@@ -51,6 +52,7 @@ init()  # MANDATORY first step for ANY Next.js work
 ```
 
 This establishes:
+
 - The documentation-first requirement
 - Access to the complete Next.js docs index (llms.txt)
 - Available MCP tools for development
@@ -58,6 +60,7 @@ This establishes:
 #### Step 2: Use `nextjs_docs` for ALL Next.js Concepts
 
 **You MUST look up documentation for:**
+
 - ✅ ALL Next.js APIs (generateStaticParams, cookies, headers, etc.)
 - ✅ ALL concepts (Server Components, Client Components, Route Handlers)
 - ✅ ALL configuration (next.config.js options)
@@ -100,11 +103,13 @@ nextjs_index()  # Auto-discovers all running Next.js 16+ dev servers
 ```
 
 **Returns:**
+
 - Server port, PID, and URL
 - Complete list of available MCP tools
 - Tool descriptions and input schemas
 
 **Requirements:**
+
 - Next.js 16+ (MCP is built-in)
 - Dev server must be running (`pnpm dev`)
 
@@ -141,11 +146,13 @@ nextjs_call(port="3000", toolName="get_server_action_by_id", args={"id": "action
 #### Step 5: Use Specialized Tools for Migrations
 
 **Upgrading to Next.js 16:**
+
 ```
 upgrade_nextjs_16()  # Runs codemods and handles breaking changes
 ```
 
 **Enabling Cache Components:**
+
 ```
 enable_cache_components()  # Sets up Cache Components mode
 ```
@@ -172,6 +179,7 @@ browser_eval(action="close")
 ```
 
 **Why browser automation over curl:**
+
 - Renders JavaScript (curl only fetches HTML)
 - Detects hydration issues and client-side problems
 - Captures browser console errors
@@ -186,12 +194,14 @@ browser_eval(action="close")
 #### Two-Step Process (REQUIRED)
 
 **Step 1: Resolve the library ID**
+
 ```
 resolve-library-id("convex")
 # Returns: /llmstxt/convex_dev_llms_txt
 ```
 
 **Step 2: Fetch documentation with the resolved ID**
+
 ```
 get-library-docs("/llmstxt/convex_dev_llms_txt", topic="mutations")
 ```
@@ -200,22 +210,22 @@ get-library-docs("/llmstxt/convex_dev_llms_txt", topic="mutations")
 
 #### Pre-Resolved Library IDs for This Project
 
-| Library | Context7 ID | Common Topics |
-|---------|-------------|---------------|
-| Convex | `/llmstxt/convex_dev_llms_txt` | queries, mutations, schema, auth |
-| Convex Ents | `/get-convex/convex-ents` | edges, relationships, defineEnt |
-| Zod v4 | `/colinhacks/zod/v4.0.1` | schemas, validation, error messages |
-| Tailwind CSS v4 | `/websites/tailwindcss` | utilities, configuration, dark mode |
-| React Hook Form | `/react-hook-form/documentation` | useForm, Controller, validation |
-| Sentry Next.js | `/websites/sentry_io_platforms_javascript_guides_nextjs` | captureException, setup |
-| PostHog | `/posthog/posthog-js` | capture, identify, feature flags |
-| shadcn/ui | `/websites/ui_shadcn` | components, theming, installation |
-| Radix UI | `/websites/radix-ui-primitives` | Dialog, Popover, accessibility |
-| Legend State | `/websites/legendapp_open-source_state_v3` | observable, sync, persistence |
-| Framer Motion | `/websites/motion-dev-docs` | motion components, animations |
-| Serwist | `/serwist/serwist` | service worker, caching, PWA |
-| nuqs | `/47ng/nuqs` | URL state, query parameters |
-| Clerk | `/websites/clerk_com` | authentication, user management |
+| Library         | Context7 ID                                              | Common Topics                       |
+| --------------- | -------------------------------------------------------- | ----------------------------------- |
+| Convex          | `/llmstxt/convex_dev_llms_txt`                           | queries, mutations, schema, auth    |
+| Convex Ents     | `/get-convex/convex-ents`                                | edges, relationships, defineEnt     |
+| Zod v4          | `/colinhacks/zod/v4.0.1`                                 | schemas, validation, error messages |
+| Tailwind CSS v4 | `/websites/tailwindcss`                                  | utilities, configuration, dark mode |
+| React Hook Form | `/react-hook-form/documentation`                         | useForm, Controller, validation     |
+| Sentry Next.js  | `/websites/sentry_io_platforms_javascript_guides_nextjs` | captureException, setup             |
+| PostHog         | `/posthog/posthog-js`                                    | capture, identify, feature flags    |
+| shadcn/ui       | `/websites/ui_shadcn`                                    | components, theming, installation   |
+| Radix UI        | `/websites/radix-ui-primitives`                          | Dialog, Popover, accessibility      |
+| Legend State    | `/websites/legendapp_open-source_state_v3`               | observable, sync, persistence       |
+| Framer Motion   | `/websites/motion-dev-docs`                              | motion components, animations       |
+| Serwist         | `/serwist/serwist`                                       | service worker, caching, PWA        |
+| nuqs            | `/47ng/nuqs`                                             | URL state, query parameters         |
+| Clerk           | `/websites/clerk_com`                                    | authentication, user management     |
 
 #### Documentation Modes
 
@@ -262,13 +272,13 @@ search-hooks("scroll")
 
 #### Hook Categories
 
-| Category | Description | Example Hooks |
-|----------|-------------|---------------|
-| `browser` | Browser APIs | useClipboard, useMediaQuery, useOnline |
-| `effect` | Side effects | useDebounce, useThrottle, useInterval |
-| `element` | DOM elements | useClickOutside, useHover, useIntersectionObserver |
-| `state` | State management | useToggle, useCounter, usePrevious |
-| `integrations` | Third-party | useAxios, useFetch |
+| Category       | Description      | Example Hooks                                      |
+| -------------- | ---------------- | -------------------------------------------------- |
+| `browser`      | Browser APIs     | useClipboard, useMediaQuery, useOnline             |
+| `effect`       | Side effects     | useDebounce, useThrottle, useInterval              |
+| `element`      | DOM elements     | useClickOutside, useHover, useIntersectionObserver |
+| `state`        | State management | useToggle, useCounter, usePrevious                 |
+| `integrations` | Third-party      | useAxios, useFetch                                 |
 
 ---
 
@@ -351,13 +361,11 @@ console.log(item.name); // TypeScript error!
 
 ```typescript
 // ✅ CORRECT
-import { type ReactNode } from "react";
 import { type FunctionReturnType } from "convex/server";
-import { type Config } from "tailwindcss";
-
+import { ReactNode, type ReactNode } from "react";
 // ❌ WRONG
 import type { ReactNode } from "react";
-import { ReactNode } from "react";
+import { type Config } from "tailwindcss";
 ```
 
 ### Path Aliases
@@ -366,13 +374,12 @@ import { ReactNode } from "react";
 
 ```typescript
 // ✅ CORRECT
-import { cn } from "~/lib/utils";
+import { cn } from "@/lib/utils";
 import { Button } from "~/components/ui/button";
 import { env } from "~/env";
-
+import { cn } from "~/lib/utils";
 // ❌ WRONG
 import { cn } from "../../../lib/utils";
-import { cn } from "@/lib/utils";
 ```
 
 ### Environment Variables
@@ -382,6 +389,7 @@ import { cn } from "@/lib/utils";
 ```typescript
 // ✅ CORRECT
 import { env } from "~/env";
+
 const convexUrl = env.NEXT_PUBLIC_CONVEX_URL;
 
 // ❌ WRONG - ESLint will error
@@ -421,6 +429,7 @@ export function Counter() {
 ```
 
 **When to use `"use client"`:**
+
 - Using React hooks (useState, useEffect, useContext, etc.)
 - Using browser APIs (window, document, localStorage)
 - Using event handlers (onClick, onChange, etc.)
@@ -530,11 +539,9 @@ const schema = defineEntSchema({
   users: defineEnt({})
     .field("clerkId", v.string(), { unique: true })
     .field("username", v.string(), { unique: true })
-    .edges("messages", { ref: true }),  // 1:many edge
+    .edges("messages", { ref: true }), // 1:many edge
 
-  messages: defineEnt({})
-    .field("content", v.string())
-    .edge("user"),  // Many:1 edge back to user
+  messages: defineEnt({}).field("content", v.string()).edge("user"), // Many:1 edge back to user
 });
 
 export default schema;
@@ -568,17 +575,17 @@ export const createChat = mutation({
   args: { friendId: v.string() },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
-    
+
     if (identity === null) {
       console.error("Unauthenticated call to mutation");
       return null;
     }
-    
+
     const user = await ctx.table("users").get("clerkId", args.friendId);
     if (!user) {
       throw new ConvexError("User not found");
     }
-    
+
     // ... rest of handler
   },
 });
@@ -590,12 +597,11 @@ export const createChat = mutation({
 
 ```typescript
 // ✅ CORRECT - Use cached hooks
-import { useQuery, useQueries } from "convex-helpers/react/cache/hooks";
-
-const messages = useQuery(api.messages.getMessages, { chatId });
-
+import { useQueries, useQuery } from "convex-helpers/react/cache/hooks";
 // ❌ WRONG - ESLint will error
 import { useQuery } from "convex/react";
+
+const messages = useQuery(api.messages.getMessages, { chatId });
 ```
 
 ### Optimistic Updates
@@ -608,7 +614,7 @@ const sendMessage = useMutation(api.messages.send).withOptimisticUpdate(
     const existingMessages = localStore.getQuery(api.messages.getMessages, {
       chatId: args.chatId,
     });
-    
+
     if (existingMessages) {
       localStore.setQuery(api.messages.getMessages, { chatId: args.chatId }, [
         ...existingMessages,
@@ -620,7 +626,7 @@ const sendMessage = useMutation(api.messages.send).withOptimisticUpdate(
         },
       ]);
     }
-  }
+  },
 );
 ```
 
@@ -706,11 +712,12 @@ const buttonVariants = cva(
       variant: "default",
       size: "default",
     },
-  }
+  },
 );
 
 export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+  extends
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
 }
@@ -816,17 +823,16 @@ export function MyForm() {
 ```typescript
 // ✅ CORRECT - Allows: undefined | "" | valid string
 const schema = z.object({
-  firstName: z.string()
+  firstName: z
+    .string()
     .min(2, { error: "Name must be at least 2 characters." })
     .optional()
-    .or(z.literal("")),  // REQUIRED for form inputs!
+    .or(z.literal("")), // REQUIRED for form inputs!
 });
 
 // ❌ WRONG - "" will fail validation
 const schema = z.object({
-  firstName: z.string()
-    .min(2, { error: "..." })
-    .optional(),  // Only allows undefined, not ""
+  firstName: z.string().min(2, { error: "..." }).optional(), // Only allows undefined, not ""
 });
 ```
 
@@ -842,6 +848,8 @@ const schema = z.object({
 import { observable } from "@legendapp/state";
 import { ObservablePersistLocalStorage } from "@legendapp/state/persist-plugins/local-storage";
 import { configureObservableSync, syncObservable } from "@legendapp/state/sync";
+// Usage in components
+import { devMode$ } from "~/states";
 
 // Configure persistence
 configureObservableSync({
@@ -859,9 +867,6 @@ syncObservable(devMode$, {
     name: "devMode",
   },
 });
-
-// Usage in components
-import { devMode$ } from "~/states";
 
 function Component() {
   const devMode = devMode$.get();
@@ -1152,17 +1157,18 @@ pnpm typecheck && pnpm lint && pnpm format:write
 
 This project uses **strict TypeScript** with enhanced safety:
 
-| Option | Value | Effect |
-|--------|-------|--------|
-| `strict` | `true` | Enables all strict type-checking options |
+| Option                     | Value  | Effect                                       |
+| -------------------------- | ------ | -------------------------------------------- |
+| `strict`                   | `true` | Enables all strict type-checking options     |
 | `noUncheckedIndexedAccess` | `true` | Array/object access returns `T \| undefined` |
-| `checkJs` | `true` | Type-check JavaScript files too |
-| `noEmit` | `true` | Only type-check, don't emit files |
+| `checkJs`                  | `true` | Type-check JavaScript files too              |
+| `noEmit`                   | `true` | Only type-check, don't emit files            |
 
 **Key implications of `noUncheckedIndexedAccess`:**
+
 ```typescript
 const arr = [1, 2, 3];
-const first = arr[0];  // Type: number | undefined
+const first = arr[0]; // Type: number | undefined
 
 // ✅ MUST check before using
 if (first !== undefined) {
@@ -1170,7 +1176,7 @@ if (first !== undefined) {
 }
 
 // ❌ WRONG - TypeScript error
-console.log(arr[0].toFixed(2));  // Object is possibly 'undefined'
+console.log(arr[0].toFixed(2)); // Object is possibly 'undefined'
 ```
 
 ### ESLint Configuration
@@ -1178,6 +1184,7 @@ console.log(arr[0].toFixed(2));  // Object is possibly 'undefined'
 This project uses **type-checked ESLint** with strict rules:
 
 **Enabled rule sets:**
+
 - `typescript-eslint/recommendedTypeChecked` - Type-aware linting
 - `typescript-eslint/stylisticTypeChecked` - Consistent code style
 - `eslint-config-next/core-web-vitals` - Next.js best practices
@@ -1185,14 +1192,15 @@ This project uses **type-checked ESLint** with strict rules:
 
 **Custom enforced rules:**
 
-| Rule | Effect |
-|------|--------|
-| `consistent-type-imports` | Enforces `import { type X }` syntax |
-| `no-unused-vars` | Warns on unused variables (allows `_` prefix) |
-| `no-restricted-properties` | Blocks `process.env` access |
-| `no-restricted-imports` | Blocks direct `convex/react` hooks |
+| Rule                       | Effect                                        |
+| -------------------------- | --------------------------------------------- |
+| `consistent-type-imports`  | Enforces `import { type X }` syntax           |
+| `no-unused-vars`           | Warns on unused variables (allows `_` prefix) |
+| `no-restricted-properties` | Blocks `process.env` access                   |
+| `no-restricted-imports`    | Blocks direct `convex/react` hooks            |
 
 **To fix lint errors:**
+
 ```bash
 # Check for errors
 pnpm lint
@@ -1205,12 +1213,13 @@ pnpm lint --fix
 
 This project uses **Prettier** with these plugins:
 
-| Plugin | Purpose |
-|--------|---------|
-| `@ianvs/prettier-plugin-sort-imports` | Auto-sorts imports |
-| `prettier-plugin-tailwindcss` | Sorts Tailwind classes |
+| Plugin                                | Purpose                |
+| ------------------------------------- | ---------------------- |
+| `@ianvs/prettier-plugin-sort-imports` | Auto-sorts imports     |
+| `prettier-plugin-tailwindcss`         | Sorts Tailwind classes |
 
 **Import sort order** (automatically enforced):
+
 1. React imports
 2. External packages (alphabetical)
 3. Internal `~/` imports (alphabetical)
@@ -1218,6 +1227,7 @@ This project uses **Prettier** with these plugins:
 5. Type-only imports last within each group
 
 **To format code:**
+
 ```bash
 # Check formatting without changes
 pnpm format:check
@@ -1250,6 +1260,7 @@ When you encounter errors, follow this workflow:
 ```
 
 **ESLint disable comments** (use sparingly with justification):
+
 ```typescript
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- External lib lacks types
 const data = externalLib.getData();
@@ -1269,21 +1280,22 @@ Before considering any task complete:
 
 ## File Naming Conventions
 
-| Type | Convention | Example |
-|------|------------|---------|
-| Components | kebab-case | `chat-overview.tsx` |
-| Pages | `page.tsx` | `app/chats/page.tsx` |
-| Layouts | `layout.tsx` | `app/chats/layout.tsx` |
-| UI Components | kebab-case in `ui/` | `components/ui/button.tsx` |
-| Convex Functions | camelCase | `convex/messages.ts` |
-| Types | PascalCase | `type UserData = ...` |
-| Utilities | camelCase | `lib/utils.ts` |
+| Type             | Convention          | Example                    |
+| ---------------- | ------------------- | -------------------------- |
+| Components       | kebab-case          | `chat-overview.tsx`        |
+| Pages            | `page.tsx`          | `app/chats/page.tsx`       |
+| Layouts          | `layout.tsx`        | `app/chats/layout.tsx`     |
+| UI Components    | kebab-case in `ui/` | `components/ui/button.tsx` |
+| Convex Functions | camelCase           | `convex/messages.ts`       |
+| Types            | PascalCase          | `type UserData = ...`      |
+| Utilities        | camelCase           | `lib/utils.ts`             |
 
 ---
 
 ## Common Patterns Quick Reference
 
 ### Server Component with Data Fetching
+
 ```typescript
 // app/chats/page.tsx
 export default async function ChatsPage() {
@@ -1296,6 +1308,7 @@ export default async function ChatsPage() {
 ```
 
 ### Client Component with Convex
+
 ```typescript
 "use client";
 
@@ -1310,6 +1323,7 @@ export function ChatsContent() {
 ```
 
 ### Form with Validation
+
 ```typescript
 "use client";
 
@@ -1324,9 +1338,10 @@ export function MyForm() {
 ```
 
 ### Convex Mutation
+
 ```typescript
-import { mutation } from "./lib/functions";
 import { ConvexError, v } from "convex/values";
+import { mutation } from "./lib/functions";
 
 export const createItem = mutation({
   args: { name: v.string() },
@@ -1343,6 +1358,7 @@ export const createItem = mutation({
 ## Remember
 
 ### Code Quality (MANDATORY after every change)
+
 1. **ALWAYS** run `get_errors` on modified files to check for TypeScript/lint errors
 2. **ALWAYS** run `pnpm typecheck` to verify type safety
 3. **ALWAYS** run `pnpm lint` to catch code quality issues
@@ -1350,6 +1366,7 @@ export const createItem = mutation({
 5. **NEVER** consider a task complete without validation passing
 
 ### Code Conventions
+
 6. **ALWAYS** use `~/` path alias for imports
 7. **ALWAYS** use `import { env } from "~/env"` for environment variables
 8. **ALWAYS** use `useQuery` from `convex-helpers/react/cache/hooks`
@@ -1362,6 +1379,6 @@ export const createItem = mutation({
 15. **NEVER** access `process.env` directly
 
 ### Documentation & Tools
+
 16. **Use MCP tools** to look up documentation before implementing unfamiliar APIs
 17. **Use browser automation** (not curl) to verify page changes
-
