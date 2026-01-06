@@ -31,6 +31,7 @@ import { UserRoundPlus } from "lucide-react";
 import { parseAsBoolean, useQueryState } from "nuqs";
 import { usePostHog } from "posthog-js/react";
 import { Controller, useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 import { api } from "../../convex/_generated/api";
 
@@ -41,7 +42,7 @@ export const formSchema = z.object({
       error: "Username must be at least 7 characters.",
     })
     .max(15, {
-      error: "Username must be at most 20 characters.",
+      error: "Username must be at most 15 characters.",
     })
     .regex(new RegExp(/^[a-z]+$/), {
       error:
@@ -88,6 +89,7 @@ export function AddUserDialog({
         friendsUsername: values.username,
         friendsUsernameId: values.usernameId,
       });
+      toast.success("Contact added successfully!");
       form.reset();
       void setDialogOpen(false);
       posthog.capture("new_connection_added");
@@ -143,7 +145,7 @@ export function AddUserDialog({
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
-      <DialogContent className="sm:max-w-106.25">
+      <DialogContent className="sm:max-w-md">
         <form
           className="flex flex-col gap-4"
           id="form-add-user-dialog"
@@ -217,11 +219,9 @@ export function AddUserDialog({
             </p>
           )}
           <DialogFooter>
-            <Field>
-              <Button form="form-add-user-dialog" type="submit">
-                Add
-              </Button>
-            </Field>
+            <Button form="form-add-user-dialog" type="submit">
+              Add
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

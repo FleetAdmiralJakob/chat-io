@@ -96,7 +96,10 @@ export const formSchemaSignUp = z.object({
    *
    * Valid values: undefined | "" | valid email string
    */
-  email: z.email().optional().or(z.literal("")),
+  email: z
+    .email({ error: "Please enter a valid email address." })
+    .optional()
+    .or(z.literal("")),
   password: z
     .string()
     .min(8, {
