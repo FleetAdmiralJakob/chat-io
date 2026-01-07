@@ -50,7 +50,12 @@ export default function ProfileContent() {
                     {item.title.slice(0, 2).toUpperCase()}
                   </div>
                   <p className="text-destructive-foreground pt-2 font-semibold">
-                    {item.title}
+                    {item.title.length > 5
+                      ? item.title.slice(0, -5)
+                      : item.title}
+                    <span className="text-muted-foreground ml-1">
+                      {item.title.length > 5 ? item.title.slice(-5) : ""}
+                    </span>
                   </p>
                 </div>
               );
