@@ -4,6 +4,8 @@ import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import { autoPlacement, useFloating } from "@floating-ui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { api } from "#convex/_generated/api";
+import { type Id } from "#convex/_generated/dataModel";
 import { useQueryWithStatus } from "~/app/convex-client-provider";
 import ChatsWithSearch from "~/components/chats-with-search";
 import { DevMode } from "~/components/dev-mode-info";
@@ -48,8 +50,6 @@ import { Controller, useForm } from "react-hook-form";
 import { useMediaQuery } from "react-responsive";
 import { toast } from "sonner";
 import { z } from "zod";
-import { api } from "../../../../../convex/_generated/api";
-import { type Id } from "../../../../../convex/_generated/dataModel";
 
 dayjs.extend(relativeTime);
 
@@ -423,8 +423,9 @@ export default function Page() {
   }, [userInfo, messages, chatInfo, router]);
 
   const is2xlOrMore = useMediaQuery({ query: "(max-width: 1537px)" });
-  const maxSize = is2xlOrMore ? 50 : 60;
-  const minSize = is2xlOrMore ? 45 : 30;
+  const maxSize = is2xlOrMore ? "50%" : "60%";
+  const minSize = is2xlOrMore ? "45%" : "30%";
+  const isLgOrMore = useMediaQuery({ query: "(min-width: 1024px)" });
 
   const textMessageForm = useForm<z.infer<typeof textMessageSchema>>({
     resolver: zodResolver(textMessageSchema),
@@ -593,25 +594,28 @@ export default function Page() {
         ></div>
       ) : null}
       <ResizablePanelGroup className="w-full grow" orientation="horizontal">
-        <ResizablePanel
-          className="hidden w-full lg:block"
-          defaultSize={50}
-          minSize={minSize}
-          maxSize={maxSize}
-        >
-          <div className="min-w-96 pb-24">
-            <div className="relative flex h-full w-full justify-center">
-              <div className="h-screen w-full overflow-y-auto">
-                <ChatsWithSearch classNameChatList="xl:w-1/2" />
+        {isLgOrMore && (
+          <ResizablePanel
+            className="w-full"
+            defaultSize={"50%"}
+            minSize={minSize}
+            maxSize={maxSize}
+            id="resizable-panel-chat-list"
+          >
+            <div className="min-w-96 pb-24">
+              <div className="relative flex h-full w-full justify-center">
+                <div className="h-screen w-full overflow-y-auto">
+                  <ChatsWithSearch classNameChatList="xl:w-1/2" />
+                </div>
               </div>
             </div>
-          </div>
-        </ResizablePanel>
+          </ResizablePanel>
+        )}
         <ResizableHandle />
         <ResizablePanel
-          defaultSize={50}
-          minSize={30}
-          maxSize={70}
+          defaultSize={"50%"}
+          minSize={"30%"}
+          maxSize={"100%"}
           className="relative flex flex-col"
           id="resizable-panel-chat"
         >
@@ -703,11 +707,11 @@ export default function Page() {
                 },
               )}
             >
-              <div className="border-secondary-foreground h-10 border-2 lg:h-12 lg:rounded-none lg:border-0 lg:border-r-2">
+              <div className="border-secondary-foreground h-10 rounded-md border-2 lg:h-12 lg:rounded-none lg:border-0 lg:border-r-2">
                 <Phone className="mx-1.5 mt-1.5 lg:mx-0 lg:mt-3 lg:mr-4 lg:ml-2" />
               </div>
 
-              <div className="border-secondary-foreground ml-3 h-10 border-2 lg:ml-0 lg:h-12 lg:border-0">
+              <div className="border-secondary-foreground ml-3 h-10 rounded-md border-2 lg:ml-0 lg:h-12 lg:rounded-none lg:border-0">
                 <Video className="mx-1.5 mt-1.5 lg:mx-0 lg:mt-3 lg:mr-2 lg:ml-4" />
               </div>
             </div>

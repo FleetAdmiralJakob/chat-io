@@ -37,7 +37,7 @@ const Navbar = () => {
         >
           <MessagesSquare
             className={cn({
-              "text-accent": pathname.includes("/chats"),
+              "text-accent": pathname.startsWith("/chats"),
             })}
           />
           <p className="mt-0.5 text-sm lg:hidden">Chats</p>
@@ -69,7 +69,7 @@ const Navbar = () => {
         >
           <CircleUser
             className={cn({
-              "text-accent": pathname === "/profile",
+              "text-accent": pathname.startsWith("/profile"),
             })}
           />
           <p className="mt-0.5 text-sm lg:hidden">Profile</p>

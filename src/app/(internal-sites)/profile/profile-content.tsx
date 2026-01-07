@@ -1,6 +1,7 @@
 "use client";
 
-import { useUser } from "@clerk/nextjs";
+import { useAuth, useUser } from "@clerk/nextjs";
+import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 import {
   ArrowRight,
@@ -21,6 +22,7 @@ interface settingsCard {
 export default function ProfileContent() {
   const clerkUser = useUser();
   const username = clerkUser.user ? (clerkUser.user.username ?? "") : "";
+  const { signOut } = useAuth();
 
   const settings: settingsCard[] = [
     { title: username },
@@ -35,8 +37,8 @@ export default function ProfileContent() {
       <div className="flex flex-col items-center">
         <p className="my-10 text-xl font-bold sm:text-2xl">Profile</p>
       </div>
-      <div className="flex w-full flex-col items-center justify-center">
-        <div className="border-secondary mb-8 flex w-11/12 flex-col items-center justify-center rounded-xl border-2 lg:w-2/3 xl:w-1/3">
+      <div className="flex w-full flex-col items-center justify-center gap-8 pb-[30%] lg:pb-0">
+        <div className="border-secondary flex w-11/12 flex-col items-center justify-center rounded-xl border-2 lg:w-2/3 xl:w-1/3">
           {settings.map((item, index) => {
             if (item.title == username) {
               return (
@@ -87,7 +89,7 @@ export default function ProfileContent() {
             );
           })}
         </div>
-        <div className="mt-8 mb-4 flex w-full flex-col items-center justify-center rounded-xl pb-[30%] lg:pb-0">
+        <div className="flex w-full flex-col items-center justify-center rounded-xl">
           <div className="border-secondary w-11/12 rounded-xl border-2 lg:w-2/3 xl:w-1/3">
             <Link
               href="/contributors"
@@ -107,6 +109,9 @@ export default function ProfileContent() {
             </Link>
           </div>
         </div>
+        <Button variant="destructive" onMouseDown={() => signOut()}>
+          Sign Out
+        </Button>
       </div>
     </main>
   );
