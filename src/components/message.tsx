@@ -1,10 +1,10 @@
 import { useUser } from "@clerk/nextjs";
 import { useFloating, type ReferenceType } from "@floating-ui/react";
 import { useLongPress } from "@reactuses/core";
+import { api } from "#convex/_generated/api";
+import type { Id } from "#convex/_generated/dataModel";
 import { useQueryWithStatus } from "~/app/convex-client-provider";
-import { ForwardDialog } from "~/components/forward-message-dialog";
 import { cn } from "~/lib/utils";
-import { useQuery } from "convex-helpers/react/cache/hooks";
 import { useMutation } from "convex/react";
 import { type FunctionReturnType } from "convex/server";
 import dayjs from "dayjs";
@@ -27,8 +27,6 @@ import React, { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useInView } from "react-intersection-observer";
 import { toast } from "sonner";
-import { api } from "../../convex/_generated/api";
-import type { Id } from "../../convex/_generated/dataModel";
 import { ReactionHandler } from "./reactions";
 
 dayjs.extend(relativeTime);
@@ -292,8 +290,9 @@ export const Message = ({
     );
   };
 
-  const [ForwardedMessageId, setForwardedMessageId] = useQueryState(
-    // It is used to show if the forward dialog should be shown. If the string is empty the dialog should be not shown if there is an id inside it should
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_, setForwardedMessageId] = useQueryState(
+    // It is used to show if the forward dialog should be shown. If the string is empty, the dialog should be not shown if there is an id inside it should
     "forward",
     parseAsString.withDefault(""),
   );
@@ -326,7 +325,6 @@ export const Message = ({
     delay: 300,
   };
   const longPressEvent = useLongPress(onLongPress, defaultOptions);
-  const existingChats = useQuery(api.chats.getChats);
 
   return (
     <div className="flex" ref={ref}>
@@ -651,12 +649,6 @@ export const Message = ({
                         <Forward />
                         <p className="ml-1">Forward</p>
                       </button>
-                      <ForwardDialog
-                        ForwardedMessageId={ForwardedMessageId}
-                        setForwardedMessageId={setForwardedMessageId}
-                        chats={existingChats}
-                        userInfos={userInfos}
-                      />
                       <button
                         className="border-secondary-foreground flex w-full cursor-pointer border-y-2 p-2 pr-8"
                         onClick={() => {
@@ -815,7 +807,7 @@ export const Message = ({
                   style={floatingStylesContextModal}
                   className="z-50 py-3 opacity-100"
                 >
-                  <div className="border-secondary-foreground rounded-xs border-2">
+                  <div className="border-secondary-foreground rounded-md border-2">
                     <div className="bg-secondary rounded-xs">
                       <div
                         onClick={() => {
@@ -845,12 +837,6 @@ export const Message = ({
                         <Forward />
                         <p className="ml-1">Forward</p>
                       </div>
-                      <ForwardDialog
-                        ForwardedMessageId={ForwardedMessageId}
-                        setForwardedMessageId={setForwardedMessageId}
-                        chats={existingChats}
-                        userInfos={userInfos}
-                      />
                       <div className="text-secondary-foreground flex p-2 pr-8">
                         <Info />
                         <p className="ml-1">{sentInfo()}</p>

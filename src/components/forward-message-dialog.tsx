@@ -1,6 +1,5 @@
 import { api } from "#convex/_generated/api";
 import { type Id } from "#convex/_generated/dataModel";
-import { type Chats } from "~/components/chat-overview";
 import { type UserInfos } from "~/components/message";
 import Badge from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
@@ -13,6 +12,7 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog";
 import { cn } from "~/lib/utils";
+import { useQuery } from "convex-helpers/react/cache/hooks";
 import { useMutation } from "convex/react";
 import { LoaderCircle } from "lucide-react";
 import React, { useState, type Dispatch, type SetStateAction } from "react";
@@ -20,7 +20,6 @@ import React, { useState, type Dispatch, type SetStateAction } from "react";
 interface ForwardDialogProps {
   ForwardedMessageId: string;
   setForwardedMessageId: Dispatch<SetStateAction<string>>;
-  chats: Chats | undefined;
   userInfos: UserInfos;
 }
 
@@ -33,10 +32,10 @@ export interface ForwardUser {
 export const ForwardDialog = ({
   ForwardedMessageId,
   setForwardedMessageId,
-  chats,
   userInfos,
 }: ForwardDialogProps) => {
   const [chatsToForwardTo, setChatsToForwardTo] = useState<ForwardUser[]>([]);
+  const chats = useQuery(api.chats.getChats);
   const forwardMessage = useMutation(api.messages.forwardMessage);
 
   const handleForward = (user: ForwardUser) => {

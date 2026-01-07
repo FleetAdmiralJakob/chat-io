@@ -9,6 +9,7 @@ import { type Id } from "#convex/_generated/dataModel";
 import { useQueryWithStatus } from "~/app/convex-client-provider";
 import ChatsWithSearch from "~/components/chats-with-search";
 import { DevMode } from "~/components/dev-mode-info";
+import { ForwardDialog } from "~/components/forward-message-dialog";
 import { Message } from "~/components/message";
 import { useReactToMessage } from "~/components/reactions";
 import { Avatar, AvatarFallback } from "~/components/ui/avatar";
@@ -44,6 +45,7 @@ import {
   X,
 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
+import { parseAsString, useQueryState } from "nuqs";
 import { usePostHog } from "posthog-js/react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -582,6 +584,11 @@ export default function Page() {
     }
   }, []);
 
+  const [ForwardedMessageId, setForwardedMessageId] = useQueryState(
+    "forward",
+    parseAsString.withDefault(""),
+  );
+
   return (
     <main className="flex h-screen flex-col">
       {selectedMessageId ? (
@@ -627,6 +634,11 @@ export default function Page() {
               reactToMessageHandler,
               selectedMessageId,
             }}
+          />
+          <ForwardDialog
+            ForwardedMessageId={ForwardedMessageId}
+            setForwardedMessageId={setForwardedMessageId}
+            userInfos={[userInfo.data, chatInfo.data?.otherUser]}
           />
           <DevMode className="top-20 z-10">
             <button
