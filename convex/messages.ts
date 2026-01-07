@@ -1,8 +1,7 @@
 import { ConvexError, v } from "convex/values";
 import emojiRegex from "emoji-regex";
+import { EDIT_WINDOW_MS } from "./constants";
 import { mutation, query } from "./lib/functions";
-
-const EDIT_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
 
 export const getMessages = query({
   args: { chatId: v.string() },

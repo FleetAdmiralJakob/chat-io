@@ -1,6 +1,7 @@
 import { useUser } from "@clerk/nextjs";
 import { useFloating, type ReferenceType } from "@floating-ui/react";
 import { useLongPress } from "@reactuses/core";
+import { EDIT_WINDOW_MS } from "#convex/constants";
 import { api } from "#convex/_generated/api";
 import type { Id } from "#convex/_generated/dataModel";
 import { useQueryWithStatus } from "~/app/convex-client-provider";
@@ -30,8 +31,6 @@ import { toast } from "sonner";
 import { ReactionHandler } from "./reactions";
 
 dayjs.extend(relativeTime);
-
-const EDIT_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
 
 export type Message = NonNullable<
   FunctionReturnType<typeof api.messages.getMessages>
@@ -135,7 +134,15 @@ export const Message = ({
 
   useEffect(() => {
     if (selectedMessageId === message._id) {
+      // Initial check
       setIsEditable(Date.now() - message._creationTime < EDIT_WINDOW_MS);
+
+      // Set up interval to re-check every second
+      const intervalId = setInterval(() => {
+        setIsEditable(Date.now() - message._creationTime < EDIT_WINDOW_MS);
+      }, 1000);
+
+      return () => clearInterval(intervalId);
     }
   }, [selectedMessageId, message._id, message._creationTime]);
 
