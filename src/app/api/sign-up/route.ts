@@ -1,9 +1,6 @@
 import { isClerkAPIResponseError } from "@clerk/nextjs/errors";
 import { clerkClient } from "@clerk/nextjs/server";
-import {
-  formSchemaSignUp,
-  type FormSchemaSignUp,
-} from "~/lib/validators";
+import { formSchemaSignUp, type FormSchemaSignUp } from "~/lib/validators";
 import { log } from "next-axiom";
 import { after } from "next/server";
 

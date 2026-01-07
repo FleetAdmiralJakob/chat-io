@@ -424,7 +424,7 @@ import { useState } from "react";
 
 export function Counter() {
   const [count, setCount] = useState(0);
-  return <button onClick={() => setCount(c => c + 1)}>{count}</button>;
+  return <button onClick={() => setCount((c) => c + 1)}>{count}</button>;
 }
 ```
 
@@ -655,10 +655,7 @@ const DialogContent = ({
 }: React.ComponentProps<typeof DialogPrimitive.Content>) => (
   <DialogPrimitive.Content
     ref={ref}
-    className={cn(
-      "fixed top-[50%] left-[50%] z-50 ...",
-      className
-    )}
+    className={cn("fixed left-[50%] top-[50%] z-50 ...", className)}
     {...props}
   >
     {children}
@@ -777,12 +774,14 @@ import { z } from "zod";
 
 // Define schema with Zod v4
 const formSchema = z.object({
-  username: z.string()
+  username: z
+    .string()
     .min(7, { error: "Username must be at least 7 characters." })
     .max(15, { error: "Username must be at most 15 characters." }),
-  email: z.email({ error: "Please enter a valid email address." })
+  email: z
+    .email({ error: "Please enter a valid email address." })
     .optional()
-    .or(z.literal("")),  // Allow empty strings for optional fields!
+    .or(z.literal("")), // Allow empty strings for optional fields!
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -792,7 +791,7 @@ export function MyForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       username: "",
-      email: "",  // Must default to "" for optional fields
+      email: "", // Must default to "" for optional fields
     },
   });
 
@@ -879,20 +878,17 @@ function Component() {
 **Use nuqs for URL query parameter state:**
 
 ```tsx
-import { parseAsString, parseAsBoolean, useQueryState } from "nuqs";
+import { parseAsBoolean, parseAsString, useQueryState } from "nuqs";
 
 function Component() {
   const [search, setSearch] = useQueryState("q", parseAsString);
   const [isOpen, setIsOpen] = useQueryState(
     "open",
-    parseAsBoolean.withDefault(false)
+    parseAsBoolean.withDefault(false),
   );
 
   return (
-    <input
-      value={search ?? ""}
-      onChange={(e) => setSearch(e.target.value)}
-    />
+    <input value={search ?? ""} onChange={(e) => setSearch(e.target.value)} />
   );
 }
 ```
@@ -968,6 +964,8 @@ export default function manifest(): MetadataRoute.Manifest {
 
 ```tsx
 import * as Sentry from "@sentry/nextjs";
+import * as Sentry from "@sentry/nextjs";
+import { useEffect } from "react";
 
 // In try-catch blocks
 try {
@@ -978,10 +976,7 @@ try {
 }
 
 // In error boundaries (global-error.tsx)
-"use client";
-
-import * as Sentry from "@sentry/nextjs";
-import { useEffect } from "react";
+("use client");
 
 export default function GlobalError({
   error,
@@ -1060,7 +1055,7 @@ import { motion } from "framer-motion";
   animate={{ opacity: 1, y: 0 }}
   exit={{ opacity: 0, y: -20 }}
   transition={{ duration: 0.3 }}
-/>
+/>;
 ```
 
 ### Animate Presence
@@ -1079,7 +1074,7 @@ import { AnimatePresence, motion } from "framer-motion";
       Content
     </motion.div>
   )}
-</AnimatePresence>
+</AnimatePresence>;
 ```
 
 ---
@@ -1093,12 +1088,12 @@ Use Clerk components in layouts:
 ```tsx
 import { ClerkProvider } from "@clerk/nextjs";
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <ClerkProvider dynamic>
-      {children}
-    </ClerkProvider>
-  );
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return <ClerkProvider dynamic>{children}</ClerkProvider>;
 }
 ```
 
@@ -1107,7 +1102,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 ```tsx
 "use client";
 
-import { useUser, useAuth } from "@clerk/nextjs";
+import { useAuth, useUser } from "@clerk/nextjs";
 
 function Component() {
   const { user, isLoaded } = useUser();
