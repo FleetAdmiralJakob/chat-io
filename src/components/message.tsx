@@ -143,6 +143,8 @@ export const Message = ({
       }, 1000);
 
       return () => clearInterval(intervalId);
+    } else {
+      setIsEditable(false);
     }
   }, [selectedMessageId, message._id, message._creationTime]);
 
