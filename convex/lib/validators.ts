@@ -3,13 +3,14 @@ import { z } from "zod";
 /**
  * User Update Form Schema
  *
- * NOTE: This schema does NOT use `.or(z.literal(""))` for optional fields.
- * If this form is used with React Hook Form and empty string defaults,
- * you may need to add the same pattern as formSchemaSignUp.
+ * NOTE: This schema uses `.or(z.literal(""))` for optional fields to handle
+ * React Hook Form's behavior where empty inputs return empty strings instead
+ * of undefined.
  *
- * Currently, expects:
- * - `undefined` for empty optional fields (not "")
- * - Or the form should transform "" to undefined before validation
+ * Currently accepts:
+ * - `undefined` for omitted fields
+ * - `""` (empty string) for cleared fields
+ * - Valid string values meeting min/max constraints
  */
 export const formSchemaUserUpdate = z.object({
   firstName: z
