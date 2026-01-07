@@ -95,106 +95,98 @@ export const ForwardDialog = ({
           {chats === undefined ? (
             <LoaderCircle className="mr-1.5 animate-spin justify-center p-0.5" />
           ) : (
-            chats?.map((chat, index) => (
-              <div key={index}>
-                {chat.support ? (
-                  <div
-                    onClick={() =>
-                      handleForward({
-                        username: "Chat.io Support",
-                        userId: chat._id,
-                        chatId: chat._id,
-                      })
-                    }
-                    key={index}
-                    className="bg-secondary flex cursor-pointer rounded-xl p-5"
-                  >
-                    <Checkbox
-                      checked={
-                        chatsToForwardTo.length > 0
-                          ? chatsToForwardTo.some(
-                              (forwardObject) =>
-                                forwardObject.userId === chat._id,
-                            )
-                          : false
-                      }
-                      className="mt-1 mr-3 flex"
-                    />
-                    <div className="flex">
-                      Chat.io <Badge>Support</Badge>
-                    </div>
-                  </div>
-                ) : null}
-                {chat.users.length === 0 ? (
-                  <div
-                    onClick={() =>
-                      handleForward({
-                        username: userInfos[0]!.username,
-                        userId: userInfos[0]!._id,
-                        chatId: chat._id,
-                      })
-                    }
-                    key={index}
-                    className="bg-secondary flex cursor-pointer rounded-xl p-5"
-                  >
-                    <Checkbox
-                      checked={
-                        chatsToForwardTo.length > 0
-                          ? chatsToForwardTo.some(
-                              (forwardObject) =>
-                                forwardObject.userId === userInfos[0]!._id,
-                            )
-                          : false
-                      }
-                      className="mt-1 mr-3 flex"
-                    />
-                    <div className="flex">
-                      My Notes <Badge>Tool</Badge>
-                    </div>
-                  </div>
-                ) : null}
-                {chat.users.map((user, index) => {
-                  return (
+            chats?.map((chat, index) => {
+              const otherUsers = chat.users.filter(
+                (user) => user.username !== userInfos[0]?.username,
+              );
+
+              return (
+                <div key={index}>
+                  {chat.support ? (
                     <div
                       onClick={() =>
                         handleForward({
-                          username: user.username,
-                          userId: user._id,
+                          username: "Chat.io Support",
+                          userId: chat._id,
                           chatId: chat._id,
                         })
                       }
-                      key={index}
-                      className={cn(
-                        "bg-secondary flex cursor-pointer rounded-xl p-5",
-                        user.username == userInfos[0]?.username
-                          ? "h-0 p-0"
-                          : null,
-                      )}
+                      className="bg-secondary flex cursor-pointer rounded-xl p-5"
                     >
                       <Checkbox
                         checked={
                           chatsToForwardTo.length > 0
                             ? chatsToForwardTo.some(
                                 (forwardObject) =>
-                                  forwardObject.userId === user._id,
+                                  forwardObject.userId === chat._id,
                               )
                             : false
                         }
-                        className={cn(
-                          "mt-1 mr-3 flex",
-                          user.username == userInfos[0]?.username
-                            ? "hidden"
-                            : null,
-                        )}
+                        className="mt-1 mr-3 flex"
                       />
-                      {user.username != userInfos[0]?.username ? (
-                        <p className="font-medium">{user.username}</p>
-                      ) : null}
+                      <div className="flex">
+                        Chat.io <Badge>Support</Badge>
+                      </div>
                     </div>
-                  );
-                })}
-              </div>
-            ))
+                  ) : null}
+                  {!chat.support && otherUsers.length === 0 ? (
+                    <div
+                      onClick={() =>
+                        handleForward({
+                          username: userInfos[0]!.username,
+                          userId: userInfos[0]!._id,
+                          chatId: chat._id,
+                        })
+                      }
+                      className="bg-secondary flex cursor-pointer rounded-xl p-5"
+                    >
+                      <Checkbox
+                        checked={
+                          chatsToForwardTo.length > 0
+                            ? chatsToForwardTo.some(
+                                (forwardObject) =>
+                                  forwardObject.userId === userInfos[0]!._id,
+                              )
+                            : false
+                        }
+                        className="mt-1 mr-3 flex"
+                      />
+                      <div className="flex">
+                        My Notes <Badge>Tool</Badge>
+                      </div>
+                    </div>
+                  ) : null}
+                  {otherUsers.map((user, userIndex) => {
+                    return (
+                      <div
+                        onClick={() =>
+                          handleForward({
+                            username: user.username,
+                            userId: user._id,
+                            chatId: chat._id,
+                          })
+                        }
+                        key={userIndex}
+                        className="bg-secondary flex cursor-pointer rounded-xl p-5"
+                      >
+                        <Checkbox
+                          checked={
+                            chatsToForwardTo.length > 0
+                              ? chatsToForwardTo.some(
+                                  (forwardObject) =>
+                                    forwardObject.userId === user._id,
+                                )
+                              : false
+                          }
+                          className="mt-1 mr-3 flex"
+                        />
+                        <p className="font-medium">{user.username}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })
           )}
         </div>
         <Button

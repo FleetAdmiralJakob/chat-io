@@ -61,9 +61,9 @@ const Chats: React.FC<{
   const searchedChats = !searchTerm
     ? chats
     : chats?.filter((chat) => {
-        const filteredChatUsers = (chat.users = chat.users.filter(
+        const filteredChatUsers = chat.users.filter(
           (user) => user.clerkId.split("|").pop() !== clerkUser.user?.id,
-        ));
+        );
         return filteredChatUsers.some((user) =>
           user.username
             .toLowerCase()
@@ -184,7 +184,7 @@ const Chats: React.FC<{
                   </div>
                 );
               }
-              chat.users = chat.users.filter(
+              const displayUsers = chat.users.filter(
                 (user) => user.clerkId.split("|").pop() !== clerkUser.user?.id,
               );
 
@@ -204,18 +204,18 @@ const Chats: React.FC<{
                     <div className="flex w-full truncate">
                       <Avatar className="text-white">
                         <AvatarFallback>
-                          {chat.users[0] ? (
-                            chat.users[0].username.slice(0, 2).toUpperCase()
+                          {displayUsers[0] ? (
+                            displayUsers[0].username.slice(0, 2).toUpperCase()
                           ) : (
                             <NotebookText />
                           )}
                         </AvatarFallback>
                       </Avatar>
                       <div className="ml-4 truncate text-xl font-bold">
-                        {chat.users[0] ? (
+                        {displayUsers[0] ? (
                           <div className="truncate whitespace-nowrap">
                             <p className="truncate text-lg">
-                              {chat.users[0].username}
+                              {displayUsers[0].username}
                             </p>
                             <div className="text-destructive-foreground mt-0.5 w-10/12 truncate text-sm font-normal">
                               {chat.lastMessage &&
@@ -226,19 +226,19 @@ const Chats: React.FC<{
                                           .split("|")
                                           .pop() === clerkUser.user?.id
                                         ? "You've sent a request to clear the chat"
-                                        : `${chat.users[0].username} has sent a request to clear the chat`
+                                        : `${displayUsers[0].username} has sent a request to clear the chat`
                                       : chat.lastMessage?.type ===
                                           "expiredRequest"
                                         ? chat.lastMessage.clerkId
                                             .split("|")
                                             .pop() === clerkUser.user?.id
                                           ? "Your request to clear the chat has expired"
-                                          : `${chat.users[0].username}'s request to clear the chat has expired`
+                                          : `${displayUsers[0].username}'s request to clear the chat has expired`
                                         : chat.lastMessage.clerkId
                                               .split("|")
                                               .pop() ===
                                             clerkUser.user?.username
-                                          ? `${chat.users[0].username} has rejected your request to clear the chat`
+                                          ? `${displayUsers[0].username} has rejected your request to clear the chat`
                                           : "You have rejected the request to clear the chat"}
                                   </div>
                                 )}
