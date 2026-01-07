@@ -66,23 +66,23 @@ const ReplyToMessage = ({
             scrollToMessage(message.replyTo._id);
           }
         }}
-        className="border-secondary-foreground bg-primary mb-2 cursor-pointer rounded-lg border p-2"
+        className="border-secondary-foreground bg-primary mb-2 max-w-[66.6667%] cursor-pointer rounded-lg border p-2"
       >
         <div className="flex items-center justify-between">
           <p className="text-destructive-foreground text-sm">Replied to:</p>
         </div>
 
-        <p className="text-sm">
+        <div className="line-clamp-3 text-sm">
           <strong>{message.replyTo.from.username}</strong>:{" "}
           {message.replyTo.deleted ? (
-            <div className="flex">
+            <div className="inline-flex items-center">
               The original message was deleted
               <Ban className="ml-1 h-5 w-5" />
             </div>
           ) : (
             message.replyTo.content
           )}
-        </p>
+        </div>
       </div>
     );
   } else {

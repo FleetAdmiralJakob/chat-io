@@ -241,7 +241,7 @@ const MessageContext: React.FC<MessageContextProps> = ({
             <X className="h-4 w-4" />
           </button>
 
-          <p className="text-sm">
+          <p className="line-clamp-2 text-sm">
             <strong>{message.from.username}</strong>: {message.content}
           </p>
         </div>
