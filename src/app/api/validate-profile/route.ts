@@ -1,10 +1,19 @@
 import {
   formSchemaUserUpdate,
-  type FormSchemaUserUpdate,
 } from "../../../../convex/lib/validators";
 
 export async function POST(request: Request) {
-  const unparsedData = (await request.json()) as FormSchemaUserUpdate;
+  let unparsedData: unknown;
+
+  try {
+    unparsedData = await request.json();
+  } catch {
+    return Response.json(
+      { success: false, message: "Invalid JSON body" },
+      { status: 400 },
+    );
+  }
+
   const parsedData = formSchemaUserUpdate.safeParse(unparsedData);
 
   if (!parsedData.success) {
