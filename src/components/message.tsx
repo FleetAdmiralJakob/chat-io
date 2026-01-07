@@ -23,13 +23,15 @@ import {
   Trash2,
 } from "lucide-react";
 import { parseAsString, useQueryState } from "nuqs";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useInView } from "react-intersection-observer";
 import { toast } from "sonner";
 import { ReactionHandler } from "./reactions";
 
 dayjs.extend(relativeTime);
+
+const EDIT_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
 
 export type Message = NonNullable<
   FunctionReturnType<typeof api.messages.getMessages>
@@ -128,6 +130,14 @@ export const Message = ({
   scrollToMessage: (messageId: Id<"messages">) => void;
 }) => {
   const clerkUser = useUser();
+
+  const [isEditable, setIsEditable] = useState(false);
+
+  useEffect(() => {
+    if (selectedMessageId === message._id) {
+      setIsEditable(Date.now() - message._creationTime < EDIT_WINDOW_MS);
+    }
+  }, [selectedMessageId, message._id, message._creationTime]);
 
   const deleteMessage = useMutation(
     api.messages.deleteMessage,
@@ -649,17 +659,19 @@ export const Message = ({
                         <Forward />
                         <p className="ml-1">Forward</p>
                       </button>
-                      <button
-                        className="border-secondary-foreground flex w-full cursor-pointer border-y-2 p-2 pr-8"
-                        onClick={() => {
-                          setEditingMessageId(message._id);
-                          setSelectedMessageId(null);
-                          setShowFullEmojiPicker(false);
-                        }}
-                      >
-                        <Pen />
-                        <p className="ml-1">Edit</p>
-                      </button>
+                      {isEditable && (
+                        <button
+                          className="border-secondary-foreground flex w-full cursor-pointer border-y-2 p-2 pr-8"
+                          onClick={() => {
+                            setEditingMessageId(message._id);
+                            setSelectedMessageId(null);
+                            setShowFullEmojiPicker(false);
+                          }}
+                        >
+                          <Pen />
+                          <p className="ml-1">Edit</p>
+                        </button>
+                      )}
                       <button
                         className="text-accent flex w-full cursor-pointer p-2"
                         onMouseDown={() => {
