@@ -8,6 +8,7 @@ import {
   type formSchemaUserUpdate,
 } from "#convex/lib/validators";
 import { Button } from "~/components/ui/button";
+import { Checkbox } from "~/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -19,6 +20,7 @@ import {
 } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
+import { env } from "~/env";
 import { useMutation } from "convex/react";
 import {
   ChevronLeft,
@@ -61,6 +63,19 @@ const SettingValidator = z.object({
     }),
 });
 
+const base64ToUint8Array = (base64: string) => {
+  const padding = "=".repeat((4 - (base64.length % 4)) % 4);
+  const b64 = (base64 + padding).replace(/-/g, "+").replace(/_/g, "/");
+
+  const rawData = window.atob(b64);
+  const outputArray = new Uint8Array(rawData.length);
+
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+};
+
 export default function SettingsContent() {
   const clerkUser = useUser();
 
@@ -78,6 +93,68 @@ export default function SettingsContent() {
   const [emailError, setEmailError] = useState(false);
   const [firstNameError, setFirstNameError] = useState("");
   const [lastNameError, setLastNameError] = useState("");
+
+  const [isPushEnabled, setIsPushEnabled] = useState(false);
+  const [pushLoading, setPushLoading] = useState(false);
+  const subscribeToPush = useMutation(api.notifications.subscribe);
+  const unsubscribeFromPush = useMutation(api.notifications.unsubscribe);
+
+  useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      void navigator.serviceWorker.ready.then((reg) => {
+        void reg.pushManager.getSubscription().then((sub) => {
+          if (sub) setIsPushEnabled(true);
+        });
+      });
+    }
+  }, []);
+
+  const handlePushToggle = async (checked: boolean) => {
+    setPushLoading(true);
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      if (checked) {
+        if (!env.NEXT_PUBLIC_VAPID_PUBLIC_KEY) {
+          throw new Error("VAPID Public Key not found");
+        }
+        const sub = await reg.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: base64ToUint8Array(
+            env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+          ),
+        });
+        // Serialize keys
+        const p256dh = sub.getKey("p256dh");
+        const auth = sub.getKey("auth");
+        if (!p256dh || !auth) throw new Error("Missing keys");
+
+        await subscribeToPush({
+          endpoint: sub.endpoint,
+          keys: {
+            p256dh: btoa(String.fromCharCode(...new Uint8Array(p256dh))),
+            auth: btoa(String.fromCharCode(...new Uint8Array(auth))),
+          },
+        });
+        setIsPushEnabled(true);
+        toast.success("Notifications enabled");
+      } else {
+        const sub = await reg.pushManager.getSubscription();
+        if (sub) {
+          await unsubscribeFromPush({ endpoint: sub.endpoint });
+          await sub.unsubscribe();
+        }
+        setIsPushEnabled(false);
+        toast.success("Notifications disabled");
+      }
+    } catch (e) {
+      console.error(e);
+      toast.error("Failed to update notifications");
+      // Revert state if failed
+      setIsPushEnabled(!checked);
+    } finally {
+      setPushLoading(false);
+    }
+  };
 
   // ============================================================================
   // DIRTY FLAGS - Prevent race conditions between user edits and Clerk updates
@@ -513,6 +590,24 @@ export default function SettingsContent() {
             <p className="text-secondary-foreground mt-0.5 ml-2 text-[85%]">
               If you forgot your password we can send you an Email
             </p>
+          </div>
+          <div className="mb-4 w-11/12 lg:w-1/3">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="push-notifications"
+                checked={isPushEnabled}
+                onCheckedChange={(checked) =>
+                  handlePushToggle(checked === true)
+                }
+                disabled={pushLoading}
+              />
+              <label
+                htmlFor="push-notifications"
+                className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Enable Push Notifications
+              </label>
+            </div>
           </div>
           <Dialog
             open={dialogOpen}

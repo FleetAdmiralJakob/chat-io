@@ -20,6 +20,7 @@ export const env = createEnv({
     NEXT_PUBLIC_CONVEX_URL: z.url(),
     NEXT_PUBLIC_POSTHOG_HOST: z.url(),
     NEXT_PUBLIC_POSTHOG_KEY: z.string().min(2),
+    NEXT_PUBLIC_VAPID_PUBLIC_KEY: z.string().min(1),
   },
 
   /**
@@ -31,6 +32,7 @@ export const env = createEnv({
     NEXT_PUBLIC_CONVEX_URL: process.env.NEXT_PUBLIC_CONVEX_URL,
     NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
     NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
+    NEXT_PUBLIC_VAPID_PUBLIC_KEY: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**

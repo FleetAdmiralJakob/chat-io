@@ -1,5 +1,6 @@
 import { ConvexError, v } from "convex/values";
 import emojiRegex from "emoji-regex";
+import { internal } from "./_generated/api";
 import { EDIT_WINDOW_MS } from "./constants";
 import { mutation, query } from "./lib/functions";
 
@@ -153,6 +154,17 @@ export const createMessage = mutation({
       replyTo: args.replyToId,
       forwarded: 0,
     });
+
+    // Schedule push notification
+    const otherUsers = usersInChat.filter((u) => u._id !== convexUser._id);
+    for (const otherUser of otherUsers) {
+      await ctx.scheduler.runAfter(0, internal.push.sendPush, {
+        userId: otherUser._id,
+        title: convexUser.username,
+        body: args.content.trim(),
+        data: { url: `/chats/${parsedChatId}` },
+      });
+    }
   },
 });
 
