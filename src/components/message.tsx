@@ -3,6 +3,7 @@ import { useFloating, type ReferenceType } from "@floating-ui/react";
 import { useLongPress } from "@reactuses/core";
 import { api } from "#convex/_generated/api";
 import type { Id } from "#convex/_generated/dataModel";
+import { EDIT_WINDOW_MS } from "#convex/constants";
 import { useQueryWithStatus } from "~/app/convex-client-provider";
 import { cn } from "~/lib/utils";
 import { useMutation } from "convex/react";
@@ -23,7 +24,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { parseAsString, useQueryState } from "nuqs";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useInView } from "react-intersection-observer";
 import { toast } from "sonner";
@@ -128,6 +129,24 @@ export const Message = ({
   scrollToMessage: (messageId: Id<"messages">) => void;
 }) => {
   const clerkUser = useUser();
+
+  const [isEditable, setIsEditable] = useState(false);
+
+  useEffect(() => {
+    if (selectedMessageId === message._id) {
+      // Initial check
+      setIsEditable(Date.now() - message._creationTime < EDIT_WINDOW_MS);
+
+      // Set up interval to re-check every second
+      const intervalId = setInterval(() => {
+        setIsEditable(Date.now() - message._creationTime < EDIT_WINDOW_MS);
+      }, 1000);
+
+      return () => clearInterval(intervalId);
+    } else {
+      setIsEditable(false);
+    }
+  }, [selectedMessageId, message._id, message._creationTime]);
 
   const deleteMessage = useMutation(
     api.messages.deleteMessage,
@@ -649,17 +668,19 @@ export const Message = ({
                         <Forward />
                         <p className="ml-1">Forward</p>
                       </button>
-                      <button
-                        className="border-secondary-foreground flex w-full cursor-pointer border-y-2 p-2 pr-8"
-                        onClick={() => {
-                          setEditingMessageId(message._id);
-                          setSelectedMessageId(null);
-                          setShowFullEmojiPicker(false);
-                        }}
-                      >
-                        <Pen />
-                        <p className="ml-1">Edit</p>
-                      </button>
+                      {isEditable && (
+                        <button
+                          className="border-secondary-foreground flex w-full cursor-pointer border-y-2 p-2 pr-8"
+                          onClick={() => {
+                            setEditingMessageId(message._id);
+                            setSelectedMessageId(null);
+                            setShowFullEmojiPicker(false);
+                          }}
+                        >
+                          <Pen />
+                          <p className="ml-1">Edit</p>
+                        </button>
+                      )}
                       <button
                         className="text-accent flex w-full cursor-pointer p-2"
                         onMouseDown={() => {
