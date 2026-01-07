@@ -2,6 +2,11 @@
 
 import { useUser } from "@clerk/nextjs";
 import { isClerkAPIResponseError } from "@clerk/nextjs/errors";
+import { api } from "#convex/_generated/api";
+import {
+  type FormSchemaUserUpdate,
+  type formSchemaUserUpdate,
+} from "#convex/lib/validators";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -27,11 +32,6 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { z, ZodError } from "zod";
-import { api } from "../../../../../convex/_generated/api";
-import {
-  type FormSchemaUserUpdate,
-  type formSchemaUserUpdate,
-} from "../../../../../convex/lib/validators";
 
 const SettingValidator = z.object({
   email: z.email(),

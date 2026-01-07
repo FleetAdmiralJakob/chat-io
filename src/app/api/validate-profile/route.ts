@@ -1,6 +1,4 @@
-import {
-  formSchemaUserUpdate,
-} from "../../../../convex/lib/validators";
+import { formSchemaUserUpdate } from "#convex/lib/validators";
 
 export async function POST(request: Request) {
   let unparsedData: unknown;
