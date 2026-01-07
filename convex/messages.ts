@@ -2,6 +2,8 @@ import { ConvexError, v } from "convex/values";
 import emojiRegex from "emoji-regex";
 import { mutation, query } from "./lib/functions";
 
+const EDIT_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
+
 export const getMessages = query({
   args: { chatId: v.string() },
   handler: async (ctx, args) => {
@@ -356,6 +358,10 @@ export const editMessage = mutation({
       throw new ConvexError(
         "UNAUTHORIZED REQUEST: User tried to edit a message from another person.",
       );
+    }
+
+    if (Date.now() - message._creationTime > EDIT_WINDOW_MS) {
+      throw new ConvexError("Cannot edit message older than 15 minutes");
     }
 
     if (message.deleted) {
