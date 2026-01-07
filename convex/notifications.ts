@@ -69,7 +69,9 @@ export const getSubscriptions = internalQuery({
 export const deleteSubscription = internalMutation({
   args: { id: v.id("pushSubscriptions") },
   handler: async (ctx, args) => {
-    const sub = await ctx.table("pushSubscriptions").getX(args.id);
-    await sub.delete();
+    const sub = await ctx.table("pushSubscriptions").get(args.id);
+    if (sub) {
+      await sub.delete();
+    }
   },
 });

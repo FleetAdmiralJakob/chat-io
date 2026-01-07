@@ -148,7 +148,8 @@ export default function SettingsContent() {
       }
     } catch (e) {
       console.error(e);
-      toast.error("Failed to update notifications");
+      const errorMessage = e instanceof Error ? e.message : "Unknown error";
+      toast.error(`Failed to update notifications: ${errorMessage}`);
       // Revert state if failed
       setIsPushEnabled(!checked);
     } finally {
@@ -198,7 +199,7 @@ export default function SettingsContent() {
   useEffect(() => {
     // Only sync firstName if the user hasn't modified it yet
     if (clerkUser.user?.firstName && !isFirstNameDirty) {
-      setFirstName(clerkUser.user.firstName); // eslint-disable-line -- Intentional sync from Clerk
+      setFirstName(clerkUser.user.firstName);
     }
 
     // Only sync lastName if the user hasn't modified it yet

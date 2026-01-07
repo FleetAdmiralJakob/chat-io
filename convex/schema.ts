@@ -33,7 +33,8 @@ const schema = defineEntSchema({
   pushSubscriptions: defineEnt({})
     .field("endpoint", v.string())
     .field("keys", v.object({ p256dh: v.string(), auth: v.string() }))
-    .edge("user"),
+    .edge("user")
+    .index("by_endpoint", ["endpoint"]),
 
   clearRequests: defineEnt({})
     .field(

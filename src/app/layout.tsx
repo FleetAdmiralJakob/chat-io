@@ -79,8 +79,8 @@ export default function RootLayout({
       </head>
       <body
         className={cn(
-          GeistSans.className,
-          "bg-background min-h-screen antialiased",
+          GeistSans.variable,
+          "bg-background font-sans min-h-screen antialiased",
         )}
       >
         <SerwistProvider swUrl="/sw.js">

@@ -17,7 +17,8 @@
     "lint": "eslint .",
     "start": "next start",
     "preinstall": "npx only-allow pnpm",
-    "convex:deploy": "convex deploy"
+    "convex:deploy": "convex deploy",
+    "gen:vapid": "web-push generate-vapid-keys"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.23.3",

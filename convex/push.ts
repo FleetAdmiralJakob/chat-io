@@ -3,7 +3,7 @@
 import { v } from "convex/values";
 import webPush from "web-push";
 import { internal } from "./_generated/api";
-import { Doc } from "./_generated/dataModel";
+import { type Doc } from "./_generated/dataModel";
 import { internalAction } from "./_generated/server";
 
 export const sendPush = internalAction({
@@ -29,13 +29,13 @@ export const sendPush = internalAction({
       process.env.VAPID_PRIVATE_KEY,
     );
 
-    const subscriptions = await ctx.runQuery(
+    const subscriptions: Doc<"pushSubscriptions">[] = await ctx.runQuery(
       internal.notifications.getSubscriptions,
       { userId: args.userId },
     );
 
     await Promise.all(
-      subscriptions.map(async (sub: Doc<"pushSubscriptions">) => {
+      subscriptions.map(async (sub) => {
         try {
           await webPush.sendNotification(
             {
@@ -45,15 +45,23 @@ export const sendPush = internalAction({
             JSON.stringify({
               title: args.title,
               body: args.body,
-              data: args.data,
+              data: args.data as unknown,
             }),
           );
-        } catch (error: any) {
-          if (error.statusCode === 404 || error.statusCode === 410) {
-            // Subscription expired/invalid
-            await ctx.runMutation(internal.notifications.deleteSubscription, {
-              id: sub._id,
-            });
+        } catch (error) {
+          const isWebPushError = (err: unknown): err is webPush.WebPushError =>
+            typeof err === "object" &&
+            err !== null &&
+            "statusCode" in err &&
+            typeof (err as { statusCode: unknown }).statusCode === "number";
+
+          if (isWebPushError(error)) {
+            if (error.statusCode === 404 || error.statusCode === 410) {
+              // Subscription expired/invalid
+              await ctx.runMutation(internal.notifications.deleteSubscription, {
+                id: sub._id,
+              });
+            }
           } else {
             console.error("Error sending push:", error);
           }

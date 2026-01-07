@@ -57,11 +57,12 @@ self.addEventListener("push", (event) => {
 
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
+  const notificationData = event.notification.data as { url?: string };
   event.waitUntil(
     self.clients
       .matchAll({ type: "window", includeUncontrolled: true })
       .then((clientList) => {
-        const url = event.notification.data?.url || "/";
+        const url = notificationData.url ?? "/";
         for (const client of clientList) {
           if (client.url.includes(url) && "focus" in client) {
             return client.focus();
