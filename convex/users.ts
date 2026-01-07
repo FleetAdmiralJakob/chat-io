@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./lib/functions";
+import { formSchemaUserUpdate } from "./lib/validators";
 
 export const getUserData = query({
   args: {},
@@ -30,18 +31,27 @@ export const updateUserData = mutation({
       return null;
     }
 
+    // Validate data against Zod schema to ensure security
+    const parsedData = formSchemaUserUpdate.parse(args.data);
+
     const user = ctx.table("users").getX("clerkId", identity.tokenIdentifier);
 
     const updates: { email?: string; lastName?: string; firstName?: string } =
       {};
-    if (args.data.email) {
-      updates.email = args.data.email;
+
+    // Use parsedData to ensure we only use validated values
+    // Note: Zod might transform "" to literal "" or keep it, schema allows both.
+    // The logic below checks for truthiness, so empty strings are skipped unless check is stricter.
+    // args.data was already partial, parsedData is also partial.
+
+    if (parsedData.email !== undefined && parsedData.email !== "") {
+      updates.email = parsedData.email;
     }
-    if (args.data.lastName) {
-      updates.lastName = args.data.lastName;
+    if (parsedData.lastName !== undefined && parsedData.lastName !== "") {
+      updates.lastName = parsedData.lastName;
     }
-    if (args.data.firstName) {
-      updates.firstName = args.data.firstName;
+    if (parsedData.firstName !== undefined && parsedData.firstName !== "") {
+      updates.firstName = parsedData.firstName;
     }
 
     // Use one patch instead of a few singular patches for better performance

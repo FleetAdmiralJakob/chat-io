@@ -14,10 +14,6 @@ import {
 } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-import {
-  type FormSchemaUserUpdate,
-  type formSchemaUserUpdate,
-} from "~/lib/validators";
 import { useMutation } from "convex/react";
 import {
   ChevronLeft,
@@ -32,6 +28,10 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { z, ZodError } from "zod";
 import { api } from "../../../../../convex/_generated/api";
+import {
+  type FormSchemaUserUpdate,
+  type formSchemaUserUpdate,
+} from "../../../../../convex/lib/validators";
 
 const SettingValidator = z.object({
   email: z.email(),
@@ -60,21 +60,6 @@ const SettingValidator = z.object({
       error: "Name must be at most 20 characters.",
     }),
 });
-
-const signUpResponseSchema = z.object({
-  message: z.string().optional(),
-  statusText: z.string().optional(),
-  data: z.unknown().optional(),
-});
-
-// Define the error schema using Zod
-const errorSchema = z.object({
-  path: z.array(z.string()),
-  message: z.string(),
-});
-
-// Define the parsed JSON schema using Zod
-const parsedJsonSchema = z.array(errorSchema);
 
 export default function SettingsContent() {
   const clerkUser = useUser();
@@ -134,12 +119,12 @@ export default function SettingsContent() {
   // Reference: https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
   // ============================================================================
   useEffect(() => {
-    // Only sync firstName if user hasn't modified it yet
+    // Only sync firstName if the user hasn't modified it yet
     if (clerkUser.user?.firstName && !isFirstNameDirty) {
       setFirstName(clerkUser.user.firstName); // eslint-disable-line -- Intentional sync from Clerk
     }
 
-    // Only sync lastName if user hasn't modified it yet
+    // Only sync lastName if the user hasn't modified it yet
     if (clerkUser.user?.lastName && !isLastNameDirty) {
       setLastName(clerkUser.user.lastName);
     }
@@ -159,48 +144,53 @@ export default function SettingsContent() {
 
   const updateConvexUserData = useMutation(api.users.updateUserData);
 
-  const test = useCallback(async () => {
+  const validateProfileOnServer = useCallback(async () => {
     const valuesObject: z.infer<typeof formSchemaUserUpdate> = {
       email: emailValue,
       firstName: firstName,
       lastName: lastName,
     };
 
-    const response = await fetch("/api/sign-up", {
-      method: "OPTIONS",
+    const response = await fetch("/api/validate-profile", {
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(valuesObject),
     });
 
-    const responseBody = await response.text(); // Get the response body as text
-    if (!responseBody) {
+    const responseBody = (await response.json()) as {
+      success: boolean;
+      errors?: { path: (string | number)[]; message: string }[];
+    };
+
+    if (responseBody.success) {
+      // Clear all errors when validation passes
+      setEmailError(false);
+      setFirstNameError("");
+      setLastNameError("");
       return;
     }
 
-    const parsedResponseBody = signUpResponseSchema.safeParse(
-      JSON.parse(responseBody),
-    );
+    // Reset errors before setting new ones
+    setEmailError(false);
+    setFirstNameError("");
+    setLastNameError("");
 
-    if (parsedResponseBody.data?.message) {
-      const parsedJson = parsedJsonSchema.safeParse(
-        JSON.parse(parsedResponseBody.data.message),
-      );
-
-      if (parsedJson.success) {
-        parsedJson.data.forEach((error) => {
-          if (error.path[0] == "email") {
+    if (responseBody.errors) {
+      responseBody.errors.forEach(
+        (error: { path: (string | number)[]; message: string }) => {
+          if (error.path[0] === "email") {
             setEmailError(true);
           }
-          if (error.path[0] == "firstName") {
+          if (error.path[0] === "firstName") {
             setFirstNameError(error.message);
           }
-          if (error.path[0] == "lastName") {
+          if (error.path[0] === "lastName") {
             setLastNameError(error.message);
           }
-        });
-      }
+        },
+      );
     }
   }, [emailValue, firstName, lastName]);
 
@@ -307,9 +297,13 @@ export default function SettingsContent() {
   };
 
   useEffect(() => {
-    if (emailValue != "" || firstName != "" || lastName != "") {
-      void test();
-    }
+    const timer = setTimeout(() => {
+      if (emailValue != "" || firstName != "" || lastName != "") {
+        void validateProfileOnServer();
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
   }, [
     handleLastNameChange,
     handleFirstNameChange,
@@ -317,7 +311,7 @@ export default function SettingsContent() {
     emailValue,
     firstName,
     lastName,
-    test,
+    validateProfileOnServer,
   ]);
 
   async function checkPasswordAgainstClerkRules(
