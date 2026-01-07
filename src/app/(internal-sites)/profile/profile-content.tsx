@@ -53,8 +53,8 @@ export default function ProfileContent() {
                     {item.title.length > 5
                       ? item.title.slice(0, -5)
                       : item.title}
-                    <span className="text-muted-foreground ml-1 font-normal">
-                      #{item.title.length > 5 ? item.title.slice(-5) : ""}
+                    <span className="text-muted-foreground ml-1">
+                      {item.title.length > 5 ? item.title.slice(-5) : ""}
                     </span>
                   </p>
                 </div>
