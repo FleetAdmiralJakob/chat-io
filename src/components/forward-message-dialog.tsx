@@ -1,3 +1,5 @@
+import { api } from "#convex/_generated/api";
+import { type Id } from "#convex/_generated/dataModel";
 import { type Chats } from "~/components/chat-overview";
 import { type UserInfos } from "~/components/message";
 import Badge from "~/components/ui/badge";
@@ -14,8 +16,6 @@ import { cn } from "~/lib/utils";
 import { useMutation } from "convex/react";
 import { LoaderCircle } from "lucide-react";
 import React, { useState, type Dispatch, type SetStateAction } from "react";
-import { api } from "../../convex/_generated/api";
-import { type Id } from "../../convex/_generated/dataModel";
 
 interface ForwardDialogProps {
   ForwardedMessageId: string;
@@ -78,16 +78,18 @@ export const ForwardDialog = ({
       onOpenChange={(e) => (!e ? closeDialog() : null)}
       open={ForwardedMessageId !== ""}
     >
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex">
             <p className="mt-1">Forward</p>{" "}
           </DialogTitle>
-          <DialogDescription>Select a user to forward them.</DialogDescription>
+          <DialogDescription>
+            Select a user to forward the message to.
+          </DialogDescription>
         </DialogHeader>
         <div
           className={cn(
-            "grid max-h-72 gap-4 overflow-auto",
+            "grid max-h-72 gap-2 overflow-auto",
             chats === undefined ? "flex justify-center" : null,
           )}
         >
@@ -96,6 +98,34 @@ export const ForwardDialog = ({
           ) : (
             chats?.map((chat, index) => (
               <div key={index}>
+                {chat.support ? (
+                  <div
+                    onClick={() =>
+                      handleForward({
+                        username: "Chat.io Support",
+                        userId: chat._id,
+                        chatId: chat._id,
+                      })
+                    }
+                    key={index}
+                    className="bg-secondary flex cursor-pointer rounded-xl p-5"
+                  >
+                    <Checkbox
+                      checked={
+                        chatsToForwardTo.length > 0
+                          ? chatsToForwardTo.some(
+                              (forwardObject) =>
+                                forwardObject.userId === chat._id,
+                            )
+                          : false
+                      }
+                      className="mt-1 mr-3 flex"
+                    />
+                    <div className="flex">
+                      Chat.io <Badge>Support</Badge>
+                    </div>
+                  </div>
+                ) : null}
                 {chat.users.length === 0 ? (
                   <div
                     onClick={() =>
