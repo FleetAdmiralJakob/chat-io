@@ -72,10 +72,10 @@ const ReplyToMessage = ({
           <p className="text-destructive-foreground text-sm">Replied to:</p>
         </div>
 
-        <div className="line-clamp-3 text-sm">
+        <div className="line-clamp-2 text-sm">
           <strong>{message.replyTo.from.username}</strong>:{" "}
           {message.replyTo.deleted ? (
-            <div className="flex inline-flex items-center">
+            <div className="inline-flex items-center">
               The original message was deleted
               <Ban className="ml-1 h-5 w-5" />
             </div>
