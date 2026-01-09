@@ -1,4 +1,7 @@
 // API imports for Convex backend communication
+
+// Error tracking
+import * as Sentry from "@sentry/nextjs";
 import { api } from "#convex/_generated/api";
 import { type Id } from "#convex/_generated/dataModel";
 // Component and type imports
@@ -102,20 +105,28 @@ export const ForwardDialog = ({
   /**
    * Handles the submission of the forward operation
    * Sends the message to all selected chats, then resets the dialog state
+   * Uses try-catch-finally to ensure cleanup always runs even if the mutation fails
    *
    * @param {ForwardUser[]} forwardObjects - Array of users/chats to forward the message to
    */
   const onForwardSubmit = async (forwardObjects: ForwardUser[]) => {
     // Set loading state while the forward operation is in progress
     setLoading(true);
-    // Execute the forward mutation with the message ID and selected recipients
-    await forwardMessage({ messageId: ForwardedMessageId, forwardObjects });
-    // Clear the forwarded message ID (closes the dialog)
-    setForwardedMessageId("");
-    // Reset the selected chats
-    setChatsToForwardTo([]);
-    // Clear loading state
-    setLoading(false);
+    try {
+      // Execute the forward mutation with the message ID and selected recipients
+      await forwardMessage({ messageId: ForwardedMessageId, forwardObjects });
+    } catch (error) {
+      // Capture any errors that occur during forwarding and send to Sentry
+      Sentry.captureException(error);
+    } finally {
+      // Always cleanup state, even if the mutation fails
+      // Clear loading state
+      setLoading(false);
+      // Clear the forwarded message ID (closes the dialog)
+      setForwardedMessageId("");
+      // Reset the selected chats
+      setChatsToForwardTo([]);
+    }
   };
 
   /**
