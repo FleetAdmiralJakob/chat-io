@@ -277,7 +277,7 @@ export const ForwardDialog = ({
           onClick={async () => {
             await onForwardSubmit(chatsToForwardTo);
           }}
-          disabled={chatsToForwardTo.length == 0 || loading}
+          disabled={chatsToForwardTo.length === 0 || loading}
         >
           <p>
             {/* Show "Forward" text when not loading, or loading spinner with "Processing..." when loading */}
