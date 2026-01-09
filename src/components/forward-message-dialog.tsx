@@ -82,7 +82,7 @@ export const ForwardDialog = ({
    */
   const handleForward = (user: ForwardUser) => {
     // If no chats are selected yet, add this one
-    if (chatsToForwardTo.length == 0) {
+    if (chatsToForwardTo.length === 0) {
       setChatsToForwardTo((prev) => [...prev, user]);
     } else {
       // Check if this user is already selected
