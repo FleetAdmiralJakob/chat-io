@@ -263,12 +263,14 @@ export default function NotificationContent() {
     <>
       <div className="text-destructive-foreground flex justify-center lg:hidden">
         <p className="absolute top-12 text-xl font-semibold">Notifications</p>
-        <ChevronLeft
-          className="absolute top-11 left-10 h-8 w-8"
-          onClick={() => {
-            router.back();
-          }}
-        />
+        <button
+          type="button"
+          aria-label="Back"
+          className="absolute top-11 left-10"
+          onMouseDown={() => router.back()}
+        >
+          <ChevronLeft className="h-8 w-8" />
+        </button>
       </div>
       <main className="flex h-screen flex-col items-center justify-center lg:ml-24">
         <div className="flex h-2/3 w-full flex-col items-center justify-center gap-7 sm:h-1/2">
