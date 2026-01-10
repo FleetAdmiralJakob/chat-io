@@ -35,6 +35,28 @@ export const sendPush = internalAction({
       { userId: args.userId },
     );
 
+    // Truncate the notification body to 500 characters.
+    //
+    // RATIONALE:
+    // 1. Technical Limit (Hard): The Web Push API (RFC 8268) enforces a strict 4096-byte (4KB) limit
+    //    on the encrypted payload. Encryption adds ~18 bytes of overhead, leaving ~4078 bytes for
+    //    the JSON payload. A 500-character string (even with multibyte characters) plus metadata
+    //    is well within this safety margin (~2KB max).
+    //
+    // 2. Visual Truncation (Soft):
+    //    - iOS visually truncates notifications after ~178 characters (4 lines).
+    //    - Android visually truncates after ~240 characters (BigText style).
+    //
+    // 3. User Experience (Expanded View):
+    //    Critically, both platforms support an "Expanded View" (long-press or swipe) that displays
+    //    significantly more text. Truncating too early (e.g., at 100 chars) breaks this feature,
+    //    preventing users from reading longer messages without opening the app.
+    //
+    //    500 characters is a safe "middle ground" that supports the Expanded View utility while
+    //    guaranteeing we never hit the hard 4KB API limit.
+    const body =
+      args.body.length > 500 ? `${args.body.slice(0, 500)}…` : args.body;
+
     await Promise.allSettled(
       subscriptions.map(async (sub) => {
         try {
@@ -45,7 +67,7 @@ export const sendPush = internalAction({
             },
             JSON.stringify({
               title: args.title,
-              body: args.body,
+              body,
               data: args.data as unknown,
             }),
           );
