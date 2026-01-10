@@ -1,7 +1,7 @@
 "use client";
 
-import { api } from "#convex/_generated/api";
 import * as Sentry from "@sentry/nextjs";
+import { api } from "#convex/_generated/api";
 import { Checkbox } from "~/components/ui/checkbox";
 import { env } from "~/env";
 import { useQuery } from "convex-helpers/react/cache/hooks";
