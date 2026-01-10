@@ -1,6 +1,7 @@
 "use client";
 
 import { api } from "#convex/_generated/api";
+import * as Sentry from "@sentry/nextjs";
 import { Checkbox } from "~/components/ui/checkbox";
 import { env } from "~/env";
 import { useQuery } from "convex-helpers/react/cache/hooks";
@@ -96,6 +97,12 @@ export default function NotificationContent() {
 
       const reg = await navigator.serviceWorker.ready;
       if (checked) {
+        // Explicitly request permission before subscribing
+        const permission = await Notification.requestPermission();
+        if (permission !== "granted") {
+          throw new Error("Notification permission not granted");
+        }
+
         // ------------------------------------------------------------------
         // STEP 1: BROWSER SUBSCRIPTION
         // ------------------------------------------------------------------
@@ -143,6 +150,7 @@ export default function NotificationContent() {
           // the true state of the system (Browser + Backend both ready).
           setIsPushEnabled(true);
           toast.success("Notifications enabled");
+          setSubscriptionEndpoint(sub.endpoint);
         } catch (backendError) {
           // ------------------------------------------------------------------
           // ROLLBACK MECHANISM: COMPENSATING TRANSACTION
@@ -159,10 +167,7 @@ export default function NotificationContent() {
           //
           // FIX: We must UNDO the browser subscription to reset to a clean slate.
           // ------------------------------------------------------------------
-          console.error(
-            "Backend subscription failed. Rolling back browser subscription.",
-            backendError,
-          );
+          Sentry.captureException(backendError);
 
           try {
             // Retrieve the latest subscription to be absolutely sure we're
@@ -176,10 +181,7 @@ export default function NotificationContent() {
             // If rollback fails, we are truly stuck. Log it for debugging.
             // We still re-throw the original error to inform the user of the initial failure.
             // This is a rare edge case (e.g. network lost mid-operation).
-            console.error(
-              "CRITICAL: Rollback failed. Browser is subscribed but backend is not.",
-              rollbackError,
-            );
+            Sentry.captureException(rollbackError);
           }
 
           // Re-throw the original backend error so the outer catch block
@@ -222,6 +224,7 @@ export default function NotificationContent() {
 
           try {
             await unsubscribeFromPush({ endpoint: sub.endpoint });
+            setSubscriptionEndpoint(null);
           } catch (backendError) {
             // If the backend fails, we swallow the error and log it.
             // We do NOT want to throw here, because that would trigger the
@@ -230,17 +233,14 @@ export default function NotificationContent() {
             // unsubscribed for all intents and purposes. The orphaned DB
             // record will eventually be cleaned up (e.g., by a 410 Gone
             // response when the server tries to push to it later).
-            console.error(
-              "Backend unsubscription failed (orphaned record):",
-              backendError,
-            );
+            Sentry.captureException(backendError);
           }
         }
         setIsPushEnabled(false);
         toast.success("Notifications disabled");
       }
     } catch (e) {
-      console.error(e);
+      Sentry.captureException(e);
 
       // Check if the error was due to denied notification permission
       if (Notification.permission === "denied") {
