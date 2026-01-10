@@ -14,7 +14,9 @@ export const subscribe = mutation({
     if (!identity) {
       throw new Error("Unauthorized");
     }
-    const user = await ctx.table("users").get("clerkId", identity.tokenIdentifier);
+    const user = await ctx
+      .table("users")
+      .get("clerkId", identity.tokenIdentifier);
     if (!user) {
       throw new Error("User not found");
     }
