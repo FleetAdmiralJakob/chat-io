@@ -82,11 +82,32 @@ self.addEventListener("push", (event) => {
   // Keep the service worker alive until the notification is displayed
   // This ensures the notification shows even if the page is closed
   event.waitUntil(
-    self.registration.showNotification(data.title, {
-      body: data.body,
-      icon: "/icons/icon-512x-512-any.png", // App icon shown in the notification
-      data: data.data, // Custom data attached to the notification (e.g., URL to open)
-    }),
+    (async () => {
+      // Check if the user is currently viewing the chat
+      // If so, we don't want to show a notification
+      if (isNotificationData(data.data) && data.data.url) {
+        const urlToCheck = data.data.url;
+        const clientList = await self.clients.matchAll({
+          type: "window",
+          includeUncontrolled: true,
+        });
+        const isChatOpen = clientList.some(
+          (client) =>
+            client.url.includes(urlToCheck) &&
+            client.visibilityState === "visible",
+        );
+
+        if (isChatOpen) {
+          return;
+        }
+      }
+
+      await self.registration.showNotification(data.title, {
+        body: data.body,
+        icon: "/icons/icon-512x-512-any.png", // App icon shown in the notification
+        data: data.data, // Custom data attached to the notification (e.g., URL to open)
+      });
+    })(),
   );
 });
 

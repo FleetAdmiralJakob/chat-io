@@ -20,7 +20,13 @@ export const sendPush = internalAction({
       !process.env.VAPID_PRIVATE_KEY ||
       !process.env.VAPID_EMAIL
     ) {
-      console.error("VAPID keys not configured");
+      const errorMessage =
+        "VAPID keys not configured. Push notifications will not be sent.";
+      console.error(errorMessage);
+
+      if (process.env.NODE_ENV === "development") {
+        throw new Error(errorMessage);
+      }
       return;
     }
 

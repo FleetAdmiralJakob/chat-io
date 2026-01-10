@@ -160,19 +160,12 @@ export const createMessage = mutation({
     const trimmedContent = args.content.trim();
 
     for (const otherUser of otherUsers) {
-      try {
-        await ctx.scheduler.runAfter(0, internal.push.sendPush, {
-          userId: otherUser._id,
-          title: convexUser.username,
-          body: trimmedContent,
-          data: { url: `/chats/${parsedChatId}` },
-        });
-      } catch (error) {
-        console.error(
-          `Failed to schedule push notification for user ${otherUser._id}:`,
-          error,
-        );
-      }
+      await ctx.scheduler.runAfter(0, internal.push.sendPush, {
+        userId: otherUser._id,
+        title: convexUser.username,
+        body: trimmedContent,
+        data: { url: `/chats/${parsedChatId}` },
+      });
     }
   },
 });
