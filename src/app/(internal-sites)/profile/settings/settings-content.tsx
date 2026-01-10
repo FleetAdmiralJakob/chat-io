@@ -100,13 +100,33 @@ export default function SettingsContent() {
   const unsubscribeFromPush = useMutation(api.notifications.unsubscribe);
 
   useEffect(() => {
-    if ("serviceWorker" in navigator) {
-      void navigator.serviceWorker.ready.then((reg) => {
-        void reg.pushManager.getSubscription().then((sub) => {
-          if (sub) setIsPushEnabled(true);
-        });
-      });
+    // Check if the browser supports notifications at all
+    if (!("Notification" in window)) {
+      return;
     }
+
+    // Check if the user currently blocks notifications
+    if (Notification.permission === "denied") {
+      setIsPushEnabled(false);
+      return;
+    }
+
+    // Check if service workers are supported
+    if (!("serviceWorker" in navigator)) {
+      return;
+    }
+
+    // Wait for the service worker to be fully registered and ready,
+    // then check if we have an active push subscription
+    void navigator.serviceWorker.ready.then((reg) => {
+      void reg.pushManager.getSubscription().then((sub) => {
+        // Only set push as enabled if we have an active subscription
+        // AND the user hasn't revoked notification permissions
+        if (sub && Notification.permission === "granted") {
+          setIsPushEnabled(true);
+        }
+      });
+    });
   }, []);
 
   const handlePushToggle = async (checked: boolean) => {
@@ -167,9 +187,9 @@ export default function SettingsContent() {
   // your in-progress edit with the old value from the server. Frustrating!
   //
   // Solution: Track whether the user has started editing each field ("dirty" state).
-  // - When user types in a field → set dirty flag to TRUE
-  // - When syncing from Clerk → only update if dirty flag is FALSE
-  // - After successful save → reset dirty flag to FALSE (allow future syncs)
+  // - When a user types in a field → set the dirty flag to TRUE
+  // - When syncing from Clerk → only update if the dirty flag is FALSE
+  // - After successful save → reset the dirty flag to FALSE (allow future syncs)
   //
   // This ensures user edits are never lost due to external data updates.
   // ============================================================================
