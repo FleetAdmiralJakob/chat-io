@@ -283,7 +283,18 @@ export default function NotificationContent() {
           // unsubscription is treated as a success in the UI, regardless of
           // the backend's clean-up status (which is just garbage collection).
           // ------------------------------------------------------------------
-          await sub.unsubscribe();
+          // Wrap browser unsubscribe in its own try-catch for explicit error handling
+          try {
+            await sub.unsubscribe();
+          } catch (unsubscribeError) {
+            // Browser unsubscribe failed - do NOT mark as disabled
+            Sentry.captureException(unsubscribeError);
+            throw unsubscribeError; // Re-throw to trigger outer catch
+          }
+
+          // Only reach here if browser unsubscribe succeeded
+          setIsPushEnabled(false);
+          toast.success("Notifications disabled");
 
           try {
             await unsubscribeFromPush({ endpoint: sub.endpoint });
@@ -299,8 +310,6 @@ export default function NotificationContent() {
             Sentry.captureException(backendError);
           }
         }
-        setIsPushEnabled(false);
-        toast.success("Notifications disabled");
       }
     } catch (e) {
       Sentry.captureException(e);
