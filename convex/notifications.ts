@@ -1,4 +1,4 @@
-import { v } from "convex/values";
+import { ConvexError, v } from "convex/values";
 import { internalMutation, internalQuery, mutation } from "./lib/functions";
 
 export const subscribe = mutation({
@@ -9,32 +9,51 @@ export const subscribe = mutation({
       auth: v.string(),
     }),
   },
+  returns: v.id("pushSubscriptions"),
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      throw new Error("Unauthorized");
+      throw new ConvexError("Unauthorized");
     }
     const user = await ctx
       .table("users")
       .get("clerkId", identity.tokenIdentifier);
     if (!user) {
-      throw new Error("User not found");
+      throw new ConvexError("User not found");
     }
 
+    // Check if this endpoint is already registered
     const existing = await ctx
-      .table("pushSubscriptions")
-      .filter((q) => q.eq(q.field("endpoint"), args.endpoint))
+      .table("pushSubscriptions", "by_endpoint", (q) =>
+        q.eq("endpoint", args.endpoint),
+      )
       .first();
 
     if (existing) {
       if (existing.userId !== user._id) {
-        await existing.patch({ userId: user._id, keys: args.keys });
+        // SECURITY NOTE: Different user attempting to use the same endpoint
+        // This handles legitimate cases like:
+        // - User logged out and different user logged in on the same device
+        // - User switched accounts in the same browser
+        //
+        // The old subscription is deleted to prevent the previous user from
+        // receiving notifications intended for the new user. The endpoint
+        // will be re-registered below with the new userId.
+        //
+        // Without this deletion, the old user would continue receiving
+        // notifications, and we'd either need to reject this registration
+        // (poor UX for account switching) or silently hijack the subscription
+        // (security issue - old user loses notifications without knowing why).
+        await existing.delete();
       } else {
+        // Same user re-subscribing (e.g., page refresh, key rotation)
+        // Just update the encryption keys and return the existing subscription
         await existing.patch({ keys: args.keys });
+        return existing._id;
       }
-      return existing._id;
     }
 
+    // Create a new subscription for this user + endpoint combination
     return await ctx.table("pushSubscriptions").insert({
       userId: user._id,
       endpoint: args.endpoint,
@@ -49,8 +68,9 @@ export const unsubscribe = mutation({
   },
   handler: async (ctx, args) => {
     const existing = await ctx
-      .table("pushSubscriptions")
-      .filter((q) => q.eq(q.field("endpoint"), args.endpoint))
+      .table("pushSubscriptions", "by_endpoint", (q) =>
+        q.eq("endpoint", args.endpoint),
+      )
       .first();
 
     if (existing) {
