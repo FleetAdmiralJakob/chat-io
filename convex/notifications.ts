@@ -1,5 +1,10 @@
 import { ConvexError, v } from "convex/values";
-import { internalMutation, internalQuery, mutation } from "./lib/functions";
+import {
+  internalMutation,
+  internalQuery,
+  mutation,
+  query,
+} from "./lib/functions";
 
 export const subscribe = mutation({
   args: {
@@ -62,12 +67,53 @@ export const subscribe = mutation({
   },
 });
 
+export const verifySubscriptionOwnership = query({
+  args: {
+    endpoint: v.string(),
+  },
+  returns: v.boolean(),
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      return false;
+    }
+
+    const user = await ctx
+      .table("users")
+      .get("clerkId", identity.tokenIdentifier);
+    if (!user) {
+      return false;
+    }
+
+    const subscription = await ctx
+      .table("pushSubscriptions", "by_endpoint", (q) =>
+        q.eq("endpoint", args.endpoint),
+      )
+      .first();
+
+    // Return true only if the subscription exists AND belongs to this user
+    return subscription !== null && subscription.userId === user._id;
+  },
+});
+
 export const unsubscribe = mutation({
   args: {
     endpoint: v.string(),
   },
   returns: v.null(),
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError("Unauthorized");
+    }
+
+    const user = await ctx
+      .table("users")
+      .get("clerkId", identity.tokenIdentifier);
+    if (!user) {
+      throw new ConvexError("User not found");
+    }
+
     const existing = await ctx
       .table("pushSubscriptions", "by_endpoint", (q) =>
         q.eq("endpoint", args.endpoint),
@@ -75,6 +121,12 @@ export const unsubscribe = mutation({
       .first();
 
     if (existing) {
+      // Verify ownership before deleting
+      if (existing.userId !== user._id) {
+        throw new ConvexError(
+          "Cannot unsubscribe: subscription belongs to another user",
+        );
+      }
       await existing.delete();
     }
   },

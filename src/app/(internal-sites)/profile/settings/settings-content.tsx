@@ -21,6 +21,7 @@ import {
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { env } from "~/env";
+import { useQuery } from "convex-helpers/react/cache/hooks";
 import { useMutation } from "convex/react";
 import {
   ChevronLeft,
@@ -96,8 +97,17 @@ export default function SettingsContent() {
 
   const [isPushEnabled, setIsPushEnabled] = useState(false);
   const [pushLoading, setPushLoading] = useState(false);
+  const [subscriptionEndpoint, setSubscriptionEndpoint] = useState<
+    string | null
+  >(null);
   const subscribeToPush = useMutation(api.notifications.subscribe);
   const unsubscribeFromPush = useMutation(api.notifications.unsubscribe);
+
+  // Query to verify subscription ownership - only runs when we have an endpoint
+  const isSubscriptionOwned = useQuery(
+    api.notifications.verifySubscriptionOwnership,
+    subscriptionEndpoint ? { endpoint: subscriptionEndpoint } : "skip",
+  );
 
   useEffect(() => {
     // Check if the browser supports notifications at all
@@ -120,14 +130,25 @@ export default function SettingsContent() {
     // then check if we have an active push subscription
     void navigator.serviceWorker.ready.then((reg) => {
       void reg.pushManager.getSubscription().then((sub) => {
-        // Only set push as enabled if we have an active subscription
-        // AND the user hasn't revoked notification permissions
         if (sub && Notification.permission === "granted") {
-          setIsPushEnabled(true);
+          // Store the endpoint to trigger ownership verification
+          setSubscriptionEndpoint(sub.endpoint);
+        } else {
+          // No subscription exists
+          setSubscriptionEndpoint(null);
+          setIsPushEnabled(false);
         }
       });
     });
   }, []);
+
+  // Update isPushEnabled based on ownership verification
+  useEffect(() => {
+    if (subscriptionEndpoint !== null) {
+      // Only enable if the backend confirms ownership
+      setIsPushEnabled(isSubscriptionOwned === true);
+    }
+  }, [isSubscriptionOwned, subscriptionEndpoint]);
 
   const handlePushToggle = async (checked: boolean) => {
     setPushLoading(true);
