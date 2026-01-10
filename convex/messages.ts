@@ -348,6 +348,18 @@ export const forwardMessage = mutation({
         modified: false,
         forwarded: message.forwarded + 1,
       });
+
+      // Schedule push notification for a forwarded message
+      const otherUsersInChat = usersInChat.filter((u) => u._id !== user._id);
+
+      for (const otherUser of otherUsersInChat) {
+        await ctx.scheduler.runAfter(0, internal.push.sendPush, {
+          userId: otherUser._id,
+          title: user.username,
+          body: message.content,
+          data: { url: `/chats/${forwardObject.chatId}` },
+        });
+      }
     }
   },
 });
