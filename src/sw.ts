@@ -91,6 +91,23 @@ self.addEventListener("push", (event) => {
 });
 
 /**
+ * Type guard to check if a value is a valid NotificationData object.
+ * Ensures the data has the expected shape before accessing its properties.
+ */
+interface NotificationData {
+  url?: string;
+}
+
+function isNotificationData(data: unknown): data is NotificationData {
+  return (
+    typeof data === "object" &&
+    data !== null &&
+    // Either url is undefined, or it's a string
+    (("url" in data && typeof data.url === "string") || !("url" in data))
+  );
+}
+
+/**
  * Handle notification click events.
  * When a user clicks on a notification, this handler:
  * 1. Closes the notification
@@ -101,8 +118,14 @@ self.addEventListener("notificationclick", (event) => {
   // Close the clicked notification
   event.notification.close();
 
-  // Extract the URL from the notification's custom data (if provided)
-  const notificationData = event.notification.data as { url?: string };
+  // Extract and validate the URL from the notification's custom data
+  const rawData: unknown = event.notification.data;
+  let url = "/"; // Default fallback URL
+
+  // Type-safely extract the URL if the data structure is valid
+  if (isNotificationData(rawData) && rawData.url !== undefined) {
+    url = rawData.url;
+  }
 
   // Keep the service worker alive until the window management is complete
   event.waitUntil(
@@ -111,9 +134,6 @@ self.addEventListener("notificationclick", (event) => {
       // includeUncontrolled: true includes windows that haven't been claimed yet
       .matchAll({ type: "window", includeUncontrolled: true })
       .then((clientList) => {
-        // Use the URL from notification data, or default to the root path
-        const url = notificationData.url ?? "/";
-
         // Try to find an existing window/tab that matches the target URL
         for (const client of clientList) {
           // If we find a matching window, focus it instead of opening a new one

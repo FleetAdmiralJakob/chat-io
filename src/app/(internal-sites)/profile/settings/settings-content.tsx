@@ -168,8 +168,17 @@ export default function SettingsContent() {
       }
     } catch (e) {
       console.error(e);
-      const errorMessage = e instanceof Error ? e.message : "Unknown error";
-      toast.error(`Failed to update notifications: ${errorMessage}`);
+
+      // Check if the error was due to denied notification permission
+      if (Notification.permission === "denied") {
+        toast.error(
+          "Notifications blocked. Please enable them in your browser settings."
+        );
+      } else {
+        const errorMessage = e instanceof Error ? e.message : "Unknown error";
+        toast.error(`Failed to update notifications: ${errorMessage}`);
+      }
+
       // Revert state if failed
       setIsPushEnabled(!checked);
     } finally {
