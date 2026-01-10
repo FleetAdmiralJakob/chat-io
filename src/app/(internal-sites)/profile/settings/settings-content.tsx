@@ -181,8 +181,51 @@ export default function SettingsContent() {
       } else {
         const sub = await reg.pushManager.getSubscription();
         if (sub) {
-          await unsubscribeFromPush({ endpoint: sub.endpoint });
+          // ------------------------------------------------------------------
+          // CRITICAL ORDER OF OPERATIONS: BROWSER FIRST, THEN BACKEND
+          // ------------------------------------------------------------------
+          // We MUST unsubscribe from the browser (PushManager) BEFORE removing
+          // the subscription from the backend database.
+          //
+          // Why?
+          // 1. Browser Truth: The browser's PushManager is the ultimate source
+          //    of truth for "is this device subscribed?". If we remove the DB
+          //    record but the browser subscription remains active, the user
+          //    is efficiently in a "zombie" state where they might still
+          //    receive stray pushes (if the endpoint was leaked or another
+          //    service uses it), but our app thinks they are unsubscribed.
+          //
+          // 2. Error Handling & UI Consistency:
+          //    - If `sub.unsubscribe()` fails, the browser subscription is
+          //      still active. We catch this in the outer block, revert the
+          //      UI toggle to "on", and the user can try again. Correct.
+          //    - If `sub.unsubscribe()` SUCCEEDS, the user is effectively
+          //      unsubscribed on this device. Even if the backend call fails
+          //      (network error, etc.), we should NOT revert the UI to "on".
+          //      Doing so would lie to the user ("You are subscribed") when
+          //      the browser will essentially reject any future pushes.
+          //
+          // By doing browser first, we ensure that a successful browser
+          // unsubscription is treated as a success in the UI, regardless of
+          // the backend's clean-up status (which is just garbage collection).
+          // ------------------------------------------------------------------
           await sub.unsubscribe();
+
+          try {
+            await unsubscribeFromPush({ endpoint: sub.endpoint });
+          } catch (backendError) {
+            // If the backend fails, we swallow the error and log it.
+            // We do NOT want to throw here, because that would trigger the
+            // outer catch block and revert the UI switch to "on".
+            // Since the browser subscription is already gone, the user IS
+            // unsubscribed for all intents and purposes. The orphaned DB
+            // record will eventually be cleaned up (e.g., by a 410 Gone
+            // response when the server tries to push to it later).
+            console.error(
+              "Backend unsubscription failed (orphaned record):",
+              backendError,
+            );
+          }
         }
         setIsPushEnabled(false);
         toast.success("Notifications disabled");
