@@ -151,6 +151,13 @@ export default function SettingsContent() {
   }, [isSubscriptionOwned, subscriptionEndpoint]);
 
   const handlePushToggle = async (checked: boolean) => {
+    if (checked && Notification.permission === "denied") {
+      toast.error(
+        "Notifications blocked. Please enable them in your browser settings.",
+      );
+      return;
+    }
+
     setPushLoading(true);
     try {
       if (checked && !env.NEXT_PUBLIC_VAPID_PUBLIC_KEY) {
