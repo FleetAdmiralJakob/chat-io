@@ -73,18 +73,39 @@ export default function NotificationContent() {
 
     // Wait for the service worker to be fully registered and ready,
     // then check if we have an active push subscription
-    void navigator.serviceWorker.ready.then((reg) => {
-      void reg.pushManager.getSubscription().then((sub) => {
-        if (sub && Notification.permission === "granted") {
-          // Store the endpoint to trigger ownership verification
-          setSubscriptionEndpoint(sub.endpoint);
-        } else {
-          // No subscription exists
+    const checkSubscription = async () => {
+      try {
+        const reg = await navigator.serviceWorker.ready;
+        try {
+          const sub = await reg.pushManager.getSubscription();
+          if (sub && Notification.permission === "granted") {
+            // Store the endpoint to trigger ownership verification
+            setSubscriptionEndpoint(sub.endpoint);
+          } else {
+            // No subscription exists
+            setSubscriptionEndpoint(null);
+            setIsPushEnabled(false);
+          }
+        } catch (subscriptionError) {
+          // Failed to get a subscription from pushManager
+          console.error("Failed to get push subscription:", subscriptionError);
+          Sentry.captureException(subscriptionError);
           setSubscriptionEndpoint(null);
           setIsPushEnabled(false);
         }
-      });
-    });
+      } catch (serviceWorkerError) {
+        // Service worker failed to become ready
+        console.error(
+          "Service worker failed to become ready:",
+          serviceWorkerError,
+        );
+        Sentry.captureException(serviceWorkerError);
+        setSubscriptionEndpoint(null);
+        setIsPushEnabled(false);
+      }
+    };
+
+    void checkSubscription();
   }, []);
 
   // Update isPushEnabled based on ownership verification
