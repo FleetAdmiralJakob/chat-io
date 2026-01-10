@@ -66,7 +66,9 @@ self.addEventListener("push", (event) => {
     // If event.data is null/undefined, use a fallback empty notification object
     // The 'as' assertion is necessary because @total-typescript/ts-reset makes
     // JSON.parse return 'unknown' instead of 'any' for better type safety
-    data = JSON.parse(event.data?.text() ?? '{"title":"","body":"","data":null}') as {
+    data = JSON.parse(
+      event.data?.text() ?? '{"title":"","body":"","data":null}',
+    ) as {
       title: string;
       body: string;
       data: unknown;
