@@ -13,6 +13,7 @@ export const sendPush = internalAction({
     body: v.string(),
     data: v.optional(v.any()),
   },
+  returns: v.null(),
   handler: async (ctx, args) => {
     if (
       !process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ||
@@ -34,7 +35,7 @@ export const sendPush = internalAction({
       { userId: args.userId },
     );
 
-    await Promise.all(
+    await Promise.allSettled(
       subscriptions.map(async (sub) => {
         try {
           await webPush.sendNotification(
