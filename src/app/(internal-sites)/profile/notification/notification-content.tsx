@@ -96,26 +96,97 @@ export default function NotificationContent() {
 
       const reg = await navigator.serviceWorker.ready;
       if (checked) {
+        // ------------------------------------------------------------------
+        // STEP 1: BROWSER SUBSCRIPTION
+        // ------------------------------------------------------------------
+        // We first attempt to subscribe the user in the browser. This prompts
+        // the user for permission (if not already granted) and talks to the
+        // push service (FCM, APNs, etc.) to get a subscription object.
         const sub = await reg.pushManager.subscribe({
           userVisibleOnly: true,
           applicationServerKey: base64ToUint8Array(
             env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
           ),
         });
-        // Serialize keys
+
+        // Serialize keys for storage
         const p256dh = sub.getKey("p256dh");
         const auth = sub.getKey("auth");
-        if (!p256dh || !auth) throw new Error("Missing keys");
 
-        await subscribeToPush({
-          endpoint: sub.endpoint,
-          keys: {
-            p256dh: btoa(String.fromCharCode(...new Uint8Array(p256dh))),
-            auth: btoa(String.fromCharCode(...new Uint8Array(auth))),
-          },
-        });
-        setIsPushEnabled(true);
-        toast.success("Notifications enabled");
+        // Safety check: if keys are missing (rare), we can't use this subscription.
+        // We must roll back immediately to avoid a "zombie" browser subscription
+        // that is useless without keys.
+        if (!p256dh || !auth) {
+          await sub.unsubscribe();
+          throw new Error("Missing keys");
+        }
+
+        try {
+          // ------------------------------------------------------------------
+          // STEP 2: BACKEND SUBSCRIPTION
+          // ------------------------------------------------------------------
+          // Now we send the subscription details to our Convex backend.
+          // This is the critical "link" step.
+          await subscribeToPush({
+            endpoint: sub.endpoint,
+            keys: {
+              p256dh: btoa(String.fromCharCode(...new Uint8Array(p256dh))),
+              auth: btoa(String.fromCharCode(...new Uint8Array(auth))),
+            },
+          });
+
+          // ------------------------------------------------------------------
+          // STEP 3: SUCCESS CONFIRMATION
+          // ------------------------------------------------------------------
+          // Only AFTER the backend confirms it has stored the subscription do
+          // we update the UI state to "Enabled". This ensures the UI reflects
+          // the true state of the system (Browser + Backend both ready).
+          setIsPushEnabled(true);
+          toast.success("Notifications enabled");
+        } catch (backendError) {
+          // ------------------------------------------------------------------
+          // ROLLBACK MECHANISM: COMPENSATING TRANSACTION
+          // ------------------------------------------------------------------
+          // If the backend fails (network error, validation, etc.), we are now
+          // in an INCONSISTENT STATE:
+          // - Browser: Subscribed (✅)
+          // - Backend: Not Subscribed (❌)
+          //
+          // If we leave it this way, the browser thinks it's done, but we'll
+          // never be able to send messages. The user sees "Error" toast, but
+          //  the next time they try, `subscribe()` might fail or return existing
+          // (which is fine, but cleaner to reset).
+          //
+          // FIX: We must UNDO the browser subscription to reset to a clean slate.
+          // ------------------------------------------------------------------
+          console.error(
+            "Backend subscription failed. Rolling back browser subscription.",
+            backendError,
+          );
+
+          try {
+            // Retrieve the latest subscription to be absolutely sure we're
+            // unsubscribing the right thing (though 'sub' should be valid).
+            // Using getSubscription() as a fresh check.
+            const currentSub = await reg.pushManager.getSubscription();
+            if (currentSub) {
+              await currentSub.unsubscribe();
+            }
+          } catch (rollbackError) {
+            // If rollback fails, we are truly stuck. Log it for debugging.
+            // We still re-throw the original error to inform the user of the initial failure.
+            // This is a rare edge case (e.g. network lost mid-operation).
+            console.error(
+              "CRITICAL: Rollback failed. Browser is subscribed but backend is not.",
+              rollbackError,
+            );
+          }
+
+          // Re-throw the original backend error so the outer catch block
+          // can handle the UI revert (toggling the switch back to off) and
+          // showing the error toast to the user.
+          throw backendError;
+        }
       } else {
         const sub = await reg.pushManager.getSubscription();
         if (sub) {
