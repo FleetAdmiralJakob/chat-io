@@ -90,6 +90,20 @@ export const sendPush = internalAction({
               await ctx.runMutation(internal.notifications.deleteSubscription, {
                 id: sub._id,
               });
+            } else if (error.statusCode === 429) {
+              // Rate limited - could implement retry logic here in the future
+              console.warn("Rate limited while sending push:", error);
+            } else if (error.statusCode >= 500) {
+              // Server error
+              console.error(
+                `Server error sending push (status ${error.statusCode}):`,
+                error,
+              );
+            } else {
+              console.error(
+                `Failed to send push (status ${error.statusCode}):`,
+                error,
+              );
             }
           } else {
             console.error("Error sending push:", error);

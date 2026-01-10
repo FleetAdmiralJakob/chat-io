@@ -157,9 +157,14 @@ self.addEventListener("notificationclick", (event) => {
       .then((clientList) => {
         // Try to find an existing window/tab that matches the target URL
         for (const client of clientList) {
-          // If we find a matching window, focus it instead of opening a new one
-          if (new URL(client.url).pathname === url && "focus" in client) {
-            return client.focus();
+          try {
+            // If we find a matching window, focus it instead of opening a new one
+            if (new URL(client.url).pathname === url && "focus" in client) {
+              return client.focus();
+            }
+          } catch {
+            // Skip clients with malformed URLs
+            continue;
           }
         }
 
