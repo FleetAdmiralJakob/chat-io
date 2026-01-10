@@ -155,7 +155,33 @@ export const createMessage = mutation({
       forwarded: 0,
     });
 
-    // Schedule push notification
+    /**
+     * Push Notification Scheduling
+     *
+     * KNOWN LIMITATION: Race condition with read receipts
+     *
+     * Notifications are scheduled immediately after message insertion, but the
+     * `readBy` array only contains the sender at this point. This creates a race
+     * condition where:
+     *
+     * 1. User A sends a message at time T
+     * 2. Push notification is scheduled for User B at time T+0
+     * 3. User B reads the message in the UI at time T+0.5s (before notification fires)
+     * 4. User B still receives the notification (scheduler runs asynchronously)
+     *
+     * MITIGATION: The service worker (sw.ts) has suppression logic that checks if
+     * the chat is currently open and visible, which handles the most common case.
+     * However, this doesn't cover:
+     * - Tabs that are not visible
+     * - User opening the chat in a different tab/window
+     * - General race conditions between read receipts and notification delivery
+     *
+     * FUTURE ENHANCEMENT: A complete solution would require checking read receipts
+     * at notification delivery time (in push.sendPush), but this adds complexity
+     * and latency. The current service worker suppression is an acceptable tradeoff.
+     *
+     * @see src/sw.ts - Service worker notification suppression logic
+     */
     const otherUsers = usersInChat.filter((u) => u._id !== convexUser._id);
     const trimmedContent = args.content.trim();
 
