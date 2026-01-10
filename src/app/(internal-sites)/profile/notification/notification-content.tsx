@@ -43,17 +43,31 @@ export default function NotificationContent() {
   useEffect(() => {
     // Check if the browser supports notifications at all
     if (!("Notification" in window)) {
+      console.warn("Notifications are not supported in this browser");
+      return;
+    }
+
+    // Check if service workers are supported
+    if (!("serviceWorker" in navigator)) {
+      console.warn("Service Workers are not supported in this browser");
+      return;
+    }
+
+    // Check if the context is secure (HTTPS or localhost)
+    if (!window.isSecureContext) {
+      console.warn("Notifications require a secure context (HTTPS)");
+      return;
+    }
+
+    // Check if PushManager is supported
+    if (!("PushManager" in window)) {
+      console.warn("Push notifications are not supported in this browser");
       return;
     }
 
     // Check if the user currently blocks notifications
     if (Notification.permission === "denied") {
       setIsPushEnabled(false);
-      return;
-    }
-
-    // Check if service workers are supported
-    if (!("serviceWorker" in navigator)) {
       return;
     }
 
@@ -82,10 +96,38 @@ export default function NotificationContent() {
   }, [isSubscriptionOwned, subscriptionEndpoint]);
 
   const handlePushToggle = async (checked: boolean) => {
+    // ------------------------------------------------------------------
+    // FEATURE DETECTION & PERMISSION CHECKS
+    // ------------------------------------------------------------------
+    if (!("Notification" in window)) {
+      toast.error("Notifications are not supported in this browser");
+      setIsPushEnabled(false);
+      return;
+    }
+
+    if (!("serviceWorker" in navigator)) {
+      toast.error("Service Workers are not supported in this browser");
+      setIsPushEnabled(false);
+      return;
+    }
+
+    if (!window.isSecureContext) {
+      toast.error("Notifications require a secure context (HTTPS)");
+      setIsPushEnabled(false);
+      return;
+    }
+
+    if (!("PushManager" in window)) {
+      toast.error("Push notifications are not supported in this browser");
+      setIsPushEnabled(false);
+      return;
+    }
+
     if (checked && Notification.permission === "denied") {
       toast.error(
         "Notifications blocked. Please enable them in your browser settings.",
       );
+      setIsPushEnabled(false);
       return;
     }
 
