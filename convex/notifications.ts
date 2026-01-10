@@ -66,6 +66,7 @@ export const unsubscribe = mutation({
   args: {
     endpoint: v.string(),
   },
+  returns: v.null(),
   handler: async (ctx, args) => {
     const existing = await ctx
       .table("pushSubscriptions", "by_endpoint", (q) =>
@@ -81,15 +82,28 @@ export const unsubscribe = mutation({
 
 export const getSubscriptions = internalQuery({
   args: { userId: v.id("users") },
+  returns: v.array(
+    v.object({
+      _id: v.id("pushSubscriptions"),
+      _creationTime: v.number(),
+      userId: v.id("users"),
+      endpoint: v.string(),
+      keys: v.object({
+        p256dh: v.string(),
+        auth: v.string(),
+      }),
+    }),
+  ),
   handler: async (ctx, args) => {
     const user = await ctx.table("users").get(args.userId);
     if (!user) return [];
-    return await user.edge("pushSubscriptions");
+    return user.edge("pushSubscriptions");
   },
 });
 
 export const deleteSubscription = internalMutation({
   args: { id: v.id("pushSubscriptions") },
+  returns: v.null(),
   handler: async (ctx, args) => {
     const sub = await ctx.table("pushSubscriptions").get(args.id);
     if (sub) {
