@@ -93,7 +93,7 @@ self.addEventListener("push", (event) => {
         });
         const isChatOpen = clientList.some(
           (client) =>
-            client.url.includes(urlToCheck) &&
+            new URL(client.url).pathname === urlToCheck &&
             client.visibilityState === "visible",
         );
 
@@ -158,7 +158,7 @@ self.addEventListener("notificationclick", (event) => {
         // Try to find an existing window/tab that matches the target URL
         for (const client of clientList) {
           // If we find a matching window, focus it instead of opening a new one
-          if (client.url.includes(url) && "focus" in client) {
+          if (new URL(client.url).pathname === url && "focus" in client) {
             return client.focus();
           }
         }
