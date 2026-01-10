@@ -153,11 +153,12 @@ export default function SettingsContent() {
   const handlePushToggle = async (checked: boolean) => {
     setPushLoading(true);
     try {
+      if (checked && !env.NEXT_PUBLIC_VAPID_PUBLIC_KEY) {
+        throw new Error("VAPID Public Key not found");
+      }
+
       const reg = await navigator.serviceWorker.ready;
       if (checked) {
-        if (!env.NEXT_PUBLIC_VAPID_PUBLIC_KEY) {
-          throw new Error("VAPID Public Key not found");
-        }
         const sub = await reg.pushManager.subscribe({
           userVisibleOnly: true,
           applicationServerKey: base64ToUint8Array(
