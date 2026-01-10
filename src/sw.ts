@@ -91,22 +91,37 @@ self.addEventListener("push", (event) => {
           type: "window",
           includeUncontrolled: true,
         });
-        const isChatOpen = clientList.some(
-          (client) =>
-            new URL(client.url).pathname === urlToCheck &&
-            client.visibilityState === "visible",
-        );
+        // Check if any visible client window is viewing the target chat URL.
+        // Security: We verify both pathname AND origin to prevent potential
+        // cross-origin bypass attempts (defense-in-depth, as same-origin policy
+        // should already prevent cross-origin service worker registration).
+        const isChatOpen = clientList.some((client) => {
+          try {
+            const clientUrl = new URL(client.url);
+            return (
+              clientUrl.pathname === urlToCheck &&
+              clientUrl.origin === self.location.origin &&
+              client.visibilityState === "visible"
+            );
+          } catch {
+            // Skip clients with malformed URLs
+            return false;
+          }
+        });
 
         if (isChatOpen) {
           return;
         }
       }
 
-      await self.registration.showNotification(data.title, {
-        body: data.body,
-        icon: "/icons/icon-512x-512-any.png", // App icon shown in the notification
-        data: data.data, // Custom data attached to the notification (e.g., URL to open)
-      });
+      // Only show a notification if it has meaningful content
+      if (data.title || data.body) {
+        await self.registration.showNotification(data.title, {
+          body: data.body,
+          icon: "/icons/icon-512x-512-any.png", // App icon shown in the notification
+          data: data.data, // Custom data attached to the notification (e.g., URL to open)
+        });
+      }
     })(),
   );
 });
