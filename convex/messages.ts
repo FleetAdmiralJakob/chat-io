@@ -157,11 +157,16 @@ export const createMessage = mutation({
 
     // Schedule push notification
     const otherUsers = usersInChat.filter((u) => u._id !== convexUser._id);
+    const trimmedContent = args.content.trim();
+    const notificationBody =
+      trimmedContent.length > 500
+        ? `${trimmedContent.slice(0, 500)}…`
+        : trimmedContent;
     for (const otherUser of otherUsers) {
       await ctx.scheduler.runAfter(0, internal.push.sendPush, {
         userId: otherUser._id,
         title: convexUser.username,
-        body: args.content.trim(),
+        body: notificationBody,
         data: { url: `/chats/${parsedChatId}` },
       });
     }
