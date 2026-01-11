@@ -110,9 +110,11 @@ export default function NotificationContent() {
 
   // Update isPushEnabled based on ownership verification
   useEffect(() => {
-    if (subscriptionEndpoint !== null) {
+    // Only update state when ownership verification has completed (not loading)
+    // isSubscriptionOwned is undefined while the query is loading
+    if (subscriptionEndpoint !== null && isSubscriptionOwned !== undefined) {
       // Only enable if the backend confirms ownership
-      setIsPushEnabled(isSubscriptionOwned === true);
+      setIsPushEnabled(isSubscriptionOwned);
     }
   }, [isSubscriptionOwned, subscriptionEndpoint]);
 
