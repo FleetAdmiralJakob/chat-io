@@ -89,9 +89,9 @@ export default function SettingsContent() {
   // your in-progress edit with the old value from the server. Frustrating!
   //
   // Solution: Track whether the user has started editing each field ("dirty" state).
-  // - When user types in a field → set dirty flag to TRUE
-  // - When syncing from Clerk → only update if dirty flag is FALSE
-  // - After successful save → reset dirty flag to FALSE (allow future syncs)
+  // - When a user types in a field → set the dirty flag to TRUE
+  // - When syncing from Clerk → only update if the dirty flag is FALSE
+  // - After successful save → reset the dirty flag to FALSE (allow future syncs)
   //
   // This ensures user edits are never lost due to external data updates.
   // ============================================================================

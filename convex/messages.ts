@@ -1,5 +1,6 @@
 import { ConvexError, v } from "convex/values";
 import emojiRegex from "emoji-regex";
+import { internal } from "./_generated/api";
 import { EDIT_WINDOW_MS } from "./constants";
 import { mutation, query } from "./lib/functions";
 
@@ -153,6 +154,53 @@ export const createMessage = mutation({
       replyTo: args.replyToId,
       forwarded: 0,
     });
+
+    /**
+     * Push Notification Scheduling
+     *
+     * KNOWN LIMITATION: Race condition with read receipts
+     *
+     * Notifications are scheduled immediately after message insertion, but the
+     * `readBy` array only contains the sender at this point. This creates a race
+     * condition where:
+     *
+     * 1. User A sends a message at time T
+     * 2. Push notification is scheduled for User B at time T+0
+     * 3. User B reads the message in the UI at time T+0.5s (before notification fires)
+     * 4. User B still receives the notification (scheduler runs asynchronously)
+     *
+     * MITIGATION: The service worker (sw.ts) has suppression logic that checks if
+     * the chat is currently open and visible, which handles the most common case.
+     * However, this doesn't cover:
+     * - Tabs that are not visible
+     * - User opening the chat in a different tab/window
+     * - General race conditions between read receipts and notification delivery
+     *
+     * FUTURE ENHANCEMENT: A complete solution would require checking read receipts
+     * at notification delivery time (in push.sendPush), but this adds complexity
+     * and latency. The current service worker suppression is an acceptable tradeoff.
+     *
+     * @see src/sw.ts - Service worker notification suppression logic
+     */
+    const otherUsers = usersInChat.filter((u) => u._id !== convexUser._id);
+    const trimmedContent = args.content.trim();
+
+    const pushPromises = otherUsers.map((otherUser) =>
+      ctx.scheduler.runAfter(0, internal.push.sendPush, {
+        userId: otherUser._id,
+        title: convexUser.username,
+        body: trimmedContent,
+        data: { url: `/chats/${parsedChatId}` },
+      }),
+    );
+
+    const results = await Promise.allSettled(pushPromises);
+
+    for (const result of results) {
+      if (result.status === "rejected") {
+        console.error("Failed to schedule push notification:", result.reason);
+      }
+    }
   },
 });
 
@@ -334,6 +382,18 @@ export const forwardMessage = mutation({
         modified: false,
         forwarded: message.forwarded + 1,
       });
+
+      // Schedule push notification for a forwarded message
+      const otherUsersInChat = usersInChat.filter((u) => u._id !== user._id);
+
+      for (const otherUser of otherUsersInChat) {
+        await ctx.scheduler.runAfter(0, internal.push.sendPush, {
+          userId: otherUser._id,
+          title: user.username,
+          body: message.content,
+          data: { url: `/chats/${forwardObject.chatId}` },
+        });
+      }
     }
   },
 });

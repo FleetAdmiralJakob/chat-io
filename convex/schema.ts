@@ -27,7 +27,14 @@ const schema = defineEntSchema({
       to: "clearRequests",
       inverseField: "readBy",
       table: "readRequests",
-    }),
+    })
+    .edges("pushSubscriptions", { ref: true }),
+
+  pushSubscriptions: defineEnt({})
+    .field("endpoint", v.string())
+    .field("keys", v.object({ p256dh: v.string(), auth: v.string() }))
+    .edge("user")
+    .index("by_endpoint", ["endpoint"]),
 
   clearRequests: defineEnt({})
     .field(

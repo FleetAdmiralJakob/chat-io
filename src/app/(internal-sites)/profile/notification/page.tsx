@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import NotificationContent from "./notification-content";
 
 export const metadata: Metadata = {
   title: "Notifications",
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
 };
 
 const NotificationPage = () => {
-  return <div className="ml-24">Notification</div>;
+  return <NotificationContent />;
 };
 
 export default NotificationPage;
