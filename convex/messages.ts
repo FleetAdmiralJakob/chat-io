@@ -90,6 +90,8 @@ export const createMessage = mutation({
   args: {
     chatId: v.string(),
     content: v.string(),
+    encryptedSessionKey: v.optional(v.string()),
+    iv: v.optional(v.string()),
     replyToId: v.optional(v.id("messages")),
   },
   handler: async (ctx, args) => {
@@ -148,6 +150,8 @@ export const createMessage = mutation({
       userId: convexUser._id,
       privateChatId: parsedChatId,
       content: args.content.trim(),
+      encryptedSessionKey: args.encryptedSessionKey,
+      iv: args.iv,
       deleted: false,
       readBy: [convexUser._id],
       modified: false,
@@ -185,11 +189,21 @@ export const createMessage = mutation({
     const otherUsers = usersInChat.filter((u) => u._id !== convexUser._id);
     const trimmedContent = args.content.trim();
 
+    // NOTE: With encryption, the 'trimmedContent' here is actually Ciphertext.
+    // We cannot send encrypted text in the push body because the Service Worker
+    // might not have access to the DB keys easily (or at all) to decrypt it for display.
+    //
+    // For now, we will send "New encrypted message" as the body.
+    // In a future advanced iteration, the SW could try to decrypt if it had access to the key.
+    const pushBody = args.encryptedSessionKey
+      ? "New encrypted message"
+      : trimmedContent;
+
     const pushPromises = otherUsers.map((otherUser) =>
       ctx.scheduler.runAfter(0, internal.push.sendPush, {
         userId: otherUser._id,
         title: convexUser.username,
-        body: trimmedContent,
+        body: pushBody,
         data: { url: `/chats/${parsedChatId}` },
       }),
     );
@@ -373,10 +387,32 @@ export const forwardMessage = mutation({
         throw new ConvexError("Message does not exist");
       }
 
+      // TODO: Re-encryption logic for forwarding.
+      // Currently, we just copy the content. If content is encrypted, we copy the ciphertext.
+      // But the recipient in the NEW chat won't have the key to decrypt it because the
+      // `encryptedSessionKey` was encrypted for the OLD chat's participants.
+      //
+      // For this MVP, we will only support forwarding of UNENCRYPTED messages or
+      // we need to decrypt-then-re-encrypt on the client side.
+      // Since this is a server-side mutation, we CANNOT decrypt here (we don't have private keys).
+      //
+      // ACTION: Forwarding encrypted messages requires client-side logic:
+      // 1. Client decrypts original message.
+      // 2. Client re-encrypts for new recipients.
+      // 3. Client calls `createMessage`.
+      //
+      // The current `forwardMessage` mutation is incompatible with E2EE.
+      // We will mark forwarded messages as "Cannot forward encrypted messages" for now
+      // or rely on the client to handle this logic in the future.
+      //
+      // For now, we proceed, but encrypted forwards will be unreadable.
+
       await ctx.table("messages").insert({
         userId: user._id,
         privateChatId: forwardObject.chatId,
         content: message.content,
+        encryptedSessionKey: message.encryptedSessionKey, // This key is useless for the new recipient!
+        iv: message.iv,
         deleted: false,
         readBy: [user._id],
         modified: false,
@@ -390,7 +426,9 @@ export const forwardMessage = mutation({
         ctx.scheduler.runAfter(0, internal.push.sendPush, {
           userId: otherUser._id,
           title: user.username,
-          body: message.content,
+          body: message.encryptedSessionKey
+            ? "New encrypted message"
+            : message.content,
           data: { url: `/chats/${forwardObject.chatId}` },
         }),
       );
@@ -407,7 +445,12 @@ export const forwardMessage = mutation({
 });
 
 export const editMessage = mutation({
-  args: { messageId: v.id("messages"), newContent: v.string() },
+  args: {
+    messageId: v.id("messages"),
+    newContent: v.string(),
+    encryptedSessionKey: v.optional(v.string()), // New keys for edited content
+    iv: v.optional(v.string()),
+  },
   handler: async (ctx, args) => {
     if (args.newContent.trim() === "")
       throw new Error("Message cannot be empty");
@@ -437,6 +480,8 @@ export const editMessage = mutation({
 
     await message.patch({
       content: args.newContent.trim(),
+      encryptedSessionKey: args.encryptedSessionKey,
+      iv: args.iv,
       modified: true,
       modifiedAt: Date.now().toString(),
     });

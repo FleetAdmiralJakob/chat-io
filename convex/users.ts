@@ -39,11 +39,6 @@ export const updateUserData = mutation({
     const updates: { email?: string; lastName?: string; firstName?: string } =
       {};
 
-    // Use parsedData to ensure we only use validated values
-    // Note: Zod might transform "" to literal "" or keep it, schema allows both.
-    // The logic below checks for truthiness, so empty strings are skipped unless check is stricter.
-    // args.data was already partial, parsedData is also partial.
-
     if (parsedData.email !== undefined && parsedData.email !== "") {
       updates.email = parsedData.email;
     }
@@ -54,7 +49,21 @@ export const updateUserData = mutation({
       updates.firstName = parsedData.firstName;
     }
 
-    // Use one patch instead of a few singular patches for better performance
     await user.patch(updates);
+  },
+});
+
+export const updatePublicKey = mutation({
+  args: { publicKey: v.string() },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Unauthenticated");
+    }
+
+    const user = await ctx
+      .table("users")
+      .getX("clerkId", identity.tokenIdentifier);
+    await user.patch({ publicKey: args.publicKey });
   },
 });
