@@ -57,12 +57,13 @@ const EditedLabel = ({ message }: { message: Message }) => (
 const ReplyToMessage = ({
   message,
   scrollToMessage,
+  currentUserConvexId,
 }: {
   message: Message;
   scrollToMessage: (messageId: Id<"messages">) => void;
+  currentUserConvexId: string | undefined;
 }) => {
   const [decryptedContent, setDecryptedContent] = useState<string | null>(null);
-  const { user } = useUser();
 
   useEffect(() => {
     async function decrypt() {
@@ -72,7 +73,7 @@ const ReplyToMessage = ({
         !message.replyTo.deleted &&
         message.replyTo.encryptedSessionKey &&
         message.replyTo.iv &&
-        user?.id
+        currentUserConvexId
       ) {
         try {
           const keyPair = await getStoredKeyPair();
@@ -82,7 +83,7 @@ const ReplyToMessage = ({
               message.replyTo.encryptedSessionKey,
               message.replyTo.iv,
               keyPair.privateKey,
-              user.id,
+              currentUserConvexId,
             );
             setDecryptedContent(decrypted);
           } else {
@@ -95,12 +96,12 @@ const ReplyToMessage = ({
       }
     }
     void decrypt();
-  }, [message, user?.id]);
+  }, [message, currentUserConvexId]);
 
   if (message.type === "message" && message.replyTo && !message.deleted) {
     const displayContent =
       message.replyTo.encryptedSessionKey && message.replyTo.iv
-        ? (decryptedContent ?? "Decrypting...")
+        ? decryptedContent ?? "Decrypting..."
         : message.replyTo.content;
 
     return (
@@ -179,6 +180,9 @@ export const Message = ({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isDecryptionError, setIsDecryptionError] = useState(false);
 
+  // Get the current user's Convex ID from userInfos
+  const currentUserConvexId = userInfos[0]?._id;
+
   useEffect(() => {
     async function decrypt() {
       if (
@@ -186,7 +190,7 @@ export const Message = ({
         !message.deleted &&
         message.encryptedSessionKey &&
         message.iv &&
-        clerkUser.user?.id
+        currentUserConvexId
       ) {
         try {
           const keyPair = await getStoredKeyPair();
@@ -196,7 +200,7 @@ export const Message = ({
               message.encryptedSessionKey,
               message.iv,
               keyPair.privateKey,
-              clerkUser.user.id,
+              currentUserConvexId,
             );
             setDecryptedContent(decrypted);
           } else {
@@ -213,7 +217,7 @@ export const Message = ({
       }
     }
     void decrypt();
-  }, [message, clerkUser.user?.id]);
+  }, [message, currentUserConvexId]);
 
   useEffect(() => {
     if (selectedMessageId === message._id) {
@@ -617,7 +621,11 @@ export const Message = ({
           })}
         >
           <EditedLabel message={message} />
-          <ReplyToMessage message={message} scrollToMessage={scrollToMessage} />
+          <ReplyToMessage
+            message={message}
+            scrollToMessage={scrollToMessage}
+            currentUserConvexId={currentUserConvexId}
+          />
           <div className="text-destructive-foreground text-[75%] italic">
             {message.type == "message" && !message.deleted ? (
               message.forwarded == undefined ? (
@@ -743,7 +751,7 @@ export const Message = ({
                         onClick={() => {
                           const contentToCopy =
                             message.encryptedSessionKey && message.iv
-                              ? (decryptedContent ?? "")
+                              ? decryptedContent ?? ""
                               : message.content;
 
                           if (contentToCopy) {
@@ -774,7 +782,7 @@ export const Message = ({
                       >
                         <Forward />
                         <p className="ml-1">Forward</p>
-                      </button>
+                      </div>
                       {isEditable && (
                         <button
                           className="border-secondary-foreground flex w-full cursor-pointer border-y-2 p-2 pr-8"
@@ -827,7 +835,11 @@ export const Message = ({
           })}
         >
           <EditedLabel message={message} />
-          <ReplyToMessage message={message} scrollToMessage={scrollToMessage} />
+          <ReplyToMessage
+            message={message}
+            scrollToMessage={scrollToMessage}
+            currentUserConvexId={currentUserConvexId}
+          />
           <div
             {...longPressEvent}
             ref={(ref) => {
@@ -941,7 +953,7 @@ export const Message = ({
                         onClick={() => {
                           const contentToCopy =
                             message.encryptedSessionKey && message.iv
-                              ? (decryptedContent ?? "")
+                              ? decryptedContent ?? ""
                               : message.content;
 
                           if (contentToCopy) {
