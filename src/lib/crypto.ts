@@ -57,9 +57,7 @@ export async function importPublicKey(pem: string): Promise<CryptoKey> {
   );
 }
 
-export async function encryptMessage(
-  text: string,
-) {
+export async function encryptMessage(text: string) {
   // 1. Generate a random AES session key
   const sessionKey = await window.crypto.subtle.generateKey(
     { name: "AES-GCM", length: 256 },
@@ -116,7 +114,7 @@ export async function decryptMessage(
       const decodedJson = atob(encryptedSessionKey);
       const keysJson = JSON.parse(decodedJson) as Record<string, string>;
       const extractedKey = keysJson[userId];
-      
+
       if (!extractedKey) {
         console.warn(`No encrypted key found for user ${userId}`);
         return "Could not decrypt message (no key for user)";
@@ -163,8 +161,7 @@ export async function decryptMessage(
 }
 
 function bufferToBase64(buffer: ArrayBuffer | Uint8Array): string {
-  const bytes =
-    buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer);
+  const bytes = buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer);
   return window.btoa(String.fromCharCode(...bytes));
 }
 

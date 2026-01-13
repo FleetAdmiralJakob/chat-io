@@ -774,7 +774,7 @@ export const Message = ({
                       >
                         <Forward />
                         <p className="ml-1">Forward</p>
-                      </div>
+                      </button>
                       {isEditable && (
                         <button
                           className="border-secondary-foreground flex w-full cursor-pointer border-y-2 p-2 pr-8"
