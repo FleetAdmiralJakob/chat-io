@@ -415,6 +415,22 @@ export default function Page() {
     useScrollBehavior(messages.data);
 
   useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      void navigator.serviceWorker.ready.then(async (registration) => {
+        const notifications = await registration.getNotifications();
+        const currentChatUrl = `/chats/${params.chatId}`;
+
+        for (const notification of notifications) {
+          const data = notification.data as { url?: string } | null;
+          if (data?.url === currentChatUrl) {
+            notification.close();
+          }
+        }
+      });
+    }
+  }, [params.chatId]);
+
+  useEffect(() => {
     if (
       userInfo.error?.message.includes("UNAUTHORIZED REQUEST") ||
       messages.error?.message.includes("UNAUTHORIZED REQUEST") ||

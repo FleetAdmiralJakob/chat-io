@@ -161,6 +161,18 @@ self.addEventListener("notificationclick", (event) => {
   // Type-safely extract the URL if the data structure is valid
   if (isNotificationData(rawData) && rawData.url !== undefined) {
     url = rawData.url;
+
+    // Close all other notifications that point to the same URL (same chat)
+    event.waitUntil(
+      self.registration.getNotifications().then((notifications) => {
+        for (const notification of notifications) {
+          const data: unknown = notification.data;
+          if (isNotificationData(data) && data.url === url) {
+            notification.close();
+          }
+        }
+      }),
+    );
   }
 
   // Keep the service worker alive until the window management is complete
