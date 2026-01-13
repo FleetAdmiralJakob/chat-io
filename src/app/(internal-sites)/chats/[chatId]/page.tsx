@@ -419,31 +419,56 @@ export default function Page() {
     if ("serviceWorker" in navigator) {
       // Access the active service worker registration.
       // We use .ready to ensure the SW is fully active and controlling the page before we try to interact with it.
-      void navigator.serviceWorker.ready.then(async (registration) => {
-        // Get a list of all currently displayed notifications managed by this service worker.
-        // This returns a Promise that resolves to an array of Notification objects.
-        const notifications = await registration.getNotifications();
+      void navigator.serviceWorker.ready
+        .then(async (registration) => {
+          // Get a list of all currently displayed notifications managed by this service worker.
+          // This returns a Promise that resolves to an array of Notification objects.
+          const notifications = await registration.getNotifications();
 
-        // Construct the URL path for the current chat.
-        // We want to clear only the notifications that belong to *this specific chat*.
-        // The service worker stores the chat URL in the `data.url` property of the notification.
-        const currentChatUrl = `/chats/${params.chatId}`;
+          // Construct the URL path for the current chat.
+          // We want to clear only the notifications that belong to *this specific chat*.
+          // The service worker stores the chat URL in the `data.url` property of the notification.
+          const currentChatUrl = `/chats/${params.chatId}`;
 
-        // Iterate through all active notifications.
-        for (const notification of notifications) {
-          // Type assertion to safely access the custom `data` property we attached when creating the notification.
-          // We check if `data` exists and has a `url` string property.
-          const data = notification.data as { url?: string } | null;
+          // Narrow unknown notification data to the expected shape at runtime.
+          const isChatNotificationData = (
+            value: unknown,
+          ): value is { url?: string } | null => {
+            if (value === null) {
+              return true;
+            }
+            if (typeof value !== "object") {
+              return false;
+            }
+            const maybeWithUrl = value as { url?: unknown };
+            if (maybeWithUrl.url === undefined) {
+              return true;
+            }
+            return typeof maybeWithUrl.url === "string";
+          };
 
-          // If the notification's URL matches the URL of the chat the user just opened...
-          if (data?.url === currentChatUrl) {
-            // ...close that notification.
-            // This ensures that if the user navigates to the chat manually (without clicking the notification),
-            // the stale notifications for this chat are removed from the system tray.
-            notification.close();
+          // Iterate through all active notifications.
+          for (const notification of notifications) {
+            // Validate the custom `data` property we attached when creating the notification.
+            const data = isChatNotificationData(notification.data)
+              ? notification.data
+              : null;
+
+            // If the notification's URL matches the URL of the chat the user just opened...
+            if (data?.url === currentChatUrl) {
+              // ...close that notification.
+              // This ensures that if the user navigates to the chat manually (without clicking the notification),
+              // the stale notifications for this chat are removed from the system tray.
+              notification.close();
+            }
           }
-        }
-      });
+        })
+        .catch((error) => {
+          console.error(
+            "Failed to clear notifications for current chat from service worker:",
+            error,
+          );
+        });
     }
   }, [params.chatId]);
 
