@@ -427,7 +427,6 @@ export default function Page() {
   const is2xlOrMore = useMediaQuery({ query: "(max-width: 1537px)" });
   const maxSize = is2xlOrMore ? "50%" : "60%";
   const minSize = is2xlOrMore ? "45%" : "30%";
-  const isLgOrMore = useMediaQuery({ query: "(min-width: 1024px)" });
 
   const textMessageForm = useForm<z.infer<typeof textMessageSchema>>({
     resolver: zodResolver(textMessageSchema),
@@ -600,24 +599,26 @@ export default function Page() {
           className="fixed inset-0 z-50 bg-black opacity-75"
         ></div>
       ) : null}
-      <ResizablePanelGroup className="w-full grow" orientation="horizontal">
-        {isLgOrMore && (
-          <ResizablePanel
-            className="w-full"
-            defaultSize={"50%"}
-            minSize={minSize}
-            maxSize={maxSize}
-            id="resizable-panel-chat-list"
-          >
-            <div className="min-w-96 pb-24">
-              <div className="relative flex h-full w-full justify-center">
-                <div className="h-screen w-full overflow-y-auto">
-                  <ChatsWithSearch classNameChatList="xl:w-1/2" />
-                </div>
+      <ResizablePanelGroup
+        /* Hide the chat list if on mobile or small screen */
+        className="w-full grow *:data-[testid=resizable-panel-chat-list]:hidden *:data-[testid=resizable-panel-chat-list]:lg:block"
+        orientation="horizontal"
+      >
+        <ResizablePanel
+          className=""
+          defaultSize={"50%"}
+          minSize={minSize}
+          maxSize={maxSize}
+          id="resizable-panel-chat-list"
+        >
+          <div className="min-w-96 pb-24">
+            <div className="relative flex h-full w-full justify-center">
+              <div className="h-screen w-full overflow-y-auto">
+                <ChatsWithSearch classNameChatList="xl:w-1/2" />
               </div>
             </div>
-          </ResizablePanel>
-        )}
+          </div>
+        </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel
           defaultSize={"50%"}
