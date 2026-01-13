@@ -59,8 +59,6 @@ export async function importPublicKey(pem: string): Promise<CryptoKey> {
 
 export async function encryptMessage(
   text: string,
-  _recipientPublicKey: CryptoKey,
-  _senderPublicKey: CryptoKey,
 ) {
   // 1. Generate a random AES session key
   const sessionKey = await window.crypto.subtle.generateKey(
@@ -84,19 +82,9 @@ export async function encryptMessage(
     sessionKey,
   );
 
-  // 4. Encrypt the AES key with the Recipient's Public Key
-  // Note: This variable was previously unused because we returned the RAW key
-  // and let the caller double-encrypt it (once for recipient, once for sender).
-  // Keeping this flow for now as per the calling code in page.tsx.
-  // const _encryptedSessionKeyBuffer = await window.crypto.subtle.encrypt(
-  //   { name: "RSA-OAEP" },
-  //   recipientPublicKey,
-  //   exportedSessionKey,
-  // );
-
   return {
     ciphertext: bufferToBase64(ciphertextBuffer),
-    iv: bufferToBase64(iv),
+    iv: bufferToBase64(iv.buffer),
     exportedSessionKey, // Raw key bytes, caller needs to encrypt this for each participant
   };
 }
@@ -118,17 +106,37 @@ export async function decryptMessage(
   encryptedSessionKey: string,
   iv: string,
   privateKey: CryptoKey,
+  userId: string,
 ) {
   try {
-    // 1. Decrypt the AES session key using our Private Key
-    const sessionKeyBuffer = base64ToBuffer(encryptedSessionKey);
+    // 1. Parse the JSON-packed session keys and extract our key
+    let myEncryptedKey: string;
+    try {
+      // Decode Base64 to string
+      const decodedJson = atob(encryptedSessionKey);
+      const keysJson = JSON.parse(decodedJson) as Record<string, string>;
+      const extractedKey = keysJson[userId];
+      
+      if (!extractedKey) {
+        console.warn(`No encrypted key found for user ${userId}`);
+        return "Could not decrypt message (no key for user)";
+      }
+      myEncryptedKey = extractedKey;
+    } catch {
+      // Fallback: treat as raw key for backwards compatibility or single-key testing
+      console.warn("Failed to parse session key JSON, treating as raw key");
+      myEncryptedKey = encryptedSessionKey;
+    }
+
+    // 2. Decrypt the AES session key using our Private Key
+    const sessionKeyBuffer = base64ToBuffer(myEncryptedKey);
     const decryptedSessionKeyRaw = await window.crypto.subtle.decrypt(
       { name: "RSA-OAEP" },
       privateKey,
       sessionKeyBuffer,
     );
 
-    // 2. Import the AES key
+    // 3. Import the AES key
     const sessionKey = await window.crypto.subtle.importKey(
       "raw",
       decryptedSessionKeyRaw,
@@ -137,7 +145,7 @@ export async function decryptMessage(
       ["decrypt"],
     );
 
-    // 3. Decrypt the message content
+    // 4. Decrypt the message content
     const ciphertextBuffer = base64ToBuffer(ciphertext);
     const ivBuffer = base64ToBuffer(iv);
 
@@ -155,7 +163,8 @@ export async function decryptMessage(
 }
 
 function bufferToBase64(buffer: ArrayBuffer | Uint8Array): string {
-  const bytes = buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer);
+  const bytes =
+    buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer);
   return window.btoa(String.fromCharCode(...bytes));
 }
 

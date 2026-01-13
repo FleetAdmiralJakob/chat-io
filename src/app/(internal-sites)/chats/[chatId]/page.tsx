@@ -298,11 +298,16 @@ export default function Page() {
     async function initKeys() {
       if (!userInfo.data) return;
 
-      const keyPair = (await getStoredKeyPair()) ?? (await generateKeyPair());
+      try {
+        const keyPair = (await getStoredKeyPair()) ?? (await generateKeyPair());
 
-      if (keyPair && !userInfo.data.publicKey) {
-        const exported = await exportPublicKey(keyPair.publicKey);
-        await updatePublicKey({ publicKey: exported });
+        if (keyPair && !userInfo.data.publicKey) {
+          const exported = await exportPublicKey(keyPair.publicKey);
+          await updatePublicKey({ publicKey: exported });
+        }
+      } catch (error) {
+        console.error("Failed to initialize encryption keys:", error);
+        toast.error("Encryption failed. Please try refreshing the page.");
       }
     }
 
@@ -327,6 +332,7 @@ export default function Page() {
       const replyTo = existingMessages?.find(
         (msg) => msg._id === args.replyToId,
       );
+      // eslint-disable-next-line react-hooks/purity -- Date.now() is called when mutation is invoked, not during render
       const now = Date.now();
       const newMessage: NonNullable<
         FunctionReturnType<typeof api.messages.getMessages>
@@ -570,7 +576,7 @@ export default function Page() {
   // Note: This needs to be async, but useEffect is sync.
   useEffect(() => {
     async function loadContentForEdit() {
-      if (editingMessageId) {
+      if (editingMessageId && userInfo.data?._id) {
         const message = messages.data?.find((message) => {
           return message._id === editingMessageId;
         });
@@ -595,6 +601,7 @@ export default function Page() {
                     message.encryptedSessionKey!,
                     message.iv!,
                     keyPair.privateKey,
+                    userInfo.data!._id,
                   ),
                 );
                 content = decrypted;
@@ -622,7 +629,7 @@ export default function Page() {
       }
     }
     void loadContentForEdit();
-  }, [editingMessageId, messages.data, textMessageForm]);
+  }, [editingMessageId, messages.data, textMessageForm, userInfo.data?._id]);
 
   const editingMessageIdRef = useRef(editingMessageId);
 
@@ -691,8 +698,6 @@ export default function Page() {
       // 3. Encrypt
       const { ciphertext, iv, exportedSessionKey } = await encryptMessage(
         trimmedMessage,
-        recipientPublicKey,
-        keyPair.publicKey,
       );
 
       // 4. Encrypt session key for myself (so I can read it)
@@ -741,7 +746,15 @@ export default function Page() {
       // 3. Update `decryptMessage` to try parsing JSON.
 
       const keys: Record<string, string> = {};
-      keys[userInfo.data!._id] = myEncryptedSessionKey;
+      if (userInfo.data?._id) {
+        keys[userInfo.data._id] = myEncryptedSessionKey;
+      } else {
+        // Fallback for safety, though userInfo.data check happens earlier in hooks
+        // This theoretically shouldn't be reached if we have logic correctly
+        // But for strict type safety
+        toast.error("User info not loaded");
+        return;
+      }
 
       if (recipient && recipient.publicKey) {
         // Encrypt for recipient

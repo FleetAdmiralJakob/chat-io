@@ -62,6 +62,7 @@ const ReplyToMessage = ({
   scrollToMessage: (messageId: Id<"messages">) => void;
 }) => {
   const [decryptedContent, setDecryptedContent] = useState<string | null>(null);
+  const { user } = useUser();
 
   useEffect(() => {
     async function decrypt() {
@@ -70,7 +71,8 @@ const ReplyToMessage = ({
         message.replyTo &&
         !message.replyTo.deleted &&
         message.replyTo.encryptedSessionKey &&
-        message.replyTo.iv
+        message.replyTo.iv &&
+        user?.id
       ) {
         try {
           const keyPair = await getStoredKeyPair();
@@ -80,6 +82,7 @@ const ReplyToMessage = ({
               message.replyTo.encryptedSessionKey,
               message.replyTo.iv,
               keyPair.privateKey,
+              user.id,
             );
             setDecryptedContent(decrypted);
           } else {
@@ -92,12 +95,12 @@ const ReplyToMessage = ({
       }
     }
     void decrypt();
-  }, [message]);
+  }, [message, user?.id]);
 
   if (message.type === "message" && message.replyTo && !message.deleted) {
     const displayContent =
       message.replyTo.encryptedSessionKey && message.replyTo.iv
-        ? (decryptedContent ?? "Decrypting...")
+        ? decryptedContent ?? "Decrypting..."
         : message.replyTo.content;
 
     return (
@@ -182,7 +185,8 @@ export const Message = ({
         message.type === "message" &&
         !message.deleted &&
         message.encryptedSessionKey &&
-        message.iv
+        message.iv &&
+        clerkUser.user?.id
       ) {
         try {
           const keyPair = await getStoredKeyPair();
@@ -192,6 +196,7 @@ export const Message = ({
               message.encryptedSessionKey,
               message.iv,
               keyPair.privateKey,
+              clerkUser.user.id,
             );
             setDecryptedContent(decrypted);
           } else {
@@ -208,7 +213,7 @@ export const Message = ({
       }
     }
     void decrypt();
-  }, [message]);
+  }, [message, clerkUser.user?.id]);
 
   useEffect(() => {
     if (selectedMessageId === message._id) {
@@ -738,7 +743,7 @@ export const Message = ({
                         onClick={() => {
                           const contentToCopy =
                             message.encryptedSessionKey && message.iv
-                              ? (decryptedContent ?? "")
+                              ? decryptedContent ?? ""
                               : message.content;
 
                           if (contentToCopy) {
@@ -769,7 +774,7 @@ export const Message = ({
                       >
                         <Forward />
                         <p className="ml-1">Forward</p>
-                      </button>
+                      </div>
                       {isEditable && (
                         <button
                           className="border-secondary-foreground flex w-full cursor-pointer border-y-2 p-2 pr-8"
@@ -936,7 +941,7 @@ export const Message = ({
                         onClick={() => {
                           const contentToCopy =
                             message.encryptedSessionKey && message.iv
-                              ? (decryptedContent ?? "")
+                              ? decryptedContent ?? ""
                               : message.content;
 
                           if (contentToCopy) {

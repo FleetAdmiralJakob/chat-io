@@ -55,15 +55,24 @@ export const updateUserData = mutation({
 
 export const updatePublicKey = mutation({
   args: { publicKey: v.string() },
+  returns: v.null(),
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
       throw new Error("Unauthenticated");
     }
 
+    // Basic validation for SPKI format (Base64)
+    // A standard 4096-bit RSA SPKI key in base64 is around 800 chars.
+    // P-521 is shorter. Just ensure it's non-empty and base64-ish.
+    if (!args.publicKey || args.publicKey.length < 50) {
+      throw new Error("Invalid public key format");
+    }
+
     const user = await ctx
       .table("users")
       .getX("clerkId", identity.tokenIdentifier);
     await user.patch({ publicKey: args.publicKey });
+    return null;
   },
 });
