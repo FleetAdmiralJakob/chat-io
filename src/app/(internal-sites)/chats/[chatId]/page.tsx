@@ -685,9 +685,8 @@ export default function Page() {
         : keyPair.publicKey; // Fallback to self if no recipient (e.g. My Notes)
 
       // 3. Encrypt
-      const { ciphertext, iv, exportedSessionKey } = await encryptMessage(
-        trimmedMessage,
-      );
+      const { ciphertext, iv, exportedSessionKey } =
+        await encryptMessage(trimmedMessage);
 
       // 4. Encrypt session key for myself (so I can read it)
       const myEncryptedSessionKey = await encryptSessionKeyFor(

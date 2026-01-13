@@ -100,7 +100,7 @@ const ReplyToMessage = ({
   if (message.type === "message" && message.replyTo && !message.deleted) {
     const displayContent =
       message.replyTo.encryptedSessionKey && message.replyTo.iv
-        ? decryptedContent ?? "Decrypting..."
+        ? (decryptedContent ?? "Decrypting...")
         : message.replyTo.content;
 
     return (
@@ -743,7 +743,7 @@ export const Message = ({
                         onClick={() => {
                           const contentToCopy =
                             message.encryptedSessionKey && message.iv
-                              ? decryptedContent ?? ""
+                              ? (decryptedContent ?? "")
                               : message.content;
 
                           if (contentToCopy) {
@@ -941,7 +941,7 @@ export const Message = ({
                         onClick={() => {
                           const contentToCopy =
                             message.encryptedSessionKey && message.iv
-                              ? decryptedContent ?? ""
+                              ? (decryptedContent ?? "")
                               : message.content;
 
                           if (contentToCopy) {
