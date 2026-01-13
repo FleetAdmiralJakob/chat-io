@@ -1,6 +1,6 @@
 import Dexie, { type EntityTable } from "dexie";
 
-interface KeyPair {
+export interface KeyPair {
   id: string; // "primary"
   privateKey: CryptoKey;
   publicKey: CryptoKey;

@@ -1,11 +1,8 @@
-import { db } from "./db";
+import { db, type KeyPair } from "./db";
 
 export const KEY_PAIR_ID = "primary";
 
-export async function generateKeyPair(): Promise<{
-  publicKey: CryptoKey;
-  privateKey: CryptoKey;
-}> {
+export async function generateKeyPair(): Promise<KeyPair> {
   const keyPair = await window.crypto.subtle.generateKey(
     {
       name: "RSA-OAEP",
@@ -17,14 +14,16 @@ export async function generateKeyPair(): Promise<{
     ["encrypt", "decrypt"],
   );
 
-  await db.keys.put({
+  const storedKey: KeyPair = {
     id: KEY_PAIR_ID,
     privateKey: keyPair.privateKey,
     publicKey: keyPair.publicKey,
     createdAt: Date.now(),
-  });
+  };
 
-  return keyPair;
+  await db.keys.put(storedKey);
+
+  return storedKey;
 }
 
 export async function getStoredKeyPair() {
@@ -60,8 +59,8 @@ export async function importPublicKey(pem: string): Promise<CryptoKey> {
 
 export async function encryptMessage(
   text: string,
-  recipientPublicKey: CryptoKey,
-  senderPublicKey: CryptoKey,
+  _recipientPublicKey: CryptoKey,
+  _senderPublicKey: CryptoKey,
 ) {
   // 1. Generate a random AES session key
   const sessionKey = await window.crypto.subtle.generateKey(
@@ -86,38 +85,14 @@ export async function encryptMessage(
   );
 
   // 4. Encrypt the AES key with the Recipient's Public Key
-  const encryptedSessionKeyBuffer = await window.crypto.subtle.encrypt(
-    { name: "RSA-OAEP" },
-    recipientPublicKey,
-    exportedSessionKey,
-  );
-
-  // 5. Encrypt the AES key with the Sender's Public Key (so they can read it too)
-  // NOTE: For now, we will store a simplified structure where we might need to store multiple encrypted keys
-  // or just encrypt it once if we are sending to self.
-  // Real implementation for 1:1 chat usually duplicates the encrypted key payload for each participant.
-  // To keep our schema simple for this MVP, we will rely on the "encryptedSessionKey" field being
-  // the one for the RECIPIENT.
-  //
-  // WAIT: If we only store ONE encryptedSessionKey, the sender cannot read their own message history
-  // on a different device or even this device if they don't cache the plaintext.
-  //
-  // BETTER APPROACH for MVP:
-  // Since we have a single `encryptedSessionKey` field in the DB schema for now,
-  // we will encrypt the content for the RECIPIENT.
-  // The sender will see "Encrypted Message" in history unless we store a second key?
-  //
-  // FIX: The standard way is to have a map of `userId -> encryptedKey`.
-  // But our schema has `encryptedSessionKey: v.optional(v.string())`.
-  //
-  // Let's pack JSON into that string:
-  // {
-  //   [recipientId]: "...",
-  //   [senderId]: "..."
-  // }
-  //
-  // For this specific helper function, let's just return the raw buffers/arrays
-  // and let the caller construct the final payload.
+  // Note: This variable was previously unused because we returned the RAW key
+  // and let the caller double-encrypt it (once for recipient, once for sender).
+  // Keeping this flow for now as per the calling code in page.tsx.
+  // const _encryptedSessionKeyBuffer = await window.crypto.subtle.encrypt(
+  //   { name: "RSA-OAEP" },
+  //   recipientPublicKey,
+  //   exportedSessionKey,
+  // );
 
   return {
     ciphertext: bufferToBase64(ciphertextBuffer),
@@ -179,8 +154,9 @@ export async function decryptMessage(
   }
 }
 
-function bufferToBase64(buffer: ArrayBuffer): string {
-  return window.btoa(String.fromCharCode(...new Uint8Array(buffer)));
+function bufferToBase64(buffer: ArrayBuffer | Uint8Array): string {
+  const bytes = buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer);
+  return window.btoa(String.fromCharCode(...bytes));
 }
 
 function base64ToBuffer(base64: string): ArrayBuffer {

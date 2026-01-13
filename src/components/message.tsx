@@ -5,12 +5,7 @@ import { api } from "#convex/_generated/api";
 import type { Id } from "#convex/_generated/dataModel";
 import { EDIT_WINDOW_MS } from "#convex/constants";
 import { useQueryWithStatus } from "~/app/convex-client-provider";
-import {
-  decryptMessage,
-  encryptMessage,
-  getStoredKeyPair,
-  importPublicKey,
-} from "~/lib/crypto";
+import { decryptMessage, getStoredKeyPair } from "~/lib/crypto";
 import { cn } from "~/lib/utils";
 import { useMutation } from "convex/react";
 import { type FunctionReturnType } from "convex/server";
@@ -102,7 +97,7 @@ const ReplyToMessage = ({
   if (message.type === "message" && message.replyTo && !message.deleted) {
     const displayContent =
       message.replyTo.encryptedSessionKey && message.replyTo.iv
-        ? decryptedContent || "Decrypting..."
+        ? (decryptedContent ?? "Decrypting...")
         : message.replyTo.content;
 
     return (
@@ -177,6 +172,8 @@ export const Message = ({
 
   const [isEditable, setIsEditable] = useState(false);
   const [decryptedContent, setDecryptedContent] = useState<string | null>(null);
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isDecryptionError, setIsDecryptionError] = useState(false);
 
   useEffect(() => {
@@ -427,11 +424,9 @@ export const Message = ({
   const longPressEvent = useLongPress(onLongPress, defaultOptions);
 
   const getDisplayContent = () => {
-    if (
-      message.type === "message" &&
-      message.encryptedSessionKey &&
-      message.iv
-    ) {
+    if (message.type !== "message") return null;
+
+    if (message.encryptedSessionKey && message.iv) {
       if (decryptedContent) return decryptedContent;
       return (
         <span className="flex items-center gap-1.5 italic opacity-70">
@@ -743,7 +738,7 @@ export const Message = ({
                         onClick={() => {
                           const contentToCopy =
                             message.encryptedSessionKey && message.iv
-                              ? decryptedContent || ""
+                              ? (decryptedContent ?? "")
                               : message.content;
 
                           if (contentToCopy) {
@@ -941,7 +936,7 @@ export const Message = ({
                         onClick={() => {
                           const contentToCopy =
                             message.encryptedSessionKey && message.iv
-                              ? decryptedContent || ""
+                              ? (decryptedContent ?? "")
                               : message.content;
 
                           if (contentToCopy) {

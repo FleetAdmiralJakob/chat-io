@@ -291,16 +291,14 @@ export default function Page() {
   const posthog = usePostHog();
 
   const updatePublicKey = useMutation(api.users.updatePublicKey);
+  const userInfo = useQueryWithStatus(api.users.getUserData, {});
 
   // Ensure user has keys and public key is uploaded
   useEffect(() => {
     async function initKeys() {
       if (!userInfo.data) return;
 
-      let keyPair = await getStoredKeyPair();
-      if (!keyPair) {
-        keyPair = await generateKeyPair();
-      }
+      const keyPair = (await getStoredKeyPair()) ?? (await generateKeyPair());
 
       if (keyPair && !userInfo.data.publicKey) {
         const exported = await exportPublicKey(keyPair.publicKey);
@@ -329,7 +327,6 @@ export default function Page() {
       const replyTo = existingMessages?.find(
         (msg) => msg._id === args.replyToId,
       );
-      // eslint-disable-next-line react-hooks/purity -- Date.now() is called when mutation is invoked, not during render
       const now = Date.now();
       const newMessage: NonNullable<
         FunctionReturnType<typeof api.messages.getMessages>
@@ -460,8 +457,6 @@ export default function Page() {
       );
     }
   });
-
-  const userInfo = useQueryWithStatus(api.users.getUserData, {});
 
   const messages = useQueryWithStatus(api.messages.getMessages, {
     chatId: params.chatId,
