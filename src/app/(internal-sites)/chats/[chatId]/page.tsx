@@ -294,9 +294,11 @@ export default function Page() {
   const userInfo = useQueryWithStatus(api.users.getUserData, {});
 
   // Ensure user has keys and public key is uploaded
+  const isInitializingKeyPair = useRef(false);
   useEffect(() => {
     async function initKeys() {
-      if (!userInfo.data) return;
+      if (!userInfo.data || isInitializingKeyPair.current) return;
+      isInitializingKeyPair.current = true;
 
       try {
         const keyPair = (await getStoredKeyPair()) ?? (await generateKeyPair());
@@ -308,6 +310,8 @@ export default function Page() {
       } catch (error) {
         console.error("Failed to initialize encryption keys:", error);
         toast.error("Encryption failed. Please try refreshing the page.");
+      } finally {
+        isInitializingKeyPair.current = false;
       }
     }
 
@@ -318,9 +322,8 @@ export default function Page() {
     api.messages.createMessage,
   ).withOptimisticUpdate((localStore, args) => {
     const chatId: Id<"privateChats"> = args.chatId as Id<"privateChats">;
-    // For optimistic updates, we display the plaintext content immediately.
-    // The actual mutation sends the ciphertext.
-    const content = args.content;
+    // Use the optimistic plaintext if available, otherwise fallback to content (which is ciphertext)
+    const content = args.optimisticPlaintext ?? args.content;
 
     const existingMessages = localStore.getQuery(api.messages.getMessages, {
       chatId,
@@ -341,8 +344,13 @@ export default function Page() {
         _id: crypto.randomUUID() as Id<"messages">,
         _creationTime: now,
         content,
-        encryptedSessionKey: args.encryptedSessionKey,
-        iv: args.iv,
+        // If we are showing optimistic plaintext, don't show the encryptedSessionKey
+        // so the UI doesn't try to decrypt it and flash "Decrypting...".
+        // When the real message arrives from the server, it will include these fields.
+        encryptedSessionKey: args.optimisticPlaintext
+          ? undefined
+          : args.encryptedSessionKey,
+        iv: args.optimisticPlaintext ? undefined : args.iv,
         deleted: false,
         forwarded: 0,
         type: "message",
@@ -386,27 +394,9 @@ export default function Page() {
     api.messages.editMessage,
   ).withOptimisticUpdate((localStore, args) => {
     const chatId: Id<"privateChats"> = params.chatId as Id<"privateChats">;
-    // Optimistic update uses the plaintext content we just typed
-    // Note: This logic assumes args.newContent passed to useMutation is plaintext,
-    // which contradicts how we are calling it (passing ciphertext).
-    //
-    // The previous implementation of `editMessage` optimistic update used `args.newContent`.
-    // We need to be careful. Since we're encrypting, `args.newContent` will be CIPHERTEXT.
-    // The optimistic update needs to know the PLAINTEXT to show it immediately.
-    //
-    // However, `useMutation` args are fixed.
-    //
-    // WORKAROUND: We can't easily do optimistic updates for edits with encryption
-    // unless we pass metadata or rely on the fact that for the sender,
-    // we might re-fetch or decode locally.
-    //
-    // Actually, `args.newContent` IS the ciphertext in the mutation call.
-    // So if we update the store with ciphertext, the UI will try to decrypt it.
-    // Since we have the key locally, it SHOULD work if the UI reacts fast enough.
-    //
-    // Let's rely on standard flow or improved optimistic logic later if needed.
-    // For now, we update with what we have.
-    const { newContent, messageId } = args;
+    // Use optimistic plaintext if available
+    const { messageId } = args;
+    const newContent = args.optimisticPlaintext ?? args.newContent;
 
     const existingMessages = localStore.getQuery(api.messages.getMessages, {
       chatId,
@@ -424,8 +414,10 @@ export default function Page() {
           return {
             ...message,
             content: newContent,
-            encryptedSessionKey: args.encryptedSessionKey,
-            iv: args.iv,
+            encryptedSessionKey: args.optimisticPlaintext
+              ? undefined
+              : args.encryptedSessionKey,
+            iv: args.optimisticPlaintext ? undefined : args.iv,
             modified: true,
             modifiedAt: Date.now().toString(),
           };
@@ -450,8 +442,10 @@ export default function Page() {
               lastMessage: {
                 ...lastMessage,
                 content: newContent,
-                encryptedSessionKey: args.encryptedSessionKey,
-                iv: args.iv,
+                encryptedSessionKey: args.optimisticPlaintext
+                  ? undefined
+                  : args.encryptedSessionKey,
+                iv: args.optimisticPlaintext ? undefined : args.iv,
                 modified: true,
                 modifiedAt: Date.now().toString(),
               },
@@ -587,12 +581,7 @@ export default function Page() {
           if (message.encryptedSessionKey && message.iv) {
             const keyPair = await getStoredKeyPair();
             if (keyPair) {
-              // We reuse the decryptMessage function but might need error handling
-              // Since it's UI logic, we could duplicate or import.
-              // For now, let's assume we can import it.
               try {
-                // Dynamic import or assumed available from context if we refactor?
-                // Actually we have imported it.
                 // We must use `import { decryptMessage } from "~/lib/crypto"`
                 // But `decryptMessage` is async.
                 const decrypted = await import("~/lib/crypto").then((mod) =>
@@ -696,53 +685,15 @@ export default function Page() {
         : keyPair.publicKey; // Fallback to self if no recipient (e.g. My Notes)
 
       // 3. Encrypt
-      const { ciphertext, iv, exportedSessionKey } =
-        await encryptMessage(trimmedMessage);
+      const { ciphertext, iv, exportedSessionKey } = await encryptMessage(
+        trimmedMessage,
+      );
 
       // 4. Encrypt session key for myself (so I can read it)
       const myEncryptedSessionKey = await encryptSessionKeyFor(
         exportedSessionKey,
         keyPair.publicKey,
       );
-
-      // NOTE: The server schema currently has only ONE `encryptedSessionKey`.
-      // This is a limitation for 1:1 where we want BOTH to read it.
-      //
-      // Solution for MVP Schema Compatibility:
-      // We will concatenate the encrypted keys or use a JSON structure,
-      // BUT `decryptMessage` expects a single string.
-      //
-      // If we change `encryptedSessionKey` to hold a JSON string:
-      // { "userId1": "key1", "userId2": "key2" }
-      // Then `decryptMessage` needs to parse it.
-      //
-      // Refactoring `decryptMessage` in `src/components/message.tsx` to handle this?
-      // Or `src/lib/crypto.ts`?
-      //
-      // Hack for MVP Schema (Strictly 1:1):
-      // If we only store ONE key, only ONE person can read it.
-      //
-      // Real Solution:
-      // We need to store keys for ALL participants.
-      // Since we can't easily change schema to `v.any()` or `v.map()` quickly without migration,
-      // let's pack it into the string field as JSON.
-      //
-      // {
-      //   [myUserId]: "...",
-      //   [recipientUserId]: "..."
-      // }
-      //
-      // The `decryptMessage` function needs to know MY user ID to pick the right key.
-      //
-      // Let's UPDATE `src/lib/crypto.ts` to handle this JSON structure in `decryptMessage`?
-      // OR update `createMessage` to accept a JSON string in `encryptedSessionKey`.
-      //
-      // Wait, `createMessage` takes `v.string()`.
-      //
-      // Plan:
-      // 1. Construct JSON: keys = { [myId]: myEncryptedKey, [recipientId]: recipientEncryptedKey }
-      // 2. JSON.stringify(keys) -> encryptedSessionKey
-      // 3. Update `decryptMessage` to try parsing JSON.
 
       const keys: Record<string, string> = {};
       if (userInfo.data?._id) {
@@ -775,6 +726,7 @@ export default function Page() {
           newContent: ciphertext,
           encryptedSessionKey: packedSessionKeys,
           iv,
+          optimisticPlaintext: trimmedMessage,
         });
         posthog.capture("message_edited");
       } else {
@@ -785,6 +737,7 @@ export default function Page() {
           replyToId: replyToMessageId,
           encryptedSessionKey: packedSessionKeys,
           iv,
+          optimisticPlaintext: trimmedMessage,
         });
         posthog.capture("message_sent");
       }

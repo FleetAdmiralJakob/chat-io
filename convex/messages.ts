@@ -93,6 +93,10 @@ export const createMessage = mutation({
     encryptedSessionKey: v.optional(v.string()),
     iv: v.optional(v.string()),
     replyToId: v.optional(v.id("messages")),
+    // Optional arg to help with optimistic updates on the client.
+    // The server ignores this, but it allows the client to pass the plaintext
+    // so the optimistic updater can render it immediately without decryption.
+    optimisticPlaintext: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -387,25 +391,13 @@ export const forwardMessage = mutation({
         throw new ConvexError("Message does not exist");
       }
 
-      // TODO: Re-encryption logic for forwarding.
-      // Currently, we just copy the content. If content is encrypted, we copy the ciphertext.
-      // But the recipient in the NEW chat won't have the key to decrypt it because the
-      // `encryptedSessionKey` was encrypted for the OLD chat's participants.
-      //
-      // For this MVP, we will only support forwarding of UNENCRYPTED messages or
-      // we need to decrypt-then-re-encrypt on the client side.
-      // Since this is a server-side mutation, we CANNOT decrypt here (we don't have private keys).
-      //
-      // ACTION: Forwarding encrypted messages requires client-side logic:
-      // 1. Client decrypts original message.
-      // 2. Client re-encrypts for new recipients.
-      // 3. Client calls `createMessage`.
-      //
-      // The current `forwardMessage` mutation is incompatible with E2EE.
-      // We will mark forwarded messages as "Cannot forward encrypted messages" for now
-      // or rely on the client to handle this logic in the future.
-      //
-      // For now, we proceed, but encrypted forwards will be unreadable.
+      if (message.encryptedSessionKey) {
+        // Forwarding encrypted messages is not supported in this version
+        // because the key is encrypted for the original participants.
+        // The new recipient would not be able to decrypt it.
+        // Client-side decryption and re-encryption is required.
+        throw new ConvexError("Cannot forward encrypted messages");
+      }
 
       await ctx.table("messages").insert({
         userId: user._id,
@@ -450,6 +442,8 @@ export const editMessage = mutation({
     newContent: v.string(),
     encryptedSessionKey: v.optional(v.string()), // New keys for edited content
     iv: v.optional(v.string()),
+    // Optional arg to help with optimistic updates on the client.
+    optimisticPlaintext: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     if (args.newContent.trim() === "")
