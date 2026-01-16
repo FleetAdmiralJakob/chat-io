@@ -32,10 +32,7 @@ export async function getStoredKeyPair() {
 
 export async function exportPublicKey(key: CryptoKey): Promise<string> {
   const exported = await window.crypto.subtle.exportKey("spki", key);
-  const exportedAsBase64 = window.btoa(
-    String.fromCharCode(...new Uint8Array(exported)),
-  );
-  return exportedAsBase64;
+  return bufferToBase64(exported);
 }
 
 export async function importPublicKey(pem: string): Promise<CryptoKey> {
@@ -162,7 +159,14 @@ export async function decryptMessage(
 
 function bufferToBase64(buffer: ArrayBuffer | Uint8Array): string {
   const bytes = buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer);
-  return window.btoa(String.fromCharCode(...bytes));
+  let binary = "";
+  const len = bytes.byteLength;
+  const chunkSize = 0x8000; // 32KB to avoid stack overflow with spread operator
+  for (let i = 0; i < len; i += chunkSize) {
+    const chunk = bytes.subarray(i, Math.min(i + chunkSize, len));
+    binary += String.fromCharCode(...chunk);
+  }
+  return window.btoa(binary);
 }
 
 function base64ToBuffer(base64: string): ArrayBuffer {
