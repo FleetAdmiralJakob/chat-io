@@ -23,6 +23,7 @@ import {
 } from "~/components/ui/resize";
 import { Skeleton } from "~/components/ui/skeleton";
 import {
+  decryptMessage,
   encryptMessage,
   encryptSessionKeyFor,
   exportPublicKey,
@@ -296,26 +297,39 @@ export default function Page() {
   // Ensure user has keys and public key is uploaded
   const isInitializingKeyPair = useRef(false);
   useEffect(() => {
+    let cancelled = false;
+
     async function initKeys() {
       if (!userInfo.data || isInitializingKeyPair.current) return;
       isInitializingKeyPair.current = true;
 
       try {
-        const keyPair = (await getStoredKeyPair()) ?? (await generateKeyPair());
+        let keyPair = await getStoredKeyPair();
+        if (cancelled) return;
+
+        keyPair ??= await generateKeyPair();
+        if (cancelled) return;
 
         if (keyPair && !userInfo.data.publicKey) {
           const exported = await exportPublicKey(keyPair.publicKey);
+          if (cancelled) return;
           await updatePublicKey({ publicKey: exported });
         }
       } catch (error) {
-        console.error("Failed to initialize encryption keys:", error);
-        toast.error("Encryption failed. Please try refreshing the page.");
+        if (!cancelled) {
+          console.error("Failed to initialize encryption keys:", error);
+          toast.error("Encryption failed. Please try refreshing the page.");
+        }
       } finally {
         isInitializingKeyPair.current = false;
       }
     }
 
     void initKeys();
+
+    return () => {
+      cancelled = true;
+    };
   }, [userInfo.data, updatePublicKey]);
 
   const sendMessage = useMutation(
@@ -335,7 +349,7 @@ export default function Page() {
       const replyTo = existingMessages?.find(
         (msg) => msg._id === args.replyToId,
       );
-      // eslint-disable-next-line react-hooks/purity -- Date.now() is called when mutation is invoked, not during render
+      // Date.now() is called when mutation is invoked, not during render
       const now = Date.now();
       const newMessage: NonNullable<
         FunctionReturnType<typeof api.messages.getMessages>
@@ -582,16 +596,12 @@ export default function Page() {
             const keyPair = await getStoredKeyPair();
             if (keyPair) {
               try {
-                // We must use `import { decryptMessage } from "~/lib/crypto"`
-                // But `decryptMessage` is async.
-                const decrypted = await import("~/lib/crypto").then((mod) =>
-                  mod.decryptMessage(
-                    message.content,
-                    message.encryptedSessionKey!,
-                    message.iv!,
-                    keyPair.privateKey,
-                    userInfo.data!._id,
-                  ),
+                const decrypted = await decryptMessage(
+                  message.content,
+                  message.encryptedSessionKey,
+                  message.iv,
+                  keyPair.privateKey,
+                  userInfo.data._id,
                 );
                 content = decrypted;
               } catch (e) {
@@ -618,7 +628,13 @@ export default function Page() {
       }
     }
     void loadContentForEdit();
-  }, [editingMessageId, messages.data, textMessageForm, userInfo.data?._id]);
+  }, [
+    editingMessageId,
+    messages.data,
+    textMessageForm,
+    userInfo.data,
+    userInfo.data?._id,
+  ]);
 
   const editingMessageIdRef = useRef(editingMessageId);
 

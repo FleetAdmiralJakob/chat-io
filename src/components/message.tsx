@@ -101,7 +101,7 @@ const ReplyToMessage = ({
   if (message.type === "message" && message.replyTo && !message.deleted) {
     const displayContent =
       message.replyTo.encryptedSessionKey && message.replyTo.iv
-        ? decryptedContent ?? "Decrypting..."
+        ? (decryptedContent ?? "Decrypting...")
         : message.replyTo.content;
 
     return (
@@ -763,7 +763,7 @@ export const Message = ({
                           if (e.key === "Enter" || e.key === " ") {
                             const contentToCopy =
                               message.encryptedSessionKey && message.iv
-                                ? decryptedContent ?? ""
+                                ? (decryptedContent ?? "")
                                 : message.content;
 
                             if (contentToCopy) {
@@ -779,7 +779,7 @@ export const Message = ({
                         onClick={() => {
                           const contentToCopy =
                             message.encryptedSessionKey && message.iv
-                              ? decryptedContent ?? ""
+                              ? (decryptedContent ?? "")
                               : message.content;
 
                           if (contentToCopy) {
@@ -802,15 +802,17 @@ export const Message = ({
                         <Reply />
                         <p className="ml-1">Reply</p>
                       </button>
-                      <button
-                        className="border-secondary-foreground flex w-full cursor-pointer border-t-2 p-2 pr-8"
-                        onClick={() => {
-                          handleForward();
-                        }}
-                      >
-                        <Forward />
-                        <p className="ml-1">Forward</p>
-                      </button>
+                      {!message.encryptedSessionKey && (
+                        <button
+                          className="border-secondary-foreground flex w-full cursor-pointer border-t-2 p-2 pr-8"
+                          onClick={() => {
+                            handleForward();
+                          }}
+                        >
+                          <Forward />
+                          <p className="ml-1">Forward</p>
+                        </button>
+                      )}
                       {isEditable && (
                         <button
                           className="border-secondary-foreground flex w-full cursor-pointer border-y-2 p-2 pr-8"
@@ -981,7 +983,7 @@ export const Message = ({
                         onClick={() => {
                           const contentToCopy =
                             message.encryptedSessionKey && message.iv
-                              ? decryptedContent ?? ""
+                              ? (decryptedContent ?? "")
                               : message.content;
 
                           if (contentToCopy) {
@@ -999,7 +1001,7 @@ export const Message = ({
                           if (e.key === "Enter" || e.key === " ") {
                             const contentToCopy =
                               message.encryptedSessionKey && message.iv
-                                ? decryptedContent ?? ""
+                                ? (decryptedContent ?? "")
                                 : message.content;
 
                             if (contentToCopy) {
@@ -1024,22 +1026,24 @@ export const Message = ({
                         <Reply />
                         <p className="ml-1">Reply</p>
                       </button>
-                      <div
-                        onClick={() => {
-                          handleForward();
-                        }}
-                        role="button"
-                        tabIndex={0}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" || e.key === " ") {
+                      {!message.encryptedSessionKey && (
+                        <div
+                          onClick={() => {
                             handleForward();
-                          }
-                        }}
-                        className="border-secondary-foreground flex w-full cursor-pointer border-b-2 p-2 pr-8"
-                      >
-                        <Forward />
-                        <p className="ml-1">Forward</p>
-                      </div>
+                          }}
+                          role="button"
+                          tabIndex={0}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              handleForward();
+                            }
+                          }}
+                          className="border-secondary-foreground flex w-full cursor-pointer border-b-2 p-2 pr-8"
+                        >
+                          <Forward />
+                          <p className="ml-1">Forward</p>
+                        </div>
+                      )}
                       <div className="text-secondary-foreground flex p-2 pr-8">
                         <Info />
                         <p className="ml-1">{sentInfo()}</p>
