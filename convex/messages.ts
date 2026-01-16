@@ -391,32 +391,32 @@ export const forwardMessage = mutation({
         throw new ConvexError("Message does not exist");
       }
 
-      /* 
+      /*
        * BLOCKING FORWARDING OF ENCRYPTED MESSAGES:
-       * 
+       *
        * Why?
        * Encrypted messages store their session keys in `encryptedSessionKey`.
-       * This payload is a JSON object where keys are User IDs and values are the 
+       * This payload is a JSON object where keys are User IDs and values are the
        * AES session key encrypted with that specific user's Public Key.
-       * 
+       *
        * Problem:
        * When forwarding a message to a NEW chat, the new recipient(s) are NOT in the
        * original `encryptedSessionKey` payload. They do not have an entry there.
        * If we just copy the `encryptedSessionKey` (like we do for normal fields),
        * the new recipient receives a payload they cannot decrypt (because it's encrypted
        * for the OLD participants).
-       * 
+       *
        * Solution Required:
        * To forward an encrypted message, the CLIENT must:
        * 1. Decrypt the original message content locally using their Private Key.
        * 2. Re-encrypt the content with a NEW session key (or the same one).
        * 3. Encrypt that session key for the NEW recipient(s) in the destination chat.
        * 4. Call `createMessage` with the new encrypted payload.
-       * 
+       *
        * Since `forwardMessage` is a server-side mutation, it does not have access to
        * the user's Private Key (which lives in IndexedDB). Therefore, the server
        * CANNOT re-encrypt the message.
-       * 
+       *
        * Temporary Safety Measure:
        * We block forwarding here to prevent creating "broken" messages that the
        * recipient cannot read. The UI should handle this by either disabling the
