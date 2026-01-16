@@ -101,7 +101,7 @@ const ReplyToMessage = ({
   if (message.type === "message" && message.replyTo && !message.deleted) {
     const displayContent =
       message.replyTo.encryptedSessionKey && message.replyTo.iv
-        ? decryptedContent ?? "Decrypting..."
+        ? (decryptedContent ?? "Decrypting...")
         : message.replyTo.content;
 
     return (
@@ -751,7 +751,7 @@ export const Message = ({
                         onClick={() => {
                           const contentToCopy =
                             message.encryptedSessionKey && message.iv
-                              ? decryptedContent ?? ""
+                              ? (decryptedContent ?? "")
                               : message.content;
 
                           if (contentToCopy) {
@@ -782,7 +782,7 @@ export const Message = ({
                       >
                         <Forward />
                         <p className="ml-1">Forward</p>
-                      </div>
+                      </button>
                       {isEditable && (
                         <button
                           className="border-secondary-foreground flex w-full cursor-pointer border-y-2 p-2 pr-8"
@@ -953,7 +953,7 @@ export const Message = ({
                         onClick={() => {
                           const contentToCopy =
                             message.encryptedSessionKey && message.iv
-                              ? decryptedContent ?? ""
+                              ? (decryptedContent ?? "")
                               : message.content;
 
                           if (contentToCopy) {
