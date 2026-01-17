@@ -5,6 +5,7 @@ import { api } from "#convex/_generated/api";
 import type { Id } from "#convex/_generated/dataModel";
 import { EDIT_WINDOW_MS } from "#convex/constants";
 import { useQueryWithStatus } from "~/app/convex-client-provider";
+import { decryptMessage, getStoredKeyPair } from "~/lib/crypto";
 import { cn } from "~/lib/utils";
 import { useMutation } from "convex/react";
 import { type FunctionReturnType } from "convex/server";
@@ -18,6 +19,7 @@ import {
   CopyCheck,
   Forward,
   Info,
+  Lock,
   Pen,
   Plus,
   Reply,
@@ -55,16 +57,67 @@ const EditedLabel = ({ message }: { message: Message }) => (
 const ReplyToMessage = ({
   message,
   scrollToMessage,
+  currentUserConvexId,
 }: {
   message: Message;
   scrollToMessage: (messageId: Id<"messages">) => void;
+  currentUserConvexId: string | undefined;
 }) => {
+  const [decryptedContent, setDecryptedContent] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function decrypt() {
+      if (
+        message.type === "message" &&
+        message.replyTo &&
+        !message.replyTo.deleted &&
+        message.replyTo.encryptedSessionKey &&
+        message.replyTo.iv &&
+        currentUserConvexId
+      ) {
+        try {
+          const keyPair = await getStoredKeyPair();
+          if (keyPair) {
+            const decrypted = await decryptMessage(
+              message.replyTo.content,
+              message.replyTo.encryptedSessionKey,
+              message.replyTo.iv,
+              keyPair.privateKey,
+              currentUserConvexId,
+            );
+            setDecryptedContent(decrypted);
+          } else {
+            setDecryptedContent("Waiting for key...");
+          }
+        } catch (e) {
+          console.error("Failed to decrypt reply", e);
+          setDecryptedContent("Unable to decrypt reply");
+        }
+      }
+    }
+    void decrypt();
+  }, [message, currentUserConvexId]);
+
   if (message.type === "message" && message.replyTo && !message.deleted) {
+    const displayContent =
+      message.replyTo.encryptedSessionKey && message.replyTo.iv
+        ? (decryptedContent ?? "Decrypting...")
+        : message.replyTo.content;
+
     return (
       <div
         onClick={() => {
           if (message.type === "message" && message.replyTo) {
             scrollToMessage(message.replyTo._id);
+          }
+        }}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            if (message.type === "message" && message.replyTo) {
+              scrollToMessage(message.replyTo._id);
+            }
           }
         }}
         className="border-secondary-foreground bg-primary mb-2 max-w-[66.6667%] cursor-pointer rounded-lg border p-2"
@@ -81,7 +134,7 @@ const ReplyToMessage = ({
               <Ban className="ml-1 h-5 w-5" />
             </div>
           ) : (
-            message.replyTo.content
+            displayContent
           )}
         </div>
       </div>
@@ -131,6 +184,49 @@ export const Message = ({
   const clerkUser = useUser();
 
   const [isEditable, setIsEditable] = useState(false);
+  const [decryptedContent, setDecryptedContent] = useState<string | null>(null);
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [isDecryptionError, setIsDecryptionError] = useState(false);
+
+  // Get the current user's Convex ID from userInfos
+  const currentUserConvexId = userInfos[0]?._id;
+
+  useEffect(() => {
+    async function decrypt() {
+      if (
+        message.type === "message" &&
+        !message.deleted &&
+        message.encryptedSessionKey &&
+        message.iv &&
+        currentUserConvexId
+      ) {
+        try {
+          const keyPair = await getStoredKeyPair();
+          if (keyPair) {
+            const decrypted = await decryptMessage(
+              message.content,
+              message.encryptedSessionKey,
+              message.iv,
+              keyPair.privateKey,
+              currentUserConvexId,
+            );
+            setDecryptedContent(decrypted);
+          } else {
+            // If no local key, we can't decrypt.
+            // This happens if the user logged in on a new device.
+            setDecryptedContent("🔒 Encrypted message (key not found)");
+            setIsDecryptionError(true);
+          }
+        } catch (e) {
+          console.error("Decryption failed", e);
+          setDecryptedContent("🔒 Decryption failed");
+          setIsDecryptionError(true);
+        }
+      }
+    }
+    void decrypt();
+  }, [message, currentUserConvexId]);
 
   useEffect(() => {
     if (selectedMessageId === message._id) {
@@ -345,6 +441,21 @@ export const Message = ({
   };
   const longPressEvent = useLongPress(onLongPress, defaultOptions);
 
+  const getDisplayContent = () => {
+    if (message.type !== "message") return null;
+
+    if (message.encryptedSessionKey && message.iv) {
+      if (decryptedContent) return decryptedContent;
+      return (
+        <span className="flex items-center gap-1.5 italic opacity-70">
+          <Lock className="h-3 w-3" />
+          Decrypting...
+        </span>
+      );
+    }
+    return message.content;
+  };
+
   return (
     <div className="flex" ref={ref}>
       {chatContainerElement &&
@@ -519,7 +630,11 @@ export const Message = ({
           })}
         >
           <EditedLabel message={message} />
-          <ReplyToMessage message={message} scrollToMessage={scrollToMessage} />
+          <ReplyToMessage
+            message={message}
+            scrollToMessage={scrollToMessage}
+            currentUserConvexId={currentUserConvexId}
+          />
           <div className="text-destructive-foreground text-[75%] italic">
             {message.type == "message" && !message.deleted ? (
               message.forwarded == undefined ? (
@@ -595,7 +710,7 @@ export const Message = ({
                   </div>
                 ) : (
                   <div className="select-none lg:select-auto">
-                    <div>{message.content}</div>
+                    <div>{getDisplayContent()}</div>
                   </div>
                 )}
               </div>
@@ -642,11 +757,39 @@ export const Message = ({
                     <div className="bg-secondary">
                       <div
                         className="flex w-full cursor-pointer p-2"
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            const contentToCopy =
+                              message.encryptedSessionKey && message.iv
+                                ? (decryptedContent ?? "")
+                                : message.content;
+
+                            if (contentToCopy) {
+                              void navigator.clipboard.writeText(contentToCopy);
+                              toast.success("Copied to clipboard");
+                            } else {
+                              toast.error("Nothing to copy");
+                            }
+                            setSelectedMessageId(null);
+                            setShowFullEmojiPicker(false);
+                          }
+                        }}
                         onClick={() => {
-                          void navigator.clipboard.writeText(message.content);
+                          const contentToCopy =
+                            message.encryptedSessionKey && message.iv
+                              ? (decryptedContent ?? "")
+                              : message.content;
+
+                          if (contentToCopy) {
+                            void navigator.clipboard.writeText(contentToCopy);
+                            toast.success("Copied to clipboard");
+                          } else {
+                            toast.error("Nothing to copy");
+                          }
                           setSelectedMessageId(null);
                           setShowFullEmojiPicker(false);
-                          toast.success("Copied to clipboard");
                         }}
                       >
                         <CopyCheck />
@@ -659,15 +802,17 @@ export const Message = ({
                         <Reply />
                         <p className="ml-1">Reply</p>
                       </button>
-                      <button
-                        className="border-secondary-foreground flex w-full cursor-pointer border-t-2 p-2 pr-8"
-                        onClick={() => {
-                          handleForward();
-                        }}
-                      >
-                        <Forward />
-                        <p className="ml-1">Forward</p>
-                      </button>
+                      {!message.encryptedSessionKey && (
+                        <button
+                          className="border-secondary-foreground flex w-full cursor-pointer border-t-2 p-2 pr-8"
+                          onClick={() => {
+                            handleForward();
+                          }}
+                        >
+                          <Forward />
+                          <p className="ml-1">Forward</p>
+                        </button>
+                      )}
                       {isEditable && (
                         <button
                           className="border-secondary-foreground flex w-full cursor-pointer border-y-2 p-2 pr-8"
@@ -720,7 +865,11 @@ export const Message = ({
           })}
         >
           <EditedLabel message={message} />
-          <ReplyToMessage message={message} scrollToMessage={scrollToMessage} />
+          <ReplyToMessage
+            message={message}
+            scrollToMessage={scrollToMessage}
+            currentUserConvexId={currentUserConvexId}
+          />
           <div
             {...longPressEvent}
             ref={(ref) => {
@@ -805,7 +954,7 @@ export const Message = ({
               </div>
             ) : (
               <div className="select-none lg:select-auto">
-                <div>{message.content}</div>
+                <div>{getDisplayContent()}</div>
               </div>
             )}
           </div>
@@ -832,10 +981,38 @@ export const Message = ({
                     <div className="bg-secondary rounded-xs">
                       <div
                         onClick={() => {
-                          void navigator.clipboard.writeText(message.content);
+                          const contentToCopy =
+                            message.encryptedSessionKey && message.iv
+                              ? (decryptedContent ?? "")
+                              : message.content;
+
+                          if (contentToCopy) {
+                            void navigator.clipboard.writeText(contentToCopy);
+                            toast.success("Copied to clipboard");
+                          } else {
+                            toast.error("Nothing to copy");
+                          }
                           setSelectedMessageId(null);
                           setShowFullEmojiPicker(false);
-                          toast.success("Copied to clipboard");
+                        }}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            const contentToCopy =
+                              message.encryptedSessionKey && message.iv
+                                ? (decryptedContent ?? "")
+                                : message.content;
+
+                            if (contentToCopy) {
+                              void navigator.clipboard.writeText(contentToCopy);
+                              toast.success("Copied to clipboard");
+                            } else {
+                              toast.error("Nothing to copy");
+                            }
+                            setSelectedMessageId(null);
+                            setShowFullEmojiPicker(false);
+                          }
                         }}
                         className="flex cursor-pointer p-2"
                       >
@@ -849,15 +1026,24 @@ export const Message = ({
                         <Reply />
                         <p className="ml-1">Reply</p>
                       </button>
-                      <div
-                        onClick={() => {
-                          handleForward();
-                        }}
-                        className="border-secondary-foreground flex w-full cursor-pointer border-b-2 p-2 pr-8"
-                      >
-                        <Forward />
-                        <p className="ml-1">Forward</p>
-                      </div>
+                      {!message.encryptedSessionKey && (
+                        <div
+                          onClick={() => {
+                            handleForward();
+                          }}
+                          role="button"
+                          tabIndex={0}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              handleForward();
+                            }
+                          }}
+                          className="border-secondary-foreground flex w-full cursor-pointer border-b-2 p-2 pr-8"
+                        >
+                          <Forward />
+                          <p className="ml-1">Forward</p>
+                        </div>
+                      )}
                       <div className="text-secondary-foreground flex p-2 pr-8">
                         <Info />
                         <p className="ml-1">{sentInfo()}</p>

@@ -39,11 +39,6 @@ export const updateUserData = mutation({
     const updates: { email?: string; lastName?: string; firstName?: string } =
       {};
 
-    // Use parsedData to ensure we only use validated values
-    // Note: Zod might transform "" to literal "" or keep it, schema allows both.
-    // The logic below checks for truthiness, so empty strings are skipped unless check is stricter.
-    // args.data was already partial, parsedData is also partial.
-
     if (parsedData.email !== undefined && parsedData.email !== "") {
       updates.email = parsedData.email;
     }
@@ -54,7 +49,30 @@ export const updateUserData = mutation({
       updates.firstName = parsedData.firstName;
     }
 
-    // Use one patch instead of a few singular patches for better performance
     await user.patch(updates);
+  },
+});
+
+export const updatePublicKey = mutation({
+  args: { publicKey: v.string() },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Unauthenticated");
+    }
+
+    // Basic validation for SPKI format (Base64)
+    // A standard 4096-bit RSA SPKI key in base64 is around 800 chars.
+    // P-521 is shorter. Just ensure it's non-empty and base64-ish.
+    if (!args.publicKey || args.publicKey.length < 50) {
+      throw new Error("Invalid public key format");
+    }
+
+    const user = await ctx
+      .table("users")
+      .getX("clerkId", identity.tokenIdentifier);
+    await user.patch({ publicKey: args.publicKey });
+    return null;
   },
 });
