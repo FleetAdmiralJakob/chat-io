@@ -283,6 +283,7 @@ export default function Page() {
     useState<Id<"messages"> | null>(null);
 
   const router = useRouter();
+  const [keyInitAttempt, setKeyInitAttempt] = useState(0);
 
   useEffect(() => {
     const timer = setTimeout(() => setProgress(66), 500);
@@ -318,7 +319,12 @@ export default function Page() {
       } catch (error) {
         if (!cancelled) {
           console.error("Failed to initialize encryption keys:", error);
-          toast.error("Encryption failed. Please try refreshing the page.");
+          toast.error("Encryption failed. Please try again.", {
+            action: {
+              label: "Retry",
+              onClick: () => setKeyInitAttempt((attempt) => attempt + 1),
+            },
+          });
         }
       } finally {
         isInitializingKeyPair.current = false;
@@ -330,7 +336,7 @@ export default function Page() {
     return () => {
       cancelled = true;
     };
-  }, [userInfo.data, updatePublicKey]);
+  }, [keyInitAttempt, updatePublicKey, userInfo.data]);
 
   const sendMessage = useMutation(
     api.messages.createMessage,

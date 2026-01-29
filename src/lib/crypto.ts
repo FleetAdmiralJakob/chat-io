@@ -164,20 +164,36 @@ export async function decryptMessage(
 function bufferToBase64(buffer: ArrayBuffer | Uint8Array): string {
   const bytes = buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer);
   let binary = "";
-  const len = bytes.byteLength;
-  const chunkSize = 0x8000; // 32KB to avoid stack overflow with spread operator
-  for (let i = 0; i < len; i += chunkSize) {
-    const chunk = bytes.subarray(i, Math.min(i + chunkSize, len));
-    binary += String.fromCharCode(...chunk);
+  for (const byte of bytes) {
+    binary += String.fromCharCode(byte);
   }
   return window.btoa(binary);
 }
 
 function base64ToBuffer(base64: string): ArrayBuffer {
-  const binaryString = window.atob(base64);
-  const bytes = new Uint8Array(binaryString.length);
-  for (let i = 0; i < binaryString.length; i++) {
-    bytes[i] = binaryString.charCodeAt(i);
+  const chunkSize = 8192; // Must be a multiple of 4 for base64 chunks
+  const chunks: Array<Uint8Array> = [];
+  let totalLength = 0;
+
+  for (let i = 0; i < base64.length; i += chunkSize) {
+    const chunk = base64.slice(i, i + chunkSize);
+    const binaryString = window.atob(chunk);
+    const bytes = new Uint8Array(binaryString.length);
+    let offset = 0;
+    for (const char of binaryString) {
+      bytes[offset] = char.charCodeAt(0);
+      offset += 1;
+    }
+    chunks.push(bytes);
+    totalLength += bytes.length;
   }
-  return bytes.buffer;
+
+  const result = new Uint8Array(totalLength);
+  let position = 0;
+  for (const bytes of chunks) {
+    result.set(bytes, position);
+    position += bytes.length;
+  }
+
+  return result.buffer;
 }
