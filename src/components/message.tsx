@@ -186,9 +186,6 @@ export const Message = ({
   const [isEditable, setIsEditable] = useState(false);
   const [decryptedContent, setDecryptedContent] = useState<string | null>(null);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [isDecryptionError, setIsDecryptionError] = useState(false);
-
   // Get the current user's Convex ID from userInfos
   const currentUserConvexId = userInfos[0]?._id;
 
@@ -216,12 +213,10 @@ export const Message = ({
             // If no local key, we can't decrypt.
             // This happens if the user logged in on a new device.
             setDecryptedContent("🔒 Encrypted message (key not found)");
-            setIsDecryptionError(true);
           }
         } catch (e) {
           console.error("Decryption failed", e);
           setDecryptedContent("🔒 Decryption failed");
-          setIsDecryptionError(true);
         }
       }
     }
@@ -442,7 +437,7 @@ export const Message = ({
   const longPressEvent = useLongPress(onLongPress, defaultOptions);
 
   const getDisplayContent = () => {
-    if (message.type !== "message") return null;
+    if (message.type !== "message" || !("content" in message)) return null;
 
     if (message.encryptedSessionKey && message.iv) {
       if (decryptedContent) return decryptedContent;

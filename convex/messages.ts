@@ -98,6 +98,7 @@ export const createMessage = mutation({
     // so the optimistic updater can render it immediately without decryption.
     optimisticPlaintext: v.optional(v.string()),
   },
+  returns: v.null(),
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
 
@@ -423,7 +424,9 @@ export const forwardMessage = mutation({
        * forward button for encrypted messages or implementing the client-side flow described above.
        */
       if (message.encryptedSessionKey) {
-        throw new ConvexError("Cannot forward encrypted messages");
+        throw new ConvexError(
+          "Cannot forward encrypted messages. Please copy and send as a new message.",
+        );
       }
 
       await ctx.table("messages").insert({
@@ -470,6 +473,7 @@ export const editMessage = mutation({
     // Optional arg to help with optimistic updates on the client.
     optimisticPlaintext: v.optional(v.string()),
   },
+  returns: v.null(),
   handler: async (ctx, args) => {
     if (args.newContent.trim() === "")
       throw new Error("Message cannot be empty");

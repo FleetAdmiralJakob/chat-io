@@ -3,6 +3,10 @@ import { db, type KeyPair } from "./db";
 export const KEY_PAIR_ID = "primary";
 
 export async function generateKeyPair(): Promise<KeyPair> {
+  /**
+   * NOTE: RSA-OAEP is not post-quantum resistant. This is a known limitation
+   * until the Web Crypto API supports modern PQ algorithms (e.g. ML-KEM).
+   */
   const keyPair = await window.crypto.subtle.generateKey(
     {
       name: "RSA-OAEP",
@@ -114,7 +118,7 @@ export async function decryptMessage(
 
       if (!extractedKey) {
         console.warn(`No encrypted key found for user ${userId}`);
-        return "Could not decrypt message (no key for user)";
+        throw new Error("Could not decrypt message");
       }
       myEncryptedKey = extractedKey;
     } catch {
@@ -153,7 +157,7 @@ export async function decryptMessage(
     return new TextDecoder().decode(decryptedContentBuffer);
   } catch (error) {
     console.error("Decryption failed:", error);
-    return "Could not decrypt message";
+    throw new Error("Could not decrypt message");
   }
 }
 
