@@ -22,6 +22,15 @@ import {
   ResizablePanelGroup,
 } from "~/components/ui/resize";
 import { Skeleton } from "~/components/ui/skeleton";
+import {
+  decryptMessage,
+  encryptMessage,
+  encryptSessionKeyFor,
+  exportPublicKey,
+  generateKeyPair,
+  getStoredKeyPair,
+  importPublicKey,
+} from "~/lib/crypto";
 import { usePrevious } from "~/lib/hooks";
 import { cn } from "~/lib/utils";
 import { devMode$ } from "~/states";
@@ -242,7 +251,10 @@ const MessageContext: React.FC<MessageContextProps> = ({
           </button>
 
           <p className="line-clamp-2 text-sm">
-            <strong>{message.from.username}</strong>: {message.content}
+            <strong>{message.from.username}</strong>:{" "}
+            {message.encryptedSessionKey && message.iv
+              ? "🔒 Encrypted Message"
+              : message.content}
           </p>
         </div>
       </motion.div>
@@ -271,6 +283,7 @@ export default function Page() {
     useState<Id<"messages"> | null>(null);
 
   const router = useRouter();
+  const [keyInitAttempt, setKeyInitAttempt] = useState(0);
 
   useEffect(() => {
     const timer = setTimeout(() => setProgress(66), 500);
@@ -279,11 +292,58 @@ export default function Page() {
 
   const posthog = usePostHog();
 
+  const updatePublicKey = useMutation(api.users.updatePublicKey);
+  const userInfo = useQueryWithStatus(api.users.getUserData, {});
+
+  // Ensure user has keys and public key is uploaded
+  const isInitializingKeyPair = useRef(false);
+  useEffect(() => {
+    let cancelled = false;
+
+    async function initKeys() {
+      if (!userInfo.data || isInitializingKeyPair.current) return;
+      isInitializingKeyPair.current = true;
+
+      try {
+        let keyPair = await getStoredKeyPair();
+        if (cancelled) return;
+
+        keyPair ??= await generateKeyPair();
+        if (cancelled) return;
+
+        if (keyPair && !userInfo.data.publicKey) {
+          const exported = await exportPublicKey(keyPair.publicKey);
+          if (cancelled) return;
+          await updatePublicKey({ publicKey: exported });
+        }
+      } catch (error) {
+        if (!cancelled) {
+          console.error("Failed to initialize encryption keys:", error);
+          toast.error("Encryption failed. Please try again.", {
+            action: {
+              label: "Retry",
+              onClick: () => setKeyInitAttempt((attempt) => attempt + 1),
+            },
+          });
+        }
+      } finally {
+        isInitializingKeyPair.current = false;
+      }
+    }
+
+    void initKeys();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [keyInitAttempt, updatePublicKey, userInfo.data]);
+
   const sendMessage = useMutation(
     api.messages.createMessage,
   ).withOptimisticUpdate((localStore, args) => {
     const chatId: Id<"privateChats"> = args.chatId as Id<"privateChats">;
-    const content = args.content;
+    // Use the optimistic plaintext if available, otherwise fallback to content (which is ciphertext)
+    const content = args.optimisticPlaintext ?? args.content;
 
     const existingMessages = localStore.getQuery(api.messages.getMessages, {
       chatId,
@@ -295,7 +355,7 @@ export default function Page() {
       const replyTo = existingMessages?.find(
         (msg) => msg._id === args.replyToId,
       );
-      // eslint-disable-next-line react-hooks/purity -- Date.now() is called when mutation is invoked, not during render
+      // Date.now() is called when mutation is invoked, not during render
       const now = Date.now();
       const newMessage: NonNullable<
         FunctionReturnType<typeof api.messages.getMessages>
@@ -304,6 +364,13 @@ export default function Page() {
         _id: crypto.randomUUID() as Id<"messages">,
         _creationTime: now,
         content,
+        // If we are showing optimistic plaintext, don't show the encryptedSessionKey
+        // so the UI doesn't try to decrypt it and flash "Decrypting...".
+        // When the real message arrives from the server, it will include these fields.
+        encryptedSessionKey: args.optimisticPlaintext
+          ? undefined
+          : args.encryptedSessionKey,
+        iv: args.optimisticPlaintext ? undefined : args.iv,
         deleted: false,
         forwarded: 0,
         type: "message",
@@ -347,7 +414,9 @@ export default function Page() {
     api.messages.editMessage,
   ).withOptimisticUpdate((localStore, args) => {
     const chatId: Id<"privateChats"> = params.chatId as Id<"privateChats">;
-    const { newContent, messageId } = args;
+    // Use optimistic plaintext if available
+    const { messageId } = args;
+    const newContent = args.optimisticPlaintext ?? args.newContent;
 
     const existingMessages = localStore.getQuery(api.messages.getMessages, {
       chatId,
@@ -365,6 +434,10 @@ export default function Page() {
           return {
             ...message,
             content: newContent,
+            encryptedSessionKey: args.optimisticPlaintext
+              ? undefined
+              : args.encryptedSessionKey,
+            iv: args.optimisticPlaintext ? undefined : args.iv,
             modified: true,
             modifiedAt: Date.now().toString(),
           };
@@ -389,6 +462,10 @@ export default function Page() {
               lastMessage: {
                 ...lastMessage,
                 content: newContent,
+                encryptedSessionKey: args.optimisticPlaintext
+                  ? undefined
+                  : args.encryptedSessionKey,
+                iv: args.optimisticPlaintext ? undefined : args.iv,
                 modified: true,
                 modifiedAt: Date.now().toString(),
               },
@@ -400,8 +477,6 @@ export default function Page() {
       );
     }
   });
-
-  const userInfo = useQueryWithStatus(api.users.getUserData, {});
 
   const messages = useQueryWithStatus(api.messages.getMessages, {
     chatId: params.chatId,
@@ -511,20 +586,61 @@ export default function Page() {
     setInputValue("");
   };
 
+  // Helper to decode message for editing
+  // Note: This needs to be async, but useEffect is sync.
   useEffect(() => {
-    if (editingMessageId) {
-      const message = messages.data?.find((message) => {
-        return message._id === editingMessageId;
-      });
-      if (message?.type === "message") {
-        setReplyToMessageId(undefined);
-        setInputValue(message.content);
-        inputRef.current?.focus();
-      } else {
-        console.error("Message not found");
+    async function loadContentForEdit() {
+      if (editingMessageId && userInfo.data?._id) {
+        const message = messages.data?.find((message) => {
+          return message._id === editingMessageId;
+        });
+
+        if (message?.type === "message") {
+          let content = message.content;
+          // If encrypted, try to decrypt
+          if (message.encryptedSessionKey && message.iv) {
+            const keyPair = await getStoredKeyPair();
+            if (keyPair) {
+              try {
+                const decrypted = await decryptMessage(
+                  message.content,
+                  message.encryptedSessionKey,
+                  message.iv,
+                  keyPair.privateKey,
+                  userInfo.data._id,
+                );
+                content = decrypted;
+              } catch (e) {
+                console.error("Failed to decrypt for editing", e);
+                toast.error(
+                  "Cannot edit encrypted message (decryption failed)",
+                );
+                return;
+              }
+            } else {
+              toast.error("Cannot edit encrypted message (missing key)");
+              return;
+            }
+          }
+
+          setReplyToMessageId(undefined);
+          setInputValue(content);
+          // Manually update form value so validation works
+          textMessageForm.setValue("message", content);
+          inputRef.current?.focus();
+        } else {
+          console.error("Message not found");
+        }
       }
     }
-  }, [editingMessageId, messages.data]);
+    void loadContentForEdit();
+  }, [
+    editingMessageId,
+    messages.data,
+    textMessageForm,
+    userInfo.data,
+    userInfo.data?._id,
+  ]);
 
   const editingMessageIdRef = useRef(editingMessageId);
 
@@ -548,29 +664,111 @@ export default function Page() {
     const trimmedMessage = values.message.trim();
     if (!trimmedMessage) return;
 
-    if (editingMessageId) {
-      const message = messages.data?.find((message) => {
-        return message._id === editingMessageId;
-      });
+    try {
+      // 1. Get keys
+      const keyPair = await getStoredKeyPair();
+      if (!keyPair) {
+        toast.error("Encryption keys not found. Please refresh the page.");
+        return;
+      }
 
-      if (message?.type === "message" && message.content !== trimmedMessage) {
+      // 2. Determine recipients' public keys
+      // Since this is 1:1 or small group, we need to fetch other users' public keys.
+      // `chatInfo.data.otherUser` is an array of users.
+      //
+      // NOTE: `chatInfo.data` might be undefined if loading.
+      if (!chatInfo.data) {
+        toast.error("Chat info not loaded");
+        return;
+      }
+
+      // We need to encrypt for: Myself + All other users in chat.
+      // Currently `chatInfo.data.otherUser` gives us the other person in 1:1.
+      // What about group chats? The schema supports multiple users.
+      //
+      // MVP Limitation: We are doing 1:1 logic mostly.
+      // We need the `publicKey` of the recipient.
+      const recipient = chatInfo.data.otherUser[0];
+      if (!recipient) {
+        // Self-chat or "My Notes"?
+        // If "My Notes", recipient is just me.
+        // If support chat?
+        //
+        // If no recipient, we just encrypt for ourselves.
+      } else if (!recipient.publicKey) {
+        toast.error(
+          `${recipient.username} has not set up encryption keys yet. Cannot send encrypted message.`,
+        );
+        return;
+      }
+
+      const recipientPublicKey = recipient?.publicKey
+        ? await importPublicKey(recipient.publicKey)
+        : keyPair.publicKey; // Fallback to self if no recipient (e.g. My Notes)
+
+      // 3. Encrypt
+      const { ciphertext, iv, exportedSessionKey } =
+        await encryptMessage(trimmedMessage);
+
+      // 4. Encrypt session key for myself (so I can read it)
+      const myEncryptedSessionKey = await encryptSessionKeyFor(
+        exportedSessionKey,
+        keyPair.publicKey,
+      );
+
+      const keys: Record<string, string> = {};
+      if (userInfo.data?._id) {
+        keys[userInfo.data._id] = myEncryptedSessionKey;
+      } else {
+        // Fallback for safety, though userInfo.data check happens earlier in hooks
+        // This theoretically shouldn't be reached if we have logic correctly
+        // But for strict type safety
+        toast.error("User info not loaded");
+        return;
+      }
+
+      if (recipient && recipient.publicKey) {
+        // Encrypt for recipient
+        const recipientEncryptedKey = await encryptSessionKeyFor(
+          exportedSessionKey,
+          recipientPublicKey,
+        );
+        keys[recipient._id] = recipientEncryptedKey;
+      }
+
+      const packedSessionKeys = btoa(JSON.stringify(keys)); // Base64 encode the JSON to be safe
+
+      if (editingMessageId) {
+        // EDIT MODE
+        // We need to fetch the original message to check if it was encrypted.
+        // Actually, we are just overwriting with new encrypted content.
         void editMessage({
-          newContent: trimmedMessage,
           messageId: editingMessageId,
+          newContent: ciphertext,
+          encryptedSessionKey: packedSessionKeys,
+          iv,
+          optimisticPlaintext: trimmedMessage,
         });
         posthog.capture("message_edited");
+      } else {
+        // SEND MODE
+        void sendMessage({
+          content: ciphertext,
+          chatId: params.chatId,
+          replyToId: replyToMessageId,
+          encryptedSessionKey: packedSessionKeys,
+          iv,
+          optimisticPlaintext: trimmedMessage,
+        });
+        posthog.capture("message_sent");
       }
-    } else {
-      void sendMessage({
-        content: trimmedMessage,
-        chatId: params.chatId,
-        replyToId: replyToMessageId,
-      });
-      posthog.capture("message_sent");
-    }
 
-    fullyResetInput();
-    scrollToBottom();
+      fullyResetInput();
+      scrollToBottom();
+    } catch (e) {
+      console.error("Failed to send encrypted message", e);
+      toast.error("Failed to encrypt message");
+    }
   }
 
   const createClearRequest = useMutation(api.clearRequests.createClearRequest);
