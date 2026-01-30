@@ -4,6 +4,7 @@ import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import { autoPlacement, useFloating } from "@floating-ui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import * as Sentry from "@sentry/nextjs";
 import { api } from "#convex/_generated/api";
 import { type Id } from "#convex/_generated/dataModel";
 import { useQueryWithStatus } from "~/app/convex-client-provider";
@@ -31,7 +32,7 @@ import {
   getStoredKeyPair,
   importPublicKey,
 } from "~/lib/crypto";
-import { usePrevious } from "~/lib/hooks";
+import { useDecryptMessage, usePrevious } from "~/lib/hooks";
 import { cn } from "~/lib/utils";
 import { devMode$ } from "~/states";
 import { useMutation } from "convex/react";
@@ -191,6 +192,7 @@ interface MessageContextProps {
   messages: FunctionReturnType<typeof api.messages.getMessages> | undefined;
   setReplyToMessageId: (id: undefined) => void;
   scrollToMessage: (messageId: Id<"messages">) => void;
+  currentUserConvexId: string | undefined;
 }
 
 const MessageContext: React.FC<MessageContextProps> = ({
@@ -199,6 +201,7 @@ const MessageContext: React.FC<MessageContextProps> = ({
   messages,
   setReplyToMessageId,
   scrollToMessage,
+  currentUserConvexId,
 }) => {
   if (!replyToMessageId && !editingMessageId) return null;
 
@@ -213,6 +216,15 @@ const MessageContext: React.FC<MessageContextProps> = ({
   const handleClose = () => {
     setReplyToMessageId(undefined);
   };
+
+  const isEncrypted = Boolean(message.encryptedSessionKey && message.iv);
+  const decryptedContent = useDecryptMessage(
+    message.content,
+    message.encryptedSessionKey,
+    message.iv,
+    currentUserConvexId,
+    isEncrypted,
+  );
 
   return (
     <AnimatePresence>
@@ -252,8 +264,8 @@ const MessageContext: React.FC<MessageContextProps> = ({
 
           <p className="line-clamp-2 text-sm">
             <strong>{message.from.username}</strong>:{" "}
-            {message.encryptedSessionKey && message.iv
-              ? "🔒 Encrypted Message"
+            {isEncrypted
+              ? (decryptedContent ?? "Decrypting...")
               : message.content}
           </p>
         </div>
@@ -317,6 +329,7 @@ export default function Page() {
           await updatePublicKey({ publicKey: exported });
         }
       } catch (error) {
+        Sentry.captureException(error);
         if (!cancelled) {
           console.error("Failed to initialize encryption keys:", error);
           toast.error("Encryption failed. Please try again.", {
@@ -611,6 +624,7 @@ export default function Page() {
                 );
                 content = decrypted;
               } catch (e) {
+                Sentry.captureException(e);
                 console.error("Failed to decrypt for editing", e);
                 toast.error(
                   "Cannot edit encrypted message (decryption failed)",
@@ -682,29 +696,7 @@ export default function Page() {
         return;
       }
 
-      // We need to encrypt for: Myself + All other users in chat.
-      // Currently `chatInfo.data.otherUser` gives us the other person in 1:1.
-      // What about group chats? The schema supports multiple users.
-      //
-      // MVP Limitation: We are doing 1:1 logic mostly.
-      // We need the `publicKey` of the recipient.
-      const recipient = chatInfo.data.otherUser[0];
-      if (!recipient) {
-        // Self-chat or "My Notes"?
-        // If "My Notes", recipient is just me.
-        // If support chat?
-        //
-        // If no recipient, we just encrypt for ourselves.
-      } else if (!recipient.publicKey) {
-        toast.error(
-          `${recipient.username} has not set up encryption keys yet. Cannot send encrypted message.`,
-        );
-        return;
-      }
-
-      const recipientPublicKey = recipient?.publicKey
-        ? await importPublicKey(recipient.publicKey)
-        : keyPair.publicKey; // Fallback to self if no recipient (e.g. My Notes)
+      // We need to encrypt for: myself + all other users in the chat.
 
       // 3. Encrypt
       const { ciphertext, iv, exportedSessionKey } =
@@ -727,8 +719,19 @@ export default function Page() {
         return;
       }
 
-      if (recipient && recipient.publicKey) {
-        // Encrypt for recipient
+      for (const recipient of chatInfo.data.otherUser) {
+        if (recipient._id === userInfo.data?._id) {
+          continue;
+        }
+
+        if (!recipient.publicKey) {
+          toast.error(
+            `${recipient.username} has not set up encryption keys yet. Cannot send encrypted message.`,
+          );
+          return;
+        }
+
+        const recipientPublicKey = await importPublicKey(recipient.publicKey);
         const recipientEncryptedKey = await encryptSessionKeyFor(
           exportedSessionKey,
           recipientPublicKey,
@@ -766,6 +769,7 @@ export default function Page() {
       fullyResetInput();
       scrollToBottom();
     } catch (e) {
+      Sentry.captureException(e);
       console.error("Failed to send encrypted message", e);
       toast.error("Failed to encrypt message");
     }
@@ -777,6 +781,7 @@ export default function Page() {
     try {
       await createClearRequest({ chatId });
     } catch (error) {
+      Sentry.captureException(error);
       console.error("Failed to create clear chat request:", {
         error,
         chatId,
@@ -1063,6 +1068,7 @@ export default function Page() {
                 messages={messages.data}
                 setReplyToMessageId={setReplyToMessageId}
                 scrollToMessage={scrollToMessage}
+                currentUserConvexId={userInfo.data?._id}
               />
               <div className="bg-primary z-10 flex w-full justify-between gap-8 p-4 pb-10 lg:pb-4">
                 <form

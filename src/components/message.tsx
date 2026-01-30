@@ -5,7 +5,7 @@ import { api } from "#convex/_generated/api";
 import type { Id } from "#convex/_generated/dataModel";
 import { EDIT_WINDOW_MS } from "#convex/constants";
 import { useQueryWithStatus } from "~/app/convex-client-provider";
-import { decryptMessage, getStoredKeyPair } from "~/lib/crypto";
+import { useDecryptMessage } from "~/lib/hooks";
 import { cn } from "~/lib/utils";
 import { useMutation } from "convex/react";
 import { type FunctionReturnType } from "convex/server";
@@ -61,48 +61,30 @@ const ReplyToMessage = ({
 }: {
   message: Message;
   scrollToMessage: (messageId: Id<"messages">) => void;
-  currentUserConvexId: string | undefined;
+  currentUserConvexId: Id<"users"> | undefined;
 }) => {
-  const [decryptedContent, setDecryptedContent] = useState<string | null>(null);
+  const isEncrypted = Boolean(
+    message.type === "message" &&
+    message.replyTo &&
+    !message.replyTo.deleted &&
+    message.replyTo.encryptedSessionKey &&
+    message.replyTo.iv,
+  );
 
-  useEffect(() => {
-    async function decrypt() {
-      if (
-        message.type === "message" &&
-        message.replyTo &&
-        !message.replyTo.deleted &&
-        message.replyTo.encryptedSessionKey &&
-        message.replyTo.iv &&
-        currentUserConvexId
-      ) {
-        try {
-          const keyPair = await getStoredKeyPair();
-          if (keyPair) {
-            const decrypted = await decryptMessage(
-              message.replyTo.content,
-              message.replyTo.encryptedSessionKey,
-              message.replyTo.iv,
-              keyPair.privateKey,
-              currentUserConvexId,
-            );
-            setDecryptedContent(decrypted);
-          } else {
-            setDecryptedContent("Waiting for key...");
-          }
-        } catch (e) {
-          console.error("Failed to decrypt reply", e);
-          setDecryptedContent("Unable to decrypt reply");
-        }
-      }
-    }
-    void decrypt();
-  }, [message, currentUserConvexId]);
+  const decryptedContent = useDecryptMessage(
+    message.type === "message" ? message.replyTo?.content : undefined,
+    message.type === "message"
+      ? message.replyTo?.encryptedSessionKey
+      : undefined,
+    message.type === "message" ? message.replyTo?.iv : undefined,
+    currentUserConvexId,
+    isEncrypted,
+  );
 
   if (message.type === "message" && message.replyTo && !message.deleted) {
-    const displayContent =
-      message.replyTo.encryptedSessionKey && message.replyTo.iv
-        ? (decryptedContent ?? "Decrypting...")
-        : message.replyTo.content;
+    const displayContent = isEncrypted
+      ? (decryptedContent ?? "Decrypting...")
+      : message.replyTo.content;
 
     return (
       <div
@@ -184,44 +166,22 @@ export const Message = ({
   const clerkUser = useUser();
 
   const [isEditable, setIsEditable] = useState(false);
-  const [decryptedContent, setDecryptedContent] = useState<string | null>(null);
 
   // Get the current user's Convex ID from userInfos
   const currentUserConvexId = userInfos[0]?._id;
 
-  useEffect(() => {
-    async function decrypt() {
-      if (
-        message.type === "message" &&
-        !message.deleted &&
-        message.encryptedSessionKey &&
-        message.iv &&
-        currentUserConvexId
-      ) {
-        try {
-          const keyPair = await getStoredKeyPair();
-          if (keyPair) {
-            const decrypted = await decryptMessage(
-              message.content,
-              message.encryptedSessionKey,
-              message.iv,
-              keyPair.privateKey,
-              currentUserConvexId,
-            );
-            setDecryptedContent(decrypted);
-          } else {
-            // If no local key, we can't decrypt.
-            // This happens if the user logged in on a new device.
-            setDecryptedContent("🔒 Encrypted message (key not found)");
-          }
-        } catch (e) {
-          console.error("Decryption failed", e);
-          setDecryptedContent("🔒 Decryption failed");
-        }
-      }
-    }
-    void decrypt();
-  }, [message, currentUserConvexId]);
+  const isEncrypted =
+    message.type === "message" &&
+    !message.deleted &&
+    Boolean(message.encryptedSessionKey && message.iv);
+
+  const decryptedContent = useDecryptMessage(
+    message.type === "message" ? message.content : undefined,
+    message.type === "message" ? message.encryptedSessionKey : undefined,
+    message.type === "message" ? message.iv : undefined,
+    currentUserConvexId,
+    isEncrypted,
+  );
 
   useEffect(() => {
     if (selectedMessageId === message._id) {
