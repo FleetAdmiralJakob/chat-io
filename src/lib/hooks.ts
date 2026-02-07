@@ -1,5 +1,6 @@
+import * as Sentry from "@sentry/nextjs";
+import { decryptMessage, getStoredKeyPair } from "~/lib/crypto";
 import React, { useEffect, useState } from "react";
-import { decryptMessage, getStoredKeyPair } from "./crypto";
 
 const MAX_DECRYPTED_MESSAGE_CACHE_SIZE = 500;
 const decryptedMessageCache = new Map<string, string>();
@@ -78,19 +79,21 @@ export function useDecryptMessage(
 
       // Prefer cached plaintext so encrypted messages don't flash "Decrypting..."
       // when server data replaces optimistic UI.
-      setDecryptedState((previousState) => {
-        if (
-          previousState.ciphertext === ciphertext &&
-          previousState.content === cachedContent
-        ) {
-          return previousState;
-        }
+      if (!cancelled) {
+        setDecryptedState((previousState) => {
+          if (
+            previousState.ciphertext === ciphertext &&
+            previousState.content === cachedContent
+          ) {
+            return previousState;
+          }
 
-        return {
-          ciphertext,
-          content: cachedContent,
-        };
-      });
+          return {
+            ciphertext,
+            content: cachedContent,
+          };
+        });
+      }
 
       if (cachedContent !== null) {
         return;
@@ -103,6 +106,10 @@ export function useDecryptMessage(
 
       try {
         const keyPair = await getStoredKeyPair();
+        if (cancelled) {
+          return;
+        }
+
         if (keyPair) {
           const decrypted = await decryptMessage(
             ciphertext,
@@ -111,6 +118,10 @@ export function useDecryptMessage(
             keyPair.privateKey,
             userId,
           );
+          if (cancelled) {
+            return;
+          }
+
           if (!cancelled) {
             cacheDecryptedMessage(ciphertext, decrypted);
             setDecryptedState((previousState) => {
@@ -141,6 +152,7 @@ export function useDecryptMessage(
           }
         }
       } catch (e) {
+        Sentry.captureException(e);
         console.error("Decryption failed", e);
         if (!cancelled) {
           setDecryptedState((previousState) => {

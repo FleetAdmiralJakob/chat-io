@@ -561,6 +561,8 @@ export default function Page() {
   // Helper to decode message for editing
   // Note: This needs to be async, but useEffect is sync.
   useEffect(() => {
+    let cancelled = false;
+
     async function loadContentForEdit() {
       if (editingMessageId && userInfo.data?._id) {
         const message = messages.data?.find((message) => {
@@ -572,6 +574,8 @@ export default function Page() {
           // If encrypted, try to decrypt
           if (message.encryptedSessionKey && message.iv) {
             const keyPair = await getStoredKeyPair();
+            if (cancelled) return;
+
             if (keyPair) {
               try {
                 const decrypted = await decryptMessage(
@@ -581,6 +585,8 @@ export default function Page() {
                   keyPair.privateKey,
                   userInfo.data._id,
                 );
+                if (cancelled) return;
+
                 content = decrypted;
               } catch (e) {
                 Sentry.captureException(e);
@@ -596,6 +602,8 @@ export default function Page() {
             }
           }
 
+          if (cancelled) return;
+
           setReplyToMessageId(undefined);
           setInputValue(content);
           // Manually update form value so validation works
@@ -606,7 +614,12 @@ export default function Page() {
         }
       }
     }
+
     void loadContentForEdit();
+
+    return () => {
+      cancelled = true;
+    };
   }, [
     editingMessageId,
     messages.data,
