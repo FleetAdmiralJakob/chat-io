@@ -1,34 +1,79 @@
-import * as Sentry from "@sentry/nextjs";
 import {
-  decryptMessage,
+  decryptMessageWithStoredKeys,
   EncryptedSessionKeyNotFoundError,
-  getStoredKeyPair,
+  StoredKeyPairNotFoundError,
 } from "~/lib/crypto";
+import { reportSafeError } from "~/lib/safe-error-reporting";
 import React, { useEffect, useState } from "react";
 
 const MAX_DECRYPTED_MESSAGE_CACHE_SIZE = 500;
 const decryptedMessageCache = new Map<string, string>();
+let activeCacheUserId: string | null = null;
 
-const getCachedDecryptedMessage = (
-  ciphertext: string | undefined,
-): string | null => {
-  if (!ciphertext) {
-    return null;
-  }
-
-  return decryptedMessageCache.get(ciphertext) ?? null;
+export const clearDecryptedMessageCache = () => {
+  decryptedMessageCache.clear();
+  activeCacheUserId = null;
 };
 
-export function cacheDecryptedMessage(ciphertext: string, plaintext: string) {
-  if (!ciphertext || !plaintext) {
+const getCacheKey = (
+  userId: string | undefined,
+  ciphertext: string | undefined,
+): string | undefined => {
+  if (!userId || !ciphertext) {
+    return undefined;
+  }
+
+  return `${userId}:${ciphertext}`;
+};
+
+const ensureCacheUserContext = (userId: string | undefined): void => {
+  if (!userId) {
     return;
   }
 
-  if (decryptedMessageCache.has(ciphertext)) {
-    decryptedMessageCache.delete(ciphertext);
+  if (!activeCacheUserId) {
+    activeCacheUserId = userId;
+    return;
   }
 
-  decryptedMessageCache.set(ciphertext, plaintext);
+  if (activeCacheUserId !== userId) {
+    clearDecryptedMessageCache();
+    activeCacheUserId = userId;
+  }
+};
+
+const getCachedDecryptedMessage = (
+  userId: string | undefined,
+  ciphertext: string | undefined,
+): string | null => {
+  const cacheKey = getCacheKey(userId, ciphertext);
+  if (!cacheKey) {
+    return null;
+  }
+
+  ensureCacheUserContext(userId);
+
+  return decryptedMessageCache.get(cacheKey) ?? null;
+};
+
+export function cacheDecryptedMessage(
+  userId: string | undefined,
+  ciphertext: string,
+  plaintext: string,
+) {
+  const cacheKey = getCacheKey(userId, ciphertext);
+
+  if (!cacheKey || !plaintext) {
+    return;
+  }
+
+  ensureCacheUserContext(userId);
+
+  if (decryptedMessageCache.has(cacheKey)) {
+    decryptedMessageCache.delete(cacheKey);
+  }
+
+  decryptedMessageCache.set(cacheKey, plaintext);
 
   if (decryptedMessageCache.size > MAX_DECRYPTED_MESSAGE_CACHE_SIZE) {
     const oldestCiphertext = decryptedMessageCache.keys().next().value;
@@ -67,33 +112,47 @@ export function useDecryptMessage(
   userId: string | undefined,
   enabled = true,
 ): string | null {
+  const cacheKey = getCacheKey(userId, ciphertext);
+
+  useEffect(() => {
+    if (!userId) {
+      if (activeCacheUserId) {
+        clearDecryptedMessageCache();
+      }
+      return;
+    }
+
+    ensureCacheUserContext(userId);
+  }, [userId]);
+
   const [decryptedState, setDecryptedState] = useState<{
-    ciphertext: string | undefined;
+    cacheKey: string | undefined;
     content: string | null;
   }>(() => ({
-    ciphertext,
-    content: getCachedDecryptedMessage(ciphertext),
+    cacheKey,
+    content: getCachedDecryptedMessage(userId, ciphertext),
   }));
 
   useEffect(() => {
     let cancelled = false;
 
     async function decrypt() {
-      const cachedContent = getCachedDecryptedMessage(ciphertext);
+      const currentCacheKey = getCacheKey(userId, ciphertext);
+      const cachedContent = getCachedDecryptedMessage(userId, ciphertext);
 
       // Prefer cached plaintext so encrypted messages don't flash "Decrypting..."
       // when server data replaces optimistic UI.
       if (!cancelled) {
         setDecryptedState((previousState) => {
           if (
-            previousState.ciphertext === ciphertext &&
+            previousState.cacheKey === currentCacheKey &&
             previousState.content === cachedContent
           ) {
             return previousState;
           }
 
           return {
-            ciphertext,
+            cacheKey: currentCacheKey,
             content: cachedContent,
           };
         });
@@ -109,57 +168,51 @@ export function useDecryptMessage(
       }
 
       try {
-        const keyPair = await getStoredKeyPair(userId);
+        const decrypted = await decryptMessageWithStoredKeys(
+          ciphertext,
+          encryptedSessionKey,
+          iv,
+          userId,
+        );
         if (cancelled) {
           return;
         }
 
-        if (keyPair) {
-          const decrypted = await decryptMessage(
-            ciphertext,
-            encryptedSessionKey,
-            iv,
-            keyPair.privateKey,
-            userId,
-          );
+        if (!cancelled) {
+          cacheDecryptedMessage(userId, ciphertext, decrypted);
+          setDecryptedState((previousState) => {
+            if (previousState.cacheKey !== currentCacheKey) {
+              return previousState;
+            }
+
+            return {
+              cacheKey: currentCacheKey,
+              content: decrypted,
+            };
+          });
+        }
+      } catch (e) {
+        if (e instanceof StoredKeyPairNotFoundError) {
           if (cancelled) {
             return;
           }
 
-          if (!cancelled) {
-            cacheDecryptedMessage(ciphertext, decrypted);
-            setDecryptedState((previousState) => {
-              if (previousState.ciphertext !== ciphertext) {
-                return previousState;
-              }
+          setDecryptedState((previousState) => {
+            if (previousState.cacheKey !== currentCacheKey) {
+              return previousState;
+            }
 
-              return {
-                ciphertext,
-                content: decrypted,
-              };
-            });
-          }
-        } else {
-          // If no local key, we can't decrypt.
-          // This happens if the user logged in on a new device.
-          if (!cancelled) {
-            setDecryptedState((previousState) => {
-              if (previousState.ciphertext !== ciphertext) {
-                return previousState;
-              }
-
-              return {
-                ciphertext,
-                content: "🔒 Encrypted message (key not found)",
-              };
-            });
-          }
+            return {
+              cacheKey: currentCacheKey,
+              content: "🔒 Encrypted message (key not found)",
+            };
+          });
+          return;
         }
-      } catch (e) {
+
         if (!(e instanceof EncryptedSessionKeyNotFoundError)) {
-          Sentry.captureException(e);
+          reportSafeError("Decryption failed", e);
         }
-        console.error("Decryption failed", e);
         if (!cancelled) {
           const decryptionFallbackMessage =
             e instanceof EncryptedSessionKeyNotFoundError
@@ -167,12 +220,12 @@ export function useDecryptMessage(
               : "🔒 Decryption failed";
 
           setDecryptedState((previousState) => {
-            if (previousState.ciphertext !== ciphertext) {
+            if (previousState.cacheKey !== currentCacheKey) {
               return previousState;
             }
 
             return {
-              ciphertext,
+              cacheKey: currentCacheKey,
               content: decryptionFallbackMessage,
             };
           });
@@ -187,8 +240,8 @@ export function useDecryptMessage(
     };
   }, [ciphertext, encryptedSessionKey, iv, userId, enabled]);
 
-  if (decryptedState.ciphertext !== ciphertext) {
-    return getCachedDecryptedMessage(ciphertext);
+  if (decryptedState.cacheKey !== cacheKey) {
+    return getCachedDecryptedMessage(userId, ciphertext);
   }
 
   return decryptedState.content;

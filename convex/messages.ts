@@ -213,10 +213,6 @@ export const createMessage = mutation({
     encryptedSessionKey: v.optional(v.string()),
     iv: v.optional(v.string()),
     replyToId: v.optional(v.id("messages")),
-    // Optional arg to help with optimistic updates on the client.
-    // The server ignores this, but it allows the client to pass the plaintext
-    // so the optimistic updater can render it immediately without decryption.
-    optimisticPlaintext: v.optional(v.string()),
   },
   returns: v.null(),
   handler: async (ctx, args) => {
@@ -573,9 +569,7 @@ export const forwardMessage = mutation({
         ctx.scheduler.runAfter(0, internal.push.sendPush, {
           userId: otherUser._id,
           title: user.username,
-          body: message.encryptedSessionKey
-            ? "New encrypted message"
-            : message.content,
+          body: message.content,
           data: { url: `/chats/${forwardObject.chatId}` },
         }),
       );
@@ -597,8 +591,6 @@ export const editMessage = mutation({
     newContent: v.string(),
     encryptedSessionKey: v.optional(v.string()), // New keys for edited content
     iv: v.optional(v.string()),
-    // Optional arg to help with optimistic updates on the client.
-    optimisticPlaintext: v.optional(v.string()),
   },
   returns: v.null(),
   handler: async (ctx, args) => {

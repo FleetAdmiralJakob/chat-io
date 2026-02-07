@@ -4,7 +4,6 @@ import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import { autoPlacement, useFloating } from "@floating-ui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as Sentry from "@sentry/nextjs";
 import { api } from "#convex/_generated/api";
 import { type Id } from "#convex/_generated/dataModel";
 import { useQueryWithStatus } from "~/app/convex-client-provider";
@@ -24,18 +23,20 @@ import {
 } from "~/components/ui/resize";
 import { Skeleton } from "~/components/ui/skeleton";
 import {
-  decryptMessage,
+  decryptMessageWithStoredKeys,
   EncryptedSessionKeyNotFoundError,
   encryptMessage,
   encryptSessionKeyFor,
   getStoredKeyPair,
   importPublicKey,
+  StoredKeyPairNotFoundError,
 } from "~/lib/crypto";
 import {
   cacheDecryptedMessage,
   useDecryptMessage,
   usePrevious,
 } from "~/lib/hooks";
+import { reportSafeError } from "~/lib/safe-error-reporting";
 import { cn } from "~/lib/utils";
 import { devMode$ } from "~/states";
 import { useConvex, useMutation } from "convex/react";
@@ -315,8 +316,7 @@ export default function Page() {
     api.messages.createMessage,
   ).withOptimisticUpdate((localStore, args) => {
     const chatId: Id<"privateChats"> = args.chatId as Id<"privateChats">;
-    // Use the optimistic plaintext if available, otherwise fallback to content (which is ciphertext)
-    const content = args.optimisticPlaintext ?? args.content;
+    const content = args.content;
 
     const existingMessages = localStore.getQuery(api.messages.getMessages, {
       chatId,
@@ -337,13 +337,8 @@ export default function Page() {
         _id: crypto.randomUUID() as Id<"messages">,
         _creationTime: now,
         content,
-        // If we are showing optimistic plaintext, don't show the encryptedSessionKey
-        // so the UI doesn't try to decrypt it and flash "Decrypting...".
-        // When the real message arrives from the server, it will include these fields.
-        encryptedSessionKey: args.optimisticPlaintext
-          ? undefined
-          : args.encryptedSessionKey,
-        iv: args.optimisticPlaintext ? undefined : args.iv,
+        encryptedSessionKey: args.encryptedSessionKey,
+        iv: args.iv,
         deleted: false,
         forwarded: 0,
         type: "message",
@@ -387,9 +382,8 @@ export default function Page() {
     api.messages.editMessage,
   ).withOptimisticUpdate((localStore, args) => {
     const chatId: Id<"privateChats"> = params.chatId as Id<"privateChats">;
-    // Use optimistic plaintext if available
     const { messageId } = args;
-    const newContent = args.optimisticPlaintext ?? args.newContent;
+    const newContent = args.newContent;
 
     const existingMessages = localStore.getQuery(api.messages.getMessages, {
       chatId,
@@ -407,10 +401,8 @@ export default function Page() {
           return {
             ...message,
             content: newContent,
-            encryptedSessionKey: args.optimisticPlaintext
-              ? undefined
-              : args.encryptedSessionKey,
-            iv: args.optimisticPlaintext ? undefined : args.iv,
+            encryptedSessionKey: args.encryptedSessionKey,
+            iv: args.iv,
             modified: true,
             modifiedAt: Date.now().toString(),
           };
@@ -435,10 +427,8 @@ export default function Page() {
               lastMessage: {
                 ...lastMessage,
                 content: newContent,
-                encryptedSessionKey: args.optimisticPlaintext
-                  ? undefined
-                  : args.encryptedSessionKey,
-                iv: args.optimisticPlaintext ? undefined : args.iv,
+                encryptedSessionKey: args.encryptedSessionKey,
+                iv: args.iv,
                 modified: true,
                 modifiedAt: Date.now().toString(),
               },
@@ -583,36 +573,32 @@ export default function Page() {
       if (message?.type === "message") {
         let content = message.content;
         if (message.encryptedSessionKey && message.iv) {
-          const keyPair = await getStoredKeyPair(userInfo.data._id);
-          if (cancelled) return;
+          try {
+            const decrypted = await decryptMessageWithStoredKeys(
+              message.content,
+              message.encryptedSessionKey,
+              message.iv,
+              userInfo.data._id,
+            );
+            if (cancelled) return;
 
-          if (keyPair) {
-            try {
-              const decrypted = await decryptMessage(
-                message.content,
-                message.encryptedSessionKey,
-                message.iv,
-                keyPair.privateKey,
-                userInfo.data._id,
-              );
-              if (cancelled) return;
+            content = decrypted;
+          } catch (e) {
+            reportSafeError("Failed to decrypt for editing", e);
 
-              content = decrypted;
-            } catch (e) {
-              Sentry.captureException(e);
-              console.error("Failed to decrypt for editing", e);
-              const errorMessage =
-                e instanceof EncryptedSessionKeyNotFoundError
-                  ? "Cannot edit encrypted message (not encrypted for this device)"
-                  : "Cannot edit encrypted message (decryption failed)";
-
+            if (e instanceof StoredKeyPairNotFoundError) {
               originalEditingContentRef.current = null;
-              toast.error(errorMessage);
+              toast.error("Cannot edit encrypted message (missing key)");
               return;
             }
-          } else {
+
+            const errorMessage =
+              e instanceof EncryptedSessionKeyNotFoundError
+                ? "Cannot edit encrypted message (not encrypted for this device)"
+                : "Cannot edit encrypted message (decryption failed)";
+
             originalEditingContentRef.current = null;
-            toast.error("Cannot edit encrypted message (missing key)");
+            toast.error(errorMessage);
             return;
           }
         }
@@ -711,14 +697,13 @@ export default function Page() {
           recipients = latestChatInfo.otherUser;
         }
       } catch (error) {
-        Sentry.captureException(error);
-        console.error("Failed to refresh recipient public keys", error);
+        reportSafeError("Failed to refresh recipient public keys", error);
       }
 
       // 3. Encrypt
       const { ciphertext, iv, exportedSessionKey } =
         await encryptMessage(trimmedMessage);
-      cacheDecryptedMessage(ciphertext, trimmedMessage);
+      cacheDecryptedMessage(currentUserConvexId, ciphertext, trimmedMessage);
 
       // 4. Encrypt session key for myself (so I can read it)
       const myEncryptedSessionKey = await encryptSessionKeyFor(
@@ -760,7 +745,6 @@ export default function Page() {
           newContent: ciphertext,
           encryptedSessionKey: packedSessionKeys,
           iv,
-          optimisticPlaintext: trimmedMessage,
         });
         posthog.capture("message_edited");
       } else {
@@ -771,7 +755,6 @@ export default function Page() {
           replyToId: replyToMessageId,
           encryptedSessionKey: packedSessionKeys,
           iv,
-          optimisticPlaintext: trimmedMessage,
         });
         posthog.capture("message_sent");
       }
@@ -779,8 +762,7 @@ export default function Page() {
       fullyResetInput();
       scrollToBottom();
     } catch (e) {
-      Sentry.captureException(e);
-      console.error("Failed to send encrypted message", e);
+      reportSafeError("Failed to send encrypted message", e);
       toast.error("Failed to encrypt message");
     }
   }
@@ -791,9 +773,7 @@ export default function Page() {
     try {
       await createClearRequest({ chatId });
     } catch (error) {
-      Sentry.captureException(error);
-      console.error("Failed to create clear chat request:", {
-        error,
+      reportSafeError("Failed to create clear chat request", error, {
         chatId,
       });
 

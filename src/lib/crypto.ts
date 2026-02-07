@@ -1,4 +1,5 @@
 import { db, type KeyPair } from "./db";
+import { reportSafeError } from "./safe-error-reporting";
 
 const LEGACY_KEY_PAIR_ID = "primary";
 const USER_KEY_PAIR_PREFIX = "primary:";
@@ -12,6 +13,13 @@ export class EncryptedSessionKeyNotFoundError extends Error {
   constructor(userId: string) {
     super(`Missing encrypted session key for user ${userId}`);
     this.name = "EncryptedSessionKeyNotFoundError";
+  }
+}
+
+export class StoredKeyPairNotFoundError extends Error {
+  constructor(userId: string) {
+    super(`No stored key pair found for user ${userId}`);
+    this.name = "StoredKeyPairNotFoundError";
   }
 }
 
@@ -45,6 +53,33 @@ export async function generateKeyPair(userId: string): Promise<KeyPair> {
 
 export async function getStoredKeyPair(userId: string) {
   return await db.keys.get(getUserScopedKeyPairId(userId));
+}
+
+export async function getStoredKeyPairsForDecryption(
+  userId: string,
+): Promise<Array<KeyPair>> {
+  const [userScopedKeyPair, legacyKeyPair] = await Promise.all([
+    getStoredKeyPair(userId),
+    getLegacyStoredKeyPair(),
+  ]);
+
+  if (
+    userScopedKeyPair &&
+    legacyKeyPair &&
+    userScopedKeyPair.id !== legacyKeyPair.id
+  ) {
+    return [userScopedKeyPair, legacyKeyPair];
+  }
+
+  if (userScopedKeyPair) {
+    return [userScopedKeyPair];
+  }
+
+  if (legacyKeyPair) {
+    return [legacyKeyPair];
+  }
+
+  return [];
 }
 
 export async function getLegacyStoredKeyPair() {
@@ -175,9 +210,44 @@ export async function decryptMessage(
       throw error;
     }
 
-    console.error("Decryption failed:", error);
+    reportSafeError("Decryption failed", error);
     throw new Error("Could not decrypt message");
   }
+}
+
+export async function decryptMessageWithStoredKeys(
+  ciphertext: string,
+  encryptedSessionKey: string,
+  iv: string,
+  userId: string,
+): Promise<string> {
+  const candidateKeyPairs = await getStoredKeyPairsForDecryption(userId);
+
+  if (candidateKeyPairs.length === 0) {
+    throw new StoredKeyPairNotFoundError(userId);
+  }
+
+  let lastDecryptionError: unknown = null;
+
+  for (const keyPair of candidateKeyPairs) {
+    try {
+      return await decryptMessage(
+        ciphertext,
+        encryptedSessionKey,
+        iv,
+        keyPair.privateKey,
+        userId,
+      );
+    } catch (error) {
+      if (error instanceof EncryptedSessionKeyNotFoundError) {
+        throw error;
+      }
+
+      lastDecryptionError = error;
+    }
+  }
+
+  throw lastDecryptionError ?? new Error("Could not decrypt message");
 }
 
 function extractEncryptedSessionKeyForUser(

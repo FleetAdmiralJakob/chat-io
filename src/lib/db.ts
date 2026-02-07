@@ -1,7 +1,7 @@
 import Dexie, { type EntityTable } from "dexie";
 
 export interface KeyPair {
-  id: string; // "primary"
+  id: string; // "primary" (legacy) or "primary:<userId>" (user-scoped)
   privateKey: CryptoKey;
   publicKey: CryptoKey;
   createdAt: number;

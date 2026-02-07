@@ -1,6 +1,5 @@
 "use client";
 
-import * as Sentry from "@sentry/nextjs";
 import { api } from "#convex/_generated/api";
 import { useQueryWithStatus } from "~/app/convex-client-provider";
 import {
@@ -10,6 +9,7 @@ import {
   getStoredKeyPair,
   migrateLegacyKeyPairToUser,
 } from "~/lib/crypto";
+import { reportSafeError } from "~/lib/safe-error-reporting";
 import { useMutation } from "convex/react";
 import { useEffect, useRef } from "react";
 
@@ -35,18 +35,12 @@ export function EncryptionKeyBootstrap() {
           const legacyKeyPair = await getLegacyStoredKeyPair();
           if (cancelled) return;
 
-          if (legacyKeyPair && userInfo.data.publicKey) {
-            const legacyPublicKey = await exportPublicKey(
-              legacyKeyPair.publicKey,
-            );
+          if (legacyKeyPair) {
+            await migrateLegacyKeyPairToUser(currentUserId, legacyKeyPair);
             if (cancelled) return;
 
-            if (legacyPublicKey === userInfo.data.publicKey) {
-              await migrateLegacyKeyPairToUser(currentUserId, legacyKeyPair);
-              if (cancelled) return;
-              keyPair = await getStoredKeyPair(currentUserId);
-              if (cancelled) return;
-            }
+            keyPair = await getStoredKeyPair(currentUserId);
+            if (cancelled) return;
           }
         }
 
@@ -61,9 +55,8 @@ export function EncryptionKeyBootstrap() {
           await updatePublicKey({ publicKey: exportedPublicKey });
         }
       } catch (error) {
-        Sentry.captureException(error);
         if (!cancelled) {
-          console.error("Failed to initialize encryption keys:", error);
+          reportSafeError("Failed to initialize encryption keys", error);
         }
       } finally {
         isInitializingKeyPair.current = false;
