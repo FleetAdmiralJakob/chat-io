@@ -32,7 +32,11 @@ import {
   getStoredKeyPair,
   importPublicKey,
 } from "~/lib/crypto";
-import { useDecryptMessage, usePrevious } from "~/lib/hooks";
+import {
+  cacheDecryptedMessage,
+  useDecryptMessage,
+  usePrevious,
+} from "~/lib/hooks";
 import { cn } from "~/lib/utils";
 import { devMode$ } from "~/states";
 import { useMutation } from "convex/react";
@@ -203,28 +207,30 @@ const MessageContext: React.FC<MessageContextProps> = ({
   scrollToMessage,
   currentUserConvexId,
 }) => {
-  if (!replyToMessageId && !editingMessageId) return null;
+  const targetMessageId = replyToMessageId ?? editingMessageId;
 
-  const message = messages?.find(
-    (msg) => msg._id === (replyToMessageId ?? editingMessageId),
+  const message = targetMessageId
+    ? messages?.find((msg) => msg._id === targetMessageId)
+    : undefined;
+
+  const isEncrypted = Boolean(
+    message?.type === "message" && message.encryptedSessionKey && message.iv,
+  );
+  const decryptedContent = useDecryptMessage(
+    message?.type === "message" ? message.content : undefined,
+    message?.type === "message" ? message.encryptedSessionKey : undefined,
+    message?.type === "message" ? message.iv : undefined,
+    currentUserConvexId,
+    isEncrypted,
   );
 
-  if (message?.type !== "message") return null;
+  if (!targetMessageId || message?.type !== "message") return null;
 
   const isEditing = Boolean(editingMessageId);
   const contextText = isEditing ? "Editing message:" : "Replying to:";
   const handleClose = () => {
     setReplyToMessageId(undefined);
   };
-
-  const isEncrypted = Boolean(message.encryptedSessionKey && message.iv);
-  const decryptedContent = useDecryptMessage(
-    message.content,
-    message.encryptedSessionKey,
-    message.iv,
-    currentUserConvexId,
-    isEncrypted,
-  );
 
   return (
     <AnimatePresence>
@@ -701,6 +707,7 @@ export default function Page() {
       // 3. Encrypt
       const { ciphertext, iv, exportedSessionKey } =
         await encryptMessage(trimmedMessage);
+      cacheDecryptedMessage(ciphertext, trimmedMessage);
 
       // 4. Encrypt session key for myself (so I can read it)
       const myEncryptedSessionKey = await encryptSessionKeyFor(
@@ -1015,8 +1022,8 @@ export default function Page() {
                     <Sparkles className="h-5 w-5 animate-pulse delay-1000" />
                   </div>
                 </div>
-                {messages.data.map((message, key) => (
-                  <React.Fragment key={key}>
+                {messages.data.map((message) => (
+                  <React.Fragment key={message._id}>
                     <Message
                       selectedMessageId={selectedMessageId}
                       setSelectedMessageId={setSelectedMessageId}

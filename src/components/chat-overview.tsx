@@ -161,7 +161,7 @@ const Chats: React.FC<{
                     className={cn("border-secondary w-full border-t-2", {
                       "border-0": index == 0,
                     })}
-                    key={index}
+                    key={chat._id}
                   >
                     <Link
                       className="flex w-full items-center justify-between truncate px-5 py-6 lg:ml-5 lg:px-0"
@@ -233,7 +233,7 @@ const Chats: React.FC<{
                   className={cn("border-secondary w-full border-t-2", {
                     "border-0": index == 0,
                   })}
-                  key={index}
+                  key={chat._id}
                 >
                   <Link
                     className={cn(
