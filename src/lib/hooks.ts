@@ -76,9 +76,9 @@ export function cacheDecryptedMessage(
   decryptedMessageCache.set(cacheKey, plaintext);
 
   if (decryptedMessageCache.size > MAX_DECRYPTED_MESSAGE_CACHE_SIZE) {
-    const oldestCiphertext = decryptedMessageCache.keys().next().value;
-    if (oldestCiphertext) {
-      decryptedMessageCache.delete(oldestCiphertext);
+    const oldestCacheKey = decryptedMessageCache.keys().next().value;
+    if (oldestCacheKey) {
+      decryptedMessageCache.delete(oldestCacheKey);
     }
   }
 }

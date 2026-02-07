@@ -25,17 +25,35 @@ export function EncryptionKeyBootstrap() {
       if (!userInfo.data || isInitializingKeyPair.current) return;
 
       const currentUserId = userInfo.data._id;
+      const serverPublicKey = userInfo.data.publicKey;
 
       isInitializingKeyPair.current = true;
       try {
         let keyPair = await getStoredKeyPair(currentUserId);
         if (cancelled) return;
 
-        if (!keyPair) {
-          const legacyKeyPair = await getLegacyStoredKeyPair();
+        const legacyKeyPair = await getLegacyStoredKeyPair();
+        if (cancelled) return;
+
+        if (!keyPair && legacyKeyPair) {
+          await migrateLegacyKeyPairToUser(currentUserId, legacyKeyPair);
           if (cancelled) return;
 
-          if (legacyKeyPair) {
+          keyPair = await getStoredKeyPair(currentUserId);
+          if (cancelled) return;
+        }
+
+        if (keyPair && legacyKeyPair && serverPublicKey) {
+          const [storedPublicKey, legacyPublicKey] = await Promise.all([
+            exportPublicKey(keyPair.publicKey),
+            exportPublicKey(legacyKeyPair.publicKey),
+          ]);
+          if (cancelled) return;
+
+          if (
+            serverPublicKey === legacyPublicKey &&
+            serverPublicKey !== storedPublicKey
+          ) {
             await migrateLegacyKeyPairToUser(currentUserId, legacyKeyPair);
             if (cancelled) return;
 
@@ -50,7 +68,6 @@ export function EncryptionKeyBootstrap() {
         const exportedPublicKey = await exportPublicKey(keyPair.publicKey);
         if (cancelled) return;
 
-        const serverPublicKey = userInfo.data.publicKey;
         if (!serverPublicKey || serverPublicKey !== exportedPublicKey) {
           await updatePublicKey({ publicKey: exportedPublicKey });
         }

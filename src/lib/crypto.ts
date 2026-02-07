@@ -247,7 +247,11 @@ export async function decryptMessageWithStoredKeys(
     }
   }
 
-  throw lastDecryptionError ?? new Error("Could not decrypt message");
+  if (lastDecryptionError instanceof Error) {
+    throw lastDecryptionError;
+  }
+
+  throw new Error("Could not decrypt message");
 }
 
 function extractEncryptedSessionKeyForUser(
