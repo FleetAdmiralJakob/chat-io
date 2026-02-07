@@ -4,6 +4,126 @@ import { internal } from "./_generated/api";
 import { EDIT_WINDOW_MS } from "./constants";
 import { mutation, query } from "./lib/functions";
 
+const BASE64_PATTERN = /^[A-Za-z0-9+/]+={0,2}$/;
+
+const decodeBase64Value = (value: string): string | null => {
+  if (value.length === 0 || value.length % 4 !== 0) {
+    return null;
+  }
+
+  if (!BASE64_PATTERN.test(value)) {
+    return null;
+  }
+
+  try {
+    return atob(value);
+  } catch {
+    return null;
+  }
+};
+
+const parseEncryptedSessionKeysByUserId = (
+  packedSessionKeys: string,
+): Record<string, string> | null => {
+  const decoded = decodeBase64Value(packedSessionKeys);
+  if (!decoded) {
+    return null;
+  }
+
+  try {
+    const parsed: unknown = JSON.parse(decoded);
+
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+      return null;
+    }
+
+    const entries = Object.entries(parsed as Record<string, unknown>);
+    if (entries.length === 0) {
+      return null;
+    }
+
+    const sessionKeysByUserId: Record<string, string> = {};
+
+    for (const [userId, encryptedSessionKey] of entries) {
+      if (typeof encryptedSessionKey !== "string") {
+        return null;
+      }
+
+      if (!decodeBase64Value(encryptedSessionKey)) {
+        return null;
+      }
+
+      sessionKeysByUserId[userId] = encryptedSessionKey;
+    }
+
+    return sessionKeysByUserId;
+  } catch {
+    return null;
+  }
+};
+
+const assertValidEncryptionPayload = ({
+  chatParticipantIds,
+  ciphertext,
+  encryptedSessionKey,
+  iv,
+}: {
+  chatParticipantIds: Array<string>;
+  ciphertext: string;
+  encryptedSessionKey: string | undefined;
+  iv: string | undefined;
+}) => {
+  if (Boolean(encryptedSessionKey) !== Boolean(iv)) {
+    throw new ConvexError(
+      "Encrypted messages must include both encryptedSessionKey and iv",
+    );
+  }
+
+  if (!encryptedSessionKey && !iv) {
+    return;
+  }
+
+  if (!encryptedSessionKey || !iv) {
+    throw new ConvexError(
+      "Encrypted messages must include both encryptedSessionKey and iv",
+    );
+  }
+
+  if (!decodeBase64Value(ciphertext)) {
+    throw new ConvexError(
+      "Encrypted message content must be base64 ciphertext",
+    );
+  }
+
+  const decodedIv = decodeBase64Value(iv);
+  if (decodedIv?.length !== 12) {
+    throw new ConvexError("Encrypted messages must include a valid 12-byte iv");
+  }
+
+  const sessionKeysByUserId =
+    parseEncryptedSessionKeysByUserId(encryptedSessionKey);
+
+  if (!sessionKeysByUserId) {
+    throw new ConvexError("Invalid encrypted session key payload");
+  }
+
+  for (const userId of chatParticipantIds) {
+    if (!sessionKeysByUserId[userId]) {
+      throw new ConvexError(
+        "Missing encrypted session key for a chat participant",
+      );
+    }
+  }
+
+  for (const userId of Object.keys(sessionKeysByUserId)) {
+    if (!chatParticipantIds.includes(userId)) {
+      throw new ConvexError(
+        "Encrypted session key payload includes users outside of this chat",
+      );
+    }
+  }
+};
+
 export const getMessages = query({
   args: { chatId: v.string() },
   handler: async (ctx, args) => {
@@ -137,6 +257,13 @@ export const createMessage = mutation({
     }
 
     if (args.content.trim() === "") throw new Error("Message cannot be empty");
+
+    assertValidEncryptionPayload({
+      chatParticipantIds: usersInChat.map((user) => user._id),
+      ciphertext: args.content.trim(),
+      encryptedSessionKey: args.encryptedSessionKey,
+      iv: args.iv,
+    });
 
     if (args.replyToId) {
       const replyMessage = await ctx.table("messages").get(args.replyToId);
@@ -500,6 +627,18 @@ export const editMessage = mutation({
     if (message.deleted) {
       throw new Error("Cannot edit deleted message");
     }
+
+    const usersInChat = await ctx
+      .table("privateChats")
+      .getX(message.privateChatId)
+      .edge("users");
+
+    assertValidEncryptionPayload({
+      chatParticipantIds: usersInChat.map((user) => user._id),
+      ciphertext: args.newContent.trim(),
+      encryptedSessionKey: args.encryptedSessionKey,
+      iv: args.iv,
+    });
 
     await message.patch({
       content: args.newContent.trim(),

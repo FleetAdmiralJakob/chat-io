@@ -25,6 +25,7 @@ import {
 import { Skeleton } from "~/components/ui/skeleton";
 import {
   decryptMessage,
+  EncryptedSessionKeyNotFoundError,
   encryptMessage,
   encryptSessionKeyFor,
   getStoredKeyPair,
@@ -546,6 +547,7 @@ export default function Page() {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const [inputValue, setInputValue] = useState("");
+  const originalEditingContentRef = useRef<string | null>(null);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
@@ -554,6 +556,7 @@ export default function Page() {
   const fullyResetInput = () => {
     setEditingMessageId(null);
     setReplyToMessageId(undefined);
+    originalEditingContentRef.current = null;
     textMessageForm.reset();
     setInputValue("");
   };
@@ -564,54 +567,66 @@ export default function Page() {
     let cancelled = false;
 
     async function loadContentForEdit() {
-      if (editingMessageId && userInfo.data?._id) {
-        const message = messages.data?.find((message) => {
-          return message._id === editingMessageId;
-        });
+      if (!editingMessageId) {
+        originalEditingContentRef.current = null;
+        return;
+      }
 
-        if (message?.type === "message") {
-          let content = message.content;
-          // If encrypted, try to decrypt
-          if (message.encryptedSessionKey && message.iv) {
-            const keyPair = await getStoredKeyPair();
-            if (cancelled) return;
+      if (!userInfo.data?._id) {
+        return;
+      }
 
-            if (keyPair) {
-              try {
-                const decrypted = await decryptMessage(
-                  message.content,
-                  message.encryptedSessionKey,
-                  message.iv,
-                  keyPair.privateKey,
-                  userInfo.data._id,
-                );
-                if (cancelled) return;
+      const message = messages.data?.find((message) => {
+        return message._id === editingMessageId;
+      });
 
-                content = decrypted;
-              } catch (e) {
-                Sentry.captureException(e);
-                console.error("Failed to decrypt for editing", e);
-                toast.error(
-                  "Cannot edit encrypted message (decryption failed)",
-                );
-                return;
-              }
-            } else {
-              toast.error("Cannot edit encrypted message (missing key)");
-              return;
-            }
-          }
-
+      if (message?.type === "message") {
+        let content = message.content;
+        if (message.encryptedSessionKey && message.iv) {
+          const keyPair = await getStoredKeyPair(userInfo.data._id);
           if (cancelled) return;
 
-          setReplyToMessageId(undefined);
-          setInputValue(content);
-          // Manually update form value so validation works
-          textMessageForm.setValue("message", content);
-          inputRef.current?.focus();
-        } else {
-          console.error("Message not found");
+          if (keyPair) {
+            try {
+              const decrypted = await decryptMessage(
+                message.content,
+                message.encryptedSessionKey,
+                message.iv,
+                keyPair.privateKey,
+                userInfo.data._id,
+              );
+              if (cancelled) return;
+
+              content = decrypted;
+            } catch (e) {
+              Sentry.captureException(e);
+              console.error("Failed to decrypt for editing", e);
+              const errorMessage =
+                e instanceof EncryptedSessionKeyNotFoundError
+                  ? "Cannot edit encrypted message (not encrypted for this device)"
+                  : "Cannot edit encrypted message (decryption failed)";
+
+              originalEditingContentRef.current = null;
+              toast.error(errorMessage);
+              return;
+            }
+          } else {
+            originalEditingContentRef.current = null;
+            toast.error("Cannot edit encrypted message (missing key)");
+            return;
+          }
         }
+
+        if (cancelled) return;
+
+        originalEditingContentRef.current = content;
+        setReplyToMessageId(undefined);
+        setInputValue(content);
+        textMessageForm.setValue("message", content);
+        inputRef.current?.focus();
+      } else {
+        originalEditingContentRef.current = null;
+        console.error("Message not found");
       }
     }
 
@@ -651,8 +666,24 @@ export default function Page() {
     if (!trimmedMessage) return;
 
     try {
+      if (!userInfo.data?._id) {
+        toast.error("User info not loaded");
+        return;
+      }
+
+      if (
+        editingMessageId &&
+        originalEditingContentRef.current !== null &&
+        originalEditingContentRef.current.trim() === trimmedMessage
+      ) {
+        fullyResetInput();
+        return;
+      }
+
+      const currentUserConvexId = userInfo.data._id;
+
       // 1. Get keys
-      const keyPair = await getStoredKeyPair();
+      const keyPair = await getStoredKeyPair(currentUserConvexId);
       if (!keyPair) {
         toast.error("Encryption keys not found. Please refresh the page.");
         return;
@@ -696,18 +727,10 @@ export default function Page() {
       );
 
       const keys: Record<string, string> = {};
-      if (userInfo.data?._id) {
-        keys[userInfo.data._id] = myEncryptedSessionKey;
-      } else {
-        // Fallback for safety, though userInfo.data check happens earlier in hooks
-        // This theoretically shouldn't be reached if we have logic correctly
-        // But for strict type safety
-        toast.error("User info not loaded");
-        return;
-      }
+      keys[currentUserConvexId] = myEncryptedSessionKey;
 
       for (const recipient of recipients) {
-        if (recipient._id === userInfo.data?._id) {
+        if (recipient._id === currentUserConvexId) {
           continue;
         }
 

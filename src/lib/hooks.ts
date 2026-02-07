@@ -1,5 +1,9 @@
 import * as Sentry from "@sentry/nextjs";
-import { decryptMessage, getStoredKeyPair } from "~/lib/crypto";
+import {
+  decryptMessage,
+  EncryptedSessionKeyNotFoundError,
+  getStoredKeyPair,
+} from "~/lib/crypto";
 import React, { useEffect, useState } from "react";
 
 const MAX_DECRYPTED_MESSAGE_CACHE_SIZE = 500;
@@ -105,7 +109,7 @@ export function useDecryptMessage(
       }
 
       try {
-        const keyPair = await getStoredKeyPair();
+        const keyPair = await getStoredKeyPair(userId);
         if (cancelled) {
           return;
         }
@@ -152,9 +156,16 @@ export function useDecryptMessage(
           }
         }
       } catch (e) {
-        Sentry.captureException(e);
+        if (!(e instanceof EncryptedSessionKeyNotFoundError)) {
+          Sentry.captureException(e);
+        }
         console.error("Decryption failed", e);
         if (!cancelled) {
+          const decryptionFallbackMessage =
+            e instanceof EncryptedSessionKeyNotFoundError
+              ? "🔒 Encrypted message (not encrypted for this device)"
+              : "🔒 Decryption failed";
+
           setDecryptedState((previousState) => {
             if (previousState.ciphertext !== ciphertext) {
               return previousState;
@@ -162,7 +173,7 @@ export function useDecryptMessage(
 
             return {
               ciphertext,
-              content: "🔒 Decryption failed",
+              content: decryptionFallbackMessage,
             };
           });
         }

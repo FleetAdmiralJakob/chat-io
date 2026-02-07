@@ -1,8 +1,21 @@
 import { db, type KeyPair } from "./db";
 
-export const KEY_PAIR_ID = "primary";
+const LEGACY_KEY_PAIR_ID = "primary";
+const USER_KEY_PAIR_PREFIX = "primary:";
+const MIN_KEY_DISTRIBUTION_MAP_LENGTH = 8;
 
-export async function generateKeyPair(): Promise<KeyPair> {
+const getUserScopedKeyPairId = (userId: string) => {
+  return `${USER_KEY_PAIR_PREFIX}${userId}`;
+};
+
+export class EncryptedSessionKeyNotFoundError extends Error {
+  constructor(userId: string) {
+    super(`Missing encrypted session key for user ${userId}`);
+    this.name = "EncryptedSessionKeyNotFoundError";
+  }
+}
+
+export async function generateKeyPair(userId: string): Promise<KeyPair> {
   /**
    * NOTE: RSA-OAEP is not post-quantum resistant. This is a known limitation
    * until the Web Crypto API supports modern PQ algorithms (e.g. ML-KEM).
@@ -14,12 +27,12 @@ export async function generateKeyPair(): Promise<KeyPair> {
       publicExponent: new Uint8Array([1, 0, 1]),
       hash: "SHA-256",
     },
-    true,
+    false,
     ["encrypt", "decrypt"],
   );
 
   const storedKey: KeyPair = {
-    id: KEY_PAIR_ID,
+    id: getUserScopedKeyPairId(userId),
     privateKey: keyPair.privateKey,
     publicKey: keyPair.publicKey,
     createdAt: Date.now(),
@@ -30,8 +43,23 @@ export async function generateKeyPair(): Promise<KeyPair> {
   return storedKey;
 }
 
-export async function getStoredKeyPair() {
-  return await db.keys.get(KEY_PAIR_ID);
+export async function getStoredKeyPair(userId: string) {
+  return await db.keys.get(getUserScopedKeyPairId(userId));
+}
+
+export async function getLegacyStoredKeyPair() {
+  return await db.keys.get(LEGACY_KEY_PAIR_ID);
+}
+
+export async function migrateLegacyKeyPairToUser(
+  userId: string,
+  keyPair: KeyPair,
+) {
+  await db.keys.put({
+    ...keyPair,
+    id: getUserScopedKeyPairId(userId),
+  });
+  await db.keys.delete(LEGACY_KEY_PAIR_ID);
 }
 
 export async function exportPublicKey(key: CryptoKey): Promise<string> {
@@ -39,8 +67,8 @@ export async function exportPublicKey(key: CryptoKey): Promise<string> {
   return bufferToBase64(exported);
 }
 
-export async function importPublicKey(pem: string): Promise<CryptoKey> {
-  const binaryDerString = window.atob(pem);
+export async function importPublicKey(spkiBase64: string): Promise<CryptoKey> {
+  const binaryDerString = window.atob(spkiBase64);
   const binaryDer = new Uint8Array(binaryDerString.length);
   for (let i = 0; i < binaryDerString.length; i++) {
     binaryDer[i] = binaryDerString.charCodeAt(i);
@@ -109,23 +137,10 @@ export async function decryptMessage(
 ) {
   try {
     // 1. Parse the JSON-packed session keys and extract our key
-    let myEncryptedKey: string;
-    try {
-      // Decode Base64 to string
-      const decodedJson = atob(encryptedSessionKey);
-      const keysJson = JSON.parse(decodedJson) as Record<string, string>;
-      const extractedKey = keysJson[userId];
-
-      if (!extractedKey) {
-        console.warn(`No encrypted key found for user ${userId}`);
-        throw new Error("Could not decrypt message");
-      }
-      myEncryptedKey = extractedKey;
-    } catch {
-      // Fallback: treat as raw key for backwards compatibility or single-key testing
-      console.warn("Failed to parse session key JSON, treating as raw key");
-      myEncryptedKey = encryptedSessionKey;
-    }
+    const myEncryptedKey = extractEncryptedSessionKeyForUser(
+      encryptedSessionKey,
+      userId,
+    );
 
     // 2. Decrypt the AES session key using our Private Key
     const sessionKeyBuffer = base64ToBuffer(myEncryptedKey);
@@ -156,8 +171,65 @@ export async function decryptMessage(
 
     return new TextDecoder().decode(decryptedContentBuffer);
   } catch (error) {
+    if (error instanceof EncryptedSessionKeyNotFoundError) {
+      throw error;
+    }
+
     console.error("Decryption failed:", error);
     throw new Error("Could not decrypt message");
+  }
+}
+
+function extractEncryptedSessionKeyForUser(
+  encryptedSessionKey: string,
+  userId: string,
+): string {
+  const packedSessionKeys = decodePackedSessionKeys(encryptedSessionKey);
+
+  if (!packedSessionKeys) {
+    return encryptedSessionKey;
+  }
+
+  const userEncryptedKey = packedSessionKeys[userId];
+  if (!userEncryptedKey) {
+    throw new EncryptedSessionKeyNotFoundError(userId);
+  }
+
+  return userEncryptedKey;
+}
+
+function decodePackedSessionKeys(
+  encryptedSessionKey: string,
+): Record<string, string> | null {
+  if (encryptedSessionKey.length < MIN_KEY_DISTRIBUTION_MAP_LENGTH) {
+    return null;
+  }
+
+  try {
+    const decodedJson = window.atob(encryptedSessionKey);
+    const parsed = JSON.parse(decodedJson);
+
+    if (!parsed || typeof parsed !== "object") {
+      return null;
+    }
+
+    const keysMap = Object.entries(parsed as Record<string, unknown>);
+    if (keysMap.length === 0) {
+      return null;
+    }
+
+    const sessionKeysByUserId: Record<string, string> = {};
+    for (const [recipientUserId, wrappedSessionKey] of keysMap) {
+      if (typeof wrappedSessionKey !== "string") {
+        return null;
+      }
+      sessionKeysByUserId[recipientUserId] = wrappedSessionKey;
+    }
+
+    return sessionKeysByUserId;
+  } catch {
+    // Backward compatibility: previous messages may store a single wrapped key string.
+    return null;
   }
 }
 

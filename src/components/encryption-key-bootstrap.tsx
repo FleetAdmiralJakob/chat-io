@@ -6,7 +6,9 @@ import { useQueryWithStatus } from "~/app/convex-client-provider";
 import {
   exportPublicKey,
   generateKeyPair,
+  getLegacyStoredKeyPair,
   getStoredKeyPair,
+  migrateLegacyKeyPairToUser,
 } from "~/lib/crypto";
 import { useMutation } from "convex/react";
 import { useEffect, useRef } from "react";
@@ -22,18 +24,41 @@ export function EncryptionKeyBootstrap() {
     async function ensureEncryptionKeys() {
       if (!userInfo.data || isInitializingKeyPair.current) return;
 
+      const currentUserId = userInfo.data._id;
+
       isInitializingKeyPair.current = true;
       try {
-        let keyPair = await getStoredKeyPair();
+        let keyPair = await getStoredKeyPair(currentUserId);
         if (cancelled) return;
 
-        keyPair ??= await generateKeyPair();
-        if (cancelled) return;
-
-        if (!userInfo.data.publicKey) {
-          const exported = await exportPublicKey(keyPair.publicKey);
+        if (!keyPair) {
+          const legacyKeyPair = await getLegacyStoredKeyPair();
           if (cancelled) return;
-          await updatePublicKey({ publicKey: exported });
+
+          if (legacyKeyPair && userInfo.data.publicKey) {
+            const legacyPublicKey = await exportPublicKey(
+              legacyKeyPair.publicKey,
+            );
+            if (cancelled) return;
+
+            if (legacyPublicKey === userInfo.data.publicKey) {
+              await migrateLegacyKeyPairToUser(currentUserId, legacyKeyPair);
+              if (cancelled) return;
+              keyPair = await getStoredKeyPair(currentUserId);
+              if (cancelled) return;
+            }
+          }
+        }
+
+        keyPair ??= await generateKeyPair(currentUserId);
+        if (cancelled) return;
+
+        const exportedPublicKey = await exportPublicKey(keyPair.publicKey);
+        if (cancelled) return;
+
+        const serverPublicKey = userInfo.data.publicKey;
+        if (!serverPublicKey || serverPublicKey !== exportedPublicKey) {
+          await updatePublicKey({ publicKey: exportedPublicKey });
         }
       } catch (error) {
         Sentry.captureException(error);
