@@ -4,6 +4,126 @@ import { internal } from "./_generated/api";
 import { EDIT_WINDOW_MS } from "./constants";
 import { mutation, query } from "./lib/functions";
 
+const BASE64_PATTERN = /^[A-Za-z0-9+/]+={0,2}$/;
+
+const decodeBase64Value = (value: string): string | null => {
+  if (value.length === 0 || value.length % 4 !== 0) {
+    return null;
+  }
+
+  if (!BASE64_PATTERN.test(value)) {
+    return null;
+  }
+
+  try {
+    return atob(value);
+  } catch {
+    return null;
+  }
+};
+
+const parseEncryptedSessionKeysByUserId = (
+  packedSessionKeys: string,
+): Record<string, string> | null => {
+  const decoded = decodeBase64Value(packedSessionKeys);
+  if (!decoded) {
+    return null;
+  }
+
+  try {
+    const parsed: unknown = JSON.parse(decoded);
+
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+      return null;
+    }
+
+    const entries = Object.entries(parsed as Record<string, unknown>);
+    if (entries.length === 0) {
+      return null;
+    }
+
+    const sessionKeysByUserId: Record<string, string> = {};
+
+    for (const [userId, encryptedSessionKey] of entries) {
+      if (typeof encryptedSessionKey !== "string") {
+        return null;
+      }
+
+      if (!decodeBase64Value(encryptedSessionKey)) {
+        return null;
+      }
+
+      sessionKeysByUserId[userId] = encryptedSessionKey;
+    }
+
+    return sessionKeysByUserId;
+  } catch {
+    return null;
+  }
+};
+
+const assertValidEncryptionPayload = ({
+  chatParticipantIds,
+  ciphertext,
+  encryptedSessionKey,
+  iv,
+}: {
+  chatParticipantIds: Array<string>;
+  ciphertext: string;
+  encryptedSessionKey: string | undefined;
+  iv: string | undefined;
+}) => {
+  if (Boolean(encryptedSessionKey) !== Boolean(iv)) {
+    throw new ConvexError(
+      "Encrypted messages must include both encryptedSessionKey and iv",
+    );
+  }
+
+  if (!encryptedSessionKey && !iv) {
+    return;
+  }
+
+  if (!encryptedSessionKey || !iv) {
+    throw new ConvexError(
+      "Encrypted messages must include both encryptedSessionKey and iv",
+    );
+  }
+
+  if (!decodeBase64Value(ciphertext)) {
+    throw new ConvexError(
+      "Encrypted message content must be base64 ciphertext",
+    );
+  }
+
+  const decodedIv = decodeBase64Value(iv);
+  if (decodedIv?.length !== 12) {
+    throw new ConvexError("Encrypted messages must include a valid 12-byte iv");
+  }
+
+  const sessionKeysByUserId =
+    parseEncryptedSessionKeysByUserId(encryptedSessionKey);
+
+  if (!sessionKeysByUserId) {
+    throw new ConvexError("Invalid encrypted session key payload");
+  }
+
+  for (const userId of chatParticipantIds) {
+    if (!sessionKeysByUserId[userId]) {
+      throw new ConvexError(
+        "Missing encrypted session key for a chat participant",
+      );
+    }
+  }
+
+  for (const userId of Object.keys(sessionKeysByUserId)) {
+    if (!chatParticipantIds.includes(userId)) {
+      throw new ConvexError(
+        "Encrypted session key payload includes users outside of this chat",
+      );
+    }
+  }
+};
+
 export const getMessages = query({
   args: { chatId: v.string() },
   handler: async (ctx, args) => {
@@ -90,8 +210,11 @@ export const createMessage = mutation({
   args: {
     chatId: v.string(),
     content: v.string(),
+    encryptedSessionKey: v.optional(v.string()),
+    iv: v.optional(v.string()),
     replyToId: v.optional(v.id("messages")),
   },
+  returns: v.null(),
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
 
@@ -131,6 +254,13 @@ export const createMessage = mutation({
 
     if (args.content.trim() === "") throw new Error("Message cannot be empty");
 
+    assertValidEncryptionPayload({
+      chatParticipantIds: usersInChat.map((user) => user._id),
+      ciphertext: args.content.trim(),
+      encryptedSessionKey: args.encryptedSessionKey,
+      iv: args.iv,
+    });
+
     if (args.replyToId) {
       const replyMessage = await ctx.table("messages").get(args.replyToId);
       if (!replyMessage) {
@@ -148,6 +278,8 @@ export const createMessage = mutation({
       userId: convexUser._id,
       privateChatId: parsedChatId,
       content: args.content.trim(),
+      encryptedSessionKey: args.encryptedSessionKey,
+      iv: args.iv,
       deleted: false,
       readBy: [convexUser._id],
       modified: false,
@@ -185,11 +317,21 @@ export const createMessage = mutation({
     const otherUsers = usersInChat.filter((u) => u._id !== convexUser._id);
     const trimmedContent = args.content.trim();
 
+    // NOTE: With encryption, the 'trimmedContent' here is actually Ciphertext.
+    // We cannot send encrypted text in the push body because the Service Worker
+    // might not have access to the DB keys easily (or at all) to decrypt it for display.
+    //
+    // For now, we will send "New encrypted message" as the body.
+    // In a future advanced iteration, the SW could try to decrypt if it had access to the key.
+    const pushBody = args.encryptedSessionKey
+      ? "New encrypted message"
+      : trimmedContent;
+
     const pushPromises = otherUsers.map((otherUser) =>
       ctx.scheduler.runAfter(0, internal.push.sendPush, {
         userId: otherUser._id,
         title: convexUser.username,
-        body: trimmedContent,
+        body: pushBody,
         data: { url: `/chats/${parsedChatId}` },
       }),
     );
@@ -373,6 +515,43 @@ export const forwardMessage = mutation({
         throw new ConvexError("Message does not exist");
       }
 
+      /*
+       * BLOCKING FORWARDING OF ENCRYPTED MESSAGES:
+       *
+       * Why?
+       * Encrypted messages store their session keys in `encryptedSessionKey`.
+       * This payload is a JSON object where keys are User IDs and values are the
+       * AES session key encrypted with that specific user's Public Key.
+       *
+       * Problem:
+       * When forwarding a message to a NEW chat, the new recipient(s) are NOT in the
+       * original `encryptedSessionKey` payload. They do not have an entry there.
+       * If we just copy the `encryptedSessionKey` (like we do for normal fields),
+       * the new recipient receives a payload they cannot decrypt (because it's encrypted
+       * for the OLD participants).
+       *
+       * Solution Required:
+       * To forward an encrypted message, the CLIENT must:
+       * 1. Decrypt the original message content locally using their Private Key.
+       * 2. Re-encrypt the content with a NEW session key (or the same one).
+       * 3. Encrypt that session key for the NEW recipient(s) in the destination chat.
+       * 4. Call `createMessage` with the new encrypted payload.
+       *
+       * Since `forwardMessage` is a server-side mutation, it does not have access to
+       * the user's Private Key (which lives in IndexedDB). Therefore, the server
+       * CANNOT re-encrypt the message.
+       *
+       * Temporary Safety Measure:
+       * We block forwarding here to prevent creating "broken" messages that the
+       * recipient cannot read. The UI should handle this by either disabling the
+       * forward button for encrypted messages or implementing the client-side flow described above.
+       */
+      if (message.encryptedSessionKey) {
+        throw new ConvexError(
+          "Cannot forward encrypted messages. Please copy and send as a new message.",
+        );
+      }
+
       await ctx.table("messages").insert({
         userId: user._id,
         privateChatId: forwardObject.chatId,
@@ -407,7 +586,13 @@ export const forwardMessage = mutation({
 });
 
 export const editMessage = mutation({
-  args: { messageId: v.id("messages"), newContent: v.string() },
+  args: {
+    messageId: v.id("messages"),
+    newContent: v.string(),
+    encryptedSessionKey: v.optional(v.string()), // New keys for edited content
+    iv: v.optional(v.string()),
+  },
+  returns: v.null(),
   handler: async (ctx, args) => {
     if (args.newContent.trim() === "")
       throw new Error("Message cannot be empty");
@@ -435,8 +620,31 @@ export const editMessage = mutation({
       throw new Error("Cannot edit deleted message");
     }
 
+    const usersInChat = await ctx
+      .table("privateChats")
+      .getX(message.privateChatId)
+      .edge("users");
+
+    if (
+      (message.encryptedSessionKey || message.iv) &&
+      (!args.encryptedSessionKey || !args.iv)
+    ) {
+      throw new ConvexError(
+        "Cannot remove encryption metadata when editing an encrypted message",
+      );
+    }
+
+    assertValidEncryptionPayload({
+      chatParticipantIds: usersInChat.map((user) => user._id),
+      ciphertext: args.newContent.trim(),
+      encryptedSessionKey: args.encryptedSessionKey,
+      iv: args.iv,
+    });
+
     await message.patch({
       content: args.newContent.trim(),
+      encryptedSessionKey: args.encryptedSessionKey,
+      iv: args.iv,
       modified: true,
       modifiedAt: Date.now().toString(),
     });

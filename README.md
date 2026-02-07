@@ -29,3 +29,42 @@ You can check out the [create-t3-app GitHub repository](https://github.com/t3-os
 ## How do I deploy this?
 
 Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+
+## Telemetry and E2EE Safety
+
+When working on chat encryption and related flows, do not send message plaintext (or other sensitive content) to telemetry.
+
+### Policy
+
+- Use `reportSafeError(context, error, extra?)` from `src/lib/safe-error-reporting.ts`.
+- Log only safe metadata (for example: `errorName`, `chatId`, operation name).
+- Do not pass message text, form values, decrypted content, or raw error payloads that may include sensitive data.
+
+### ESLint Guardrail
+
+Direct imports of `@sentry/nextjs` are blocked in E2EE-sensitive files:
+
+- `src/app/(internal-sites)/chats/**`
+- `src/components/encryption-key-bootstrap.tsx`
+- `src/lib/crypto.ts`
+- `src/lib/hooks.ts`
+
+If you need Sentry in those files, route the event through `reportSafeError` instead.
+
+### Examples
+
+Good:
+
+```ts
+reportSafeError("Failed to send encrypted message", error, { chatId });
+```
+
+Bad:
+
+```ts
+Sentry.captureException(error);
+console.error("Failed to send encrypted message", {
+  error,
+  message: values.message,
+});
+```

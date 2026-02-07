@@ -22,10 +22,24 @@ import {
   ResizablePanelGroup,
 } from "~/components/ui/resize";
 import { Skeleton } from "~/components/ui/skeleton";
-import { usePrevious } from "~/lib/hooks";
+import {
+  decryptMessageWithStoredKeys,
+  EncryptedSessionKeyNotFoundError,
+  encryptMessage,
+  encryptSessionKeyFor,
+  getStoredKeyPair,
+  importPublicKey,
+  StoredKeyPairNotFoundError,
+} from "~/lib/crypto";
+import {
+  cacheDecryptedMessage,
+  useDecryptMessage,
+  usePrevious,
+} from "~/lib/hooks";
+import { reportSafeError } from "~/lib/safe-error-reporting";
 import { cn } from "~/lib/utils";
 import { devMode$ } from "~/states";
-import { useMutation } from "convex/react";
+import { useConvex, useMutation } from "convex/react";
 import { type FunctionReturnType } from "convex/server";
 import { ConvexError } from "convex/values";
 import dayjs from "dayjs";
@@ -182,6 +196,7 @@ interface MessageContextProps {
   messages: FunctionReturnType<typeof api.messages.getMessages> | undefined;
   setReplyToMessageId: (id: undefined) => void;
   scrollToMessage: (messageId: Id<"messages">) => void;
+  currentUserConvexId: string | undefined;
 }
 
 const MessageContext: React.FC<MessageContextProps> = ({
@@ -190,14 +205,26 @@ const MessageContext: React.FC<MessageContextProps> = ({
   messages,
   setReplyToMessageId,
   scrollToMessage,
+  currentUserConvexId,
 }) => {
-  if (!replyToMessageId && !editingMessageId) return null;
+  const targetMessageId = replyToMessageId ?? editingMessageId;
 
-  const message = messages?.find(
-    (msg) => msg._id === (replyToMessageId ?? editingMessageId),
+  const message = targetMessageId
+    ? messages?.find((msg) => msg._id === targetMessageId)
+    : undefined;
+
+  const isEncrypted = Boolean(
+    message?.type === "message" && message.encryptedSessionKey && message.iv,
+  );
+  const decryptedContent = useDecryptMessage(
+    message?.type === "message" ? message.content : undefined,
+    message?.type === "message" ? message.encryptedSessionKey : undefined,
+    message?.type === "message" ? message.iv : undefined,
+    currentUserConvexId,
+    isEncrypted,
   );
 
-  if (message?.type !== "message") return null;
+  if (!targetMessageId || message?.type !== "message") return null;
 
   const isEditing = Boolean(editingMessageId);
   const contextText = isEditing ? "Editing message:" : "Replying to:";
@@ -242,7 +269,10 @@ const MessageContext: React.FC<MessageContextProps> = ({
           </button>
 
           <p className="line-clamp-2 text-sm">
-            <strong>{message.from.username}</strong>: {message.content}
+            <strong>{message.from.username}</strong>:{" "}
+            {isEncrypted
+              ? (decryptedContent ?? "Decrypting...")
+              : message.content}
           </p>
         </div>
       </motion.div>
@@ -278,6 +308,9 @@ export default function Page() {
   }, []);
 
   const posthog = usePostHog();
+  const convex = useConvex();
+
+  const userInfo = useQueryWithStatus(api.users.getUserData, {});
 
   const sendMessage = useMutation(
     api.messages.createMessage,
@@ -304,6 +337,8 @@ export default function Page() {
         _id: crypto.randomUUID() as Id<"messages">,
         _creationTime: now,
         content,
+        encryptedSessionKey: args.encryptedSessionKey,
+        iv: args.iv,
         deleted: false,
         forwarded: 0,
         type: "message",
@@ -347,7 +382,8 @@ export default function Page() {
     api.messages.editMessage,
   ).withOptimisticUpdate((localStore, args) => {
     const chatId: Id<"privateChats"> = params.chatId as Id<"privateChats">;
-    const { newContent, messageId } = args;
+    const { messageId } = args;
+    const newContent = args.newContent;
 
     const existingMessages = localStore.getQuery(api.messages.getMessages, {
       chatId,
@@ -365,6 +401,8 @@ export default function Page() {
           return {
             ...message,
             content: newContent,
+            encryptedSessionKey: args.encryptedSessionKey,
+            iv: args.iv,
             modified: true,
             modifiedAt: Date.now().toString(),
           };
@@ -389,6 +427,8 @@ export default function Page() {
               lastMessage: {
                 ...lastMessage,
                 content: newContent,
+                encryptedSessionKey: args.encryptedSessionKey,
+                iv: args.iv,
                 modified: true,
                 modifiedAt: Date.now().toString(),
               },
@@ -400,8 +440,6 @@ export default function Page() {
       );
     }
   });
-
-  const userInfo = useQueryWithStatus(api.users.getUserData, {});
 
   const messages = useQueryWithStatus(api.messages.getMessages, {
     chatId: params.chatId,
@@ -499,6 +537,7 @@ export default function Page() {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const [inputValue, setInputValue] = useState("");
+  const originalEditingContentRef = useRef<string | null>(null);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
@@ -507,24 +546,88 @@ export default function Page() {
   const fullyResetInput = () => {
     setEditingMessageId(null);
     setReplyToMessageId(undefined);
+    originalEditingContentRef.current = null;
     textMessageForm.reset();
     setInputValue("");
   };
 
+  // Helper to decode message for editing
+  // Note: This needs to be async, but useEffect is sync.
   useEffect(() => {
-    if (editingMessageId) {
+    let cancelled = false;
+
+    async function loadContentForEdit() {
+      if (!editingMessageId) {
+        originalEditingContentRef.current = null;
+        return;
+      }
+
+      if (!userInfo.data?._id) {
+        return;
+      }
+
       const message = messages.data?.find((message) => {
         return message._id === editingMessageId;
       });
+
       if (message?.type === "message") {
+        let content = message.content;
+        if (message.encryptedSessionKey && message.iv) {
+          try {
+            const decrypted = await decryptMessageWithStoredKeys(
+              message.content,
+              message.encryptedSessionKey,
+              message.iv,
+              userInfo.data._id,
+            );
+            if (cancelled) return;
+
+            content = decrypted;
+          } catch (e) {
+            reportSafeError("Failed to decrypt for editing", e);
+
+            if (e instanceof StoredKeyPairNotFoundError) {
+              originalEditingContentRef.current = null;
+              toast.error("Cannot edit encrypted message (missing key)");
+              return;
+            }
+
+            const errorMessage =
+              e instanceof EncryptedSessionKeyNotFoundError
+                ? "Cannot edit encrypted message (not encrypted for this device)"
+                : "Cannot edit encrypted message (decryption failed)";
+
+            originalEditingContentRef.current = null;
+            toast.error(errorMessage);
+            return;
+          }
+        }
+
+        if (cancelled) return;
+
+        originalEditingContentRef.current = content;
         setReplyToMessageId(undefined);
-        setInputValue(message.content);
+        setInputValue(content);
+        textMessageForm.setValue("message", content);
         inputRef.current?.focus();
       } else {
+        originalEditingContentRef.current = null;
         console.error("Message not found");
       }
     }
-  }, [editingMessageId, messages.data]);
+
+    void loadContentForEdit();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    editingMessageId,
+    messages.data,
+    textMessageForm,
+    userInfo.data,
+    userInfo.data?._id,
+  ]);
 
   const editingMessageIdRef = useRef(editingMessageId);
 
@@ -548,29 +651,120 @@ export default function Page() {
     const trimmedMessage = values.message.trim();
     if (!trimmedMessage) return;
 
-    if (editingMessageId) {
-      const message = messages.data?.find((message) => {
-        return message._id === editingMessageId;
-      });
+    try {
+      if (!userInfo.data?._id) {
+        toast.error("User info not loaded");
+        return;
+      }
 
-      if (message?.type === "message" && message.content !== trimmedMessage) {
+      if (
+        editingMessageId &&
+        originalEditingContentRef.current !== null &&
+        originalEditingContentRef.current.trim() === trimmedMessage
+      ) {
+        fullyResetInput();
+        return;
+      }
+
+      const currentUserConvexId = userInfo.data._id;
+
+      // 1. Get keys
+      const keyPair = await getStoredKeyPair(currentUserConvexId);
+      if (!keyPair) {
+        toast.error("Encryption keys not found. Please refresh the page.");
+        return;
+      }
+
+      // 2. Determine recipients' public keys
+      // Since this is 1:1 or small group, we need to fetch other users' public keys.
+      // `chatInfo.data.otherUser` is an array of users.
+      //
+      // NOTE: `chatInfo.data` might be undefined if loading.
+      if (!chatInfo.data) {
+        toast.error("Chat info not loaded");
+        return;
+      }
+
+      // We need to encrypt for: myself + all other users in the chat.
+
+      let recipients = chatInfo.data.otherUser;
+      try {
+        const latestChatInfo = await convex.query(api.chats.getChatInfoFromId, {
+          chatId: params.chatId,
+        });
+
+        if (latestChatInfo?.otherUser) {
+          recipients = latestChatInfo.otherUser;
+        }
+      } catch (error) {
+        reportSafeError("Failed to refresh recipient public keys", error);
+      }
+
+      // 3. Encrypt
+      const { ciphertext, iv, exportedSessionKey } =
+        await encryptMessage(trimmedMessage);
+      cacheDecryptedMessage(currentUserConvexId, ciphertext, trimmedMessage);
+
+      // 4. Encrypt session key for myself (so I can read it)
+      const myEncryptedSessionKey = await encryptSessionKeyFor(
+        exportedSessionKey,
+        keyPair.publicKey,
+      );
+
+      const keys: Record<string, string> = {};
+      keys[currentUserConvexId] = myEncryptedSessionKey;
+
+      for (const recipient of recipients) {
+        if (recipient._id === currentUserConvexId) {
+          continue;
+        }
+
+        if (!recipient.publicKey) {
+          toast.error(
+            `${recipient.username} has not set up encryption keys yet. Cannot send encrypted message.`,
+          );
+          return;
+        }
+
+        const recipientPublicKey = await importPublicKey(recipient.publicKey);
+        const recipientEncryptedKey = await encryptSessionKeyFor(
+          exportedSessionKey,
+          recipientPublicKey,
+        );
+        keys[recipient._id] = recipientEncryptedKey;
+      }
+
+      const packedSessionKeys = btoa(JSON.stringify(keys)); // Base64 encode the JSON to be safe
+
+      if (editingMessageId) {
+        // EDIT MODE
+        // We need to fetch the original message to check if it was encrypted.
+        // Actually, we are just overwriting with new encrypted content.
         void editMessage({
-          newContent: trimmedMessage,
           messageId: editingMessageId,
+          newContent: ciphertext,
+          encryptedSessionKey: packedSessionKeys,
+          iv,
         });
         posthog.capture("message_edited");
+      } else {
+        // SEND MODE
+        void sendMessage({
+          content: ciphertext,
+          chatId: params.chatId,
+          replyToId: replyToMessageId,
+          encryptedSessionKey: packedSessionKeys,
+          iv,
+        });
+        posthog.capture("message_sent");
       }
-    } else {
-      void sendMessage({
-        content: trimmedMessage,
-        chatId: params.chatId,
-        replyToId: replyToMessageId,
-      });
-      posthog.capture("message_sent");
-    }
 
-    fullyResetInput();
-    scrollToBottom();
+      fullyResetInput();
+      scrollToBottom();
+    } catch (e) {
+      reportSafeError("Failed to send encrypted message", e);
+      toast.error("Failed to encrypt message");
+    }
   }
 
   const createClearRequest = useMutation(api.clearRequests.createClearRequest);
@@ -579,8 +773,7 @@ export default function Page() {
     try {
       await createClearRequest({ chatId });
     } catch (error) {
-      console.error("Failed to create clear chat request:", {
-        error,
+      reportSafeError("Failed to create clear chat request", error, {
         chatId,
       });
 
@@ -812,8 +1005,8 @@ export default function Page() {
                     <Sparkles className="h-5 w-5 animate-pulse delay-1000" />
                   </div>
                 </div>
-                {messages.data.map((message, key) => (
-                  <React.Fragment key={key}>
+                {messages.data.map((message) => (
+                  <React.Fragment key={message._id}>
                     <Message
                       selectedMessageId={selectedMessageId}
                       setSelectedMessageId={setSelectedMessageId}
@@ -865,6 +1058,7 @@ export default function Page() {
                 messages={messages.data}
                 setReplyToMessageId={setReplyToMessageId}
                 scrollToMessage={scrollToMessage}
+                currentUserConvexId={userInfo.data?._id}
               />
               <div className="bg-primary z-10 flex w-full justify-between gap-8 p-4 pb-10 lg:pb-4">
                 <form

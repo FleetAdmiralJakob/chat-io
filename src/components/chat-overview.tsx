@@ -3,6 +3,7 @@
 import { useUser } from "@clerk/nextjs";
 import Badge from "~/components/ui/badge";
 import { Input } from "~/components/ui/input";
+import { useDecryptMessage } from "~/lib/hooks";
 import { cn } from "~/lib/utils";
 import { useQuery } from "convex-helpers/react/cache/hooks";
 import { type FunctionReturnType } from "convex/server";
@@ -14,6 +15,59 @@ import { Avatar, AvatarFallback } from "./ui/avatar";
 import { Skeleton } from "./ui/skeleton";
 
 export type Chats = FunctionReturnType<typeof api.chats.getChats>;
+
+type LastMessage = NonNullable<NonNullable<Chats>[number]["lastMessage"]>;
+
+const LastMessagePreview = ({
+  lastMessage,
+  currentUserClerkId,
+  currentUserConvexId,
+}: {
+  lastMessage: LastMessage;
+  currentUserClerkId: string | undefined;
+  currentUserConvexId: string | undefined;
+}) => {
+  const isEncrypted =
+    lastMessage.type === "message" &&
+    Boolean(lastMessage.encryptedSessionKey && lastMessage.iv);
+
+  const decryptedContent = useDecryptMessage(
+    lastMessage.type === "message" ? lastMessage.content : undefined,
+    lastMessage.type === "message"
+      ? lastMessage.encryptedSessionKey
+      : undefined,
+    lastMessage.type === "message" ? lastMessage.iv : undefined,
+    currentUserConvexId,
+    isEncrypted,
+  );
+
+  if (lastMessage.type !== "message") {
+    return null;
+  }
+
+  const content = isEncrypted
+    ? (decryptedContent ?? "Decrypting...")
+    : lastMessage.content;
+
+  if (lastMessage.content === "") {
+    return (
+      <div className="flex truncate">
+        <Ban className="p-1 pt-0" />
+        <p className="truncate">This message was deleted</p>
+      </div>
+    );
+  }
+
+  const isRead = lastMessage.readBy.some(
+    (user) => user.clerkId.split("|").pop() === currentUserClerkId,
+  );
+
+  if (isRead) {
+    return content;
+  }
+
+  return <p className="truncate font-bold">{content}</p>;
+};
 
 const SkeletonsChat = (props: { amount: number }) => {
   return Array.from({ length: props.amount }).map((_, index) => (
@@ -42,6 +96,7 @@ const Chats: React.FC<{
   classNameChatList?: string;
 }> = ({ classNameChatList }) => {
   const chats = useQuery(api.chats.getChats);
+  const userInfo = useQuery(api.users.getUserData, {});
   chats?.sort((a, b) => {
     const aLatestTime = Math.max(
       new Date(a._creationTime || 0).getTime(),
@@ -106,7 +161,7 @@ const Chats: React.FC<{
                     className={cn("border-secondary w-full border-t-2", {
                       "border-0": index == 0,
                     })}
-                    key={index}
+                    key={chat._id}
                   >
                     <Link
                       className="flex w-full items-center justify-between truncate px-5 py-6 lg:ml-5 lg:px-0"
@@ -152,26 +207,11 @@ const Chats: React.FC<{
 
                             {chat.lastMessage ? (
                               chat.lastMessage.type === "message" ? (
-                                chat.lastMessage.content != "" ? (
-                                  chat.lastMessage.readBy.some(
-                                    (user) =>
-                                      user.username ===
-                                      clerkUser.user?.username,
-                                  ) ? (
-                                    chat.lastMessage.content
-                                  ) : (
-                                    <p className="truncate font-bold">
-                                      {chat.lastMessage.content}
-                                    </p>
-                                  )
-                                ) : (
-                                  <div className="flex truncate">
-                                    <Ban className="p-1 pt-0" />
-                                    <p className="truncate">
-                                      This message was deleted
-                                    </p>
-                                  </div>
-                                )
+                                <LastMessagePreview
+                                  lastMessage={chat.lastMessage}
+                                  currentUserClerkId={clerkUser.user?.id}
+                                  currentUserConvexId={userInfo?._id}
+                                />
                               ) : null
                             ) : (
                               "No messages yet"
@@ -193,7 +233,7 @@ const Chats: React.FC<{
                   className={cn("border-secondary w-full border-t-2", {
                     "border-0": index == 0,
                   })}
-                  key={index}
+                  key={chat._id}
                 >
                   <Link
                     className={cn(
@@ -245,26 +285,11 @@ const Chats: React.FC<{
 
                               {chat.lastMessage ? (
                                 chat.lastMessage.type === "message" ? (
-                                  chat.lastMessage.content != "" ? (
-                                    chat.lastMessage.readBy.some(
-                                      (user) =>
-                                        user.username ===
-                                        clerkUser.user?.username,
-                                    ) ? (
-                                      chat.lastMessage.content
-                                    ) : (
-                                      <p className="truncate font-bold">
-                                        {chat.lastMessage.content}
-                                      </p>
-                                    )
-                                  ) : (
-                                    <div className="flex truncate">
-                                      <Ban className="p-1 pt-0" />
-                                      <p className="truncate">
-                                        This message was deleted
-                                      </p>
-                                    </div>
-                                  )
+                                  <LastMessagePreview
+                                    lastMessage={chat.lastMessage}
+                                    currentUserClerkId={clerkUser.user?.id}
+                                    currentUserConvexId={userInfo?._id}
+                                  />
                                 ) : null
                               ) : (
                                 "No messages yet"
@@ -306,26 +331,11 @@ const Chats: React.FC<{
                                 )}
                               {chat.lastMessage ? (
                                 chat.lastMessage.type === "message" ? (
-                                  chat.lastMessage.content != "" ? (
-                                    chat.lastMessage.readBy.some(
-                                      (user) =>
-                                        user.username ===
-                                        clerkUser.user?.username,
-                                    ) ? (
-                                      chat.lastMessage.content
-                                    ) : (
-                                      <p className="truncate font-bold">
-                                        {chat.lastMessage.content}
-                                      </p>
-                                    )
-                                  ) : (
-                                    <div className="flex truncate">
-                                      <Ban className="p-1 pt-0" />
-                                      <p className="truncate">
-                                        This message was deleted
-                                      </p>
-                                    </div>
-                                  )
+                                  <LastMessagePreview
+                                    lastMessage={chat.lastMessage}
+                                    currentUserClerkId={clerkUser.user?.id}
+                                    currentUserConvexId={userInfo?._id}
+                                  />
                                 ) : null
                               ) : (
                                 "No messages yet"

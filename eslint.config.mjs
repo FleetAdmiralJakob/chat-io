@@ -87,6 +87,36 @@ const eslintConfig = defineConfig([
   },
   {
     files: [
+      "src/app/(internal-sites)/chats/**",
+      "src/components/encryption-key-bootstrap.tsx",
+      "src/lib/crypto.ts",
+      "src/lib/hooks.ts",
+    ],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          name: "process",
+          importNames: ["env"],
+          message:
+            "Use `import { env } from '~/env'` instead to ensure validated types.",
+        },
+        {
+          name: "convex/react",
+          importNames: ["useQueries", "useQuery"],
+          message:
+            "Use `import { useQuery, useQueries } from 'convex-helpers/react/cache/hooks'` instead to have a full in-memory cache.",
+        },
+        {
+          name: "@sentry/nextjs",
+          message:
+            "Use `reportSafeError` from '~/lib/safe-error-reporting' in E2EE-sensitive code.",
+        },
+      ],
+    },
+  },
+  {
+    files: [
       "convex/**",
       "src/env.ts",
       "next.config.js",

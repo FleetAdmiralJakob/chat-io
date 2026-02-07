@@ -47,10 +47,11 @@
     "@tailwindcss/postcss": "^4.1.8",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
-    "convex": "^1.31.3",
+    "convex": "^1.31.4",
     "convex-ents": "^0.16.0",
     "convex-helpers": "^0.1.108",
     "dayjs": "^1.11.13",
+    "dexie": "^4.2.1",
     "emoji-mart": "^5.6.0",
     "emoji-regex": "^10.4.0",
     "framer-motion": "^12.15.0",
@@ -101,11 +102,11 @@
   "ct3aMetadata": {
     "initVersion": "7.30.0"
   },
-  "packageManager": "pnpm@10.27.0+sha512.72d699da16b1179c14ba9e64dc71c9a40988cbdc65c264cb0e489db7de917f20dcf4d64d8723625f2969ba52d4b7e2a1170682d9ac2a5dcaeaab732b7e16f04a",
+  "packageManager": "pnpm@10.28.0+sha512.05df71d1421f21399e053fde567cea34d446fa02c76571441bfc1c7956e98e363088982d940465fd34480d4d90a0668bc12362f8aa88000a64e83d0b0e47be48",
   "engineStrict": true,
   "engines": {
     "node": ">=20.9.0",
-    "pnpm": "10.27.0"
+    "pnpm": "10.28.0"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
