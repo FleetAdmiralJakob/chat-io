@@ -1,4 +1,4 @@
-import { db, type KeyPair } from "./db";
+import { db, type KeyPair } from "~/lib/db";
 import { reportSafeError } from "./safe-error-reporting";
 
 const LEGACY_KEY_PAIR_ID = "primary";

@@ -625,6 +625,15 @@ export const editMessage = mutation({
       .getX(message.privateChatId)
       .edge("users");
 
+    if (
+      (message.encryptedSessionKey || message.iv) &&
+      (!args.encryptedSessionKey || !args.iv)
+    ) {
+      throw new ConvexError(
+        "Cannot remove encryption metadata when editing an encrypted message",
+      );
+    }
+
     assertValidEncryptionPayload({
       chatParticipantIds: usersInChat.map((user) => user._id),
       ciphertext: args.newContent.trim(),

@@ -51,8 +51,6 @@ const getCachedDecryptedMessage = (
     return null;
   }
 
-  ensureCacheUserContext(userId);
-
   return decryptedMessageCache.get(cacheKey) ?? null;
 };
 
