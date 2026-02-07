@@ -27,8 +27,6 @@ import {
   decryptMessage,
   encryptMessage,
   encryptSessionKeyFor,
-  exportPublicKey,
-  generateKeyPair,
   getStoredKeyPair,
   importPublicKey,
 } from "~/lib/crypto";
@@ -39,7 +37,7 @@ import {
 } from "~/lib/hooks";
 import { cn } from "~/lib/utils";
 import { devMode$ } from "~/states";
-import { useMutation } from "convex/react";
+import { useConvex, useMutation } from "convex/react";
 import { type FunctionReturnType } from "convex/server";
 import { ConvexError } from "convex/values";
 import dayjs from "dayjs";
@@ -301,7 +299,6 @@ export default function Page() {
     useState<Id<"messages"> | null>(null);
 
   const router = useRouter();
-  const [keyInitAttempt, setKeyInitAttempt] = useState(0);
 
   useEffect(() => {
     const timer = setTimeout(() => setProgress(66), 500);
@@ -309,53 +306,9 @@ export default function Page() {
   }, []);
 
   const posthog = usePostHog();
+  const convex = useConvex();
 
-  const updatePublicKey = useMutation(api.users.updatePublicKey);
   const userInfo = useQueryWithStatus(api.users.getUserData, {});
-
-  // Ensure user has keys and public key is uploaded
-  const isInitializingKeyPair = useRef(false);
-  useEffect(() => {
-    let cancelled = false;
-
-    async function initKeys() {
-      if (!userInfo.data || isInitializingKeyPair.current) return;
-      isInitializingKeyPair.current = true;
-
-      try {
-        let keyPair = await getStoredKeyPair();
-        if (cancelled) return;
-
-        keyPair ??= await generateKeyPair();
-        if (cancelled) return;
-
-        if (keyPair && !userInfo.data.publicKey) {
-          const exported = await exportPublicKey(keyPair.publicKey);
-          if (cancelled) return;
-          await updatePublicKey({ publicKey: exported });
-        }
-      } catch (error) {
-        Sentry.captureException(error);
-        if (!cancelled) {
-          console.error("Failed to initialize encryption keys:", error);
-          toast.error("Encryption failed. Please try again.", {
-            action: {
-              label: "Retry",
-              onClick: () => setKeyInitAttempt((attempt) => attempt + 1),
-            },
-          });
-        }
-      } finally {
-        isInitializingKeyPair.current = false;
-      }
-    }
-
-    void initKeys();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [keyInitAttempt, updatePublicKey, userInfo.data]);
 
   const sendMessage = useMutation(
     api.messages.createMessage,
@@ -374,7 +327,7 @@ export default function Page() {
       const replyTo = existingMessages?.find(
         (msg) => msg._id === args.replyToId,
       );
-      // Date.now() is called when mutation is invoked, not during render
+      // eslint-disable-next-line react-hooks/purity -- Date.now() is called when mutation is invoked, not during render
       const now = Date.now();
       const newMessage: NonNullable<
         FunctionReturnType<typeof api.messages.getMessages>
@@ -704,6 +657,20 @@ export default function Page() {
 
       // We need to encrypt for: myself + all other users in the chat.
 
+      let recipients = chatInfo.data.otherUser;
+      try {
+        const latestChatInfo = await convex.query(api.chats.getChatInfoFromId, {
+          chatId: params.chatId,
+        });
+
+        if (latestChatInfo?.otherUser) {
+          recipients = latestChatInfo.otherUser;
+        }
+      } catch (error) {
+        Sentry.captureException(error);
+        console.error("Failed to refresh recipient public keys", error);
+      }
+
       // 3. Encrypt
       const { ciphertext, iv, exportedSessionKey } =
         await encryptMessage(trimmedMessage);
@@ -726,7 +693,7 @@ export default function Page() {
         return;
       }
 
-      for (const recipient of chatInfo.data.otherUser) {
+      for (const recipient of recipients) {
         if (recipient._id === userInfo.data?._id) {
           continue;
         }
