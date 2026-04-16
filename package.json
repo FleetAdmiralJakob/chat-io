@@ -21,7 +21,7 @@
     "gen:vapid": "web-push generate-vapid-keys"
   },
   "dependencies": {
-    "@clerk/nextjs": "^6.23.3",
+    "@clerk/nextjs": "^6.39.2",
     "@emoji-mart/data": "^1.2.1",
     "@emoji-mart/react": "^1.1.1",
     "@floating-ui/react": "^0.27.9",
